@@ -330,7 +330,7 @@ namespace FleetForge
                 </Border>
                 <StackPanel VerticalAlignment=""Center"">
                     <TextBlock Text=""FLEETFORGE SETUP"" FontSize=""15"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                    <TextBlock Text=""Love Malhotra • Enterprise Deployment • v2.5.0"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
+                    <TextBlock Text=""Love Malhotra • Easy App Setup • v2.5.0"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                 </StackPanel>
             </StackPanel>
 
@@ -346,8 +346,8 @@ namespace FleetForge
             <!-- Welcome Info Card -->
             <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,12"">
                 <StackPanel>
-                    <TextBlock Text=""Enterprise Workstation Provisioning"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
-                    <TextBlock Text=""This wizard installs FleetForge by Love Malhotra onto this computer. FleetForge provides zero-touch automated workstation provisioning, Winget cloud synchronization, and fast-track role environments.""
+                    <TextBlock Text=""Welcome to FleetForge Setup"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
+                    <TextBlock Text=""This installer sets up FleetForge on your computer. FleetForge lets you install all your favorite applications, office tools, and web browsers in one simple click.""
                                FontSize=""11.5"" Foreground=""#D0D0D0"" TextWrapping=""Wrap"" LineHeight=""16""/>
                 </StackPanel>
             </Border>
@@ -375,10 +375,10 @@ namespace FleetForge
             <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,0"">
                 <StackPanel>
                     <TextBlock Text=""Setup Options"" FontSize=""12"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,8""/>
-                    <CheckBox x:Name=""ChkDesktop"" Content=""Create Desktop Shortcut (FleetForge.lnk)"" IsChecked=""True"" Foreground=""#E0E0E0"" FontSize=""11.5"" Margin=""0,0,0,6"" Cursor=""Hand""/>
+                    <CheckBox x:Name=""ChkDesktop"" Content=""Create Desktop Shortcut"" IsChecked=""True"" Foreground=""#E0E0E0"" FontSize=""11.5"" Margin=""0,0,0,6"" Cursor=""Hand""/>
                     <CheckBox x:Name=""ChkStartMenu"" Content=""Add to Start Menu &amp; Windows Search"" IsChecked=""True"" Foreground=""#E0E0E0"" FontSize=""11.5"" Margin=""0,0,0,6"" Cursor=""Hand""/>
-                    <CheckBox x:Name=""ChkRegister"" Content=""Register in Windows Installed Apps (Settings > Apps with Uninstaller)"" IsChecked=""True"" Foreground=""#E0E0E0"" FontSize=""11.5"" Margin=""0,0,0,6"" Cursor=""Hand""/>
-                    <CheckBox x:Name=""ChkLaunchAfter"" Content=""Launch FleetForge after installation finishes"" IsChecked=""True"" Foreground=""#4CC2FF"" FontSize=""11.5"" Cursor=""Hand""/>
+                    <CheckBox x:Name=""ChkRegister"" Content=""Add to Windows Installed Apps (Easy Uninstall)"" IsChecked=""True"" Foreground=""#E0E0E0"" FontSize=""11.5"" Margin=""0,0,0,6"" Cursor=""Hand""/>
+                    <CheckBox x:Name=""ChkLaunchAfter"" Content=""Launch FleetForge when setup finishes"" IsChecked=""True"" Foreground=""#4CC2FF"" FontSize=""11.5"" Cursor=""Hand""/>
                 </StackPanel>
             </Border>
 
@@ -498,7 +498,7 @@ namespace FleetForge
                 try
                 {
                     // 1. Create Directories
-                    UpdateProgress(10, "Creating destination folders...");
+                    UpdateProgress(10, "Creating installation folder...");
                     if (!Directory.Exists(targetDir))
                     {
                         Directory.CreateDirectory(targetDir);
@@ -517,13 +517,13 @@ namespace FleetForge
                     Thread.Sleep(150);
 
                     // 2. Extract FleetForge.exe
-                    UpdateProgress(30, "Extracting FleetForge.exe...");
+                    UpdateProgress(30, "Copying program files...");
                     string exePath = Path.Combine(targetDir, "FleetForge.exe");
                     ExtractResource("FleetForge.exe", exePath);
                     Thread.Sleep(150);
 
                     // 3. Extract apps.json
-                    UpdateProgress(50, "Extracting & verifying package catalog...");
+                    UpdateProgress(50, "Loading 16,349 software catalog...");
                     string appsPath = Path.Combine(dataDir, "apps.json");
                     ExtractResource("apps.json", appsPath);
                     try { File.Copy(appsPath, Path.Combine(targetDir, "apps.json"), true); } catch { }
@@ -550,7 +550,7 @@ namespace FleetForge
                     catch { }
 
                     // 4. Extract settings.json
-                    UpdateProgress(65, "Configuring settings...");
+                    UpdateProgress(65, "Applying setup preferences...");
                     string settingsPath = Path.Combine(configDir, "settings.json");
                     ExtractResource("settings.json", settingsPath);
                     try { File.Copy(settingsPath, Path.Combine(targetDir, "settings.json"), true); } catch { }
@@ -565,18 +565,18 @@ namespace FleetForge
                     catch { }
 
                     // 5. Extract appicon.ico
-                    UpdateProgress(75, "Installing application icon...");
+                    UpdateProgress(75, "Setting up app icons...");
                     string icoPath = Path.Combine(targetDir, "appicon.ico");
                     ExtractResource("appicon.ico", icoPath);
 
                     // 6. Extract Uninstall.exe
-                    UpdateProgress(80, "Installing uninstaller utility...");
+                    UpdateProgress(80, "Installing uninstaller...");
                     string uninstallExePath = Path.Combine(targetDir, "Uninstall.exe");
                     ExtractResource("Uninstall.exe", uninstallExePath);
                     Thread.Sleep(150);
 
                     // 7. Shortcuts
-                    UpdateProgress(85, "Creating desktop & start menu shortcuts...");
+                    UpdateProgress(85, "Creating desktop shortcuts...");
                     if (createDesktop)
                     {
                         string deskPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "FleetForge.lnk");
@@ -592,7 +592,7 @@ namespace FleetForge
                     // 8. Register in Windows Add/Remove Programs
                     if (registerUninstall)
                     {
-                        UpdateProgress(95, "Registering in Windows Installed Apps...");
+                        UpdateProgress(95, "Adding to Windows Apps list...");
                         RegisterInAddRemovePrograms(targetDir, uninstallExePath, icoPath);
                     }
 

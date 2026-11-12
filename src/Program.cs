@@ -477,20 +477,20 @@ namespace FleetForge
                     </Border>
                 </StackPanel>
 
-                <TextBlock Text=""Love Malhotra • Enterprise Deployment""
+                <TextBlock Text=""Love Malhotra • One-Click App Setup""
                            FontSize=""11.5"" Foreground=""#A0A0A0"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
             </StackPanel>
 
             <!-- Loading Step & Progress -->
             <StackPanel Grid.Row=""1"" Margin=""0,18,0,0"">
                 <Grid Margin=""0,0,0,8"">
-                    <TextBlock x:Name=""TxtStatus"" Text=""Starting FleetForge deployment engine..."" FontSize=""11"" Foreground=""#38BDF8""/>
+                    <TextBlock x:Name=""TxtStatus"" Text=""Starting FleetForge..."" FontSize=""11"" Foreground=""#38BDF8""/>
                     <TextBlock x:Name=""TxtPercent"" Text=""20%"" FontSize=""11"" Foreground=""#A0A0A0"" HorizontalAlignment=""Right""/>
                 </Grid>
                 <ProgressBar x:Name=""ProgressBar"" Height=""4"" Background=""#2D2D2D"" Foreground=""#0078D4"" Value=""20"" Maximum=""100"" BorderThickness=""0""/>
             </StackPanel>
 
-            <TextBlock Grid.Row=""2"" Text=""Windows 11 Fluent Edition • Microsoft Winget Connected""
+            <TextBlock Grid.Row=""2"" Text=""Windows 11 Edition • Fast App Installer""
                        FontSize=""10"" Foreground=""#64748B"" HorizontalAlignment=""Center"" Margin=""0,12,0,0""/>
         </Grid>
     </Border>
@@ -1899,7 +1899,7 @@ namespace FleetForge
                 <!-- Brand Name & Tagline (collapses in collapsed mode) -->
                 <StackPanel x:Name=""StackBrandText"" Grid.Column=""1"" Margin=""10,0,4,0"" VerticalAlignment=""Center"">
                     <TextBlock x:Name=""TxtBrandTitle"" Text=""FLEETFORGE"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,1""/>
-                    <TextBlock x:Name=""TxtBrandSubtitle"" Text=""Zero-Touch Deployment"" FontSize=""10"" Foreground=""#8F96A0""/>
+                    <TextBlock x:Name=""TxtBrandSubtitle"" Text=""One-Click App Setup"" FontSize=""10"" Foreground=""#8F96A0""/>
                 </StackPanel>
 
                 <!-- Toggle Sidebar Button (Hamburger Icon) -->
@@ -1913,7 +1913,7 @@ namespace FleetForge
             <!-- Navigation Links -->
             <StackPanel Grid.Row=""1"">
                 <!-- Nav 1: Machine Configuration -->
-                <Button x:Name=""NavBtnSetup"" Height=""40"" Margin=""0,0,0,4"" Background=""#2C2C2C"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Machine Configuration"">
+                <Button x:Name=""NavBtnSetup"" Height=""40"" Margin=""0,0,0,4"" Background=""#2C2C2C"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Quick Setup"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
@@ -1922,12 +1922,12 @@ namespace FleetForge
                         </Grid.ColumnDefinitions>
                         <Border x:Name=""NavIndSetup"" Grid.Column=""0"" Width=""3"" Height=""16"" CornerRadius=""1.5"" Background=""#0078D4"" HorizontalAlignment=""Left"" VerticalAlignment=""Center""/>
                         <TextBlock x:Name=""NavIconSetup"" Grid.Column=""1"" Text=""&#xE770;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""16"" Foreground=""#4CC2FF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        <TextBlock x:Name=""NavTxtSetup"" Grid.Column=""2"" Text=""Machine Configuration"" FontSize=""13"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
+                        <TextBlock x:Name=""NavTxtSetup"" Grid.Column=""2"" Text=""Quick Setup"" FontSize=""13"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
                     </Grid>
                 </Button>
 
                 <!-- Nav 2: Applications Catalog -->
-                <Button x:Name=""NavBtnCatalog"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Applications Catalog"">
+                <Button x:Name=""NavBtnCatalog"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""All Apps"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
@@ -1936,7 +1936,7 @@ namespace FleetForge
                         </Grid.ColumnDefinitions>
                         <Border x:Name=""NavIndCatalog"" Grid.Column=""0"" Width=""3"" Height=""16"" CornerRadius=""1.5"" Background=""#0078D4"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"" Visibility=""Collapsed""/>
                         <TextBlock x:Name=""NavIconCatalog"" Grid.Column=""1"" Text=""&#xE71D;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""16"" Foreground=""#C5CCD8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        <TextBlock x:Name=""NavTxtCatalog"" Grid.Column=""2"" Text=""Applications Catalog"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
+                        <TextBlock x:Name=""NavTxtCatalog"" Grid.Column=""2"" Text=""All Apps"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
                     </Grid>
                 </Button>
 
@@ -1955,7 +1955,7 @@ namespace FleetForge
                 </Button>
 
                 <!-- Nav 4: Activity & Logs -->
-                <Button x:Name=""NavBtnLogs"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Activity &amp; Logs"">
+                <Button x:Name=""NavBtnLogs"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Install History &amp; Logs"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
@@ -1964,7 +1964,7 @@ namespace FleetForge
                         </Grid.ColumnDefinitions>
                         <Border x:Name=""NavIndLogs"" Grid.Column=""0"" Width=""3"" Height=""16"" CornerRadius=""1.5"" Background=""#0078D4"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"" Visibility=""Collapsed""/>
                         <TextBlock x:Name=""NavIconLogs"" Grid.Column=""1"" Text=""&#xE756;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""16"" Foreground=""#C5CCD8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        <TextBlock x:Name=""NavTxtLogs"" Grid.Column=""2"" Text=""Activity &amp; Logs"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
+                        <TextBlock x:Name=""NavTxtLogs"" Grid.Column=""2"" Text=""Install History"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
                     </Grid>
                 </Button>
             </StackPanel>
@@ -1997,8 +1997,8 @@ namespace FleetForge
                     <ColumnDefinition Width=""Auto""/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column=""0"" VerticalAlignment=""Center"">
-                    <TextBlock x:Name=""TxtPageTitle"" Text=""Machine configuration"" FontSize=""20"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                    <TextBlock x:Name=""TxtPageSubtitle"" Text=""Set up your developer machine quickly with curated role environments.""
+                    <TextBlock x:Name=""TxtPageTitle"" Text=""Quick setup"" FontSize=""20"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
+                    <TextBlock x:Name=""TxtPageSubtitle"" Text=""Choose an app pack or select individual apps to install on your computer in one click.""
                                FontSize=""12"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                 </StackPanel>
 
@@ -2030,11 +2030,11 @@ namespace FleetForge
                             <TextBlock Text=""&#xE7BA;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""18"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                         </Border>
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtResumeBannerTitle"" Text=""Interrupted Deployment Session Detected"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FDE047""/>
-                            <TextBlock x:Name=""TxtResumeBannerDesc"" Text=""An earlier deployment was paused or interrupted. You can resume to finish the remaining packages."" FontSize=""11"" Foreground=""#E2E8F0"" Margin=""0,2,0,0"" TextWrapping=""Wrap""/>
+                            <TextBlock x:Name=""TxtResumeBannerTitle"" Text=""Unfinished Installation Found"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FDE047""/>
+                            <TextBlock x:Name=""TxtResumeBannerDesc"" Text=""A previous installation was stopped before finishing. Click Resume to install the remaining apps."" FontSize=""11"" Foreground=""#E2E8F0"" Margin=""0,2,0,0"" TextWrapping=""Wrap""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""12,0,0,0"">
-                            <Button x:Name=""BtnResumeSession"" Content=""Resume Deployment"" Background=""#F59E0B"" Foreground=""#000000"" FontWeight=""Bold"" FontSize=""11"" Padding=""12,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""0""/>
+                            <Button x:Name=""BtnResumeSession"" Content=""Resume Installation"" Background=""#F59E0B"" Foreground=""#000000"" FontWeight=""Bold"" FontSize=""11"" Padding=""12,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""0""/>
                             <Button x:Name=""BtnDismissResume"" Content=""Dismiss"" Background=""#374151"" Foreground=""#E2E8F0"" FontSize=""11"" Padding=""10,6"" Cursor=""Hand"" BorderThickness=""0""/>
                         </StackPanel>
                     </Grid>
@@ -2054,12 +2054,12 @@ namespace FleetForge
                         </Border>
 
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtHeroTitle"" Text=""FleetForge End-to-End Machine Setup"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                            <TextBlock x:Name=""TxtHeroDesc"" Text=""Pre-configure this PC with standard developer toolchains, design software, or enterprise office bundles. Packages are verified and silently deployed using the Windows Package Manager (winget).""
+                            <TextBlock x:Name=""TxtHeroTitle"" Text=""Install All Your Apps in One Go"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
+                            <TextBlock x:Name=""TxtHeroDesc"" Text=""Get this PC ready in minutes. Choose a ready-made pack below, or browse all 16,349 apps in the catalog. When you're ready, click Install to set up everything automatically.""
                                        FontSize=""11"" Foreground=""#A0A0A0"" TextWrapping=""Wrap"" Margin=""0,3,0,0"" LineHeight=""16""/>
                         </StackPanel>
 
-                        <Button x:Name=""BtnHeroCatalog"" Grid.Column=""2"" Content=""Browse All Catalog →""
+                        <Button x:Name=""BtnHeroCatalog"" Grid.Column=""2"" Content=""Browse All 16,349 Apps →""
                                 Background=""#263244"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" FontSize=""11""
                                 Padding=""14,8"" Margin=""14,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#354A6B"" VerticalAlignment=""Center""/>
                     </Grid>
@@ -2068,12 +2068,12 @@ namespace FleetForge
                 <!-- Role Header with Create Button -->
                 <Grid Margin=""0,0,0,16"">
                     <StackPanel VerticalAlignment=""Center"">
-                        <TextBlock x:Name=""TxtTargetRoleTitle"" Text=""Target Role Environments"" FontSize=""16"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                        <TextBlock x:Name=""TxtTargetRoleSubtitle"" Text=""Select a role to fast-track setup, or create and customize role software bundles.""
+                        <TextBlock x:Name=""TxtTargetRoleTitle"" Text=""Ready-Made App Packs"" FontSize=""16"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
+                        <TextBlock x:Name=""TxtTargetRoleSubtitle"" Text=""Select an app pack to install everything in one click, or customize the apps in any pack.""
                                    FontSize=""12"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                     </StackPanel>
 
-                    <Button x:Name=""BtnCreateNewGroup"" Content=""➕ Create New Group""
+                    <Button x:Name=""BtnCreateNewGroup"" Content=""➕ Create New Pack""
                             Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
                             Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right""/>
                 </Grid>
@@ -2119,9 +2119,9 @@ namespace FleetForge
                                 <ColumnDefinition Width=""*""/>
                                 <ColumnDefinition Width=""Auto""/>
                             </Grid.ColumnDefinitions>
-                            <CheckBox x:Name=""ChkSelectAllCatalog"" Grid.Column=""0"" Content=""Select All Software"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Cursor=""Hand""/>
+                            <CheckBox x:Name=""ChkSelectAllCatalog"" Grid.Column=""0"" Content=""Select All Apps"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Cursor=""Hand""/>
                             <TextBlock x:Name=""TxtCatalogListHeaderCount"" Grid.Column=""1"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,0,14,0"" Text=""""/>
-                            <Button x:Name=""BtnCatalogSort"" Grid.Column=""2"" Content=""↕ Sort: Selected on Top ▾""
+                            <Button x:Name=""BtnCatalogSort"" Grid.Column=""2"" Content=""↕ Sort Apps ▾""
                                     Background=""#2D2D2D"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" FontSize=""11""
                                     Padding=""10,4"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" VerticalAlignment=""Center""/>
                         </Grid>
@@ -2138,25 +2138,25 @@ namespace FleetForge
         <!-- PAGE 3: CLOUD SYNC -->
         <ScrollViewer x:Name=""ViewCloud"" Grid.Row=""1"" Visibility=""Collapsed"" VerticalScrollBarVisibility=""Auto"" Margin=""24"" Padding=""0,0,10,0"">
             <StackPanel>
-                <TextBlock x:Name=""TxtCloudTitle1"" Text=""Host &amp; Sync Software List from the Cloud"" FontSize=""16"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,4""/>
-                <TextBlock x:Name=""TxtCloudDesc1"" Text=""Keep your team's software list on GitHub or Google Drive. When you update it online, all team members instantly receive the latest software.""
+                <TextBlock x:Name=""TxtCloudTitle1"" Text=""Backup &amp; Share Your App List Online"" FontSize=""16"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,4""/>
+                <TextBlock x:Name=""TxtCloudDesc1"" Text=""Save your app list online to GitHub or Google Drive so you can set up any other computer with the same apps in seconds.""
                            FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,0,0,20""/>
 
                 <Border x:Name=""BorderCloudCard1"" Background=""#202020"" CornerRadius=""10"" Padding=""20"" BorderBrush=""#333333"" BorderThickness=""1"" Margin=""0,0,0,20"">
                     <StackPanel>
-                        <TextBlock x:Name=""TxtCloudCard1Title"" Text=""Cloud Configuration URL (GitHub Raw URL or Google Drive Link)"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,6""/>
+                        <TextBlock x:Name=""TxtCloudCard1Title"" Text=""Online App List Link (GitHub or Google Drive Link)"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,6""/>
                         <TextBox x:Name=""TxtCloudUrlInput"" Height=""38"" Background=""#141414"" Foreground=""#4CC2FF""
                                  CaretBrush=""#4CC2FF"" BorderBrush=""#3D3D3D"" BorderThickness=""1"" Padding=""12,8""
                                  FontSize=""12"" VerticalContentAlignment=""Center""/>
 
                         <Grid Margin=""0,14,0,0"">
-                            <CheckBox x:Name=""ChkAutoSync"" Content=""Automatically sync from Cloud on startup"" IsChecked=""True""
+                            <CheckBox x:Name=""ChkAutoSync"" Content=""Check for list updates on startup"" IsChecked=""True""
                                       Foreground=""#C8C8C8"" FontSize=""12"" VerticalAlignment=""Center"" Cursor=""Hand""/>
 
                             <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
-                                <Button x:Name=""BtnSaveCloudUrl"" Content=""💾 Save URL"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
+                                <Button x:Name=""BtnSaveCloudUrl"" Content=""💾 Save Link"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                                         Padding=""14,8"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12""/>
-                                <Button x:Name=""BtnSyncNow"" Content=""🔄 Sync Now"" Background=""#0078D4"" Foreground=""#FFFFFF""
+                                <Button x:Name=""BtnSyncNow"" Content=""🔄 Update List Now"" Background=""#0078D4"" Foreground=""#FFFFFF""
                                         FontWeight=""Bold"" Padding=""18,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
                             </StackPanel>
                         </Grid>
@@ -2169,9 +2169,9 @@ namespace FleetForge
 
                 <!-- Quick Actions: Export Sample & Edit Local -->
                 <StackPanel Orientation=""Horizontal"">
-                    <Button x:Name=""BtnExportSampleJson"" Content=""📥 Export Sample Catalog (sample_apps.json)"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
+                    <Button x:Name=""BtnExportSampleJson"" Content=""📥 Export Starter App List"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12"" FontWeight=""SemiBold""/>
-                    <Button x:Name=""BtnOpenLocalCatalog"" Content=""📂 Edit Local apps.json"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
+                    <Button x:Name=""BtnOpenLocalCatalog"" Content=""📂 Open App List File"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12"" FontWeight=""SemiBold""/>
                 </StackPanel>
             </StackPanel>
@@ -2185,13 +2185,13 @@ namespace FleetForge
             </Grid.RowDefinitions>
 
             <Grid Grid.Row=""0"" Margin=""0,0,0,10"">
-                <TextBlock x:Name=""TxtLogsHeader"" Text=""Live Installation Terminal &amp; Audit Trail"" FontSize=""14"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
+                <TextBlock x:Name=""TxtLogsHeader"" Text=""Installation Progress &amp; History"" FontSize=""14"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                 <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
-                    <Button x:Name=""BtnViewReport"" Content=""📊 View Audit Report"" Background=""#0078D4"" Foreground=""#FFFFFF""
+                    <Button x:Name=""BtnViewReport"" Content=""📊 View Summary Report"" Background=""#0078D4"" Foreground=""#FFFFFF""
                             Padding=""12,5"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnOpenLogFile"" Content=""📂 Open Log File"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""12,5"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
-                    <Button x:Name=""BtnClearLogConsole"" Content=""Clear Console"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
+                    <Button x:Name=""BtnClearLogConsole"" Content=""Clear Screen"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""12,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
                 </StackPanel>
             </Grid>
@@ -2212,18 +2212,18 @@ namespace FleetForge
                     <ColumnDefinition Width=""*""/>
                     <ColumnDefinition Width=""Auto""/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name=""BtnSearchWingetOnlineBottom"" Grid.Column=""0"" Content=""🌐 Search Winget Online""
+                <Button x:Name=""BtnSearchWingetOnlineBottom"" Grid.Column=""0"" Content=""🌐 Search Online Apps""
                         Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
                         Padding=""14,10"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
                         HorizontalAlignment=""Left"" VerticalAlignment=""Center""
                         Visibility=""Collapsed""/>
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""📂 Offline Folder"" Background=""#222222"" Foreground=""#C8C8C8""
+                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""📂 Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
                             Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12""/>
-                    <Button x:Name=""BtnStop"" Content=""⏹️ Stop Setup""
+                    <Button x:Name=""BtnStop"" Content=""⏹️ Stop Install""
                             Background=""#DC2626"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""22,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnInstall"" Content=""⚡ Set up this machine""
+                    <Button x:Name=""BtnInstall"" Content=""⚡ Install Selected Apps""
                             Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""28,10"" Cursor=""Hand"" BorderThickness=""0""/>
                 </StackPanel>
@@ -2250,7 +2250,7 @@ namespace FleetForge
 
                 <!-- 0. Header -->
                 <Grid Grid.Row=""0"" Margin=""0,0,0,16"">
-                    <TextBlock x:Name=""TxtModalTitle"" Text=""Create New Role Group"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
+                    <TextBlock x:Name=""TxtModalTitle"" Text=""Create New App Pack"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                     <Button x:Name=""BtnCloseModal"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""14"" FontWeight=""Bold""
                             Width=""30"" Height=""30"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
                 </Grid>
@@ -2270,7 +2270,7 @@ namespace FleetForge
                     </StackPanel>
 
                     <StackPanel Grid.Column=""1"">
-                        <TextBlock Text=""Role Group Name"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
+                        <TextBlock Text=""Pack Name"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
                         <TextBox x:Name=""TxtGroupNameInput"" Height=""34"" Background=""#141414"" Foreground=""#FFFFFF""
                                  FontSize=""13"" Padding=""8,6"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""/>
                     </StackPanel>
@@ -2322,14 +2322,14 @@ namespace FleetForge
 
                 <!-- 6. Footer Actions -->
                 <Grid Grid.Row=""6"">
-                    <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Group"" Background=""#3D1A1A"" Foreground=""#F87171""
+                    <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Pack"" Background=""#3D1A1A"" Foreground=""#F87171""
                             FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#7F1D1D""
                             FontSize=""12"" HorizontalAlignment=""Left"" Visibility=""Collapsed""/>
 
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
                         <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#2B2B2B"" Foreground=""#F3F3F3""
                                 Padding=""18,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12""/>
-                        <Button x:Name=""BtnSaveGroup"" Content=""💾 Save Group"" Background=""#0078D4"" Foreground=""#FFFFFF""
+                        <Button x:Name=""BtnSaveGroup"" Content=""💾 Save Pack"" Background=""#0078D4"" Foreground=""#FFFFFF""
                                 FontWeight=""Bold"" Padding=""22,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
                     </StackPanel>
                 </Grid>
@@ -2431,7 +2431,7 @@ namespace FleetForge
                         </Border>
                         <TextBlock x:Name=""TxtModalSettingsTitle"" Text=""FleetForge Settings"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                         <Border x:Name=""BadgeSettingsConfig"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" Margin=""12,0,0,0"" VerticalAlignment=""Center"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtSettingsConfig"" Text=""Personal &amp; Enterprise Config"" FontSize=""10.5"" FontWeight=""SemiBold"" Foreground=""#38BDF8""/>
+                            <TextBlock x:Name=""TxtSettingsConfig"" Text=""Preferences &amp; Options"" FontSize=""10.5"" FontWeight=""SemiBold"" Foreground=""#38BDF8""/>
                         </Border>
                     </StackPanel>
                     <Button x:Name=""BtnCloseSettings"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""15"" FontWeight=""Bold""
@@ -2439,20 +2439,20 @@ namespace FleetForge
                 </Grid>
 
                 <!-- Section 1: Engine -->
-                <TextBlock x:Name=""TxtSettingsSec1Title"" Text=""⚡ DEPLOYMENT ENGINE &amp; BEHAVIOR"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
+                <TextBlock x:Name=""TxtSettingsSec1Title"" Text=""⚡ INSTALLATION OPTIONS"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
                 <Border x:Name=""BorderSettingsSec1"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
                     <StackPanel>
-                        <CheckBox x:Name=""ChkSettingSilent"" Content=""Silent Installation Mode (--silent --disable-interactivity)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
-                        <CheckBox x:Name=""ChkSettingAgreements"" Content=""Accept Agreements (--accept-package-agreements --accept-source-agreements)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
-                        <CheckBox x:Name=""ChkSettingAutoTheme"" Content=""Auto-sync Theme with Live Windows OS Theme (Light / Dark)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Cursor=""Hand""/>
+                        <CheckBox x:Name=""ChkSettingSilent"" Content=""Automatic Silent Install (No popups or manual next-clicks)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
+                        <CheckBox x:Name=""ChkSettingAgreements"" Content=""Automatically accept license agreements"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
+                        <CheckBox x:Name=""ChkSettingAutoTheme"" Content=""Match Windows theme automatically (Light / Dark)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Cursor=""Hand""/>
                     </StackPanel>
                 </Border>
 
                 <!-- Section 2: Storage -->
-                <TextBlock x:Name=""TxtSettingsSec2Title"" Text=""📦 OFFLINE REPOSITORY &amp; CACHE"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
+                <TextBlock x:Name=""TxtSettingsSec2Title"" Text=""📦 DOWNLOADED FILES &amp; STORAGE"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
                 <Border x:Name=""BorderSettingsSec2"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
                     <StackPanel>
-                        <TextBlock x:Name=""TxtSettingOfflineDirLbl"" Text=""Offline Installers Directory:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,6""/>
+                        <TextBlock x:Name=""TxtSettingOfflineDirLbl"" Text=""Downloaded Installers Folder:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,6""/>
                         <Grid Margin=""0,0,0,10"">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width=""*""/>
@@ -2464,7 +2464,7 @@ namespace FleetForge
                                     Padding=""14,6"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11.5""/>
                         </Grid>
                         <StackPanel Orientation=""Horizontal"">
-                            <Button x:Name=""BtnClearCache"" Content=""🧹 Clear Temporary Cache &amp; Logs"" Background=""#1E293B"" Foreground=""#94A3B8""
+                            <Button x:Name=""BtnClearCache"" Content=""🧹 Clear Downloaded Files &amp; Logs"" Background=""#1E293B"" Foreground=""#94A3B8""
                                     Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11"" Margin=""0,0,10,0""/>
                             <TextBlock x:Name=""TxtCacheStatus"" Text=""Cache: Ready"" FontSize=""11"" Foreground=""#64748B"" VerticalAlignment=""Center""/>
                         </StackPanel>
@@ -2472,7 +2472,7 @@ namespace FleetForge
                 </Border>
 
                 <!-- Section 3: Catalog -->
-                <TextBlock x:Name=""TxtSettingsSec3Title"" Text=""📚 CATALOG MAINTENANCE"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
+                <TextBlock x:Name=""TxtSettingsSec3Title"" Text=""📚 APP CATALOG &amp; DATA"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
                 <Border x:Name=""BorderSettingsSec3"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,18"">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -2480,10 +2480,10 @@ namespace FleetForge
                             <ColumnDefinition Width=""Auto""/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column=""0"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtSettingCatalogInfo"" Text=""16,349 Packages Indexed in data/apps.json"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
-                            <TextBlock x:Name=""TxtSettingCatalogSource"" Text=""Sync source: Microsoft Winget Central Repository"" FontSize=""11"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
+                            <TextBlock x:Name=""TxtSettingCatalogInfo"" Text=""16,349 Apps Available in Local Library"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
+                            <TextBlock x:Name=""TxtSettingCatalogSource"" Text=""Source: Official Microsoft Windows App Store"" FontSize=""11"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
                         </StackPanel>
-                        <Button x:Name=""BtnExportCatalog"" Grid.Column=""1"" Content=""📥 Export Catalog JSON"" Background=""#1E293B"" Foreground=""#FFFFFF""
+                        <Button x:Name=""BtnExportCatalog"" Grid.Column=""1"" Content=""📥 Export App List"" Background=""#1E293B"" Foreground=""#FFFFFF""
                                 Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11.5"" VerticalAlignment=""Center""/>
                     </Grid>
                 </Border>
@@ -2525,20 +2525,20 @@ namespace FleetForge
                         <TextBlock x:Name=""TxtAboutFleet"" Text=""FLEET"" FontSize=""22"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
                         <TextBlock x:Name=""TxtAboutForge"" Text=""FORGE"" FontSize=""22"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
                     </StackPanel>
-                    <TextBlock x:Name=""TxtAboutTagline"" Text=""Zero-Touch Machine Setup &amp; Enterprise Software Deployment"" FontSize=""11.5"" Foreground=""#94A3B8"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
+                    <TextBlock x:Name=""TxtAboutTagline"" Text=""One-Click Software Installer for Windows"" FontSize=""11.5"" Foreground=""#94A3B8"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Center"" Margin=""0,8,0,0"">
                         <Border x:Name=""BadgeAboutCompany"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" Margin=""0,0,8,0"" BorderThickness=""1"" BorderBrush=""#334155"">
                             <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.5.0 • Enterprise IT Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.5.0 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Bio Summary -->
                 <Border x:Name=""BorderAboutBio"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,16"">
-                    <TextBlock x:Name=""TxtAboutBioText"" Text=""FleetForge is an enterprise workstation provisioning platform engineered by Love Malhotra. Designed for IT departments, systems engineers, and developer teams to automate zero-touch PC onboarding, configure toolchains, and silently deploy curated software packages.""
+                    <TextBlock x:Name=""TxtAboutBioText"" Text=""FleetForge is a simple, one-click software installer made by Love Malhotra. It helps you quickly install your favorite everyday apps, office tools, and development software on any Windows PC without any hassle.""
                                FontSize=""11.5"" Foreground=""#CBD5E1"" TextWrapping=""Wrap"" LineHeight=""17.5""/>
                 </Border>
 
@@ -2550,23 +2550,23 @@ namespace FleetForge
                             <ColumnDefinition Width=""*""/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column=""0"" Margin=""0,0,10,0"">
-                            <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Author / Publisher:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Created by:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
-                            <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Installer Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecEngVal"" Text=""Microsoft Winget v1.8+"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
-                            <TextBlock x:Name=""TxtSpecLibLbl"" Text=""Software Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecLibLbl"" Text=""App Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecLibVal"" Text=""Curated Catalog &amp; Winget Engine"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""1"">
-                            <TextBlock x:Name=""TxtSpecArchLbl"" Text=""Platform Architecture:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecArchLbl"" Text=""Supported Windows:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecArchVal"" Text=""Windows 10 / 11 (64-bit)"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
-                            <TextBlock x:Name=""TxtSpecChanLbl"" Text=""Auto-Update Channel:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecChanLbl"" Text=""Update Channel:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecChanVal"" Text=""GitHub Releases (loveonce)"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
-                            <TextBlock x:Name=""TxtSpecLicLbl"" Text=""License Model:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecLicLbl"" Text=""License:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecLicVal"" Text=""Enterprise Proprietary"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                         </StackPanel>
                     </Grid>
@@ -3035,10 +3035,10 @@ namespace FleetForge
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
                     menu.FontSize = 12;
 
-                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "✓  " : "    ") + "⭐ Selected on Top" };
-                    MenuItem itmAlphaAsc = new MenuItem() { Header = (catalogSortMode == "alpha_asc" ? "✓  " : "    ") + "🔤 Name (A → Z)" };
-                    MenuItem itmAlphaDesc = new MenuItem() { Header = (catalogSortMode == "alpha_desc" ? "✓  " : "    ") + "🔤 Name (Z → A)" };
-                    MenuItem itmPopular = new MenuItem() { Header = (catalogSortMode == "popular" ? "✓  " : "    ") + "🔥 Popular / Default" };
+                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "✓  " : "    ") + "⭐ Selected Apps First" };
+                    MenuItem itmAlphaAsc = new MenuItem() { Header = (catalogSortMode == "alpha_asc" ? "✓  " : "    ") + "🔤 Name (A to Z)" };
+                    MenuItem itmAlphaDesc = new MenuItem() { Header = (catalogSortMode == "alpha_desc" ? "✓  " : "    ") + "🔤 Name (Z to A)" };
+                    MenuItem itmPopular = new MenuItem() { Header = (catalogSortMode == "popular" ? "✓  " : "    ") + "🔥 Most Popular" };
                     MenuItem itmCategory = new MenuItem() { Header = (catalogSortMode == "category" ? "✓  " : "    ") + "🏷️ By Category" };
 
                     itmSelectedTop.Click += delegate { SetCatalogSort("selected_top", "Selected on Top"); };
@@ -4379,14 +4379,14 @@ namespace FleetForge
             if (viewName == "setup")
             {
                 viewSetup.Visibility = Visibility.Visible;
-                txtPageTitle.Text = "Machine configuration";
-                txtPageSubtitle.Text = "Set up your developer machine quickly with curated role environments.";
+                txtPageTitle.Text = "Quick setup";
+                txtPageSubtitle.Text = "Choose an app pack or select individual apps to install on your computer in one click.";
             }
             else if (viewName == "catalog")
             {
                 viewCatalog.Visibility = Visibility.Visible;
-                txtPageTitle.Text = "Applications catalog";
-                txtPageSubtitle.Text = "Browse, search, and select individual software packages for this system.";
+                txtPageTitle.Text = "All applications";
+                txtPageSubtitle.Text = "Search and select from 16,349 apps available to install.";
                 if (catalogNeedsRefresh)
                 {
                     catalogNeedsRefresh = false;
@@ -4396,14 +4396,14 @@ namespace FleetForge
             else if (viewName == "cloud")
             {
                 viewCloud.Visibility = Visibility.Visible;
-                txtPageTitle.Text = "Cloud synchronization";
-                txtPageSubtitle.Text = "Connect to GitHub or Google Drive to share one centralized software list.";
+                txtPageTitle.Text = "Cloud backup & sync";
+                txtPageSubtitle.Text = "Save or share your app list online to easily set up other computers.";
             }
             else if (viewName == "logs")
             {
                 viewLogs.Visibility = Visibility.Visible;
-                txtPageTitle.Text = "Activity & Installation logs";
-                txtPageSubtitle.Text = "Live terminal stream and detailed historical records.";
+                txtPageTitle.Text = "Install history & logs";
+                txtPageSubtitle.Text = "Watch live installation progress and see the status of all your apps.";
             }
 
             if (btnSearchWingetOnlineBottom != null)
@@ -5189,7 +5189,7 @@ namespace FleetForge
 
                 Button selectBtn = new Button()
                 {
-                    Content = "Apply Role",
+                    Content = "Select This Pack",
                     Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E"),
                     Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF"),
                     FontWeight = FontWeights.SemiBold,
@@ -5270,7 +5270,7 @@ namespace FleetForge
                     rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF");
                     rc.Card.BorderThickness = new Thickness(2);
                     rc.Card.Background = currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42");
-                    rc.SelectButton.Content = "✓ Active Environment";
+                    rc.SelectButton.Content = "✓ Selected Pack";
                     rc.SelectButton.Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
                     rc.SelectButton.Foreground = HexBrush("#FFFFFF");
                     rc.SelectButton.BorderThickness = new Thickness(0);
@@ -5280,7 +5280,7 @@ namespace FleetForge
                     rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
                     rc.Card.BorderThickness = new Thickness(1);
                     rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                    rc.SelectButton.Content = "Apply Role";
+                    rc.SelectButton.Content = "Select Pack";
                     rc.SelectButton.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
                     rc.SelectButton.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
                     rc.SelectButton.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
@@ -5355,7 +5355,7 @@ namespace FleetForge
         private void OpenCreateGroupModal()
         {
             currentEditingGroupId = null;
-            txtModalTitle.Text = "Create New Role Group";
+            txtModalTitle.Text = "Create New App Pack";
             txtGroupNameInput.Text = "";
             txtGroupIconInput.Text = "🚀";
             txtGroupDescInput.Text = "";
@@ -5369,7 +5369,7 @@ namespace FleetForge
         private void OpenEditGroupModal(GroupModel grp)
         {
             currentEditingGroupId = grp.id;
-            txtModalTitle.Text = "Edit Role Group: " + grp.name;
+            txtModalTitle.Text = "Edit App Pack: " + grp.name;
             txtGroupNameInput.Text = grp.name;
             txtGroupIconInput.Text = GetSafeGroupIcon(grp);
             txtGroupDescInput.Text = grp.description;
@@ -6354,7 +6354,7 @@ namespace FleetForge
             StackPanel bannerStack = new StackPanel();
             TextBlock txtBannerTitle = new TextBlock()
             {
-                Text = "🌐 Microsoft Winget Online Directory (Entire 20,000+ Software Library)",
+                Text = "🌐 Search Millions of Windows Apps Online",
                 FontSize = 14,
                 FontWeight = FontWeights.Bold,
                 Foreground = currentThemeIsLight ? HexBrush("#5B21B6") : HexBrush("#DDD6FE")
@@ -6363,7 +6363,7 @@ namespace FleetForge
 
             TextBlock txtBannerDesc = new TextBlock()
             {
-                Text = "Search, discover, and install ANY software available on the official Winget server — common or uncommon, developer tools, CLI utilities, games, and drivers. Check any package to install in your machine setup, or save it permanently into apps.json.",
+                Text = "Can't find what you need in the list? Search millions of software packages online and install them with one simple click.",
                 FontSize = 11,
                 Foreground = currentThemeIsLight ? HexBrush("#6D28D9") : HexBrush("#A78BFA"),
                 Margin = new Thickness(0, 4, 0, 0),
@@ -6389,12 +6389,12 @@ namespace FleetForge
                 Padding = new Thickness(12, 8, 12, 8),
                 FontSize = 12,
                 VerticalContentAlignment = VerticalAlignment.Center,
-                Text = "Enter software name or ID (e.g. steam, wireshark, ghidra, torrent, vlc)..."
+                Text = "Enter app name (e.g. Chrome, WhatsApp, Spotify, Zoom, Steam)..."
             };
 
             txtOnlineSearchInput.GotFocus += delegate
             {
-                if (txtOnlineSearchInput.Text == "Enter software name or ID (e.g. steam, wireshark, ghidra, torrent, vlc)...")
+                if (txtOnlineSearchInput.Text == "Enter app name (e.g. Chrome, WhatsApp, Spotify, Zoom, Steam)...")
                 {
                     txtOnlineSearchInput.Text = "";
                     txtOnlineSearchInput.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
@@ -6404,7 +6404,7 @@ namespace FleetForge
             {
                 if (string.IsNullOrWhiteSpace(txtOnlineSearchInput.Text))
                 {
-                    txtOnlineSearchInput.Text = "Enter software name or ID (e.g. steam, wireshark, ghidra, torrent, vlc)...";
+                    txtOnlineSearchInput.Text = "Enter app name (e.g. Chrome, WhatsApp, Spotify, Zoom, Steam)...";
                     txtOnlineSearchInput.Foreground = currentThemeIsLight ? HexBrush("#94A3B8") : HexBrush("#707070");
                 }
             };
@@ -6420,7 +6420,7 @@ namespace FleetForge
 
             btnExecuteOnlineSearch = new Button()
             {
-                Content = "🔍 Search Winget",
+                Content = "🔍 Search Online",
                 Background = HexBrush("#7C3AED"),
                 Foreground = HexBrush("#FFFFFF"),
                 Padding = new Thickness(16, 0, 16, 0),
@@ -6486,19 +6486,19 @@ namespace FleetForge
 
         private void RunWingetOnlineSearch(string query)
         {
-            if (string.IsNullOrWhiteSpace(query) || query == "Enter software name or ID (e.g. steam, wireshark, ghidra, torrent, vlc)...")
+            if (string.IsNullOrWhiteSpace(query) || query == "Enter app name (e.g. Chrome, WhatsApp, Spotify, Zoom, Steam)...")
             {
-                txtOnlineStatus.Text = "Please enter a search query (e.g. steam, wireshark, discord).";
+                txtOnlineStatus.Text = "Please enter an app name (e.g. Chrome, WhatsApp, Spotify, Zoom).";
                 return;
             }
 
             if (string.IsNullOrEmpty(wingetCmd))
             {
-                txtOnlineStatus.Text = "Winget is not detected or available on this system.";
+                txtOnlineStatus.Text = "Windows App Store is not available on this system.";
                 return;
             }
 
-            txtOnlineStatus.Text = string.Format("⏳ Searching entire Winget directory for '{0}'... Please wait.", query);
+            txtOnlineStatus.Text = string.Format("⏳ Searching online for '{0}'... Please wait.", query);
             onlineResultsPanel.Children.Clear();
             btnExecuteOnlineSearch.IsEnabled = false;
 
@@ -6594,11 +6594,11 @@ namespace FleetForge
 
                     if (foundApps.Count == 0)
                     {
-                        txtOnlineStatus.Text = string.Format("No packages found on Winget matching '{0}'. Try another keyword.", query);
+                        txtOnlineStatus.Text = string.Format("No apps found matching '{0}'. Try searching with another name.", query);
                         return;
                     }
 
-                    txtOnlineStatus.Text = string.Format("Found {0} packages on Winget for '{1}':", foundApps.Count, query);
+                    txtOnlineStatus.Text = string.Format("Found {0} app(s) online matching '{1}':", foundApps.Count, query);
 
                     foreach (AppModel app in foundApps)
                     {
@@ -6716,7 +6716,7 @@ namespace FleetForge
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = "WINGET",
+                Text = "ONLINE",
                 FontSize = 9,
                 FontWeight = FontWeights.Bold,
                 Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC")
@@ -6741,7 +6741,7 @@ namespace FleetForge
             bool alreadyInCatalog = config.apps.Exists(delegate (AppModel a) { return a.id == curApp.id; });
             Button btnAddCatalog = new Button()
             {
-                Content = alreadyInCatalog ? "✓ In Catalog" : "➕ Add to Catalog",
+                Content = alreadyInCatalog ? "✓ In List" : "➕ Add to My List",
                 IsEnabled = !alreadyInCatalog,
                 Background = alreadyInCatalog ? (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#242B38")) : HexBrush("#0078D4"),
                 Foreground = HexBrush("#FFFFFF"),
@@ -6757,10 +6757,10 @@ namespace FleetForge
                 {
                     config.apps.Add(curApp);
                     SaveConfigToFile();
-                    btnAddCatalog.Content = "✓ Added";
+                    btnAddCatalog.Content = "✓ In List";
                     btnAddCatalog.IsEnabled = false;
                     btnAddCatalog.Background = HexBrush("#16A34A");
-                    if (txtStatus != null) txtStatus.Text = string.Format("Added '{0}' to apps.json catalog.", curApp.name);
+                    if (txtStatus != null) txtStatus.Text = string.Format("Added '{0}' to your app list.", curApp.name);
                 }
             };
             actionStack.Children.Add(btnAddCatalog);
@@ -6797,8 +6797,8 @@ namespace FleetForge
             }
 
             MessageBoxResult res = MessageBox.Show(
-                string.Format("Do you want to install '{0}' ({1}) now?", curApp.name, curApp.id),
-                "Install Software",
+                string.Format("Do you want to install '{0}' now?", curApp.name),
+                "Install App",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question
             );
@@ -6908,12 +6908,12 @@ namespace FleetForge
             {
                 if (cat == "winget_online")
                 {
-                    btnSearchWingetOnlineBottom.Content = "← Back to Local Catalog";
+                    btnSearchWingetOnlineBottom.Content = "← Back to App Catalog";
                     btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#0369A1");
                 }
                 else
                 {
-                    btnSearchWingetOnlineBottom.Content = "🌐 Search Winget Online";
+                    btnSearchWingetOnlineBottom.Content = "🌐 Search Online Apps";
                     btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#6D28D9");
                 }
             }
@@ -7013,7 +7013,7 @@ namespace FleetForge
             if (!string.IsNullOrEmpty(query))
             {
                 bannerSearchWingetPrompt.Visibility = Visibility.Visible;
-                txtSearchWingetPromptText.Text = string.Format("🔍 Can't find it locally? Search entire Winget online directory for '{0}' →", txtSearch.Text.Trim());
+                txtSearchWingetPromptText.Text = string.Format("🔍 Can't find '{0}'? Search millions of apps online →", txtSearch.Text.Trim());
             }
             else
             {
@@ -7342,15 +7342,15 @@ namespace FleetForge
 
             if (selectedApps.Count == 0)
             {
-                MessageBox.Show("Please select a role environment or check at least one software package.", "No Software Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Please select an app pack or check at least one app to install.", "No Apps Selected", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
             if (!isResume)
             {
                 MessageBoxResult res = MessageBox.Show(
-                    string.Format("Ready to configure machine with {0} selected application(s).\n\nDo you want to begin now?", selectedApps.Count),
-                    "Start Machine Setup",
+                    string.Format("Ready to install {0} selected app(s) on your computer.\n\nDo you want to start now?", selectedApps.Count),
+                    "Install Apps",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
@@ -7365,7 +7365,7 @@ namespace FleetForge
             btnInstall.Visibility = Visibility.Collapsed;
             btnStop.Visibility = Visibility.Visible;
             btnStop.IsEnabled = true;
-            btnStop.Content = "⏹️ Stop Setup";
+            btnStop.Content = "⏹️ Stop Install";
             UpdateBottomBarVisibility();
             if (btnViewReport != null) btnViewReport.Visibility = Visibility.Collapsed;
 
@@ -7700,7 +7700,7 @@ namespace FleetForge
                 {
                     btnStop.Visibility = Visibility.Collapsed;
                     btnStop.IsEnabled = true;
-                    btnStop.Content = "⏹️ Stop Setup";
+                    btnStop.Content = "⏹️ Stop Install";
                     btnInstall.IsEnabled = true;
                     UpdateBottomBarVisibility();
 
@@ -7721,8 +7721,8 @@ namespace FleetForge
                         int remaining = selectedApps.Count - success - failed;
                         if (txtStatus != null) txtStatus.Text = string.Format("Setup Stopped ({0} Installed, {1} Remaining)", success, remaining);
                         MessageBox.Show(
-                            string.Format("Machine Setup was stopped by user.\n\nInstalled: {0}\nFailed/Stopped: {1}\nRemaining: {2}\n\nProgress saved! You can resume from the setup tab anytime.", success, failed, remaining),
-                            "Setup Stopped",
+                            string.Format("Installation was paused.\n\nInstalled: {0}\nRemaining: {2}\n\nYour progress is saved! You can resume anytime.", success, failed, remaining),
+                            "Installation Paused",
                             MessageBoxButton.OK,
                             MessageBoxImage.Warning);
                     }
@@ -7730,9 +7730,9 @@ namespace FleetForge
                     {
                         if (txtStatus != null) txtStatus.Text = string.Format("Setup Complete! ({0} Succeeded, {1} Failed)", success, failed);
                         MessageBoxResult reportChoice = MessageBox.Show(
-                            string.Format("Machine Setup Finished!\n\nSucceeded: {0}\nFailed: {1}\n\nCompliance Audit Report generated:\n{2}\n\nWould you like to open the deployment report now?",
+                            string.Format("All Done! App Installation Finished.\n\nInstalled Successfully: {0}\nFailed / Skipped: {1}\n\nInstallation summary saved to:\n{2}\n\nWould you like to view the installation summary now?",
                                 success, failed, lastGeneratedReportPath ?? logFilePath),
-                            "Setup Complete — FleetForge",
+                            "Installation Finished — FleetForge",
                             MessageBoxButton.YesNo,
                             MessageBoxImage.Information);
 

@@ -25,7 +25,7 @@ namespace FleetForge
         public static void Main(string[] args)
         {
             MessageBoxResult res = MessageBox.Show(
-                "Are you sure you want to completely uninstall FleetForge and remove its shortcuts from this computer?",
+                "Are you sure you want to uninstall FleetForge from your computer?",
                 "Uninstall FleetForge",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);
