@@ -143,6 +143,7 @@ namespace FleetForge
         public Border Card { get; set; }
         public Button SelectButton { get; set; }
         public Button EditButton { get; set; }
+        public Button ExportButton { get; set; }
         public TextBlock CountText { get; set; }
     }
 
@@ -1467,6 +1468,7 @@ namespace FleetForge
         private Border borderModalAppsContainer;
 
         // Setup Page
+        private Button btnImportPack;
         private Button btnCreateNewGroup;
         private System.Windows.Controls.Primitives.UniformGrid roleCardsGrid;
 
@@ -1546,6 +1548,7 @@ namespace FleetForge
         private StackPanel modalAppsContainer;
         private Button btnModalLoadMore;
         private Button btnDeleteGroup;
+        private Button btnModalExportGroup;
         private Button btnCancelModal;
         private Button btnSaveGroup;
 
@@ -2078,9 +2081,16 @@ namespace FleetForge
                                    FontSize=""12"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                     </StackPanel>
 
-                    <Button x:Name=""BtnCreateNewGroup"" Content=""➕ Create New Pack""
-                            Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
-                            Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right""/>
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
+                        <Button x:Name=""BtnImportPack"" Content=""📥 Import Pack""
+                                Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
+                                FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,8"" Margin=""0,0,8,0""
+                                Cursor=""Hand"" ToolTip=""Import a custom app pack (.json)""/>
+                        <Button x:Name=""BtnCreateNewGroup"" Content=""➕ Create New Pack""
+                                Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
+                                Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0""
+                                ToolTip=""Create a new custom app pack""/>
+                    </StackPanel>
                 </Grid>
 
                 <UniformGrid x:Name=""RoleCardsGrid"" Columns=""2"" Margin=""0,0,0,10""/>
@@ -2318,9 +2328,14 @@ namespace FleetForge
 
                 <!-- 6. Footer Actions -->
                 <Grid Grid.Row=""6"">
-                    <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Pack"" Background=""#3D1A1A"" Foreground=""#F87171""
-                            FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#7F1D1D""
-                            FontSize=""12"" HorizontalAlignment=""Left"" Visibility=""Collapsed""/>
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"">
+                        <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Pack"" Background=""#3D1A1A"" Foreground=""#F87171""
+                                FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#7F1D1D""
+                                FontSize=""12"" Visibility=""Collapsed""/>
+                        <Button x:Name=""BtnModalExportGroup"" Content=""📤 Export Pack"" Background=""#2B2B2B"" Foreground=""#E0E0E0""
+                                FontWeight=""SemiBold"" Padding=""14,8"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D""
+                                FontSize=""12"" Visibility=""Collapsed"" ToolTip=""Export this pack to a .json file""/>
+                    </StackPanel>
 
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
                         <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#2B2B2B"" Foreground=""#F3F3F3""
@@ -2656,6 +2671,7 @@ namespace FleetForge
             borderModalCard = (Border)root.FindName("BorderModalCard");
             borderModalAppsContainer = (Border)root.FindName("BorderModalAppsContainer");
 
+            btnImportPack = (Button)root.FindName("BtnImportPack");
             btnCreateNewGroup = (Button)root.FindName("BtnCreateNewGroup");
             roleCardsGrid = (System.Windows.Controls.Primitives.UniformGrid)root.FindName("RoleCardsGrid");
 
@@ -2732,6 +2748,7 @@ namespace FleetForge
             modalAppsScrollViewer = (ScrollViewer)root.FindName("ModalAppsScrollViewer");
             modalAppsContainer = (StackPanel)root.FindName("ModalAppsContainer");
             btnDeleteGroup = (Button)root.FindName("BtnDeleteGroup");
+            btnModalExportGroup = (Button)root.FindName("BtnModalExportGroup");
             btnCancelModal = (Button)root.FindName("BtnCancelModal");
             btnSaveGroup = (Button)root.FindName("BtnSaveGroup");
 
@@ -3248,7 +3265,8 @@ namespace FleetForge
             btnInstall.Click += delegate { StartInstallation(); };
             btnStop.Click += delegate { RequestStopInstallation(); };
 
-            // Create New Group Event
+            // Create New Group & Import Pack Events
+            if (btnImportPack != null) btnImportPack.Click += delegate { ImportGroup(); };
             btnCreateNewGroup.Click += delegate { OpenCreateGroupModal(); };
 
             // Modal Controls
@@ -3256,6 +3274,17 @@ namespace FleetForge
             btnCancelModal.Click += delegate { CloseGroupModal(); };
             btnSaveGroup.Click += delegate { SaveGroupModal(); };
             btnDeleteGroup.Click += delegate { DeleteGroupModal(); };
+            if (btnModalExportGroup != null)
+            {
+                btnModalExportGroup.Click += delegate
+                {
+                    if (currentEditingGroupId != null)
+                    {
+                        GroupModel cur = config.groups.Find(delegate(GroupModel g) { return g.id == currentEditingGroupId; });
+                        if (cur != null) ExportGroup(cur);
+                    }
+                };
+            }
 
             groupModalOverlay.MouseDown += delegate(object s, MouseButtonEventArgs e)
             {
@@ -3911,6 +3940,12 @@ namespace FleetForge
             }
             if (txtTargetRoleTitle != null) txtTargetRoleTitle.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
             if (txtTargetRoleSubtitle != null) txtTargetRoleSubtitle.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0");
+            if (btnImportPack != null)
+            {
+                btnImportPack.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
+                btnImportPack.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnImportPack.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            }
 
             // Header Search Box
             if (borderHeaderSearch != null)
@@ -4142,6 +4177,12 @@ namespace FleetForge
                 btnCancelModal.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
                 btnCancelModal.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
                 btnCancelModal.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            }
+            if (btnModalExportGroup != null)
+            {
+                btnModalExportGroup.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
+                btnModalExportGroup.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnModalExportGroup.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#E0E0E0");
             }
 
             // Help Button
@@ -5286,9 +5327,10 @@ namespace FleetForge
                 Grid.SetRow(wrap, 2);
                 g.Children.Add(wrap);
 
-                // Action Buttons Row: [ Apply Role ]  [ ✏️ Edit ]
+                // Action Buttons Row: [ Select This Pack ]  [ ✏️ Edit ]  [ 📤 Export ]
                 Grid btnRow = new Grid();
                 btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+                btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
                 btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 
                 Button selectBtn = new Button()
@@ -5313,15 +5355,33 @@ namespace FleetForge
                     Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E"),
                     Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#D0D0D0"),
                     FontSize = 12,
-                    Padding = new Thickness(12, 6, 12, 6),
-                    Margin = new Thickness(8, 0, 0, 0),
+                    Padding = new Thickness(10, 6, 10, 6),
+                    Margin = new Thickness(6, 0, 0, 0),
                     BorderThickness = new Thickness(1),
                     BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D"),
-                    Cursor = Cursors.Hand
+                    Cursor = Cursors.Hand,
+                    ToolTip = "Edit apps and details in this pack"
                 };
                 editBtn.Click += delegate { OpenEditGroupModal(currentGrp); };
                 Grid.SetColumn(editBtn, 1);
                 btnRow.Children.Add(editBtn);
+
+                Button exportBtn = new Button()
+                {
+                    Content = "📤 Export",
+                    Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E"),
+                    Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#D0D0D0"),
+                    FontSize = 12,
+                    Padding = new Thickness(10, 6, 10, 6),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    BorderThickness = new Thickness(1),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D"),
+                    Cursor = Cursors.Hand,
+                    ToolTip = "Export this app pack to a .json file"
+                };
+                exportBtn.Click += delegate { ExportGroup(currentGrp); };
+                Grid.SetColumn(exportBtn, 2);
+                btnRow.Children.Add(exportBtn);
 
                 Grid.SetRow(btnRow, 3);
                 g.Children.Add(btnRow);
@@ -5352,6 +5412,7 @@ namespace FleetForge
                     Card = card,
                     SelectButton = selectBtn,
                     EditButton = editBtn,
+                    ExportButton = exportBtn,
                     CountText = cTxt
                 });
             }
@@ -5464,6 +5525,7 @@ namespace FleetForge
             txtGroupIconInput.Text = "🚀";
             txtGroupDescInput.Text = "";
             btnDeleteGroup.Visibility = Visibility.Collapsed;
+            if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Collapsed;
 
             PopulateModalAppChecklist(new List<string>());
             groupModalOverlay.Visibility = Visibility.Visible;
@@ -5478,6 +5540,7 @@ namespace FleetForge
             txtGroupIconInput.Text = GetSafeGroupIcon(grp);
             txtGroupDescInput.Text = grp.description;
             btnDeleteGroup.Visibility = Visibility.Visible;
+            if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Visible;
 
             PopulateModalAppChecklist(grp.apps);
             groupModalOverlay.Visibility = Visibility.Visible;
@@ -6065,6 +6128,234 @@ namespace FleetForge
             if (config.groups.Count > 0) SelectRole(config.groups[0].id);
 
             if (txtStatus != null) txtStatus.Text = string.Format("Group '{0}' deleted.", target.name);
+        }
+
+        // =========================================================================
+        // APP PACK IMPORT & EXPORT
+        // =========================================================================
+        private string PrettyPrintJson(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return json;
+            StringBuilder sb = new StringBuilder();
+            bool inQuote = false;
+            int indent = 0;
+            for (int i = 0; i < json.Length; i++)
+            {
+                char ch = json[i];
+                if (ch == '\"')
+                {
+                    bool isEscaped = false;
+                    int k = i - 1;
+                    while (k >= 0 && json[k] == '\\') { isEscaped = !isEscaped; k--; }
+                    if (!isEscaped) inQuote = !inQuote;
+                    sb.Append(ch);
+                }
+                else if (inQuote)
+                {
+                    sb.Append(ch);
+                }
+                else
+                {
+                    if (ch == '{' || ch == '[')
+                    {
+                        sb.Append(ch);
+                        sb.AppendLine();
+                        indent++;
+                        sb.Append(new string(' ', indent * 2));
+                    }
+                    else if (ch == '}' || ch == ']')
+                    {
+                        sb.AppendLine();
+                        indent--;
+                        if (indent < 0) indent = 0;
+                        sb.Append(new string(' ', indent * 2));
+                        sb.Append(ch);
+                    }
+                    else if (ch == ',')
+                    {
+                        sb.Append(ch);
+                        sb.AppendLine();
+                        sb.Append(new string(' ', indent * 2));
+                    }
+                    else if (ch == ':')
+                    {
+                        sb.Append(": ");
+                    }
+                    else if (!char.IsWhiteSpace(ch))
+                    {
+                        sb.Append(ch);
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+
+        private void ExportGroup(GroupModel grp)
+        {
+            if (grp == null) return;
+            try
+            {
+                Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
+                string safeName = Regex.Replace(grp.name, @"[^\w\s-]", "").Trim().Replace(" ", "_");
+                if (string.IsNullOrEmpty(safeName)) safeName = "app_pack";
+                sfd.FileName = safeName + "-pack.json";
+                sfd.Filter = "FleetForge App Pack (*.json)|*.json|All Files (*.*)|*.*";
+                sfd.Title = "Export App Pack: " + grp.name;
+
+                bool? result = sfd.ShowDialog();
+                if (result == true)
+                {
+                    string rawJson = jsonSerializer.Serialize(grp);
+                    string prettyJson = PrettyPrintJson(rawJson);
+                    File.WriteAllText(sfd.FileName, prettyJson, Encoding.UTF8);
+
+                    MessageBox.Show(
+                        string.Format("App Pack '{0}' successfully exported to:\n\n{1}", grp.name, sfd.FileName),
+                        "Pack Exported Successfully",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+
+                    if (txtStatus != null) txtStatus.Text = string.Format("Exported pack '{0}'.", grp.name);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to export app pack: " + ex.Message, "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ImportGroup()
+        {
+            try
+            {
+                Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
+                ofd.Filter = "FleetForge App Pack (*.json)|*.json|All Files (*.*)|*.*";
+                ofd.Title = "Import App Pack";
+
+                bool? result = ofd.ShowDialog();
+                if (result != true) return;
+
+                if (!File.Exists(ofd.FileName)) return;
+
+                string content = File.ReadAllText(ofd.FileName, Encoding.UTF8);
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    MessageBox.Show("The selected file is empty.", "Import Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                GroupModel importedGroup = null;
+                try
+                {
+                    importedGroup = jsonSerializer.Deserialize<GroupModel>(content);
+                }
+                catch { }
+
+                if (importedGroup == null || string.IsNullOrWhiteSpace(importedGroup.name) || importedGroup.apps == null || importedGroup.apps.Count == 0)
+                {
+                    try
+                    {
+                        List<GroupModel> groupList = jsonSerializer.Deserialize<List<GroupModel>>(content);
+                        if (groupList != null && groupList.Count > 0 && !string.IsNullOrWhiteSpace(groupList[0].name))
+                        {
+                            importedGroup = groupList[0];
+                        }
+                    }
+                    catch { }
+                }
+
+                if (importedGroup == null || string.IsNullOrWhiteSpace(importedGroup.name) || importedGroup.apps == null || importedGroup.apps.Count == 0)
+                {
+                    try
+                    {
+                        ConfigModel cfg = jsonSerializer.Deserialize<ConfigModel>(content);
+                        if (cfg != null && cfg.groups != null && cfg.groups.Count > 0 && !string.IsNullOrWhiteSpace(cfg.groups[0].name))
+                        {
+                            importedGroup = cfg.groups[0];
+                        }
+                    }
+                    catch { }
+                }
+
+                if (importedGroup == null || string.IsNullOrWhiteSpace(importedGroup.name))
+                {
+                    MessageBox.Show("Invalid or unsupported app pack file format. Please choose a valid FleetForge pack .json file.", "Invalid Format", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (importedGroup.apps == null) importedGroup.apps = new List<string>();
+                if (string.IsNullOrEmpty(importedGroup.icon)) importedGroup.icon = "📦";
+                if (string.IsNullOrEmpty(importedGroup.accentColor)) importedGroup.accentColor = "#0078D4";
+                if (string.IsNullOrEmpty(importedGroup.description)) importedGroup.description = "";
+
+                // Check if pack with same id or same name exists (case-insensitive)
+                GroupModel existing = config.groups.Find(delegate(GroupModel g) {
+                    if (g == null) return false;
+                    bool idMatch = !string.IsNullOrEmpty(importedGroup.id) &&
+                                   !string.IsNullOrEmpty(g.id) &&
+                                   string.Equals(g.id.Trim(), importedGroup.id.Trim(), StringComparison.OrdinalIgnoreCase);
+                    bool nameMatch = !string.IsNullOrEmpty(importedGroup.name) &&
+                                     !string.IsNullOrEmpty(g.name) &&
+                                     string.Equals(g.name.Trim(), importedGroup.name.Trim(), StringComparison.OrdinalIgnoreCase);
+                    return idMatch || nameMatch;
+                });
+
+                if (existing != null)
+                {
+                    string message = string.Format(
+                        "An app pack with the name '{0}' already exists in FleetForge.\n\n" +
+                        "Do you want to REPLACE the existing pack with the imported version?\n\n" +
+                        "• Click YES to REPLACE the existing pack.\n" +
+                        "• Click NO to IGNORE and keep your current pack.",
+                        existing.name);
+
+                    MessageBoxResult answer = MessageBox.Show(
+                        message,
+                        "Pack Already Exists - Replace or Ignore?",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+
+                    if (answer != MessageBoxResult.Yes)
+                    {
+                        if (txtStatus != null) txtStatus.Text = string.Format("Import of pack '{0}' was ignored.", importedGroup.name);
+                        return; // Ignore - do not import
+                    }
+
+                    // User selected Yes -> Replace existing pack
+                    existing.name = importedGroup.name;
+                    existing.icon = !string.IsNullOrEmpty(importedGroup.icon) ? importedGroup.icon : existing.icon;
+                    existing.description = importedGroup.description ?? "";
+                    if (!string.IsNullOrEmpty(importedGroup.accentColor)) existing.accentColor = importedGroup.accentColor;
+                    existing.apps = importedGroup.apps ?? new List<string>();
+                    importedGroup = existing;
+                }
+                else
+                {
+                    // New Pack
+                    if (string.IsNullOrEmpty(importedGroup.id) || config.groups.Exists(delegate(GroupModel g) { return g.id == importedGroup.id; }))
+                    {
+                        importedGroup.id = Regex.Replace(importedGroup.name.ToLower(), @"[^a-z0-9]", "_") + "_" + (DateTime.Now.Ticks % 10000);
+                    }
+                    config.groups.Add(importedGroup);
+                }
+
+                SaveConfigToFile();
+                BuildRoleCards();
+                BuildCatalog();
+                SelectRole(importedGroup.id);
+
+                MessageBox.Show(
+                    string.Format("App Pack '{0}' with {1} apps has been successfully imported!", importedGroup.name, importedGroup.apps.Count),
+                    "Import Successful",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                if (txtStatus != null) txtStatus.Text = string.Format("Imported pack '{0}'.", importedGroup.name);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error importing app pack: " + ex.Message, "Import Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         // =========================================================================
@@ -7557,10 +7848,12 @@ namespace FleetForge
             if (btnViewReport != null) btnViewReport.Visibility = Visibility.Collapsed;
 
             btnCreateNewGroup.IsEnabled = false;
+            if (btnImportPack != null) btnImportPack.IsEnabled = false;
             foreach (RoleCardView rc in roleCards)
             {
                 rc.SelectButton.IsEnabled = false;
                 rc.EditButton.IsEnabled = false;
+                if (rc.ExportButton != null) rc.ExportButton.IsEnabled = false;
             }
 
             if (progressBar != null)
@@ -7897,10 +8190,12 @@ namespace FleetForge
                     }
 
                     btnCreateNewGroup.IsEnabled = true;
+                    if (btnImportPack != null) btnImportPack.IsEnabled = true;
                     foreach (RoleCardView rc in roleCards)
                     {
                         rc.SelectButton.IsEnabled = true;
                         rc.EditButton.IsEnabled = true;
+                        if (rc.ExportButton != null) rc.ExportButton.IsEnabled = true;
                     }
 
                     if (isCancelled)
