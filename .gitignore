@@ -1,0 +1,23 @@
+# Build and temporary files
+*.tmp
+*.bak
+*_old.exe
+*.pdb
+*.obj
+Uninstall.exe
+
+# Visual Studio & VS Code
+.vs/
+*.user
+*.suo
+
+# Local user logs & deployment session state
+data/deployment_session.json
+reports/Deployment-Report-*
+logs/*.log
+
+# Offline installers (large binary setups downloaded by user)
+offline_installers/*.exe
+offline_installers/*.msi
+!offline_installers/README.md
+

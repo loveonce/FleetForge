@@ -4356,6 +4356,36 @@ namespace FleetForge
             {
                 btnSearchWingetOnlineBottom.Visibility = (viewName == "catalog") ? Visibility.Visible : Visibility.Collapsed;
             }
+
+            UpdateBottomBarVisibility();
+        }
+
+        private void UpdateBottomBarVisibility()
+        {
+            bool isLogsView = (currentView == "logs");
+            bool isInstalling = (btnStop != null && btnStop.Visibility == Visibility.Visible);
+
+            if (btnOpenOfflineFolder != null)
+            {
+                btnOpenOfflineFolder.Visibility = isLogsView ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            if (btnInstall != null)
+            {
+                btnInstall.Visibility = (isLogsView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            if (borderBottomBar != null)
+            {
+                if (isLogsView)
+                {
+                    borderBottomBar.Visibility = isInstalling ? Visibility.Visible : Visibility.Collapsed;
+                }
+                else
+                {
+                    borderBottomBar.Visibility = Visibility.Visible;
+                }
+            }
         }
 
         private void LoadSettings()
@@ -4567,10 +4597,10 @@ namespace FleetForge
 
             List<PresetProfileItem> presets = new List<PresetProfileItem>();
             presets.Add(new PresetProfileItem("full", "🌐", "Complete Microsoft Winget Library", "16,349 PACKAGES", "Entire official Winget server repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
-            presets.Add(new PresetProfileItem("developer", "💻", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", "https://raw.githubusercontent.com/fleetforge/fleetforge/main/sample_apps.json"));
-            presets.Add(new PresetProfileItem("office", "💼", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", "https://raw.githubusercontent.com/fleetforge/fleetforge/main/sample_apps.json"));
-            presets.Add(new PresetProfileItem("creative", "🎨", "Designer & Creative Media Studio", "7 APPS", "Digital media & graphics suite: Blender 3D, Figma, DaVinci Resolve, OBS Studio, GIMP, VLC Media Player, HandBrake.", "https://raw.githubusercontent.com/fleetforge/fleetforge/main/sample_apps.json"));
-            presets.Add(new PresetProfileItem("minimal", "⚡", "Ultra-Lightweight Minimal Essentials", "5 TOOLS", "Fast, bare-minimum setup: Google Chrome, 7-Zip Archiver, VLC Media Player, Notepad++, Everything Search.", "https://raw.githubusercontent.com/fleetforge/fleetforge/main/sample_apps.json"));
+            presets.Add(new PresetProfileItem("developer", "💻", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
+            presets.Add(new PresetProfileItem("office", "💼", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
+            presets.Add(new PresetProfileItem("creative", "🎨", "Designer & Creative Media Studio", "7 APPS", "Digital media & graphics suite: Blender 3D, Figma, DaVinci Resolve, OBS Studio, GIMP, VLC Media Player, HandBrake.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
+            presets.Add(new PresetProfileItem("minimal", "⚡", "Ultra-Lightweight Minimal Essentials", "5 TOOLS", "Fast, bare-minimum setup: Google Chrome, 7-Zip Archiver, VLC Media Player, Notepad++, Everything Search.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
 
             foreach (PresetProfileItem p in presets)
             {
@@ -7076,6 +7106,7 @@ namespace FleetForge
             btnStop.Visibility = Visibility.Visible;
             btnStop.IsEnabled = true;
             btnStop.Content = "⏹️ Stop Setup";
+            UpdateBottomBarVisibility();
             if (btnViewReport != null) btnViewReport.Visibility = Visibility.Collapsed;
 
             btnCreateNewGroup.IsEnabled = false;
@@ -7410,8 +7441,8 @@ namespace FleetForge
                     btnStop.Visibility = Visibility.Collapsed;
                     btnStop.IsEnabled = true;
                     btnStop.Content = "⏹️ Stop Setup";
-                    btnInstall.Visibility = Visibility.Visible;
                     btnInstall.IsEnabled = true;
+                    UpdateBottomBarVisibility();
 
                     if (btnViewReport != null && !string.IsNullOrEmpty(lastGeneratedReportPath))
                     {

@@ -22,16 +22,16 @@ namespace FleetForge
         // 'config/app_urls.json' before building the setup.
 
         // 1. Cloud Synchronization URL (Raw JSON catalog link)
-        public static string CloudSyncUrl = "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/apps.json";
+        public static string CloudSyncUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json";
 
         // 2. Version Check URL (version.json containing latest version & changelog)
-        public static string UpdateCheckUrl = "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/version.json";
+        public static string UpdateCheckUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json";
 
         // 3. Setup Installer Download URL (Executable downloaded when updating)
-        public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/FleetForge-Setup.exe";
+        public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";
 
         // 4. Company Official Website
-        public static string CompanyWebsiteUrl = "https://www.innovanatech.com";
+        public static string CompanyWebsiteUrl = "https://www.innovanathinklabs.com";
 
         // ========================================================================
         // LOADER: Automatically loads and merges from app_urls.json if available

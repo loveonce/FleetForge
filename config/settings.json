@@ -1,5 +1,5 @@
 {
-  "cloudConfigUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/apps.json",
+  "cloudConfigUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json",
   "autoSyncOnLaunch": true,
   "lastSyncTime": "Never",
   "lastSyncStatus": "Local Cache",

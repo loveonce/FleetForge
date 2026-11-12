@@ -28,7 +28,7 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
     "Dedicated Help & Update Center with auto-download",
     "Modular role configuration builder"
   ],
-  "downloadUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/FleetForge-Setup.exe"
+  "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }
 ```
 
