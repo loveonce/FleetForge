@@ -1,0 +1,7 @@
+{
+  "_description": "FleetForge Cloud Synchronization and Version Update Configuration. Edit these URLs before building the application or setup installer.",
+  "cloudSyncUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/apps.json",
+  "updateCheckUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/version.json",
+  "updateDownloadUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/FleetForge-Setup.exe",
+  "companyWebsiteUrl": "https://www.innovanathinklabs.com"
+}

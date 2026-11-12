@@ -1,0 +1,15 @@
+[15.37.05] ==========================================================
+[15.37.05] FleetForge Setup Started: 1 packages (Watchdog Timeout: 10m)
+[15.37.05] Timestamp: 12-11-2026 3.37.05 PM
+[15.37.05] ==========================================================
+[15.37.05] [1/1] Processing: GitHub Desktop (GitHub.GitHubDesktop)
+[15.37.05] Running winget install for GitHub.GitHubDesktop
+[15.37.05]   > Found an existing package already installed. Trying to upgrade the installed package...
+[15.37.05]   > No available upgrade found.
+[15.37.05]   > No newer package versions are available from the configured sources.
+[15.37.05] Winget finished with ExitCode: -1978335189
+[15.37.05] ==========================================================
+[15.37.05] Setup Ended! Succeeded: 1, Failed/Timeout: 0
+[15.37.05] Log file saved to: E:\AI_Technology\My Tools\Software Pre Installer\logs\install-log.txt
+[15.37.05] Compliance Audit Report: E:\AI_Technology\My Tools\Software Pre Installer\reports\Deployment-Report-20261112-153705.html
+[15.37.05] ==========================================================

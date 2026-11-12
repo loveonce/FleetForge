@@ -1,0 +1,10 @@
+{
+  "cloudConfigUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/data/apps.json",
+  "autoSyncOnLaunch": true,
+  "lastSyncTime": "Never",
+  "lastSyncStatus": "Local Cache",
+  "theme": "system",
+  "silent": true,
+  "accept_agreements": true,
+  "offline_dir": "offline_installers"
+}

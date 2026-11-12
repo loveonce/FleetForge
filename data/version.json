@@ -1,0 +1,16 @@
+{
+  "version": "2.4.0",
+  "buildDate": "2026-11-11",
+  "title": "FleetForge v2.4.0 Enterprise IT Edition",
+  "company": "Innovana Thinklabs Limited",
+  "changelog": [
+    "Zero-touch silent installation engine for Microsoft Winget",
+    "Pre-cached enterprise catalog with 16,349 software packages",
+    "Live Windows OS Light/Dark theme synchronization",
+    "Dedicated Help & Update Center with auto-download",
+    "Modular role configuration builder",
+    "Official publication by Innovana Thinklabs Limited"
+  ],
+  "downloadUrl": "https://raw.githubusercontent.com/innovana-thinklabs/fleetforge/main/FleetForge-Setup.exe"
+}
+

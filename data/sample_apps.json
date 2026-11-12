@@ -1,0 +1,267 @@
+{
+  "groups": [
+    {
+      "id": "developer",
+      "name": "Software Developer",
+      "icon": "💻",
+      "description": "Essential development environments, version control, compilers, and debuggers.",
+      "apps": [
+        "Microsoft.VisualStudioCode",
+        "Git.Git",
+        "Docker.DockerDesktop",
+        "OpenJS.NodeJS.LTS",
+        "Python.Python.3.12",
+        "Postman.Postman",
+        "Microsoft.WindowsTerminal",
+        "Microsoft.PowerToys"
+      ]
+    },
+    {
+      "id": "office",
+      "name": "Office & Productivity",
+      "icon": "💼",
+      "description": "Standard business tools, document editors, messaging, and communication.",
+      "apps": [
+        "Google.Chrome",
+        "Mozilla.Firefox",
+        "SlackTechnologies.Slack",
+        "Zoom.Zoom",
+        "Microsoft.Teams",
+        "Adobe.Acrobat.Reader.64-bit",
+        "7zip.7zip",
+        "Notion.Notion"
+      ]
+    },
+    {
+      "id": "creative",
+      "name": "Designer & Media Studio",
+      "icon": "🎨",
+      "description": "Creative workflows, 3D modeling, video rendering, and vector design.",
+      "apps": [
+        "Figma.Figma",
+        "BlenderFoundation.Blender",
+        "BlackmagicDesign.DaVinciResolve",
+        "OBSProject.OBSStudio",
+        "GIMP.GIMP",
+        "VideoLAN.VLC",
+        "HandBrake.HandBrake"
+      ]
+    },
+    {
+      "id": "minimal",
+      "name": "Minimal Essentials",
+      "icon": "⚡",
+      "description": "Ultra-light setup with only critical utilities and a fast browser.",
+      "apps": [
+        "Google.Chrome",
+        "7zip.7zip",
+        "VideoLAN.VLC",
+        "Notepad++.Notepad++",
+        "voidtools.Everything"
+      ]
+    }
+  ],
+  "apps": [
+    {
+      "id": "Google.Chrome",
+      "name": "Google Chrome",
+      "category": "browsers",
+      "description": "Fast, secure web browser built by Google",
+      "offlineInstaller": "ChromeStandaloneSetup64.exe",
+      "silentArgs": "/silent /install"
+    },
+    {
+      "id": "Mozilla.Firefox",
+      "name": "Mozilla Firefox",
+      "category": "browsers",
+      "description": "Free and open-source privacy-focused web browser",
+      "offlineInstaller": "",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "Microsoft.VisualStudioCode",
+      "name": "Visual Studio Code",
+      "category": "development",
+      "description": "Code editor redefined and optimized for building modern web and cloud apps",
+      "offlineInstaller": "VSCodeUserSetup-x64.exe",
+      "silentArgs": "/VERYSILENT /NORESTART /MERGETASKS=!runcode,addcontextmenufiles,addcontextmenufolders"
+    },
+    {
+      "id": "Git.Git",
+      "name": "Git for Windows",
+      "category": "development",
+      "description": "Fast, scalable, distributed revision control system",
+      "offlineInstaller": "",
+      "silentArgs": "/VERYSILENT /NORESTART"
+    },
+    {
+      "id": "Docker.DockerDesktop",
+      "name": "Docker Desktop",
+      "category": "development",
+      "description": "Collaborative container platform for microservices and apps",
+      "offlineInstaller": "",
+      "silentArgs": "install --quiet"
+    },
+    {
+      "id": "OpenJS.NodeJS.LTS",
+      "name": "Node.js LTS",
+      "category": "development",
+      "description": "JavaScript runtime built on Chrome's V8 JavaScript engine",
+      "offlineInstaller": "",
+      "silentArgs": "/qn"
+    },
+    {
+      "id": "Python.Python.3.12",
+      "name": "Python 3.12",
+      "category": "development",
+      "description": "High-level, general-purpose programming language",
+      "offlineInstaller": "",
+      "silentArgs": "/quiet InstallAllUsers=1 PrependPath=1 Include_test=0"
+    },
+    {
+      "id": "Postman.Postman",
+      "name": "Postman",
+      "category": "development",
+      "description": "API platform for building and using APIs",
+      "offlineInstaller": "",
+      "silentArgs": "--silent"
+    },
+    {
+      "id": "Microsoft.WindowsTerminal",
+      "name": "Windows Terminal",
+      "category": "development",
+      "description": "Modern terminal application for command-line users",
+      "offlineInstaller": "",
+      "silentArgs": ""
+    },
+    {
+      "id": "Microsoft.PowerToys",
+      "name": "Microsoft PowerToys",
+      "category": "utilities",
+      "description": "Set of utilities for power users to tune Windows experience",
+      "offlineInstaller": "",
+      "silentArgs": "/install /quiet /norestart"
+    },
+    {
+      "id": "7zip.7zip",
+      "name": "7-Zip",
+      "category": "utilities",
+      "description": "High-compression file archiver utility",
+      "offlineInstaller": "7z-x64.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "VideoLAN.VLC",
+      "name": "VLC Media Player",
+      "category": "media",
+      "description": "Free and open-source cross-platform multimedia player",
+      "offlineInstaller": "vlc-setup.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "Notepad++.Notepad++",
+      "name": "Notepad++",
+      "category": "development",
+      "description": "Free source code editor and Notepad replacement",
+      "offlineInstaller": "npp.installer.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "voidtools.Everything",
+      "name": "Everything",
+      "category": "utilities",
+      "description": "Instant filename search engine for Windows",
+      "offlineInstaller": "",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "SlackTechnologies.Slack",
+      "name": "Slack",
+      "category": "communication",
+      "description": "Team messaging and business communication platform",
+      "offlineInstaller": "",
+      "silentArgs": "--silent"
+    },
+    {
+      "id": "Zoom.Zoom",
+      "name": "Zoom Workplace",
+      "category": "communication",
+      "description": "Video conferencing and team collaboration platform",
+      "offlineInstaller": "",
+      "silentArgs": "/silent"
+    },
+    {
+      "id": "Microsoft.Teams",
+      "name": "Microsoft Teams",
+      "category": "communication",
+      "description": "Chat, meetings, calling, and collaboration",
+      "offlineInstaller": "",
+      "silentArgs": "--silent"
+    },
+    {
+      "id": "Adobe.Acrobat.Reader.64-bit",
+      "name": "Adobe Acrobat Reader 64-bit",
+      "category": "productivity",
+      "description": "Standard PDF viewer for viewing and printing documents",
+      "offlineInstaller": "",
+      "silentArgs": "/sAll /rs /msi EULA_ACCEPT=YES"
+    },
+    {
+      "id": "Notion.Notion",
+      "name": "Notion",
+      "category": "productivity",
+      "description": "Connected workspace for wiki, docs, and project management",
+      "offlineInstaller": "",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "Figma.Figma",
+      "name": "Figma",
+      "category": "media",
+      "description": "Collaborative interface design tool",
+      "offlineInstaller": "",
+      "silentArgs": "--silent"
+    },
+    {
+      "id": "BlenderFoundation.Blender",
+      "name": "Blender",
+      "category": "media",
+      "description": "Free and open 3D creation suite",
+      "offlineInstaller": "",
+      "silentArgs": "/qn"
+    },
+    {
+      "id": "BlackmagicDesign.DaVinciResolve",
+      "name": "DaVinci Resolve",
+      "category": "media",
+      "description": "Professional video editing, color grading, visual effects",
+      "offlineInstaller": "",
+      "silentArgs": "/q"
+    },
+    {
+      "id": "OBSProject.OBSStudio",
+      "name": "OBS Studio",
+      "category": "media",
+      "description": "Free and open source software for video recording and live streaming",
+      "offlineInstaller": "",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "GIMP.GIMP",
+      "name": "GIMP",
+      "category": "media",
+      "description": "GNU Image Manipulation Program for photo editing",
+      "offlineInstaller": "",
+      "silentArgs": "/VERYSILENT /NORESTART"
+    },
+    {
+      "id": "HandBrake.HandBrake",
+      "name": "HandBrake",
+      "category": "media",
+      "description": "Open source video transcoder for converting video formats",
+      "offlineInstaller": "",
+      "silentArgs": "/S"
+    }
+  ]
+}
+
