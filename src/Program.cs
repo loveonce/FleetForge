@@ -2070,31 +2070,6 @@ namespace FleetForge
                     </Grid>
                 </Border>
 
-                <!-- FleetForge Hero Banner -->
-                <Border x:Name=""BorderHero"" Background=""#1F2633"" CornerRadius=""8"" Padding=""20,16"" BorderBrush=""#2A3B52"" BorderThickness=""1"" Margin=""0,0,0,20"">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""Auto""/>
-                            <ColumnDefinition Width=""*""/>
-                            <ColumnDefinition Width=""Auto""/>
-                        </Grid.ColumnDefinitions>
-
-                        <Border Grid.Column=""0"" Width=""40"" Height=""40"" Background=""#0078D4"" CornerRadius=""6"" Margin=""0,0,16,0"" VerticalAlignment=""Center"">
-                            <TextBlock Text=""&#xE756;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""18"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        </Border>
-
-                        <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtHeroTitle"" Text=""Install All Your Apps in One Go"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                            <TextBlock x:Name=""TxtHeroDesc"" Text=""Get this PC ready in minutes. Choose a ready-made pack below, or browse all 16,349 apps in the catalog. When you're ready, click Install to set up everything automatically.""
-                                       FontSize=""11"" Foreground=""#A0A0A0"" TextWrapping=""Wrap"" Margin=""0,3,0,0"" LineHeight=""16""/>
-                        </StackPanel>
-
-                        <Button x:Name=""BtnHeroCatalog"" Grid.Column=""2"" Content=""Browse All 16,349 Apps →""
-                                Background=""#263244"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" FontSize=""11""
-                                Padding=""14,8"" Margin=""14,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#354A6B"" VerticalAlignment=""Center""/>
-                    </Grid>
-                </Border>
-
                 <!-- Role Header with Create Button -->
                 <Grid Margin=""0,0,0,16"">
                     <StackPanel VerticalAlignment=""Center"">
