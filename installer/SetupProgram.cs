@@ -497,6 +497,17 @@ namespace FleetForge
             {
                 try
                 {
+                    // 0. Close any running FleetForge instances before copying files
+                    UpdateProgress(5, "Preparing installation...");
+                    try
+                    {
+                        foreach (Process p in Process.GetProcessesByName("FleetForge"))
+                        {
+                            try { p.Kill(); p.WaitForExit(2000); } catch { }
+                        }
+                    }
+                    catch { }
+
                     // 1. Create Directories
                     UpdateProgress(10, "Creating installation folder...");
                     if (!Directory.Exists(targetDir))
@@ -580,13 +591,13 @@ namespace FleetForge
                     if (createDesktop)
                     {
                         string deskPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "FleetForge.lnk");
-                        CreateShortcut(deskPath, exePath, targetDir, icoPath, "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
+                        CreateShortcut(deskPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
                     }
 
                     if (createStartMenu)
                     {
                         string startPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), "FleetForge.lnk");
-                        CreateShortcut(startPath, exePath, targetDir, icoPath, "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
+                        CreateShortcut(startPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
                     }
 
                     // 8. Register in Windows Add/Remove Programs
@@ -613,6 +624,20 @@ namespace FleetForge
                             LaunchInstalledApp(targetDir);
                             this.Close();
                         }
+                    }));
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        txtStatus.Text = "Access Denied: Administrator permission required.";
+                        txtStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F87171"));
+                        btnCancel.IsEnabled = true;
+                        MessageBox.Show(
+                            "Cannot install to '" + targetDir + "': Access is denied.\n\nPlease right-click FleetForge-Setup.exe and choose 'Run as administrator', or install to a folder where your user account has write permission.",
+                            "Administrator Permission Required",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
                     }));
                 }
                 catch (Exception ex)
@@ -735,7 +760,7 @@ namespace FleetForge
                 {
                     if (key != null)
                     {
-                        key.SetValue("DisplayName", "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
+                        key.SetValue("DisplayName", "FleetForge — One-Click App Setup & Software Manager");
                         key.SetValue("DisplayIcon", icoPath);
                         key.SetValue("DisplayVersion", "2.5.0");
                         key.SetValue("Publisher", "Love Malhotra");

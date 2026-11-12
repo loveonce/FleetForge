@@ -450,7 +450,8 @@ namespace FleetForge
             this.ShowInTaskbar = false;
 
             string xaml = @"
-<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+<Grid x:Name=""RootGrid"" Background=""#202020""
+      xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
       xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
     <Border Background=""#202020"" CornerRadius=""12"" BorderBrush=""#383838"" BorderThickness=""1"" Padding=""32,28"">
         <Grid>
@@ -1545,7 +1546,10 @@ namespace FleetForge
         private Button btnCancelModal;
         private Button btnSaveGroup;
 
-        // Help Menu & Brand Icon
+        // Help Menu, Theme Toggle & Brand Icon
+        private Grid rootGrid;
+        private Button btnToggleTheme;
+        private TextBlock txtToggleThemeIcon;
         private Button btnHelpMenu;
         private Image imgBrandLogo;
 
@@ -2004,6 +2008,10 @@ namespace FleetForge
 
                 <!-- Help Menu on the right (near Minimize button) -->
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                    <Button x:Name=""BtnToggleTheme"" Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
+                            Padding=""10,7"" Margin=""0,0,8,0"" Cursor=""Hand"" ToolTip=""Switch Theme (Dark / Light)"" VerticalAlignment=""Center"">
+                        <TextBlock x:Name=""TxtToggleThemeIcon"" Text=""🌙"" FontSize=""13"" VerticalAlignment=""Center""/>
+                    </Button>
                     <Button x:Name=""BtnHelpMenu"" Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
                             Padding=""14,7"" Cursor=""Hand"" ToolTip=""Help, Settings &amp; Updates"" VerticalAlignment=""Center"">
                         <StackPanel Orientation=""Horizontal"">
@@ -2582,6 +2590,7 @@ namespace FleetForge
 
             Grid root = (Grid)XamlReader.Parse(xaml);
             this.Content = root;
+            rootGrid = root;
 
             // Bind Elements
             navBtnSetup = (Button)root.FindName("NavBtnSetup");
@@ -2732,6 +2741,16 @@ namespace FleetForge
             else if (txtFallbackBrand != null)
             {
                 txtFallbackBrand.Visibility = Visibility.Visible;
+            }
+
+            btnToggleTheme = (Button)root.FindName("BtnToggleTheme");
+            txtToggleThemeIcon = (TextBlock)root.FindName("TxtToggleThemeIcon");
+            if (btnToggleTheme != null)
+            {
+                btnToggleTheme.Click += delegate
+                {
+                    ToggleTheme();
+                };
             }
 
             btnHelpMenu = (Button)root.FindName("BtnHelpMenu");
@@ -2916,7 +2935,16 @@ namespace FleetForge
                         if (chkSettingSilent != null) settings.silent = chkSettingSilent.IsChecked == true;
                         if (chkSettingAgreements != null) settings.accept_agreements = chkSettingAgreements.IsChecked == true;
                         if (txtSettingOfflineDir != null) settings.offline_dir = txtSettingOfflineDir.Text.Trim();
+                        if (chkSettingAutoTheme != null && chkSettingAutoTheme.IsChecked == true)
+                        {
+                            settings.theme = "system";
+                        }
+                        else
+                        {
+                            settings.theme = currentThemeIsLight ? "light" : "dark";
+                        }
                         SaveSettings();
+                        ApplyTheme(GetCurrentThemeIsLight());
                         if (modalSettingsOverlay != null) modalSettingsOverlay.Visibility = Visibility.Collapsed;
                         MessageBox.Show("Preferences saved successfully!", "Settings Saved", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -3375,8 +3403,22 @@ namespace FleetForge
             return IntPtr.Zero;
         }
 
+        private void ToggleTheme()
+        {
+            bool newIsLight = !currentThemeIsLight;
+            if (settings == null) settings = new SettingsModel();
+            settings.theme = newIsLight ? "light" : "dark";
+            SaveSettings();
+            ApplyTheme(newIsLight);
+        }
+
         private bool GetCurrentThemeIsLight()
         {
+            if (settings != null && !string.IsNullOrEmpty(settings.theme))
+            {
+                if (settings.theme.Equals("dark", StringComparison.OrdinalIgnoreCase)) return false;
+                if (settings.theme.Equals("light", StringComparison.OrdinalIgnoreCase)) return true;
+            }
             return IsWindowsLightTheme();
         }
 
@@ -3399,6 +3441,10 @@ namespace FleetForge
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
+                    if (settings != null && !string.IsNullOrEmpty(settings.theme) && !settings.theme.Equals("system", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
                     ApplyTheme(IsWindowsLightTheme());
                 }));
             }
@@ -3703,6 +3749,7 @@ namespace FleetForge
             {
                 if (settings != null)
                 {
+                    if (chkSettingAutoTheme != null) chkSettingAutoTheme.IsChecked = (settings.theme == "system" || string.IsNullOrEmpty(settings.theme));
                     if (chkSettingSilent != null) chkSettingSilent.IsChecked = settings.silent;
                     if (chkSettingAgreements != null) chkSettingAgreements.IsChecked = settings.accept_agreements;
                     if (txtSettingOfflineDir != null) txtSettingOfflineDir.Text = settings.offline_dir ?? "";
@@ -3789,6 +3836,7 @@ namespace FleetForge
             // Window base
             this.Background = isLight ? HexBrush("#F3F3F3") : HexBrush("#202020");
             this.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            if (rootGrid != null) rootGrid.Background = isLight ? HexBrush("#F3F3F3") : HexBrush("#202020");
 
             // Sidebar
             if (borderSidebar != null)
@@ -4265,6 +4313,24 @@ namespace FleetForge
 
             if (txtAboutCopyright != null) txtAboutCopyright.Foreground = HexBrush("#64748B");
 
+            if (txtToggleThemeIcon != null)
+            {
+                txtToggleThemeIcon.Text = isLight ? "🌙" : "☀️";
+            }
+            if (btnToggleTheme != null)
+            {
+                btnToggleTheme.ToolTip = isLight ? "Switch to Dark Theme" : "Switch to Light Theme";
+                btnToggleTheme.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
+                btnToggleTheme.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnToggleTheme.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            }
+            if (btnHelpMenu != null)
+            {
+                btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
+                btnHelpMenu.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnHelpMenu.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            }
+
             BuildEmojiChips();
             BuildCloudPresets();
 
@@ -4293,6 +4359,7 @@ namespace FleetForge
                     Content = curEmoji,
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 14,
+                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                     Width = 32,
                     Height = 28,
                     Margin = new Thickness(0, 0, 4, 4),
@@ -4808,6 +4875,7 @@ namespace FleetForge
                     Text = cur.Icon,
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 22,
+                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(0, 0, 14, 0)
                 };
@@ -5069,8 +5137,8 @@ namespace FleetForge
                     Width = 36,
                     Height = 36,
                     CornerRadius = new CornerRadius(6),
-                    Background = currentThemeIsLight ? HexBrush("#F3F3F3") : HexBrush("#202020"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838"),
+                    Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#1E293B"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#384358"),
                     BorderThickness = new Thickness(1),
                     Margin = new Thickness(0, 0, 10, 0)
                 };
@@ -5079,6 +5147,7 @@ namespace FleetForge
                     Text = GetSafeGroupIcon(currentGrp),
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 18,
+                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
@@ -5998,9 +6067,10 @@ namespace FleetForge
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     Padding = new Thickness(12, 6, 12, 6),
                     Margin = new Thickness(0, 0, 6, 0),
-                    Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#2D2D2D"),
-                    Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#D0D0D0"),
-                    BorderThickness = new Thickness(0),
+                    Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#252D3D"),
+                    Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#F8FAFC"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#384358"),
+                    BorderThickness = new Thickness(1),
                     Cursor = Cursors.Hand,
                     FontSize = 12,
                     Tag = curCat.id
@@ -6883,8 +6953,10 @@ namespace FleetForge
                         }
                         else
                         {
-                            btn.Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#2D2D2D");
-                            btn.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#D0D0D0");
+                            btn.Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#252D3D");
+                            btn.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#F8FAFC");
+                            btn.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#384358");
+                            btn.BorderThickness = new Thickness(1);
                         }
                     }
                 }
@@ -7165,11 +7237,11 @@ namespace FleetForge
 
                 if (selectedInFilter > 0)
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} packages ({2:N0} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps ({2:N0} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
                 }
                 else
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} packages", currentRenderedCount, activeFilteredApps.Count);
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps", currentRenderedCount, activeFilteredApps.Count);
                 }
             }
         }

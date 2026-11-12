@@ -1,10 +1,10 @@
-﻿{
-  " cloudConfigUrl\: \https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json\,
- \autoSyncOnLaunch\: false,
- \lastSyncTime\: \\,
- \lastSyncStatus\: \\,
- \theme\: \system\,
- \silent\: true,
- \accept_agreements\: true,
- \offline_dir\: \offline_installers\
+{
+  "cloudConfigUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json",
+  "autoSyncOnLaunch": false,
+  "lastSyncTime": "",
+  "lastSyncStatus": "",
+  "theme": "system",
+  "silent": true,
+  "accept_agreements": true,
+  "offline_dir": "offline_installers"
 }
