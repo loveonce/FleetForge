@@ -2241,8 +2241,8 @@ namespace FleetForge
     <!-- GROUP EDITOR MODAL OVERLAY (CREATE / UPDATE GROUP)                        -->
     <!-- ========================================================================= -->
     <Grid x:Name=""GroupModalOverlay"" Grid.ColumnSpan=""2"" Background=""#B0000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderModalCard"" Width=""680"" MaxHeight=""760"" Background=""#1F1F1F"" CornerRadius=""12"" BorderBrush=""#3A3A3A"" BorderThickness=""1""
-                HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""24"">
+        <Border x:Name=""BorderModalCard"" Width=""960"" MaxHeight=""780"" Background=""#1F1F1F"" CornerRadius=""12"" BorderBrush=""#3A3A3A"" BorderThickness=""1""
+                HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28,22,28,22"">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height=""Auto""/> <!-- Title & Close -->
@@ -2250,13 +2250,13 @@ namespace FleetForge
                     <RowDefinition Height=""Auto""/> <!-- Emoji Quick Select Chips -->
                     <RowDefinition Height=""Auto""/> <!-- Description -->
                     <RowDefinition Height=""Auto""/> <!-- App Search & Quick Controls -->
-                    <RowDefinition Height=""*"" MaxHeight=""320""/> <!-- App Checklist -->
+                    <RowDefinition Height=""*"" MinHeight=""360"" MaxHeight=""440""/> <!-- App Checklist -->
                     <RowDefinition Height=""Auto""/> <!-- Bottom Actions -->
                 </Grid.RowDefinitions>
 
                 <!-- 0. Header -->
                 <Grid Grid.Row=""0"" Margin=""0,0,0,16"">
-                    <TextBlock x:Name=""TxtModalTitle"" Text=""Create New App Pack"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
+                    <TextBlock x:Name=""TxtModalTitle"" Text=""Create New App Pack"" FontSize=""19"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                     <Button x:Name=""BtnCloseModal"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""14"" FontWeight=""Bold""
                             Width=""30"" Height=""30"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
                 </Grid>
@@ -2298,24 +2298,24 @@ namespace FleetForge
                 <!-- 4. App Checklist Header & Search -->
                 <Grid Grid.Row=""4"" Margin=""0,0,0,8"">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""200""/>
+                        <ColumnDefinition Width=""280""/>
                         <ColumnDefinition Width=""*""/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name=""TxtModalAppSearch"" Grid.Column=""0"" Height=""30"" Background=""#141414"" Foreground=""#FFFFFF""
-                             FontSize=""11"" Padding=""8,5"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""
+                    <TextBox x:Name=""TxtModalAppSearch"" Grid.Column=""0"" Height=""32"" Background=""#141414"" Foreground=""#FFFFFF""
+                             FontSize=""12"" Padding=""10,6"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""
                              Text=""Filter software...""/>
 
                     <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                         <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0078D4"" Foreground=""#FFFFFF""
-                                Padding=""8,4"" Margin=""0,0,4,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11"" FontWeight=""SemiBold""/>
+                                Padding=""9,5"" Margin=""0,0,5,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11"" FontWeight=""SemiBold""/>
                         <Button x:Name=""BtnModalFilterTabSelected"" Content=""★ Selected (0)"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""8,4"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
-                        <TextBlock x:Name=""TxtModalSelectedCount"" Text=""0 selected"" FontSize=""11"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" VerticalAlignment=""Center"" Margin=""0,0,8,0""/>
+                                Padding=""9,5"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
+                        <TextBlock x:Name=""TxtModalSelectedCount"" Text=""0 selected"" FontSize=""11"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
                         <Button x:Name=""BtnModalSelectAll"" Content=""Select All"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""7,4"" Margin=""0,0,4,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
+                                Padding=""8,5"" Margin=""0,0,5,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
                         <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""7,4"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
+                                Padding=""8,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
                     </StackPanel>
                 </Grid>
 
