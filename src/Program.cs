@@ -1471,9 +1471,12 @@ namespace FleetForge
         private System.Windows.Controls.Primitives.UniformGrid roleCardsGrid;
 
         // Catalog Page
+        private Border borderHeaderSearch;
         private TextBox txtSearch;
+        private Button btnClearSearch;
         private DispatcherTimer searchDebounceTimer;
-        private StackPanel categoryChipsPanel;
+        private Border borderCategoryBar;
+        private WrapPanel categoryChipsPanel;
         private StackPanel appsContainer;
         private StackPanel localAppsPanel;
         private StackPanel wingetOnlinePanel;
@@ -2008,6 +2011,25 @@ namespace FleetForge
 
                 <!-- Help Menu on the right (near Minimize button) -->
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                                        <!-- Search Box in Header (Active in All Apps) -->
+                    <Border x:Name=""BorderHeaderSearch"" Width=""270"" Height=""34"" CornerRadius=""6""
+                            Background=""#1E1E1E"" BorderBrush=""#383838"" BorderThickness=""1""
+                            Margin=""0,0,12,0"" VerticalAlignment=""Center"" Visibility=""Collapsed"">
+                        <Grid Margin=""8,0,8,0"">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=""Auto""/>
+                                <ColumnDefinition Width=""*""/>
+                                <ColumnDefinition Width=""Auto""/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text=""🔍"" FontSize=""11"" Foreground=""#8A8A8A"" VerticalAlignment=""Center"" Margin=""2,0,6,0""/>
+                            <TextBox x:Name=""TxtSearch"" Grid.Column=""1"" Height=""28"" Background=""Transparent""
+                                     Foreground=""#FFFFFF"" CaretBrush=""#4CC2FF"" BorderThickness=""0""
+                                     FontSize=""12"" VerticalContentAlignment=""Center"" Text=""Search applications...""/>
+                            <Button x:Name=""BtnClearSearch"" Grid.Column=""2"" Content=""✕"" Width=""18"" Height=""18""
+                                    Background=""Transparent"" Foreground=""#8A8A8A"" BorderThickness=""0""
+                                    Cursor=""Hand"" Visibility=""Collapsed"" Margin=""2,0,0,0"" ToolTip=""Clear search""/>
+                        </Grid>
+                    </Border>
                     <Button x:Name=""BtnToggleTheme"" Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
                             Padding=""10,7"" Margin=""0,0,8,0"" Cursor=""Hand"" ToolTip=""Switch Theme (Dark / Light)"" VerticalAlignment=""Center"">
                         <TextBlock x:Name=""TxtToggleThemeIcon"" Text=""🌙"" FontSize=""13"" VerticalAlignment=""Center""/>
@@ -2097,20 +2119,11 @@ namespace FleetForge
                 <RowDefinition Height=""*""/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row=""0"" Margin=""0,0,0,14"">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=""260""/>
-                    <ColumnDefinition Width=""*""/>
-                </Grid.ColumnDefinitions>
-
-                <TextBox x:Name=""TxtSearch"" Grid.Column=""0"" Height=""36"" Background=""#1E1E1E"" Foreground=""#FFFFFF""
-                         CaretBrush=""#4CC2FF"" BorderBrush=""#383838"" BorderThickness=""1"" Padding=""12,8""
-                         FontSize=""12"" VerticalContentAlignment=""Center"" Text=""Search applications...""/>
-
-                <ScrollViewer Grid.Column=""1"" HorizontalScrollBarVisibility=""Auto"" VerticalScrollBarVisibility=""Disabled"" Margin=""12,0,0,0"">
-                    <StackPanel x:Name=""CategoryChipsPanel"" Orientation=""Horizontal""/>
-                </ScrollViewer>
-            </Grid>
+            <!-- Expanded Modern Category Tabs Deck -->
+            <Border x:Name=""BorderCategoryBar"" Grid.Row=""0"" Background=""#1E222A"" CornerRadius=""10""
+                    Padding=""8,8,2,2"" BorderBrush=""#2D3342"" BorderThickness=""1"" Margin=""0,0,0,14"">
+                <WrapPanel x:Name=""CategoryChipsPanel"" Orientation=""Horizontal""/>
+            </Border>
 
             <Border x:Name=""BorderCatalogContainer"" Grid.Row=""1"" Background=""#272727"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#383838"" BorderThickness=""1"">
                 <Grid>
@@ -2671,8 +2684,24 @@ namespace FleetForge
             btnCreateNewGroup = (Button)root.FindName("BtnCreateNewGroup");
             roleCardsGrid = (System.Windows.Controls.Primitives.UniformGrid)root.FindName("RoleCardsGrid");
 
+            borderHeaderSearch = (Border)root.FindName("BorderHeaderSearch");
             txtSearch = (TextBox)root.FindName("TxtSearch");
-            categoryChipsPanel = (StackPanel)root.FindName("CategoryChipsPanel");
+            btnClearSearch = (Button)root.FindName("BtnClearSearch");
+            borderCategoryBar = (Border)root.FindName("BorderCategoryBar");
+            categoryChipsPanel = (WrapPanel)root.FindName("CategoryChipsPanel");
+
+            if (btnClearSearch != null)
+            {
+                btnClearSearch.Click += delegate
+                {
+                    if (txtSearch != null)
+                    {
+                        txtSearch.Text = "";
+                        ApplyFilters();
+                        btnClearSearch.Visibility = Visibility.Collapsed;
+                    }
+                };
+            }
             appsContainer = (StackPanel)root.FindName("AppsContainer");
 
             txtCloudUrlInput = (TextBox)root.FindName("TxtCloudUrlInput");
@@ -3133,6 +3162,12 @@ namespace FleetForge
 
             txtSearch.TextChanged += delegate
             {
+                if (btnClearSearch != null)
+                {
+                    string t = txtSearch.Text;
+                    bool hasText = !string.IsNullOrEmpty(t) && t != "Search applications...";
+                    btnClearSearch.Visibility = hasText ? Visibility.Visible : Visibility.Collapsed;
+                }
                 if (searchDebounceTimer != null)
                 {
                     searchDebounceTimer.Stop();
@@ -3902,12 +3937,32 @@ namespace FleetForge
             if (txtTargetRoleTitle != null) txtTargetRoleTitle.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
             if (txtTargetRoleSubtitle != null) txtTargetRoleSubtitle.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0");
 
-            // Catalog Page
+            // Header Search Box
+            if (borderHeaderSearch != null)
+            {
+                borderHeaderSearch.Background = isLight ? HexBrush("#F1F5F9") : HexBrush("#1E1E1E");
+                borderHeaderSearch.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#383838");
+            }
             if (txtSearch != null)
             {
-                txtSearch.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E1E1E");
-                txtSearch.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-                txtSearch.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#383838");
+                txtSearch.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            }
+            if (borderCategoryBar != null)
+            {
+                borderCategoryBar.Background = isLight ? HexBrush("#F1F5F9") : HexBrush("#1E222A");
+                borderCategoryBar.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#2D3342");
+            }
+            if (categoryChipsPanel != null)
+            {
+                foreach (UIElement elem in categoryChipsPanel.Children)
+                {
+                    Button btn = elem as Button;
+                    if (btn != null)
+                    {
+                        string tag = (string)btn.Tag;
+                        UpdateCategoryTabVisual(btn, tag == activeCategory);
+                    }
+                }
             }
             if (borderCatalogContainer != null)
             {
@@ -4442,6 +4497,11 @@ namespace FleetForge
             UpdateNavState(navBtnCatalog, navIndCatalog, navIconCatalog, navTxtCatalog, viewName == "catalog");
             UpdateNavState(navBtnCloud, navIndCloud, navIconCloud, navTxtCloud, viewName == "cloud");
             UpdateNavState(navBtnLogs, navIndLogs, navIconLogs, navTxtLogs, viewName == "logs");
+
+            if (borderHeaderSearch != null)
+            {
+                borderHeaderSearch.Visibility = (viewName == "catalog") ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (viewName == "setup")
             {
@@ -6033,50 +6093,149 @@ namespace FleetForge
         }
 
         // =========================================================================
-        // CATALOG VIEW BUILDER
+        // MODERN CATEGORY TABS & CATALOG BUILDER
         // =========================================================================
+        private Button CreateCategoryTabButton(string id, string icon, string title, int count, bool isActive)
+        {
+            Button btn = new Button()
+            {
+                Height = 36,
+                Padding = new Thickness(12, 0, 12, 0),
+                Margin = new Thickness(0, 0, 6, 6),
+                Cursor = Cursors.Hand,
+                BorderThickness = new Thickness(1),
+                Tag = id
+            };
+
+            StackPanel sp = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            if (!string.IsNullOrEmpty(icon))
+            {
+                TextBlock txtIcon = new TextBlock()
+                {
+                    Text = icon,
+                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
+                    FontSize = 13.5,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 0, 7, 0)
+                };
+                sp.Children.Add(txtIcon);
+            }
+
+            TextBlock txtTitle = new TextBlock()
+            {
+                Text = title,
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            sp.Children.Add(txtTitle);
+
+            Border badge = new Border()
+            {
+                CornerRadius = new CornerRadius(9),
+                Padding = new Thickness(7, 1.5, 7, 1.5),
+                Margin = new Thickness(8, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            TextBlock txtBadge = new TextBlock()
+            {
+                Text = count.ToString("N0"),
+                FontSize = 10.5,
+                FontWeight = FontWeights.Bold,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            badge.Child = txtBadge;
+            sp.Children.Add(badge);
+
+            btn.Content = sp;
+            btn.Click += delegate { SetCategoryFilter(id); };
+
+            UpdateCategoryTabVisual(btn, isActive);
+            return btn;
+        }
+
+        private void UpdateCategoryTabVisual(Button btn, bool isActive)
+        {
+            if (btn == null) return;
+            string tag = (string)btn.Tag;
+            bool isOnline = tag == "winget_online";
+
+            StackPanel sp = btn.Content as StackPanel;
+            TextBlock txtIcon = null;
+            TextBlock txtTitle = null;
+            Border badge = null;
+            TextBlock txtBadge = null;
+
+            if (sp != null)
+            {
+                int idx = 0;
+                if (sp.Children.Count >= 3)
+                {
+                    txtIcon = sp.Children[idx++] as TextBlock;
+                }
+                if (idx < sp.Children.Count) txtTitle = sp.Children[idx++] as TextBlock;
+                if (idx < sp.Children.Count)
+                {
+                    badge = sp.Children[idx++] as Border;
+                    if (badge != null) txtBadge = badge.Child as TextBlock;
+                }
+            }
+
+            if (isActive)
+            {
+                btn.Background = isOnline ? HexBrush("#7C3AED") : (currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0284C7"));
+                btn.BorderBrush = isOnline ? HexBrush("#A855F7") : (currentThemeIsLight ? HexBrush("#005A9E") : HexBrush("#38BDF8"));
+                btn.BorderThickness = new Thickness(1);
+                if (txtIcon != null) txtIcon.Foreground = HexBrush("#FFFFFF");
+                if (txtTitle != null) txtTitle.Foreground = HexBrush("#FFFFFF");
+                if (badge != null) badge.Background = HexBrush("#35FFFFFF");
+                if (txtBadge != null) txtBadge.Foreground = HexBrush("#FFFFFF");
+            }
+            else
+            {
+                if (isOnline)
+                {
+                    btn.Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2D1B4E");
+                    btn.BorderBrush = HexBrush("#8B5CF6");
+                    btn.BorderThickness = new Thickness(1);
+                    if (txtIcon != null) txtIcon.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC");
+                    if (txtTitle != null) txtTitle.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC");
+                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#EDE9FE") : HexBrush("#3B2166");
+                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#E9D5FF");
+                }
+                else
+                {
+                    btn.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#232A36");
+                    btn.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#333C4D");
+                    btn.BorderThickness = new Thickness(1);
+                    if (txtIcon != null) txtIcon.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                    if (txtTitle != null) txtTitle.Foreground = currentThemeIsLight ? HexBrush("#334155") : HexBrush("#CBD5E1");
+                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#181F2A");
+                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
+                }
+            }
+        }
+
         private void BuildCatalog()
         {
             appsContainer.Children.Clear();
             appRows.Clear();
             categoryChipsPanel.Children.Clear();
 
-            Button allChip = new Button()
-            {
-                Content = "All (" + config.apps.Count.ToString("N0") + ")",
-                FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
-                Padding = new Thickness(12, 6, 12, 6),
-                Margin = new Thickness(0, 0, 6, 0),
-                Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"),
-                Foreground = HexBrush("#FFFFFF"),
-                BorderThickness = new Thickness(0),
-                Cursor = Cursors.Hand,
-                FontSize = 12,
-                Tag = "all"
-            };
-            allChip.Click += delegate { SetCategoryFilter("all"); };
-            categoryChipsPanel.Children.Add(allChip);
+            Button allTab = CreateCategoryTabButton("all", "🌐", "All", config.apps.Count, activeCategory == "all" || string.IsNullOrEmpty(activeCategory));
+            categoryChipsPanel.Children.Add(allTab);
 
             foreach (CategoryModel cat in config.categories)
             {
                 CategoryModel curCat = cat;
                 int count = config.apps.FindAll(delegate (AppModel a) { return a.category == curCat.id; }).Count;
-                Button cChip = new Button()
-                {
-                    Content = string.Format("{0} {1} ({2:N0})", GetSafeCategoryIcon(curCat), curCat.name, count),
-                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
-                    Padding = new Thickness(12, 6, 12, 6),
-                    Margin = new Thickness(0, 0, 6, 0),
-                    Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#252D3D"),
-                    Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#F8FAFC"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#384358"),
-                    BorderThickness = new Thickness(1),
-                    Cursor = Cursors.Hand,
-                    FontSize = 12,
-                    Tag = curCat.id
-                };
-                cChip.Click += delegate { SetCategoryFilter(curCat.id); };
-                categoryChipsPanel.Children.Add(cChip);
+                Button cTab = CreateCategoryTabButton(curCat.id, GetSafeCategoryIcon(curCat), curCat.name, count, activeCategory == curCat.id);
+                categoryChipsPanel.Children.Add(cTab);
             }
 
             localAppsPanel = new StackPanel();
@@ -6939,26 +7098,7 @@ namespace FleetForge
                 if (btn != null)
                 {
                     string tag = (string)btn.Tag;
-                    if (tag == cat)
-                    {
-                        btn.Background = (tag == "winget_online") ? HexBrush("#7C3AED") : (currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"));
-                        btn.Foreground = HexBrush("#FFFFFF");
-                    }
-                    else
-                    {
-                        if (tag == "winget_online")
-                        {
-                            btn.Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2D1B4E");
-                            btn.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC");
-                        }
-                        else
-                        {
-                            btn.Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#252D3D");
-                            btn.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#F8FAFC");
-                            btn.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#384358");
-                            btn.BorderThickness = new Thickness(1);
-                        }
-                    }
+                    UpdateCategoryTabVisual(btn, tag == cat);
                 }
             }
 
