@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -106,7 +109,11 @@ namespace FleetForge
                 try
                 {
                     ProcessStartInfo psi = new ProcessStartInfo();
-                    psi.FileName = Process.GetCurrentProcess().MainModule.FileName;
+                    string exePath = null;
+                    try { if (Process.GetCurrentProcess().MainModule != null) exePath = Process.GetCurrentProcess().MainModule.FileName; } catch { }
+                    if (string.IsNullOrEmpty(exePath)) exePath = Assembly.GetExecutingAssembly().Location;
+
+                    psi.FileName = exePath;
                     if (args != null && args.Length > 0)
                     {
                         psi.Arguments = string.Join(" ", args);
@@ -119,7 +126,7 @@ namespace FleetForge
                 catch
                 {
                     MessageBox.Show(
-                        "Administrator permissions are strictly required to install FleetForge into 'C:\\Program Files\\FleetForge'.\n\nPlease approve the Windows UAC Administrator prompt to proceed.",
+                        "Administrator permissions are strictly required to install or update FleetForge.\n\nPlease approve the Windows UAC Administrator prompt to proceed.",
                         "Administrator Elevation Required",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -172,6 +179,8 @@ namespace FleetForge
 
         private TextBox txtInstallPath;
         private Button btnBrowse;
+        private Border detectedInstallCard;
+        private TextBlock txtDetectedInfo;
         private CheckBox chkDesktop;
         private CheckBox chkStartMenu;
         private CheckBox chkRegister;
@@ -185,6 +194,7 @@ namespace FleetForge
         private Button btnInstall;
         private Image imgSetupLogo;
 
+        private bool isExistingInstallation = false;
         private bool isInstalled = false;
         private string finalInstallPath = "";
 
@@ -193,13 +203,156 @@ namespace FleetForge
             InitializeWindow();
         }
 
+        public static bool IsValidFleetForgeDir(string dir)
+        {
+            if (string.IsNullOrWhiteSpace(dir)) return false;
+            try
+            {
+                string cleaned = dir.Replace("\"", "").Trim();
+                if (!Directory.Exists(cleaned)) return false;
+                if (File.Exists(Path.Combine(cleaned, "FleetForge.exe"))) return true;
+                if (File.Exists(Path.Combine(cleaned, "Uninstall.exe"))) return true;
+                if (File.Exists(Path.Combine(cleaned, "appicon.ico")) && Directory.Exists(Path.Combine(cleaned, "data"))) return true;
+            }
+            catch { }
+            return false;
+        }
+
+        private static string ResolveShortcutTarget(string shortcutPath)
+        {
+            try
+            {
+                Type wsType = Type.GetTypeFromProgID("WScript.Shell");
+                if (wsType == null) return null;
+                object ws = Activator.CreateInstance(wsType);
+                object sc = wsType.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, ws, new object[] { shortcutPath });
+                Type scType = sc.GetType();
+                return scType.InvokeMember("TargetPath", BindingFlags.GetProperty, null, sc, null) as string;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static string DetectExistingInstallPath()
+        {
+            // 1. Check Windows Registry (LocalMachine and CurrentUser, 64-bit and 32-bit views)
+            string[] uninstallKeys = new string[] {
+                @"Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge",
+                @"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge",
+                @"Software\FleetForge",
+                @"Software\WOW6432Node\FleetForge"
+            };
+
+            RegistryKey[] hives = new RegistryKey[] { Registry.LocalMachine, Registry.CurrentUser };
+            foreach (RegistryKey hive in hives)
+            {
+                foreach (string keyPath in uninstallKeys)
+                {
+                    try
+                    {
+                        using (RegistryKey key = hive.OpenSubKey(keyPath))
+                        {
+                            if (key != null)
+                            {
+                                string loc = key.GetValue("InstallLocation") as string;
+                                if (IsValidFleetForgeDir(loc)) return Path.GetFullPath(loc.TrimEnd('\\'));
+
+                                string pathVal = key.GetValue("Path") as string ?? key.GetValue("InstallPath") as string;
+                                if (IsValidFleetForgeDir(pathVal)) return Path.GetFullPath(pathVal.TrimEnd('\\'));
+
+                                string uninst = key.GetValue("UninstallString") as string;
+                                if (!string.IsNullOrEmpty(uninst))
+                                {
+                                    string cleaned = uninst.Replace("\"", "").Trim();
+                                    string dir = Path.GetDirectoryName(cleaned);
+                                    if (IsValidFleetForgeDir(dir)) return Path.GetFullPath(dir.TrimEnd('\\'));
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            // 2. Check Desktop and Start Menu Shortcuts
+            try
+            {
+                string[] shortcutDirs = new string[] {
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory),
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms),
+                    Environment.GetFolderPath(Environment.SpecialFolder.Programs)
+                };
+
+                foreach (string sDir in shortcutDirs)
+                {
+                    if (string.IsNullOrEmpty(sDir) || !Directory.Exists(sDir)) continue;
+                    string lnkPath = Path.Combine(sDir, "FleetForge.lnk");
+                    if (File.Exists(lnkPath))
+                    {
+                        string target = ResolveShortcutTarget(lnkPath);
+                        if (!string.IsNullOrEmpty(target))
+                        {
+                            string dir = File.Exists(target) ? Path.GetDirectoryName(target) : target;
+                            if (IsValidFleetForgeDir(dir)) return Path.GetFullPath(dir.TrimEnd('\\'));
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            // 3. Check any currently running FleetForge process
+            try
+            {
+                foreach (Process p in Process.GetProcessesByName("FleetForge"))
+                {
+                    try
+                    {
+                        if (p.MainModule != null && !string.IsNullOrEmpty(p.MainModule.FileName))
+                        {
+                            string dir = Path.GetDirectoryName(p.MainModule.FileName);
+                            if (IsValidFleetForgeDir(dir)) return Path.GetFullPath(dir.TrimEnd('\\'));
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            // 4. Scan available drives for previous FleetForge installation folder
+            try
+            {
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                foreach (DriveInfo d in drives)
+                {
+                    if (!d.IsReady || d.DriveType == DriveType.CDRom) continue;
+                    string root = d.RootDirectory.FullName;
+                    string[] probePaths = new string[] {
+                        Path.Combine(root, "Installation", "FleetForge"),
+                        Path.Combine(root, "Software", "FleetForge"),
+                        Path.Combine(root, "FleetForge"),
+                        Path.Combine(root, "Program Files", "FleetForge")
+                    };
+                    foreach (string probe in probePaths)
+                    {
+                        if (IsValidFleetForgeDir(probe)) return Path.GetFullPath(probe.TrimEnd('\\'));
+                    }
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
         private void InitializeWindow()
         {
             this.Title = "FleetForge Setup Wizard — Love Malhotra";
             this.Width = 680;
-            this.Height = 640;
+            this.Height = 660;
             this.MinWidth = 680;
-            this.MinHeight = 640;
+            this.MinHeight = 660;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
             this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#202020"));
             this.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F3F3"));
@@ -344,7 +497,7 @@ namespace FleetForge
     <ScrollViewer Grid.Row=""1"" VerticalScrollBarVisibility=""Disabled"" HorizontalScrollBarVisibility=""Disabled"" Padding=""24,14"">
         <StackPanel>
             <!-- Welcome Info Card -->
-            <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,12"">
+            <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,10"">
                 <StackPanel>
                     <TextBlock Text=""Welcome to FleetForge Setup"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
                     <TextBlock Text=""This installer sets up FleetForge on your computer. FleetForge lets you install all your favorite applications, office tools, and web browsers in one simple click.""
@@ -352,8 +505,31 @@ namespace FleetForge
                 </StackPanel>
             </Border>
 
+            <!-- Detected Existing Installation Card (Auto-Shown if previously installed) -->
+            <Border x:Name=""DetectedInstallCard"" Background=""#143422"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#238636"" BorderThickness=""1"" Margin=""0,0,0,10"" Visibility=""Collapsed"">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=""Auto""/>
+                        <ColumnDefinition Width=""*""/>
+                    </Grid.ColumnDefinitions>
+                    <Border Grid.Column=""0"" Width=""36"" Height=""36"" CornerRadius=""6"" Background=""#1D5333"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                        <TextBlock Text=""🔄"" FontSize=""18"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                    </Border>
+                    <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
+                        <StackPanel Orientation=""Horizontal"">
+                            <TextBlock Text=""PREVIOUS INSTALLATION FOUND"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#4ADE80""/>
+                            <Border Background=""#1E4D2B"" CornerRadius=""3"" Padding=""6,1"" Margin=""8,0,0,0"">
+                                <TextBlock Text=""AUTO-DETECTED"" FontSize=""9"" FontWeight=""Bold"" Foreground=""#86EFAC""/>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock x:Name=""TxtDetectedInfo"" Text=""FleetForge is installed at: ..."" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#F0FDF4"" Margin=""0,3,0,2"" TextTrimming=""CharacterEllipsis""/>
+                        <TextBlock Text=""Setup will update and overwrite existing files cleanly while preserving your configuration and custom app packs."" FontSize=""10.5"" Foreground=""#BBF7D0"" LineHeight=""14""/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
             <!-- Destination Card -->
-            <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,12"">
+            <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,10"">
                 <StackPanel>
                     <TextBlock Text=""Installation Location"" FontSize=""12"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,6""/>
                     <Grid>
@@ -365,7 +541,7 @@ namespace FleetForge
                         <TextBox x:Name=""TxtInstallPath"" Grid.Column=""0"" Height=""32"" Background=""#1E1E1E"" Foreground=""#FFFFFF""
                                  BorderBrush=""#383838"" BorderThickness=""1"" Padding=""8,4"" FontSize=""12"" VerticalContentAlignment=""Center""/>
                         <Button x:Name=""BtnBrowse"" Grid.Column=""1"" Content=""📂 Browse..."" Background=""#2D2D2D"" Foreground=""#FFFFFF""
-                                Padding=""14,5"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12""/>
+                                 Padding=""14,5"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12""/>
                     </Grid>
                     <TextBlock Text=""Disk space required: ~25 MB  •  Space available on drive: Plenty"" FontSize=""10.5"" Foreground=""#8A8A8A"" Margin=""0,4,0,0""/>
                 </StackPanel>
@@ -383,7 +559,7 @@ namespace FleetForge
             </Border>
 
             <!-- Progress Card (Visible during install) -->
-            <Border x:Name=""ProgressBorder"" Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,12,0,0"" Visibility=""Collapsed"">
+            <Border x:Name=""ProgressBorder"" Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,10,0,0"" Visibility=""Collapsed"">
                 <StackPanel>
                     <TextBlock x:Name=""TxtStatus"" Text=""Ready to install..."" FontSize=""12"" Foreground=""#4CC2FF"" Margin=""0,0,0,6""/>
                     <ProgressBar x:Name=""ProgressBar"" Height=""6"" Background=""#2D2D2D"" Foreground=""#0078D4"" BorderThickness=""0""/>
@@ -408,6 +584,9 @@ namespace FleetForge
 
             txtInstallPath = (TextBox)root.FindName("TxtInstallPath");
             btnBrowse = (Button)root.FindName("BtnBrowse");
+            detectedInstallCard = (Border)root.FindName("DetectedInstallCard");
+            txtDetectedInfo = (TextBlock)root.FindName("TxtDetectedInfo");
+
             chkDesktop = (CheckBox)root.FindName("ChkDesktop");
             chkStartMenu = (CheckBox)root.FindName("ChkStartMenu");
             chkRegister = (CheckBox)root.FindName("ChkRegister");
@@ -431,7 +610,23 @@ namespace FleetForge
                 txtFallbackLogo.Visibility = Visibility.Visible;
             }
 
-            txtInstallPath.Text = defaultPath;
+            // AUTO-DETECT: Find any previous installation on the machine (e.g. secondary drive D:\, E:\, etc.)
+            string detected = DetectExistingInstallPath();
+            if (!string.IsNullOrEmpty(detected))
+            {
+                txtInstallPath.Text = detected;
+                UpdateInstallLocationStatus(detected);
+            }
+            else
+            {
+                txtInstallPath.Text = defaultPath;
+                UpdateInstallLocationStatus(defaultPath);
+            }
+
+            txtInstallPath.TextChanged += delegate
+            {
+                UpdateInstallLocationStatus(txtInstallPath.Text.Trim());
+            };
 
             btnBrowse.Click += delegate
             {
@@ -443,6 +638,7 @@ namespace FleetForge
                     if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
                         txtInstallPath.Text = fbd.SelectedPath;
+                        UpdateInstallLocationStatus(fbd.SelectedPath);
                     }
                 }
             };
@@ -463,6 +659,206 @@ namespace FleetForge
 
                 StartInstallationProcess();
             };
+        }
+
+        private void UpdateInstallLocationStatus(string path)
+        {
+            if (IsValidFleetForgeDir(path))
+            {
+                isExistingInstallation = true;
+                if (detectedInstallCard != null) detectedInstallCard.Visibility = Visibility.Visible;
+                if (txtDetectedInfo != null) txtDetectedInfo.Text = "FleetForge installation detected at: " + path;
+                if (btnInstall != null)
+                {
+                    btnInstall.Content = "⚡ Update & Overwrite Installation";
+                    btnInstall.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0D8050"));
+                }
+            }
+            else
+            {
+                isExistingInstallation = false;
+                if (detectedInstallCard != null) detectedInstallCard.Visibility = Visibility.Collapsed;
+                if (btnInstall != null)
+                {
+                    btnInstall.Content = "⚡ Install Now";
+                    btnInstall.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0078D4"));
+                }
+            }
+        }
+
+        private void SafeExtractResource(string resourceName, string targetFilePath)
+        {
+            // Clear ReadOnly attribute if file already exists
+            if (File.Exists(targetFilePath))
+            {
+                try
+                {
+                    FileAttributes fa = File.GetAttributes(targetFilePath);
+                    if ((fa & FileAttributes.ReadOnly) != 0)
+                    {
+                        File.SetAttributes(targetFilePath, fa & ~FileAttributes.ReadOnly);
+                    }
+                }
+                catch { }
+            }
+
+            int retries = 0;
+            while (retries < 5)
+            {
+                try
+                {
+                    ExtractResource(resourceName, targetFilePath);
+                    return;
+                }
+                catch (IOException)
+                {
+                    retries++;
+                    if (retries >= 5)
+                    {
+                        // Fallback rename trick if file is temporarily locked
+                        try
+                        {
+                            string oldTmp = targetFilePath + ".old_" + Environment.TickCount;
+                            if (File.Exists(oldTmp)) File.Delete(oldTmp);
+                            File.Move(targetFilePath, oldTmp);
+                            ExtractResource(resourceName, targetFilePath);
+                            try { File.Delete(oldTmp); } catch { }
+                            return;
+                        }
+                        catch { }
+                        throw;
+                    }
+                    Thread.Sleep(200);
+                }
+            }
+        }
+
+        private void SafeCopyFile(string source, string dest)
+        {
+            if (!File.Exists(source)) return;
+            if (File.Exists(dest))
+            {
+                try
+                {
+                    FileAttributes fa = File.GetAttributes(dest);
+                    if ((fa & FileAttributes.ReadOnly) != 0)
+                    {
+                        File.SetAttributes(dest, fa & ~FileAttributes.ReadOnly);
+                    }
+                }
+                catch { }
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    File.Copy(source, dest, true);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if (i == 4)
+                    {
+                        try
+                        {
+                            string oldTmp = dest + ".old_" + Environment.TickCount;
+                            File.Move(dest, oldTmp);
+                            File.Copy(source, dest, true);
+                            try { File.Delete(oldTmp); } catch { }
+                            return;
+                        }
+                        catch { }
+                    }
+                    Thread.Sleep(200);
+                }
+            }
+        }
+
+        private void ExtractAndMergeCatalog(string appsDataPath, string appsRootPath)
+        {
+            string tempExtract = appsDataPath + ".tmp";
+            SafeExtractResource("apps.json", tempExtract);
+
+            try
+            {
+                string existingPath = File.Exists(appsDataPath) ? appsDataPath : (File.Exists(appsRootPath) ? appsRootPath : null);
+                if (existingPath != null)
+                {
+                    string existingJson = File.ReadAllText(existingPath, Encoding.UTF8);
+                    var jss = new JavaScriptSerializer();
+                    jss.MaxJsonLength = int.MaxValue;
+                    var existingData = jss.Deserialize<Dictionary<string, object>>(existingJson);
+
+                    if (existingData != null && existingData.ContainsKey("groups"))
+                    {
+                        var existingGroups = existingData["groups"] as ArrayList;
+                        if (existingGroups != null)
+                        {
+                            var customGroups = new ArrayList();
+                            var builtInIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+                                "developer", "office", "creative", "gamer", "system", "office_business", "gamer_creator", "essential"
+                            };
+
+                            foreach (object gObj in existingGroups)
+                            {
+                                var g = gObj as Dictionary<string, object>;
+                                if (g != null && g.ContainsKey("id"))
+                                {
+                                    string gid = Convert.ToString(g["id"]);
+                                    bool isCustom = false;
+                                    if (g.ContainsKey("is_custom") && Convert.ToBoolean(g["is_custom"])) isCustom = true;
+                                    else if (!builtInIds.Contains(gid)) isCustom = true;
+
+                                    if (isCustom)
+                                    {
+                                        customGroups.Add(g);
+                                    }
+                                }
+                            }
+
+                            if (customGroups.Count > 0)
+                            {
+                                string newJson = File.ReadAllText(tempExtract, Encoding.UTF8);
+                                var newData = jss.Deserialize<Dictionary<string, object>>(newJson);
+                                if (newData != null && newData.ContainsKey("groups"))
+                                {
+                                    var newGroups = newData["groups"] as ArrayList;
+                                    if (newGroups != null)
+                                    {
+                                        foreach (object cg in customGroups)
+                                        {
+                                            newGroups.Add(cg);
+                                        }
+                                        string mergedJson = jss.Serialize(newData);
+                                        File.WriteAllText(tempExtract, mergedJson, Encoding.UTF8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            SafeCopyFile(tempExtract, appsDataPath);
+            SafeCopyFile(tempExtract, appsRootPath);
+            try { File.Delete(tempExtract); } catch { }
+        }
+
+        private void ExtractOrPreserveSettings(string settingsConfigPath, string settingsRootPath)
+        {
+            string existingPath = File.Exists(settingsConfigPath) ? settingsConfigPath : (File.Exists(settingsRootPath) ? settingsRootPath : null);
+            if (existingPath == null)
+            {
+                SafeExtractResource("settings.json", settingsConfigPath);
+                SafeCopyFile(settingsConfigPath, settingsRootPath);
+            }
+            else
+            {
+                // Preserve existing user configuration
+                if (!File.Exists(settingsConfigPath)) SafeCopyFile(existingPath, settingsConfigPath);
+                if (!File.Exists(settingsRootPath)) SafeCopyFile(existingPath, settingsRootPath);
+            }
         }
 
         private void StartInstallationProcess()
@@ -497,19 +893,22 @@ namespace FleetForge
             {
                 try
                 {
-                    // 0. Close any running FleetForge instances before copying files
-                    UpdateProgress(5, "Preparing installation...");
+                    // 0. Close any running FleetForge instances before copying files so files are not locked
+                    UpdateProgress(5, "Closing any active FleetForge applications...");
                     try
                     {
-                        foreach (Process p in Process.GetProcessesByName("FleetForge"))
+                        foreach (string pName in new string[] { "FleetForge", "Uninstall" })
                         {
-                            try { p.Kill(); p.WaitForExit(2000); } catch { }
+                            foreach (Process p in Process.GetProcessesByName(pName))
+                            {
+                                try { p.Kill(); p.WaitForExit(3000); } catch { }
+                            }
                         }
                     }
                     catch { }
 
                     // 1. Create Directories
-                    UpdateProgress(10, "Creating installation folder...");
+                    UpdateProgress(10, "Preparing installation folder...");
                     if (!Directory.Exists(targetDir))
                     {
                         Directory.CreateDirectory(targetDir);
@@ -521,23 +920,21 @@ namespace FleetForge
                     string logsDir = Path.Combine(targetDir, "logs");
                     if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
                     string offlineDir = Path.Combine(targetDir, "offline_installers");
-                    if (!Directory.Exists(offlineDir))
-                    {
-                        Directory.CreateDirectory(offlineDir);
-                    }
-                    Thread.Sleep(150);
+                    if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
+                    string reportsDir = Path.Combine(targetDir, "reports");
+                    if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
+                    Thread.Sleep(100);
 
-                    // 2. Extract FleetForge.exe
-                    UpdateProgress(30, "Copying program files...");
+                    // 2. Extract & Overwrite FleetForge.exe
+                    UpdateProgress(30, "Updating and overwriting program files...");
                     string exePath = Path.Combine(targetDir, "FleetForge.exe");
-                    ExtractResource("FleetForge.exe", exePath);
-                    Thread.Sleep(150);
+                    SafeExtractResource("FleetForge.exe", exePath);
+                    Thread.Sleep(100);
 
-                    // 3. Extract apps.json
-                    UpdateProgress(50, "Loading 16,349 software catalog...");
+                    // 3. Extract & Merge apps.json (preserve custom user app packs)
+                    UpdateProgress(50, "Updating 16,349 software catalog...");
                     string appsPath = Path.Combine(dataDir, "apps.json");
-                    ExtractResource("apps.json", appsPath);
-                    try { File.Copy(appsPath, Path.Combine(targetDir, "apps.json"), true); } catch { }
+                    ExtractAndMergeCatalog(appsPath, Path.Combine(targetDir, "apps.json"));
 
                     int verifiedCount = 16349;
                     try
@@ -555,59 +952,68 @@ namespace FleetForge
                     try
                     {
                         string sp = Path.Combine(dataDir, "sample_apps.json");
-                        ExtractResource("sample_apps.json", sp);
-                        File.Copy(sp, Path.Combine(targetDir, "sample_apps.json"), true);
+                        SafeExtractResource("sample_apps.json", sp);
+                        SafeCopyFile(sp, Path.Combine(targetDir, "sample_apps.json"));
                     }
                     catch { }
 
-                    // 4. Extract settings.json
-                    UpdateProgress(65, "Applying setup preferences...");
+                    // 4. Extract or Preserve settings.json
+                    UpdateProgress(65, "Applying configuration preferences...");
                     string settingsPath = Path.Combine(configDir, "settings.json");
-                    ExtractResource("settings.json", settingsPath);
-                    try { File.Copy(settingsPath, Path.Combine(targetDir, "settings.json"), true); } catch { }
+                    ExtractOrPreserveSettings(settingsPath, Path.Combine(targetDir, "settings.json"));
 
-                    // 4b. Extract app_urls.json (Cloud sync & update URLs)
+                    // 4b. Extract app_urls.json
                     try
                     {
                         string urlsPath = Path.Combine(configDir, "app_urls.json");
-                        ExtractResource("app_urls.json", urlsPath);
-                        File.Copy(urlsPath, Path.Combine(targetDir, "app_urls.json"), true);
+                        SafeExtractResource("app_urls.json", urlsPath);
+                        SafeCopyFile(urlsPath, Path.Combine(targetDir, "app_urls.json"));
                     }
                     catch { }
 
                     // 5. Extract appicon.ico
-                    UpdateProgress(75, "Setting up app icons...");
+                    UpdateProgress(75, "Setting up application icons...");
                     string icoPath = Path.Combine(targetDir, "appicon.ico");
-                    ExtractResource("appicon.ico", icoPath);
+                    SafeExtractResource("appicon.ico", icoPath);
 
                     // 6. Extract Uninstall.exe
                     UpdateProgress(80, "Installing uninstaller...");
                     string uninstallExePath = Path.Combine(targetDir, "Uninstall.exe");
-                    ExtractResource("Uninstall.exe", uninstallExePath);
-                    Thread.Sleep(150);
+                    SafeExtractResource("Uninstall.exe", uninstallExePath);
+                    Thread.Sleep(100);
 
                     // 7. Shortcuts
-                    UpdateProgress(85, "Creating desktop shortcuts...");
+                    UpdateProgress(85, "Updating desktop and Start Menu shortcuts...");
                     if (createDesktop)
                     {
                         string deskPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "FleetForge.lnk");
                         CreateShortcut(deskPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                        string userDesk = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "FleetForge.lnk");
+                        if (File.Exists(userDesk))
+                        {
+                            CreateShortcut(userDesk, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                        }
                     }
 
                     if (createStartMenu)
                     {
                         string startPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), "FleetForge.lnk");
                         CreateShortcut(startPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                        string userStart = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "FleetForge.lnk");
+                        if (File.Exists(userStart))
+                        {
+                            CreateShortcut(userStart, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                        }
                     }
 
-                    // 8. Register in Windows Add/Remove Programs
+                    // 8. Register in Windows Add/Remove Programs and FleetForge registry roots
                     if (registerUninstall)
                     {
-                        UpdateProgress(95, "Adding to Windows Apps list...");
+                        UpdateProgress(95, "Updating Windows Apps registration...");
                         RegisterInAddRemovePrograms(targetDir, uninstallExePath, icoPath);
                     }
 
-                    UpdateProgress(100, "Installation completed successfully!");
+                    UpdateProgress(100, isExistingInstallation ? "Update and overwrite completed successfully!" : "Installation completed successfully!");
                     Thread.Sleep(300);
 
                     Dispatcher.Invoke(new Action(delegate
@@ -771,6 +1177,32 @@ namespace FleetForge
                         key.SetValue("EstimatedSize", 5000, RegistryValueKind.DWord);
                         key.SetValue("NoModify", 1, RegistryValueKind.DWord);
                         key.SetValue("NoRepair", 1, RegistryValueKind.DWord);
+                    }
+                }
+            }
+            catch { }
+
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.CreateSubKey(@"Software\FleetForge"))
+                {
+                    if (key != null)
+                    {
+                        key.SetValue("InstallLocation", installDir);
+                        key.SetValue("Version", "2.5.0");
+                    }
+                }
+            }
+            catch { }
+
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\FleetForge"))
+                {
+                    if (key != null)
+                    {
+                        key.SetValue("InstallLocation", installDir);
+                        key.SetValue("Version", "2.5.0");
                     }
                 }
             }

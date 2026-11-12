@@ -72,6 +72,9 @@ namespace FleetForge
 
                 // Remove Registry Keys
                 try { Registry.LocalMachine.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge", false); } catch { }
+                try { Registry.LocalMachine.DeleteSubKeyTree(@"Software\FleetForge", false); } catch { }
+                try { Registry.CurrentUser.DeleteSubKeyTree(@"Software\FleetForge", false); } catch { }
+                try { Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge", false); } catch { }
                 try { Registry.LocalMachine.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\InnovanaPreInstaller", false); } catch { }
 
                 // Self-deleting cmd trick

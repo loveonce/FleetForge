@@ -99,7 +99,9 @@ if exist ..\FleetForge-Setup.exe (
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Xaml.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Windows.Forms.dll" ^
+    /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Web.Extensions.dll" ^
     /reference:"System.dll" ^
+    /reference:"System.Core.dll" ^
     /reference:"System.Drawing.dll" ^
     SetupProgram.cs
 
