@@ -38,6 +38,8 @@ if ([string]::IsNullOrWhiteSpace($TargetUrl)) {
     exit 1
 }
 
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12 -bor [System.Net.SecurityProtocolType]::Tls11 -bor [System.Net.SecurityProtocolType]::Tls
+
 # 2. Convert GitHub blob URL to raw URL if needed
 $DirectUrl = $TargetUrl.Trim()
 if ($DirectUrl -match "github\.com/([^/]+)/([^/]+)/blob/([^/]+)/(.+)") {

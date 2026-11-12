@@ -19,9 +19,6 @@ if not exist "%APPS_JSON%" set APPS_JSON=..\apps.json
 set SAMPLE_JSON=..\data\sample_apps.json
 if not exist "%SAMPLE_JSON%" set SAMPLE_JSON=..\sample_apps.json
 
-set FULL_JSON=..\data\apps_full.json
-if not exist "%FULL_JSON%" set FULL_JSON=..\apps_full.json
-
 set SETTINGS_JSON=..\config\settings.json
 if not exist "%SETTINGS_JSON%" set SETTINGS_JSON=..\settings.json
 
@@ -37,8 +34,6 @@ echo.
 
 taskkill /F /IM FleetForge.exe >nul 2>&1
 taskkill /F /IM FleetForge-Setup.exe >nul 2>&1
-taskkill /F /IM InnovanaPreInstaller.exe >nul 2>&1
-taskkill /F /IM InnovanaPreInstaller-Setup.exe >nul 2>&1
 ping -n 2 127.0.0.1 >nul 2>&1
 
 echo [1/3] Compiling Uninstaller utility (Uninstall.exe)...
@@ -95,7 +90,6 @@ if exist ..\FleetForge-Setup.exe (
     /resource:..\FleetForge.exe,FleetForge.exe ^
     /resource:%APPS_JSON%,apps.json ^
     /resource:%SAMPLE_JSON%,sample_apps.json ^
-    /resource:%FULL_JSON%,apps_full.json ^
     /resource:%SETTINGS_JSON%,settings.json ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
     /resource:%ICON_FILE%,appicon.ico ^

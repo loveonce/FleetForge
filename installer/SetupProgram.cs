@@ -16,22 +16,82 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("FleetForge Setup Wizard")]
 [assembly: AssemblyDescription("FleetForge - Self-Extracting Enterprise Setup Wizard")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Innovana Thinklabs Limited")]
+[assembly: AssemblyCompany("Love Malhotra")]
 [assembly: AssemblyProduct("FleetForge Setup")]
-[assembly: AssemblyCopyright("Copyright © 2026 Innovana Thinklabs Limited. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.4.0.0")]
-[assembly: AssemblyFileVersion("2.4.0.0")]
-[assembly: AssemblyInformationalVersion("2.4.0")]
+[assembly: AssemblyVersion("2.5.0.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]
+[assembly: AssemblyInformationalVersion("2.5.0")]
 
 namespace FleetForge
 {
     public class SetupProgram : Application
     {
+        private static Mutex setupMutex = null;
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        private const int SW_RESTORE = 9;
+
+        private static void BringExistingSetupToFront()
+        {
+            try
+            {
+                Process current = Process.GetCurrentProcess();
+                IntPtr targetHwnd = IntPtr.Zero;
+
+                foreach (Process p in Process.GetProcessesByName(current.ProcessName))
+                {
+                    if (p.Id != current.Id)
+                    {
+                        IntPtr h = p.MainWindowHandle;
+                        if (h != IntPtr.Zero)
+                        {
+                            targetHwnd = h;
+                            break;
+                        }
+                    }
+                }
+
+                if (targetHwnd == IntPtr.Zero)
+                {
+                    targetHwnd = FindWindow(null, "FleetForge Setup Wizard");
+                }
+
+                if (targetHwnd != IntPtr.Zero)
+                {
+                    if (IsIconic(targetHwnd)) ShowWindowAsync(targetHwnd, SW_RESTORE);
+                    SetForegroundWindow(targetHwnd);
+                }
+            }
+            catch { }
+        }
+
         [STAThread]
         public static void Main(string[] args)
         {
+            bool isFirst;
+            setupMutex = new Mutex(true, "Local\\FleetForge_Setup_SingleInstance", out isFirst);
+            if (!isFirst)
+            {
+                BringExistingSetupToFront();
+                return;
+            }
+
             SetupProgram app = new SetupProgram();
             app.Run(new SetupWindow());
         }
@@ -92,7 +152,7 @@ namespace FleetForge
 
         private void InitializeWindow()
         {
-            this.Title = "FleetForge Setup Wizard — Innovana Thinklabs Limited";
+            this.Title = "FleetForge Setup Wizard — Love Malhotra";
             this.Width = 680;
             this.Height = 640;
             this.MinWidth = 680;
@@ -227,7 +287,7 @@ namespace FleetForge
                 </Border>
                 <StackPanel VerticalAlignment=""Center"">
                     <TextBlock Text=""FLEETFORGE SETUP"" FontSize=""15"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                    <TextBlock Text=""Innovana Thinklabs Limited • Enterprise Deployment • v2.4.0"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
+                    <TextBlock Text=""Love Malhotra • Enterprise Deployment • v2.5.0"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                 </StackPanel>
             </StackPanel>
 
@@ -244,7 +304,7 @@ namespace FleetForge
             <Border Background=""#272727"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,12"">
                 <StackPanel>
                     <TextBlock Text=""Enterprise Workstation Provisioning"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
-                    <TextBlock Text=""This wizard installs FleetForge by Innovana Thinklabs Limited onto this computer. FleetForge provides zero-touch automated workstation provisioning, 16,349+ pre-cached Winget software packages, and fast-track role environments.""
+                    <TextBlock Text=""This wizard installs FleetForge by Love Malhotra onto this computer. FleetForge provides zero-touch automated workstation provisioning, Winget cloud synchronization, and fast-track role environments.""
                                FontSize=""11.5"" Foreground=""#D0D0D0"" TextWrapping=""Wrap"" LineHeight=""16""/>
                 </StackPanel>
             </Border>
@@ -446,14 +506,6 @@ namespace FleetForge
                     }
                     catch { }
 
-                    try
-                    {
-                        string fp = Path.Combine(dataDir, "apps_full.json");
-                        ExtractResource("apps_full.json", fp);
-                        File.Copy(fp, Path.Combine(targetDir, "apps_full.json"), true);
-                    }
-                    catch { }
-
                     // 4. Extract settings.json
                     UpdateProgress(65, "Configuring settings...");
                     string settingsPath = Path.Combine(configDir, "settings.json");
@@ -642,8 +694,10 @@ namespace FleetForge
                     {
                         key.SetValue("DisplayName", "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
                         key.SetValue("DisplayIcon", icoPath);
-                        key.SetValue("DisplayVersion", "2.4.0");
-                        key.SetValue("Publisher", "Innovana Thinklabs Limited");
+                        key.SetValue("DisplayVersion", "2.5.0");
+                        key.SetValue("Publisher", "Love Malhotra");
+                        key.SetValue("HelpLink", "https://github.com/loveonce/FleetForge");
+                        key.SetValue("URLInfoAbout", "https://github.com/loveonce/FleetForge");
                         key.SetValue("InstallLocation", installDir);
                         key.SetValue("UninstallString", "\"" + uninstallExePath + "\"");
                         key.SetValue("EstimatedSize", 5000, RegistryValueKind.DWord);

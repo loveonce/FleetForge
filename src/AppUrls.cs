@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Web.Script.Serialization;
 
@@ -31,13 +32,22 @@ namespace FleetForge
         public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";
 
         // 4. Company Official Website
-        public static string CompanyWebsiteUrl = "https://www.innovanathinklabs.com";
+        public static string CompanyWebsiteUrl = "https://github.com/loveonce/FleetForge";
 
         // ========================================================================
         // LOADER: Automatically loads and merges from app_urls.json if available
         // ========================================================================
         public static void Initialize(string baseDir = null)
         {
+            try
+            {
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | (SecurityProtocolType)12288 | (SecurityProtocolType)768 | SecurityProtocolType.Tls;
+            }
+            catch
+            {
+                try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch { }
+            }
+
             string json = null;
 
             // 1. Check local file paths first (for developer overrides & portable mode)

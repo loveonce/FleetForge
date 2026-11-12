@@ -1,8 +1,8 @@
 # 📐 FleetForge — System Architecture & Design Specification
 
-**Publisher:** Innovana Thinklabs Limited  
+**Publisher:** Love Malhotra  
 **Product:** FleetForge Enterprise  
-**Version:** 2.4.0 (Enterprise IT Edition)  
+**Version:** 2.5.0 (Enterprise IT Edition)  
 **Target Platform:** Windows 10 / Windows 11 (x64)
 
 ---

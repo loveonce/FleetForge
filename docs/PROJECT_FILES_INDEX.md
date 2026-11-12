@@ -1,6 +1,6 @@
 # 📁 FleetForge — Project Files & Directory Index
 
-**Publisher:** Innovana Thinklabs Limited  
+**Publisher:** Love Malhotra  
 **Repository Structure Standard:** Enterprise Clean
 
 ---
@@ -8,25 +8,26 @@
 ## Complete Project Directory Map
 
 ```text
-Software Pre Installer/
+FleetForge/
 │
 ├── FleetForge.exe                      # Standalone Portable Application Executable
 ├── FleetForge-Setup.exe                # Standalone Self-Extracting Windows Setup Wizard
 ├── CHANGELOG.md                        # Official Release & Version History
 ├── README.md                           # Main Project Documentation & Setup Guide
-├── Software Pre Installer.code-workspace
+├── FleetForge.code-workspace           # Multi-root Workspace Configuration
 │
 ├── 📂 data/                            # Application Catalogs & Presets
-│   ├── apps.json                       # 16,349 Packages Master Winget Catalog Index
-│   ├── apps_full.json                  # Complete Winget Raw Database Backup
-│   ├── sample_apps.json                # Curated Default Workstation Presets
-│   └── version.json                    # GitHub Auto-Update Release Manifest
+│   ├── apps.json                       # Curated Roles, Categories & Packages Catalog Index
+│   ├── sample_apps.json                # Starter Presets & Reference Definitions
+│   └── version.json                    # GitHub Auto-Update Release Manifest (v2.5.0)
 │
 ├── 📂 config/                          # Configuration & Enterprise Settings
+│   ├── app_urls.json                   # Cloud Sync & Auto-Update URLs Configuration
 │   └── settings.json                   # Theme, silent engine flags, and cloud sync settings
 │
 ├── 📂 src/                             # Core Application Source Code
 │   ├── Program.cs                      # Main FleetForge WPF Client Source Code
+│   ├── AppUrls.cs                      # Centralized Sync & Update Link Configuration
 │   ├── app.manifest                    # Windows Administrator UAC Execution Manifest
 │   └── 📂 assets/                      # Graphic & Visual Assets
 │       └── appicon.ico                 # Master Multi-Resolution App Icon (16x16 to 768x768)
@@ -34,17 +35,19 @@ Software Pre Installer/
 ├── 📂 scripts/                         # Automation & Build Scripts
 │   ├── Build-All.bat                   # Master 1-Click Compiler (Builds App + Setup Wizard)
 │   ├── Build-Exe.bat                   # Rapid Standalone Compiler for FleetForge.exe
-│   ├── PreInstaller-GUI.ps1            # Fallback PowerShell WPF GUI Edition
-│   └── PreInstaller-CLI.ps1            # Headless Unattended CLI Deployment Engine
+│   ├── PreInstaller-CLI.ps1            # Headless Unattended CLI Deployment Engine
+│   ├── Update-Catalog-From-Git.bat     # Quick catalog updater from remote GitHub
+│   └── Update-Catalog-From-Git.ps1     # PowerShell script for remote catalog synchronization
 │
 ├── 📂 installer/                       # Dedicated Installer & Packaging Subsystem
 │   ├── Build-Installer.bat             # Compiles & packages Setup Wizard
 │   ├── SetupProgram.cs                 # Self-extracting Setup Wizard Source Code
-│   ├── UninstallProgram.cs             # Clean Windows Uninstaller Source Code
-│   └── Uninstall.exe                   # Compiled Standalone Uninstaller Binary
+│   └── UninstallProgram.cs             # Clean Windows Uninstaller Source Code
 │
 ├── 📂 logs/                            # Deployment & Audit Logging
 │   └── install-log.txt                 # Timestamped Execution & Setup Activity Log
+│
+├── 📂 reports/                         # Machine Compliance Audit Reports (HTML & JSON)
 │
 ├── 📂 docs/                            # Enterprise Architectural Documentation
 │   ├── SYSTEM_DESIGN.md                # System Architecture & WPF Component Hierarchy

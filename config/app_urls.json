@@ -3,6 +3,5 @@
   "cloudSyncUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json",
   "updateCheckUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json",
   "updateDownloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe",
-  "companyWebsiteUrl": "https://www.innovanathinklabs.com"
+  "companyWebsiteUrl": "https://github.com/loveonce/FleetForge"
 }
-

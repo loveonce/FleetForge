@@ -4,9 +4,25 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.5.0] — 2026-11-12
+### Added & Updated Branding
+- **Publisher & Author:** Officially published and branded by **Love Malhotra** ([GitHub: loveonce](https://github.com/loveonce/FleetForge)).
+- **Version Lock:** Locked release **v2.5.0** across all portable and installer binaries.
+- **Single-Instance Enforcement:** Implemented Win32 named Mutex (`Local\FleetForge_SingleInstance_LoveMalhotra`) with `SetForegroundWindow` and `ShowWindowAsync` to restore the active window if clicked multiple times.
+- **Native UTF-8 Emoji & Symbol Rendering:** Restored crisp emojis and symbol icons across all role environments (`💻`, `💼`, `🎨`, `⚡`) and catalog chips (`🌐`, `💬`, `📄`, `🛠️`, `🎬`, `🛡️`, `☁️`, `🎮`) with explicit `Segoe UI Emoji` font prioritization and automatic mojibake sanitization.
+- **Strict UTF-8 WebClient Encoding:** Configured `WebClient.Encoding = Encoding.UTF8` across all remote GitHub sync and update channels, preventing ANSI byte corruption.
+
+### Cleaned & Optimized
+- **Purged 3 MB Raw Dump (`data/apps_full.json`):** Removed uncurated scrapings, reducing the setup installer size and repo footprint.
+- **Removed Obsolete Prototype Script:** Removed `scripts/PreInstaller-GUI.ps1` (108 KB) in favor of the production C# WPF client.
+- **Workspace Rename:** Replaced legacy `Software Pre Installer.code-workspace` with modern `FleetForge.code-workspace`.
+- **Logs & Reports Sanitization:** Cleared local debug logs and purged leftover test reports.
+
+---
+
 ## [2.4.0] — 2026-11-11
 ### Added
-- **Company Branding:** Officially published by **Innovana Thinklabs Limited**.
+- **Company Branding:** Enterprise publication under **Love Malhotra**.
 - **Modern Startup Splash Screen:** Non-blocking fast launch with progress visualization and background initialization.
 - **Top Bar Help Menu:** Located near the minimize button with Check for Updates, Settings, and About screens.
 - **Interactive Update Center:** Automatic GitHub release checking, version comparison, and 1-click in-place update download.

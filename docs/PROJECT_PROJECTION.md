@@ -1,6 +1,6 @@
 # 🚀 FleetForge — Project Projection & Strategic Roadmap
 
-**Publisher:** Innovana Thinklabs Limited  
+**Publisher:** Love Malhotra  
 **Target Market:** Enterprise IT Operations, System Integrators, Managed Service Providers (MSPs), Development Agencies
 
 ---

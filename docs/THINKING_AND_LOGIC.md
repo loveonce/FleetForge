@@ -1,7 +1,7 @@
 # 🧠 FleetForge — Engineering Rationale & Core Logic
 
-**Publisher:** Innovana Thinklabs Limited  
-**Author:** FleetForge Core Architecture Team
+**Publisher:** Love Malhotra  
+**Author:** Love Malhotra & FleetForge Architecture Team
 
 ---
 

@@ -1,6 +1,6 @@
 # 🔄 FleetForge — Automated Update Architecture & Release Pipeline
 
-**Publisher:** Innovana Thinklabs Limited  
+**Publisher:** Love Malhotra  
 **Target Mechanism:** Silent Self-Updating Enterprise Pipeline
 
 ---
@@ -17,13 +17,14 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
 
 ```json
 {
-  "version": "2.4.0",
-  "buildDate": "2026-11-11",
-  "title": "FleetForge v2.4.0 Enterprise IT Edition",
-  "company": "Innovana Thinklabs Limited",
+  "version": "2.5.0",
+  "buildDate": "2026-11-12",
+  "title": "FleetForge v2.5.0 Enterprise IT Edition",
+  "company": "Love Malhotra",
   "changelog": [
     "Zero-touch silent installation engine for Microsoft Winget",
-    "Pre-cached enterprise catalog with 16,349 software packages",
+    "Restored clean UTF-8 unicode categories and role icons",
+    "Single-instance enforcement with active window foreground restoration",
     "Live Windows OS Light/Dark theme synchronization",
     "Dedicated Help & Update Center with auto-download",
     "Modular role configuration builder"

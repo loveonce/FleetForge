@@ -1,7 +1,8 @@
 # ⚡ FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment
 
 > **Zero-Touch Machine Setup & Enterprise Software Deployment**  
-> An enterprise-grade Windows 11 Desktop Application & Installer (`.EXE`) designed with modern Fluent aesthetics, live Windows theme sync, pre-cached 16,349+ Winget packages, and modular role setups.
+> An enterprise-grade Windows 11 Desktop Application & Installer (`.EXE`) designed with modern Fluent aesthetics, live Windows theme sync, curated role presets, and instant Winget package deployment.  
+> **Author & Publisher:** Love Malhotra • [GitHub Repository](https://github.com/loveonce/FleetForge) • Version 2.5.0
 
 ---
 
@@ -72,16 +73,17 @@ A single, self-contained Windows setup wizard that deploys FleetForge onto any P
 ## 📁 Clean & Sorted Project Structure
 
 ```text
-Software Pre Installer/
+FleetForge/
 │
 ├── FleetForge.exe                      # ⭐ Main Standalone Desktop Client (Ready to Run)
 ├── FleetForge-Setup.exe                # ⭐ Full Windows Setup Installer Wizard
 ├── CHANGELOG.md                        # Version Release History & Change Records
 ├── README.md                           # Complete Documentation & Architecture Guide
-├── Software Pre Installer.code-workspace
+├── FleetForge.code-workspace           # Multi-root Workspace Configuration
 │
 ├── src/                                # Core Application Source & Graphics
 │   ├── Program.cs                      # Main FleetForge WPF C# Desktop Application
+│   ├── AppUrls.cs                      # Centralized Sync & Update Link Configuration
 │   ├── app.manifest                    # Windows Administrator UAC Manifest
 │   └── assets/                         # Application Visual Assets & Icons
 │       └── appicon.ico                 # Master Application Icon (Single Source of Truth)
@@ -89,22 +91,22 @@ Software Pre Installer/
 ├── scripts/                            # Automation & Build Scripts
 │   ├── Build-All.bat                   # 1-Click Master Build (Builds both App & Setup)
 │   ├── Build-Exe.bat                   # Quick compiler for portable client
-│   ├── PreInstaller-GUI.ps1            # Full Featured Standalone PowerShell GUI Client
-│   └── PreInstaller-CLI.ps1            # Headless Unattended Provisioning CLI Engine
+│   ├── PreInstaller-CLI.ps1            # Headless Unattended Provisioning CLI Engine
+│   ├── Update-Catalog-From-Git.bat     # Quick catalog updater from remote GitHub
+│   └── Update-Catalog-From-Git.ps1     # PowerShell script for remote catalog synchronization
 │
 ├── installer/                          # Setup Wizard & Uninstaller Engine
 │   ├── SetupProgram.cs                 # Self-Extracting WPF Installer Wizard Source
 │   ├── UninstallProgram.cs             # Windows Add/Remove Programs Uninstaller
-│   ├── Uninstall.exe                   # Compiled Standalone Uninstaller Utility
 │   └── Build-Installer.bat             # Compiles & Packages FleetForge-Setup.exe
 │
 ├── config/                             # User Preferences & Deployment Settings
+│   ├── app_urls.json                   # Cloud Sync & Auto-Update URLs Configuration
 │   └── settings.json                   # Theme, Silent Flags, Cloud URL Configuration
 │
 ├── data/                               # Enterprise Software Catalogs & Databases
-│   ├── apps.json                       # Active Catalog (16,349 Packages Indexed)
-│   ├── apps_full.json                  # Complete Winget Reference Catalog
-│   ├── sample_apps.json                # Curated Developer & Office Starter Presets
+│   ├── apps.json                       # Active Catalog (Curated Roles, Categories & Packages)
+│   ├── sample_apps.json                # Starter Presets & Reference Definitions
 │   └── version.json                    # Release Metadata & Automatic Update Manifest
 │
 ├── docs/                               # Comprehensive Technical Documentation
@@ -118,8 +120,8 @@ Software Pre Installer/
 ├── logs/                               # Execution & Deployment Audit Logs
 │   └── install-log.txt                 # Real-time Background Deployment Log
 │
+├── reports/                            # Machine Compliance Audit Reports (HTML & JSON)
+│
 └── offline_installers/                 # Air-Gapped Local Installer Cache
     └── README.md                       # Guide on caching offline MSIs/EXEs
-```
-    └── README.md                       # Instructions for offline deployment
 ```

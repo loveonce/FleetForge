@@ -1,8 +1,8 @@
 # 🗄️ FleetForge — Database & Catalog Schema Specification
 
-**Publisher:** Innovana Thinklabs Limited  
+**Publisher:** Love Malhotra  
 **Data Storage Format:** JSON (JavaScript Object Notation)  
-**Primary Database File:** `data/apps.json` (~2.8 MB, 16,349 Packages)
+**Primary Database File:** `data/apps.json` (Curated Roles, Categories & Packages)
 
 ---
 

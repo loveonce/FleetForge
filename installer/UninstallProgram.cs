@@ -8,14 +8,14 @@ using Microsoft.Win32;
 [assembly: AssemblyTitle("FleetForge Uninstaller")]
 [assembly: AssemblyDescription("FleetForge - Uninstallation Utility")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("FleetForge")]
+[assembly: AssemblyCompany("Love Malhotra")]
 [assembly: AssemblyProduct("FleetForge")]
-[assembly: AssemblyCopyright("Copyright © 2026 FleetForge. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.4.0.0")]
-[assembly: AssemblyFileVersion("2.4.0.0")]
-[assembly: AssemblyInformationalVersion("2.4.0")]
+[assembly: AssemblyVersion("2.5.0.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]
+[assembly: AssemblyInformationalVersion("2.5.0")]
 
 namespace FleetForge
 {

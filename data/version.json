@@ -1,15 +1,16 @@
 {
-  "version": "2.4.0",
-  "buildDate": "2026-11-11",
-  "title": "FleetForge v2.4.0 Enterprise IT Edition",
-  "company": "Innovana Thinklabs Limited",
+  "version": "2.5.0",
+  "buildDate": "2026-11-12",
+  "title": "FleetForge v2.5.0 Enterprise IT Edition",
+  "company": "Love Malhotra",
+  "website": "https://github.com/loveonce/FleetForge",
   "changelog": [
-    "Zero-touch silent installation engine for Microsoft Winget",
-    "Pre-cached enterprise catalog with 16,349 software packages",
-    "Live Windows OS Light/Dark theme synchronization",
-    "Dedicated Help & Update Center with auto-download",
-    "Modular role configuration builder",
-    "Official publication by Innovana Thinklabs Limited"
+    "Official publication and branding by Love Malhotra",
+    "Native UTF-8 Emoji and symbol rendering for all categories and role environments",
+    "Single-instance enforcement with active window foreground restoration",
+    "Purged legacy uncurated packages and optimized binary installer footprint",
+    "Direct cloud catalog synchronization with GitHub repository releases",
+    "Zero-touch silent installation engine for Microsoft Winget"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }

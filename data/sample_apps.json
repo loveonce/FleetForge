@@ -262,6 +262,52 @@
       "offlineInstaller": "",
       "silentArgs": "/S"
     }
+  ],
+  "categories": [
+    {
+      "id": "browsers",
+      "name": "Web Browsers",
+      "icon": "🌐"
+    },
+    {
+      "id": "development",
+      "name": "Development & Code",
+      "icon": "💻"
+    },
+    {
+      "id": "communication",
+      "name": "Communication & Collab",
+      "icon": "💬"
+    },
+    {
+      "id": "productivity",
+      "name": "Productivity & Office",
+      "icon": "📄"
+    },
+    {
+      "id": "utilities",
+      "name": "Utilities & Tools",
+      "icon": "🛠️"
+    },
+    {
+      "id": "media",
+      "name": "Media & Creative",
+      "icon": "🎬"
+    },
+    {
+      "id": "security",
+      "name": "Security & Network",
+      "icon": "🛡️"
+    },
+    {
+      "id": "cloud",
+      "name": "Cloud & Storage",
+      "icon": "☁️"
+    },
+    {
+      "id": "gaming",
+      "name": "Gaming & Engines",
+      "icon": "🎮"
+    }
   ]
 }
-

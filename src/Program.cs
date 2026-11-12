@@ -24,14 +24,14 @@ using Microsoft.Win32.SafeHandles;
 [assembly: AssemblyTitle("FleetForge")]
 [assembly: AssemblyDescription("FleetForge - Zero-Touch Machine Setup & Enterprise Software Deployment")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Innovana Thinklabs Limited")]
+[assembly: AssemblyCompany("Love Malhotra")]
 [assembly: AssemblyProduct("FleetForge")]
-[assembly: AssemblyCopyright("Copyright © 2026 Innovana Thinklabs Limited. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.4.0.0")]
-[assembly: AssemblyFileVersion("2.4.0.0")]
-[assembly: AssemblyInformationalVersion("2.4.0")]
+[assembly: AssemblyVersion("2.5.0.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]
+[assembly: AssemblyInformationalVersion("2.5.0")]
 
 namespace FleetForge
 {
@@ -167,11 +167,11 @@ namespace FleetForge
 
         public UpdateInfo()
         {
-            version = "2.4.0";
-            versionCode = 240;
-            buildDate = "2026-11-11";
-            title = "FleetForge v2.4.0 Enterprise IT Edition";
-            company = "Innovana Thinklabs Limited";
+            version = "2.5.0";
+            versionCode = 250;
+            buildDate = "2026-11-12";
+            title = "FleetForge v2.5.0 Enterprise IT Edition";
+            company = "Love Malhotra";
             downloadUrl = AppUrls.UpdateDownloadUrl;
             changelog = new List<string>();
         }
@@ -306,8 +306,8 @@ namespace FleetForge
       <div class=""brand-sub"">Enterprise Workstation Zero-Touch Provisioning Audit Trail</div>
     </div>
     <div class=""badge-org"">
-      <div>INNOVANA THINKLABS LIMITED</div>
-      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.4.0 Engine</div>
+      <div>LOVE MALHOTRA</div>
+      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.5.0 Engine</div>
     </div>
   </div>
 
@@ -370,7 +370,7 @@ namespace FleetForge
   </div>
 
   <div class=""footer"">
-    FleetForge Enterprise Deployment Platform • Innovana Thinklabs Limited • All rights reserved.
+    FleetForge Enterprise Deployment Platform • Love Malhotra • All rights reserved.
   </div>
 </div>
 </body>
@@ -473,11 +473,11 @@ namespace FleetForge
                     <TextBlock Text=""FLEET"" FontSize=""24"" FontWeight=""Bold"" Foreground=""#FFFFFF"" FontFamily=""Segoe UI Variable Text, Segoe UI Variable, Segoe UI""/>
                     <TextBlock Text=""FORGE"" FontSize=""24"" FontWeight=""Bold"" Foreground=""#38BDF8"" FontFamily=""Segoe UI Variable Text, Segoe UI Variable, Segoe UI""/>
                     <Border Background=""#272727"" BorderBrush=""#383838"" BorderThickness=""1"" CornerRadius=""4"" Padding=""6,2"" Margin=""10,0,0,0"" VerticalAlignment=""Center"">
-                        <TextBlock Text=""v2.4.0"" FontSize=""10"" FontWeight=""Bold"" Foreground=""#A0A0A0""/>
+                        <TextBlock Text=""v2.5.0"" FontSize=""10"" FontWeight=""Bold"" Foreground=""#A0A0A0""/>
                     </Border>
                 </StackPanel>
 
-                <TextBlock Text=""Innovana Thinklabs Limited • Enterprise Deployment""
+                <TextBlock Text=""Love Malhotra • Enterprise Deployment""
                            FontSize=""11.5"" Foreground=""#A0A0A0"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
             </StackPanel>
 
@@ -612,6 +612,87 @@ namespace FleetForge
         private const int STD_ERROR_HANDLE = -12;
         private const int ATTACH_PARENT_PROCESS = -1;
 
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+
+        [DllImport("kernel32.dll")]
+        private static extern uint GetCurrentThreadId();
+
+        [DllImport("user32.dll")]
+        private static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+        private const int SW_RESTORE = 9;
+
+        private static Mutex singleInstanceMutex = null;
+
+        private static void BringExistingInstanceToFront()
+        {
+            try
+            {
+                Process current = Process.GetCurrentProcess();
+                IntPtr targetHwnd = IntPtr.Zero;
+
+                foreach (Process p in Process.GetProcessesByName(current.ProcessName))
+                {
+                    if (p.Id != current.Id)
+                    {
+                        IntPtr h = p.MainWindowHandle;
+                        if (h != IntPtr.Zero)
+                        {
+                            targetHwnd = h;
+                            break;
+                        }
+                    }
+                }
+
+                if (targetHwnd == IntPtr.Zero)
+                {
+                    targetHwnd = FindWindow(null, "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
+                }
+                if (targetHwnd == IntPtr.Zero)
+                {
+                    targetHwnd = FindWindow(null, "FleetForge");
+                }
+
+                if (targetHwnd != IntPtr.Zero)
+                {
+                    if (IsIconic(targetHwnd))
+                    {
+                        ShowWindowAsync(targetHwnd, SW_RESTORE);
+                    }
+
+                    uint activeThreadId = GetCurrentThreadId();
+                    uint windowThreadId = GetWindowThreadProcessId(targetHwnd, IntPtr.Zero);
+
+                    if (activeThreadId != windowThreadId && windowThreadId != 0)
+                    {
+                        AttachThreadInput(activeThreadId, windowThreadId, true);
+                        SetForegroundWindow(targetHwnd);
+                        AttachThreadInput(activeThreadId, windowThreadId, false);
+                    }
+                    else
+                    {
+                        SetForegroundWindow(targetHwnd);
+                    }
+                }
+            }
+            catch { }
+        }
+
         private static void InitConsole()
         {
             try
@@ -635,7 +716,7 @@ namespace FleetForge
             Console.WriteLine();
             Console.WriteLine("================================================================================");
             Console.WriteLine("  FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment");
-            Console.WriteLine("  Innovana Thinklabs Limited • Windows 11 Automated Workstation Provisioning");
+            Console.WriteLine("  Love Malhotra • Windows 11 Automated Workstation Provisioning");
             Console.WriteLine("================================================================================");
             Console.WriteLine();
             Console.WriteLine("Usage:");
@@ -664,8 +745,8 @@ namespace FleetForge
         {
             Console.WriteLine();
             Console.WriteLine("================================================================================");
-            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.4.0");
-            Console.WriteLine("  Innovana Thinklabs Limited • Windows 11 Automated Deployment");
+            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.5.0");
+            Console.WriteLine("  Love Malhotra • Windows 11 Automated Deployment");
             Console.WriteLine("================================================================================");
             Console.WriteLine();
 
@@ -1195,6 +1276,15 @@ namespace FleetForge
                         Environment.Exit(exitCode);
                         return;
                     }
+                }
+
+                // Single Instance Application Check (GUI Mode)
+                bool isFirstInstance;
+                singleInstanceMutex = new Mutex(true, "Local\\FleetForge_SingleInstance_LoveMalhotra", out isFirstInstance);
+                if (!isFirstInstance)
+                {
+                    BringExistingInstanceToFront();
+                    return;
                 }
 
                 Application app = new Application();
@@ -1848,20 +1938,16 @@ namespace FleetForge
                 </Button>
 
                 <!-- Nav 3: Cloud Sync -->
-                <Button x:Name=""NavBtnCloud"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync (GitHub)"">
+                <Button x:Name=""NavBtnCloud"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
                             <ColumnDefinition Width=""36""/>
                             <ColumnDefinition Width=""*""/>
-                            <ColumnDefinition Width=""Auto""/>
                         </Grid.ColumnDefinitions>
                         <Border x:Name=""NavIndCloud"" Grid.Column=""0"" Width=""3"" Height=""16"" CornerRadius=""1.5"" Background=""#0078D4"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"" Visibility=""Collapsed""/>
                         <TextBlock x:Name=""NavIconCloud"" Grid.Column=""1"" Text=""&#xE753;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol"" FontSize=""16"" Foreground=""#C5CCD8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        <TextBlock x:Name=""NavTxtCloud"" Grid.Column=""2"" Text=""Cloud Sync (GitHub)"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
-                        <Border x:Name=""BorderNavCloudBadge"" Grid.Column=""3"" Background=""#133824"" CornerRadius=""4"" Padding=""6,2"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtNavCloudStatus"" Text=""SYNC"" FontSize=""9"" FontWeight=""Bold"" Foreground=""#4ADE80""/>
-                        </Border>
+                        <TextBlock x:Name=""NavTxtCloud"" Grid.Column=""2"" Text=""Cloud Sync"" FontSize=""13"" Foreground=""#D0D6E0"" VerticalAlignment=""Center"" Margin=""6,0,0,0""/>
                     </Grid>
                 </Button>
 
@@ -1881,11 +1967,11 @@ namespace FleetForge
             </StackPanel>
 
             <!-- Left Panel Bottom: Developer Branding -->
-            <StackPanel x:Name=""StackSidebarFooter"" Grid.Row=""2"" HorizontalAlignment=""Center"" VerticalAlignment=""Bottom"" Margin=""0,0,0,10"" ToolTip=""FleetForge by Innovana Thinklabs Limited"">
+            <StackPanel x:Name=""StackSidebarFooter"" Grid.Row=""2"" HorizontalAlignment=""Center"" VerticalAlignment=""Bottom"" Margin=""0,0,0,10"" ToolTip=""FleetForge by Love Malhotra"">
                 <TextBlock x:Name=""TxtSidebarFooterBy"" Text=""Design and Develop by""
                            FontSize=""11"" Foreground=""#8A8A8A""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" Margin=""0,0,0,3""/>
-                <TextBlock x:Name=""TxtSidebarFooterCompany"" Text=""INNOVANA THINKLABS LIMITED""
+                <TextBlock x:Name=""TxtSidebarFooterCompany"" Text=""LOVE MALHOTRA""
                            FontSize=""11"" FontWeight=""Bold"" Foreground=""#EF4444""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" TextWrapping=""Wrap""/>
             </StackPanel>
@@ -2079,51 +2165,12 @@ namespace FleetForge
                 </Border>
 
                 <!-- Quick Actions: Export Sample & Edit Local -->
-                <StackPanel Orientation=""Horizontal"" Margin=""0,0,0,16"">
+                <StackPanel Orientation=""Horizontal"">
                     <Button x:Name=""BtnExportSampleJson"" Content=""📥 Export Sample Catalog (sample_apps.json)"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12"" FontWeight=""SemiBold""/>
                     <Button x:Name=""BtnOpenLocalCatalog"" Content=""📂 Edit Local apps.json"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12"" FontWeight=""SemiBold""/>
                 </StackPanel>
-
-                <!-- Preset Cloud Catalogs Card -->
-                <Border x:Name=""BorderCloudPresets"" Background=""#202020"" CornerRadius=""10"" Padding=""18"" BorderBrush=""#333333"" BorderThickness=""1"" Margin=""0,0,0,20"">
-                    <StackPanel>
-                        <TextBlock x:Name=""TxtPresetsTitle"" Text=""🌐 Ready-to-Use Cloud Profiles &amp; Catalogs (1-Click Download)"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,4""/>
-                        <TextBlock x:Name=""TxtPresetsDesc"" Text=""Select any preset catalog profile below to instantly download and switch the software configuration for your team:""
-                                   FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,0,0,14""/>
-                        <StackPanel x:Name=""PresetsContainer""/>
-                    </StackPanel>
-                </Border>
-
-                <TextBlock x:Name=""TxtCloudCard2Title"" Text=""How to configure GitHub or Google Drive for your team"" FontSize=""14"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,0,0,10""/>
-
-                <Border x:Name=""BorderCloudCard2"" Background=""#202020"" CornerRadius=""10"" Padding=""18"" BorderBrush=""#2D2D2D"" BorderThickness=""1"" Margin=""0,0,0,12"">
-                    <StackPanel>
-                        <StackPanel Orientation=""Horizontal"" Margin=""0,0,0,6"">
-                            <TextBlock Text=""🐙"" FontSize=""16"" Margin=""0,0,8,0"" VerticalAlignment=""Center""/>
-                            <TextBlock Text=""Option A: Host on GitHub (Recommended)"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
-                        </StackPanel>
-                        <TextBlock Text=""1. Create a GitHub repository (e.g. 'company-software-installer')."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,2""/>
-                        <TextBlock Text=""2. Upload apps.json to your repository."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,2""/>
-                        <TextBlock Text=""3. Click apps.json, click 'Raw', and copy the URL from your browser."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,2""/>
-                        <TextBlock Text=""4. Paste that Raw URL above and click 'Sync Now'."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,6""/>
-                        <TextBlock Text=""Example: https://raw.githubusercontent.com/user/repo/main/apps.json"" FontSize=""11"" Foreground=""#0078D4"" FontFamily=""Consolas""/>
-                    </StackPanel>
-                </Border>
-
-                <Border x:Name=""BorderCloudCard3"" Background=""#202020"" CornerRadius=""10"" Padding=""18"" BorderBrush=""#2D2D2D"" BorderThickness=""1"">
-                    <StackPanel>
-                        <StackPanel Orientation=""Horizontal"" Margin=""0,0,0,6"">
-                            <TextBlock Text=""📁"" FontSize=""16"" Margin=""0,0,8,0"" VerticalAlignment=""Center""/>
-                            <TextBlock x:Name=""TxtCloudCard3Title"" Text=""Option B: Host on Google Drive"" FontSize=""13"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
-                        </StackPanel>
-                        <TextBlock Text=""1. Upload apps.json to Google Drive."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,2""/>
-                        <TextBlock Text=""2. Right-click apps.json -> Share -> Change to 'Anyone with the link can view'."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,2""/>
-                        <TextBlock Text=""3. Copy the link, paste it into the box above, and click 'Sync Now'."" FontSize=""12"" Foreground=""#8A8A8A"" Margin=""0,2,0,6""/>
-                        <TextBlock Text=""Our app automatically converts standard Google Drive links into direct raw downloads!"" FontSize=""11"" Foreground=""#8A8A8A"" FontStyle=""Italic""/>
-                    </StackPanel>
-                </Border>
             </StackPanel>
         </ScrollViewer>
 
@@ -2215,6 +2262,7 @@ namespace FleetForge
                     <StackPanel Grid.Column=""0"" Margin=""0,0,10,0"">
                         <TextBlock Text=""Icon"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
                         <TextBox x:Name=""TxtGroupIconInput"" Text=""🚀"" Height=""34"" Background=""#141414"" Foreground=""#FFFFFF""
+                                 FontFamily=""Segoe UI Emoji, Segoe UI Symbol, Segoe UI""
                                  FontSize=""16"" TextAlignment=""Center"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""/>
                     </StackPanel>
 
@@ -2319,7 +2367,7 @@ namespace FleetForge
                         </Border>
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
                             <TextBlock x:Name=""TxtUpdateTitle"" Text=""You are running the latest version!"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#34D399""/>
-                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.4.0 (Enterprise IT Edition • Innovana Thinklabs Limited) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
+                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.5.0 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -2380,7 +2428,7 @@ namespace FleetForge
                         </Border>
                         <TextBlock x:Name=""TxtModalSettingsTitle"" Text=""FleetForge Settings"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                         <Border x:Name=""BadgeSettingsConfig"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" Margin=""12,0,0,0"" VerticalAlignment=""Center"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtSettingsConfig"" Text=""Innovana Enterprise Config"" FontSize=""10.5"" FontWeight=""SemiBold"" Foreground=""#38BDF8""/>
+                            <TextBlock x:Name=""TxtSettingsConfig"" Text=""Personal &amp; Enterprise Config"" FontSize=""10.5"" FontWeight=""SemiBold"" Foreground=""#38BDF8""/>
                         </Border>
                     </StackPanel>
                     <Button x:Name=""BtnCloseSettings"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""15"" FontWeight=""Bold""
@@ -2477,17 +2525,17 @@ namespace FleetForge
                     <TextBlock x:Name=""TxtAboutTagline"" Text=""Zero-Touch Machine Setup &amp; Enterprise Software Deployment"" FontSize=""11.5"" Foreground=""#94A3B8"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Center"" Margin=""0,8,0,0"">
                         <Border x:Name=""BadgeAboutCompany"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" Margin=""0,0,8,0"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutCompany"" Text=""Innovana Thinklabs Limited"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
+                            <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.4.0 • Enterprise IT Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.5.0 • Enterprise IT Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
 
                 <!-- Bio Summary -->
                 <Border x:Name=""BorderAboutBio"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,16"">
-                    <TextBlock x:Name=""TxtAboutBioText"" Text=""FleetForge is an enterprise workstation provisioning platform engineered by Innovana Thinklabs Limited. Designed for IT departments, systems engineers, and developer teams to automate zero-touch PC onboarding, configure toolchains, and silently deploy 16,349+ software packages.""
+                    <TextBlock x:Name=""TxtAboutBioText"" Text=""FleetForge is an enterprise workstation provisioning platform engineered by Love Malhotra. Designed for IT departments, systems engineers, and developer teams to automate zero-touch PC onboarding, configure toolchains, and silently deploy curated software packages.""
                                FontSize=""11.5"" Foreground=""#CBD5E1"" TextWrapping=""Wrap"" LineHeight=""17.5""/>
                 </Border>
 
@@ -2499,21 +2547,21 @@ namespace FleetForge
                             <ColumnDefinition Width=""*""/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column=""0"" Margin=""0,0,10,0"">
-                            <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Organization:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Innovana Thinklabs Limited"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Author / Publisher:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecEngVal"" Text=""Microsoft Winget v1.8+"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecLibLbl"" Text=""Software Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecLibVal"" Text=""16,349 Packages Indexed"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
+                            <TextBlock x:Name=""TxtSpecLibVal"" Text=""Curated Catalog &amp; Winget Engine"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""1"">
                             <TextBlock x:Name=""TxtSpecArchLbl"" Text=""Platform Architecture:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecArchVal"" Text=""Windows 10 / 11 (64-bit)"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecChanLbl"" Text=""Auto-Update Channel:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecChanVal"" Text=""Enterprise GitHub Releases"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecChanVal"" Text=""GitHub Releases (loveonce)"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecLicLbl"" Text=""License Model:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecLicVal"" Text=""Enterprise Proprietary"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
@@ -2522,7 +2570,7 @@ namespace FleetForge
                 </Border>
 
                 <!-- Footer -->
-                <TextBlock x:Name=""TxtAboutCopyright"" Text=""Copyright © 2026 Innovana Thinklabs Limited. All rights reserved."" FontSize=""11"" Foreground=""#64748B"" HorizontalAlignment=""Center"" Margin=""0,6,0,0""/>
+                <TextBlock x:Name=""TxtAboutCopyright"" Text=""Copyright © 2026 Love Malhotra. All rights reserved."" FontSize=""11"" Foreground=""#64748B"" HorizontalAlignment=""Center"" Margin=""0,6,0,0""/>
             </StackPanel>
         </Border>
     </Grid>
@@ -2933,7 +2981,7 @@ namespace FleetForge
             if (badgeAboutCompany != null)
             {
                 badgeAboutCompany.Cursor = Cursors.Hand;
-                badgeAboutCompany.ToolTip = "Visit Innovana Thinklabs Website (" + AppUrls.CompanyWebsiteUrl + ")";
+                badgeAboutCompany.ToolTip = "Visit Creator Profile (" + AppUrls.CompanyWebsiteUrl + ")";
                 badgeAboutCompany.MouseLeftButtonUp += (s, e) =>
                 {
                     try
@@ -3377,7 +3425,7 @@ namespace FleetForge
             }
             if (txtUpdateTitle != null)
             {
-                txtUpdateTitle.Text = "Checking Innovana release server...";
+                txtUpdateTitle.Text = "Checking release server...";
                 txtUpdateTitle.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
             }
             if (txtUpdateDetail != null) txtUpdateDetail.Text = "Querying live version manifests and GitHub releases...";
@@ -3456,7 +3504,7 @@ namespace FleetForge
                         }
                         if (txtUpdateDetail != null)
                         {
-                            txtUpdateDetail.Text = "FleetForge v2.4.0 (Enterprise IT Edition • Innovana Thinklabs Limited) is up to date.";
+                            txtUpdateDetail.Text = "FleetForge v2.5.0 (Enterprise IT Edition • Love Malhotra) is up to date.";
                         }
                         if (btnDownloadInstall != null)
                         {
@@ -3480,7 +3528,8 @@ namespace FleetForge
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge/2.4.0");
+                        wc.Encoding = Encoding.UTF8;
+                        wc.Headers.Add("User-Agent", "FleetForge/2.5.0");
                         string json = wc.DownloadString(updateUrl);
                         if (!string.IsNullOrEmpty(json))
                         {
@@ -3533,7 +3582,7 @@ namespace FleetForge
             if (btnDownloadInstall != null) btnDownloadInstall.IsEnabled = false;
             if (btnCheckUpdatesAgain != null) btnCheckUpdatesAgain.IsEnabled = false;
             if (pnlDownloadSection != null) pnlDownloadSection.Visibility = Visibility.Visible;
-            if (txtDownloadStatus != null) txtDownloadStatus.Text = "Connecting to Innovana release server...";
+            if (txtDownloadStatus != null) txtDownloadStatus.Text = "Connecting to release server...";
             if (pbUpdateDownload != null) pbUpdateDownload.Value = 5;
 
             string tempInstaller = Path.Combine(Path.GetTempPath(), "FleetForge-Setup-Update.exe");
@@ -3544,7 +3593,7 @@ namespace FleetForge
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.4.0");
+                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.5.0");
                         wc.DownloadProgressChanged += (s, e) =>
                         {
                             Dispatcher.Invoke(new Action(delegate
@@ -4219,6 +4268,7 @@ namespace FleetForge
             // Re-render role cards and catalog with active theme
             if (config != null)
             {
+                EnsureCategories();
                 BuildRoleCards();
                 BuildCatalog();
                 SelectRole(activeRoleId);
@@ -4238,6 +4288,7 @@ namespace FleetForge
                 Button b = new Button()
                 {
                     Content = curEmoji,
+                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 14,
                     Width = 32,
                     Height = 28,
@@ -4455,6 +4506,98 @@ namespace FleetForge
             return url;
         }
 
+        public static string FixMojibake(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            if (text.Contains("ð") || text.Contains("â") || text.Contains("Ã"))
+            {
+                try
+                {
+                    byte[] bytes = Encoding.GetEncoding(1252).GetBytes(text);
+                    string decoded = Encoding.UTF8.GetString(bytes);
+                    if (!string.IsNullOrEmpty(decoded) && !decoded.Contains("\uFFFD"))
+                    {
+                        return decoded;
+                    }
+                }
+                catch { }
+            }
+            return text;
+        }
+
+        public static string GetSafeGroupIcon(GroupModel grp)
+        {
+            if (grp == null) return "📦";
+            string icon = FixMojibake(grp.icon);
+            if (!string.IsNullOrWhiteSpace(icon) && !icon.Contains("ð") && !icon.Contains("â") && !icon.Contains("?"))
+            {
+                return icon.Trim();
+            }
+            string id = (grp.id ?? "").ToLowerInvariant();
+            if (id.Contains("dev") || id.Contains("code")) return "💻";
+            if (id.Contains("off") || id.Contains("prod")) return "💼";
+            if (id.Contains("creat") || id.Contains("design") || id.Contains("media")) return "🎨";
+            if (id.Contains("min") || id.Contains("light") || id.Contains("ess")) return "⚡";
+            if (id.Contains("game") || id.Contains("play")) return "🎮";
+            if (id.Contains("cloud") || id.Contains("sync")) return "☁️";
+            if (id.Contains("sec") || id.Contains("shield")) return "🛡️";
+            return "📦";
+        }
+
+        public static string GetSafeCategoryIcon(CategoryModel cat)
+        {
+            if (cat == null) return "📁";
+            string icon = FixMojibake(cat.icon);
+            if (!string.IsNullOrWhiteSpace(icon) && !icon.Contains("ð") && !icon.Contains("â") && !icon.Contains("?"))
+            {
+                return icon.Trim();
+            }
+            string id = (cat.id ?? "").ToLowerInvariant();
+            if (id.Contains("browser")) return "🌐";
+            if (id.Contains("dev")) return "💻";
+            if (id.Contains("commun") || id.Contains("chat")) return "💬";
+            if (id.Contains("product") || id.Contains("off")) return "📄";
+            if (id.Contains("util") || id.Contains("tool")) return "🛠️";
+            if (id.Contains("media") || id.Contains("creat")) return "🎬";
+            if (id.Contains("sec")) return "🛡️";
+            if (id.Contains("cloud")) return "☁️";
+            if (id.Contains("game")) return "🎮";
+            return "📁";
+        }
+
+        private void EnsureCategories()
+        {
+            if (config == null) config = new ConfigModel();
+            if (config.groups == null) config.groups = new List<GroupModel>();
+            if (config.categories == null) config.categories = new List<CategoryModel>();
+            if (config.apps == null) config.apps = new List<AppModel>();
+
+            foreach (GroupModel g in config.groups)
+            {
+                g.icon = GetSafeGroupIcon(g);
+            }
+
+            if (config.categories.Count == 0)
+            {
+                config.categories.Add(new CategoryModel() { id = "browsers", name = "Web Browsers", icon = "🌐" });
+                config.categories.Add(new CategoryModel() { id = "development", name = "Development & Code", icon = "💻" });
+                config.categories.Add(new CategoryModel() { id = "communication", name = "Communication & Collab", icon = "💬" });
+                config.categories.Add(new CategoryModel() { id = "productivity", name = "Productivity & Office", icon = "📄" });
+                config.categories.Add(new CategoryModel() { id = "utilities", name = "Utilities & Tools", icon = "🛠️" });
+                config.categories.Add(new CategoryModel() { id = "media", name = "Media & Creative", icon = "🎬" });
+                config.categories.Add(new CategoryModel() { id = "security", name = "Security & Network", icon = "🛡️" });
+                config.categories.Add(new CategoryModel() { id = "cloud", name = "Cloud & Storage", icon = "☁️" });
+                config.categories.Add(new CategoryModel() { id = "gaming", name = "Gaming & Engines", icon = "🎮" });
+            }
+            else
+            {
+                foreach (CategoryModel c in config.categories)
+                {
+                    c.icon = GetSafeCategoryIcon(c);
+                }
+            }
+        }
+
         private void LoadConfigWithAutoSync()
         {
             if (config == null || config.apps == null || config.apps.Count == 0)
@@ -4470,6 +4613,7 @@ namespace FleetForge
                 }
             }
             if (config == null) config = new ConfigModel();
+            EnsureCategories();
 
             if (txtTopSyncStatus != null) txtTopSyncStatus.Text = "Local Cache";
             if (txtNavCloudStatus != null) txtNavCloudStatus.Text = "Local";
@@ -4484,7 +4628,8 @@ namespace FleetForge
                         string directUrl = ConvertDirectUrl(settings.cloudConfigUrl);
                         using (WebClient wc = new WebClient())
                         {
-                            wc.Headers.Add("User-Agent", "FleetForge/2.4.0");
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "FleetForge/2.5.0");
                             string json = wc.DownloadString(directUrl);
                             ConfigModel downloaded = jsonSerializer.Deserialize<ConfigModel>(json);
                             if (downloaded != null && downloaded.apps != null && downloaded.apps.Count > 0)
@@ -4492,6 +4637,7 @@ namespace FleetForge
                                 Dispatcher.Invoke(new Action(delegate
                                 {
                                     config = downloaded;
+                                    EnsureCategories();
                                     appDefaultIndices = null;
                                     try { File.WriteAllText(configPath, json, Encoding.UTF8); } catch { }
                                     if (txtTopSyncStatus != null)
@@ -4532,12 +4678,22 @@ namespace FleetForge
 
                 try
                 {
+                    try
+                    {
+                        ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | (SecurityProtocolType)12288 | (SecurityProtocolType)768 | SecurityProtocolType.Tls;
+                    }
+                    catch
+                    {
+                        try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch { }
+                    }
+
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge/2.4.0");
+                        wc.Encoding = Encoding.UTF8;
+                        wc.Headers.Add("User-Agent", "FleetForge/2.5.0");
                         string json = wc.DownloadString(directUrl);
                         newConfig = jsonSerializer.Deserialize<ConfigModel>(json);
-                        if (newConfig != null && newConfig.apps.Count > 0)
+                        if (newConfig != null && newConfig.apps != null && newConfig.apps.Count > 0)
                         {
                             File.WriteAllText(configPath, json, Encoding.UTF8);
                             settings.cloudConfigUrl = targetUrl;
@@ -4551,6 +4707,22 @@ namespace FleetForge
                         {
                             message = "Downloaded file is missing apps or groups.";
                         }
+                    }
+                }
+                catch (WebException wex)
+                {
+                    HttpWebResponse resp = wex.Response as HttpWebResponse;
+                    if (resp != null && resp.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        message = "Sync failed (404 Not Found): Your GitHub repository appears to be Private. Change repository visibility to Public in GitHub (Settings > Danger Zone) to allow raw file syncing.";
+                    }
+                    else if (resp != null)
+                    {
+                        message = string.Format("Sync failed ({0}): {1}", (int)resp.StatusCode, resp.StatusDescription);
+                    }
+                    else
+                    {
+                        message = "Sync failed: " + wex.Message;
                     }
                 }
                 catch (Exception ex)
@@ -4567,6 +4739,7 @@ namespace FleetForge
                     if (success)
                     {
                         config = newConfig;
+                        EnsureCategories();
                         appDefaultIndices = null;
                         txtSyncResult.Text = message;
                         txtSyncResult.Foreground = currentThemeIsLight ? HexBrush("#137333") : HexBrush("#4ADE80");
@@ -4623,6 +4796,7 @@ namespace FleetForge
                 TextBlock txtIcon = new TextBlock()
                 {
                     Text = cur.Icon,
+                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 22,
                     VerticalAlignment = VerticalAlignment.Center,
                     Margin = new Thickness(0, 0, 14, 0)
@@ -4724,26 +4898,6 @@ namespace FleetForge
             try
             {
                 ConfigModel targetConfig = null;
-                if (presetId == "full")
-                {
-                    string fullPath = Path.Combine(appDir, "data", "apps_full.json");
-                    if (!File.Exists(fullPath)) fullPath = Path.Combine(appDir, "apps_full.json");
-                    if (File.Exists(fullPath))
-                    {
-                        string json = File.ReadAllText(fullPath, Encoding.UTF8);
-                        targetConfig = jsonSerializer.Deserialize<ConfigModel>(json);
-                    }
-                    if (targetConfig == null && File.Exists(configPath))
-                    {
-                        string json = File.ReadAllText(configPath, Encoding.UTF8);
-                        ConfigModel cur = jsonSerializer.Deserialize<ConfigModel>(json);
-                        if (cur != null && cur.apps != null && cur.apps.Count > 1000)
-                        {
-                            targetConfig = cur;
-                        }
-                    }
-                }
-
                 if (targetConfig == null)
                 {
                     string samplePath = Path.Combine(appDir, "data", "sample_apps.json");
@@ -4785,12 +4939,17 @@ namespace FleetForge
                             targetConfig.groups.AddRange(sampleModel.groups);
                         }
                         targetConfig.apps = sampleModel.apps;
+                        if (sampleModel.categories != null)
+                        {
+                            targetConfig.categories = new List<CategoryModel>(sampleModel.categories);
+                        }
                     }
                 }
 
                 if (targetConfig != null && targetConfig.apps != null && targetConfig.apps.Count > 0)
                 {
                     config = targetConfig;
+                    EnsureCategories();
                     appDefaultIndices = null;
                     string outJson = jsonSerializer.Serialize(config);
                     File.WriteAllText(configPath, outJson, Encoding.UTF8);
@@ -4907,7 +5066,8 @@ namespace FleetForge
                 };
                 TextBlock tIcon = new TextBlock()
                 {
-                    Text = currentGrp.icon,
+                    Text = GetSafeGroupIcon(currentGrp),
+                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 18,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
@@ -5201,7 +5361,7 @@ namespace FleetForge
             currentEditingGroupId = grp.id;
             txtModalTitle.Text = "Edit Role Group: " + grp.name;
             txtGroupNameInput.Text = grp.name;
-            txtGroupIconInput.Text = grp.icon;
+            txtGroupIconInput.Text = GetSafeGroupIcon(grp);
             txtGroupDescInput.Text = grp.description;
             btnDeleteGroup.Visibility = Visibility.Visible;
 
@@ -5805,6 +5965,7 @@ namespace FleetForge
             Button allChip = new Button()
             {
                 Content = "All (" + config.apps.Count + ")",
+                FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                 Padding = new Thickness(12, 6, 12, 6),
                 Margin = new Thickness(0, 0, 6, 0),
                 Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"),
@@ -5823,7 +5984,8 @@ namespace FleetForge
                 int count = config.apps.FindAll(delegate (AppModel a) { return a.category == curCat.id; }).Count;
                 Button cChip = new Button()
                 {
-                    Content = string.Format("{0} {1} ({2})", curCat.icon, curCat.name, count),
+                    Content = string.Format("{0} {1} ({2})", GetSafeCategoryIcon(curCat), curCat.name, count),
+                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     Padding = new Thickness(12, 6, 12, 6),
                     Margin = new Thickness(0, 0, 6, 0),
                     Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#2D2D2D"),

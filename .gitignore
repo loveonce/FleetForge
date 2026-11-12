@@ -14,7 +14,10 @@ Uninstall.exe
 # Local user logs & deployment session state
 data/deployment_session.json
 reports/Deployment-Report-*
+reports/*.html
+reports/*.json
 logs/*.log
+logs/*.txt
 
 # Offline installers (large binary setups downloaded by user)
 offline_installers/*.exe
