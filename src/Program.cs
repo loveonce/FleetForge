@@ -1443,6 +1443,9 @@ namespace FleetForge
         private ScrollViewer catalogScrollViewer;
         private StackPanel localCardsContainer;
         private Button btnLoadMore;
+        private Button btnLoadAll;
+        private StackPanel catalogPaginationPanel;
+        private bool isStreamingAllApps = false;
         private HashSet<string> selectedAppIds = new HashSet<string>();
         private List<AppModel> activeFilteredApps = new List<AppModel>();
         private int currentRenderedCount = 0;
@@ -3061,13 +3064,13 @@ namespace FleetForge
             {
                 catalogScrollViewer.ScrollChanged += delegate (object sender, ScrollChangedEventArgs e)
                 {
-                    if (activeCategory != "winget_online" && e.VerticalChange > 0)
+                    if (activeCategory != "winget_online" && e.VerticalChange > 0 && !isStreamingAllApps)
                     {
-                        if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight - 250)
+                        if (e.VerticalOffset + e.ViewportHeight >= e.ExtentHeight - 600)
                         {
                             if (currentRenderedCount < activeFilteredApps.Count)
                             {
-                                RenderNextBatch(60);
+                                RenderNextBatch(250);
                             }
                         }
                     }
@@ -4631,9 +4634,17 @@ namespace FleetForge
                             wc.Encoding = Encoding.UTF8;
                             wc.Headers.Add("User-Agent", "FleetForge/2.5.0");
                             string json = wc.DownloadString(directUrl);
-                            ConfigModel downloaded = jsonSerializer.Deserialize<ConfigModel>(json);
+                            var ser = new JavaScriptSerializer();
+                            ser.MaxJsonLength = int.MaxValue;
+                            ConfigModel downloaded = ser.Deserialize<ConfigModel>(json);
                             if (downloaded != null && downloaded.apps != null && downloaded.apps.Count > 0)
                             {
+                                // CRITICAL SAFETY: Never replace a 16,000+ local catalog with a tiny sample (e.g. 25 apps)
+                                if (config != null && config.apps != null && config.apps.Count > downloaded.apps.Count)
+                                {
+                                    return;
+                                }
+
                                 Dispatcher.Invoke(new Action(delegate
                                 {
                                     config = downloaded;
@@ -4642,10 +4653,9 @@ namespace FleetForge
                                     try { File.WriteAllText(configPath, json, Encoding.UTF8); } catch { }
                                     if (txtTopSyncStatus != null)
                                     {
-                                        txtTopSyncStatus.Text = "GitHub Synced";
+                                        txtTopSyncStatus.Text = "Catalog Synced";
                                         txtTopSyncStatus.Foreground = currentThemeIsLight ? HexBrush("#137333") : HexBrush("#4ADE80");
                                     }
-                                    if (txtNavCloudStatus != null) txtNavCloudStatus.Text = "Online";
                                     BuildRoleCards();
                                     BuildCatalog();
                                     SelectRole(activeRoleId);
@@ -4769,11 +4779,11 @@ namespace FleetForge
             presetsContainer.Children.Clear();
 
             List<PresetProfileItem> presets = new List<PresetProfileItem>();
-            presets.Add(new PresetProfileItem("full", "🌐", "Complete Microsoft Winget Library", "16,349 PACKAGES", "Entire official Winget server repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
-            presets.Add(new PresetProfileItem("developer", "💻", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
-            presets.Add(new PresetProfileItem("office", "💼", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
-            presets.Add(new PresetProfileItem("creative", "🎨", "Designer & Creative Media Studio", "7 APPS", "Digital media & graphics suite: Blender 3D, Figma, DaVinci Resolve, OBS Studio, GIMP, VLC Media Player, HandBrake.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
-            presets.Add(new PresetProfileItem("minimal", "⚡", "Ultra-Lightweight Minimal Essentials", "5 TOOLS", "Fast, bare-minimum setup: Google Chrome, 7-Zip Archiver, VLC Media Player, Notepad++, Everything Search.", "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/sample_apps.json"));
+            presets.Add(new PresetProfileItem("full", "\uD83C\uDF10", "Complete Microsoft Winget Library", "16,349 PACKAGES", "Entire official Winget server repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
+            presets.Add(new PresetProfileItem("developer", "\uD83D\uDCBB", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", AppUrls.CloudSyncUrl));
+            presets.Add(new PresetProfileItem("office", "\uD83D\uDCBC", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", AppUrls.CloudSyncUrl));
+            presets.Add(new PresetProfileItem("creative", "\uD83C\uDFA8", "Designer & Creative Media Studio", "7 APPS", "Digital media & graphics suite: Blender 3D, Figma, DaVinci Resolve, OBS Studio, GIMP, VLC Media Player, HandBrake.", AppUrls.CloudSyncUrl));
+            presets.Add(new PresetProfileItem("minimal", "\u26A1", "Ultra-Lightweight Minimal Essentials", "5 TOOLS", "Fast, bare-minimum setup: Google Chrome, 7-Zip Archiver, VLC Media Player, Notepad++, Everything Search.", AppUrls.CloudSyncUrl));
 
             foreach (PresetProfileItem p in presets)
             {
@@ -5964,7 +5974,7 @@ namespace FleetForge
 
             Button allChip = new Button()
             {
-                Content = "All (" + config.apps.Count + ")",
+                Content = "All (" + config.apps.Count.ToString("N0") + ")",
                 FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                 Padding = new Thickness(12, 6, 12, 6),
                 Margin = new Thickness(0, 0, 6, 0),
@@ -5984,7 +5994,7 @@ namespace FleetForge
                 int count = config.apps.FindAll(delegate (AppModel a) { return a.category == curCat.id; }).Count;
                 Button cChip = new Button()
                 {
-                    Content = string.Format("{0} {1} ({2})", GetSafeCategoryIcon(curCat), curCat.name, count),
+                    Content = string.Format("{0} {1} ({2:N0})", GetSafeCategoryIcon(curCat), curCat.name, count),
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     Padding = new Thickness(12, 6, 12, 6),
                     Margin = new Thickness(0, 0, 6, 0),
@@ -6037,25 +6047,51 @@ namespace FleetForge
             localCardsContainer = new StackPanel();
             localAppsPanel.Children.Add(localCardsContainer);
 
+            catalogPaginationPanel = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 14, 0, 14),
+                Visibility = Visibility.Collapsed
+            };
+
             btnLoadMore = new Button()
             {
-                Content = "⚡ Load More Software...",
+                Content = "\u26A1 Load More (+250)",
                 Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#202530"),
-                Foreground = HexBrush("#0078D4"),
+                Foreground = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#38BDF8"),
                 BorderThickness = new Thickness(1),
                 BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#2F3746"),
-                Padding = new Thickness(16, 10, 16, 10),
-                Margin = new Thickness(0, 8, 0, 8),
+                Padding = new Thickness(18, 10, 18, 10),
+                Margin = new Thickness(0, 0, 10, 0),
                 Cursor = Cursors.Hand,
                 FontWeight = FontWeights.SemiBold,
-                FontSize = 12,
-                Visibility = Visibility.Collapsed
+                FontSize = 12
             };
             btnLoadMore.Click += delegate
             {
-                RenderNextBatch(60);
+                RenderNextBatch(250);
             };
-            localAppsPanel.Children.Add(btnLoadMore);
+            catalogPaginationPanel.Children.Add(btnLoadMore);
+
+            btnLoadAll = new Button()
+            {
+                Content = "\uD83D\uDE80 Show All Apps",
+                Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"),
+                Foreground = HexBrush("#FFFFFF"),
+                BorderThickness = new Thickness(0),
+                Padding = new Thickness(20, 10, 20, 10),
+                Cursor = Cursors.Hand,
+                FontWeight = FontWeights.Bold,
+                FontSize = 12
+            };
+            btnLoadAll.Click += delegate
+            {
+                ToggleStreamAllApps();
+            };
+            catalogPaginationPanel.Children.Add(btnLoadAll);
+
+            localAppsPanel.Children.Add(catalogPaginationPanel);
 
             BuildWingetOnlinePanel();
 
@@ -6065,13 +6101,59 @@ namespace FleetForge
             ApplyFilters();
         }
 
+        private void ToggleStreamAllApps()
+        {
+            if (activeFilteredApps == null) return;
+            if (isStreamingAllApps)
+            {
+                isStreamingAllApps = false;
+                if (btnLoadAll != null) btnLoadAll.Content = string.Format("\uD83D\uDE80 Show All Apps ({0:N0} Total)", activeFilteredApps.Count);
+                return;
+            }
+
+            isStreamingAllApps = true;
+            if (btnLoadAll != null)
+            {
+                btnLoadAll.Content = string.Format("\u23F9 Stop Loading ({0:N0} of {1:N0})...", currentRenderedCount, activeFilteredApps.Count);
+            }
+
+            StreamAllAppsStep();
+        }
+
+        private void StreamAllAppsStep()
+        {
+            if (!isStreamingAllApps || activeFilteredApps == null || currentRenderedCount >= activeFilteredApps.Count)
+            {
+                isStreamingAllApps = false;
+                if (btnLoadAll != null)
+                {
+                    btnLoadAll.Content = string.Format("\u2713 All {0:N0} Apps Loaded", activeFilteredApps != null ? activeFilteredApps.Count : 0);
+                    btnLoadAll.IsEnabled = false;
+                }
+                if (btnLoadMore != null) btnLoadMore.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            RenderNextBatch(300);
+
+            if (btnLoadAll != null && isStreamingAllApps)
+            {
+                btnLoadAll.Content = string.Format("\u23F9 Loading... ({0:N0} of {1:N0})", currentRenderedCount, activeFilteredApps.Count);
+            }
+
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate
+            {
+                StreamAllAppsStep();
+            }));
+        }
+
         private void RenderNextBatch(int count)
         {
             if (activeFilteredApps == null) return;
             int toRender = Math.Min(count, activeFilteredApps.Count - currentRenderedCount);
             if (toRender <= 0)
             {
-                if (btnLoadMore != null) btnLoadMore.Visibility = Visibility.Collapsed;
+                if (catalogPaginationPanel != null) catalogPaginationPanel.Visibility = Visibility.Collapsed;
                 return;
             }
 
@@ -6084,16 +6166,31 @@ namespace FleetForge
 
             UpdateHeaderCount();
 
-            if (btnLoadMore != null)
+            if (catalogPaginationPanel != null)
             {
                 if (currentRenderedCount < activeFilteredApps.Count)
                 {
-                    btnLoadMore.Visibility = Visibility.Visible;
-                    btnLoadMore.Content = string.Format("⚡ Load More Software (Showing {0} of {1})", currentRenderedCount, activeFilteredApps.Count);
+                    catalogPaginationPanel.Visibility = Visibility.Visible;
+                    if (btnLoadMore != null)
+                    {
+                        btnLoadMore.Visibility = Visibility.Visible;
+                        btnLoadMore.Content = string.Format("\u26A1 Load More (+250) \u2014 Showing {0:N0} of {1:N0}", currentRenderedCount, activeFilteredApps.Count);
+                    }
+                    if (btnLoadAll != null && !isStreamingAllApps)
+                    {
+                        btnLoadAll.Visibility = Visibility.Visible;
+                        btnLoadAll.IsEnabled = true;
+                        btnLoadAll.Content = string.Format("\uD83D\uDE80 Show All Apps ({0:N0} Total)", activeFilteredApps.Count);
+                    }
                 }
                 else
                 {
-                    btnLoadMore.Visibility = Visibility.Collapsed;
+                    if (btnLoadMore != null) btnLoadMore.Visibility = Visibility.Collapsed;
+                    if (btnLoadAll != null)
+                    {
+                        btnLoadAll.Content = string.Format("\u2713 All {0:N0} Apps Loaded", activeFilteredApps.Count);
+                        btnLoadAll.IsEnabled = false;
+                    }
                 }
             }
         }
@@ -6937,6 +7034,7 @@ namespace FleetForge
 
             SortFilteredApps();
 
+            isStreamingAllApps = false;
             currentRenderedCount = 0;
             appRows.Clear();
             if (localCardsContainer != null) localCardsContainer.Children.Clear();
@@ -6944,7 +7042,7 @@ namespace FleetForge
             UpdateMasterCheckboxState();
             UpdateHeaderCount();
 
-            RenderNextBatch(60);
+            RenderNextBatch(250);
         }
 
         private void OnMasterCheckboxClicked()
@@ -7067,18 +7165,18 @@ namespace FleetForge
 
                 if (selectedInFilter > 0)
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0} of {1} software packages ({2} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} packages ({2:N0} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
                 }
                 else
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0} of {1} software packages", currentRenderedCount, activeFilteredApps.Count);
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} packages", currentRenderedCount, activeFilteredApps.Count);
                 }
             }
         }
 
         private void UpdateCount()
         {
-            if (txtCount != null) txtCount.Text = string.Format("Selected: {0} of {1} apps", selectedAppIds.Count, config.apps.Count);
+            if (txtCount != null) txtCount.Text = string.Format("Selected: {0:N0} of {1:N0} apps", selectedAppIds.Count, config.apps.Count);
         }
 
         private void AppendLog(string message)

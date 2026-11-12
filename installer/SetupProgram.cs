@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -81,9 +81,52 @@ namespace FleetForge
             catch { }
         }
 
+        private static bool IsAdministrator()
+        {
+            try
+            {
+                using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+                {
+                    var principal = new System.Security.Principal.WindowsPrincipal(identity);
+                    return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         [STAThread]
         public static void Main(string[] args)
         {
+            // Forcibly require and self-elevate to Administrator privileges
+            if (!IsAdministrator())
+            {
+                try
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo();
+                    psi.FileName = Process.GetCurrentProcess().MainModule.FileName;
+                    if (args != null && args.Length > 0)
+                    {
+                        psi.Arguments = string.Join(" ", args);
+                    }
+                    psi.Verb = "runas"; // Windows UAC Elevation prompt
+                    psi.UseShellExecute = true;
+                    Process.Start(psi);
+                    return;
+                }
+                catch
+                {
+                    MessageBox.Show(
+                        "Administrator permissions are strictly required to install FleetForge into 'C:\\Program Files\\FleetForge'.\n\nPlease approve the Windows UAC Administrator prompt to proceed.",
+                        "Administrator Elevation Required",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
             bool isFirst;
             setupMutex = new Mutex(true, "Local\\FleetForge_Setup_SingleInstance", out isFirst);
             if (!isFirst)

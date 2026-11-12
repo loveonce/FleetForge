@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
-  <assemblyIdentity version="2.0.0.0" name="DevHomePreInstaller"/>
+  <assemblyIdentity version="2.5.0.0" name="FleetForge"/>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
     <security>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
-        <!-- asInvoker runs with current caller permissions, elevates on demand for installers -->
-        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+        <!-- Always require administrator privileges for system-level provisioning & installations -->
+        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
       </requestedPrivileges>
     </security>
   </trustInfo>
