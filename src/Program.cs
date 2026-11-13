@@ -6917,11 +6917,15 @@ namespace FleetForge
                     BorderThickness = new Thickness(1),
                     BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D"),
                     Cursor = Cursors.Hand,
-                    ToolTip = "Export this app pack to a .json file"
+                    ToolTip = "Export this app pack to a .json file",
+                    Visibility = isRecGroup ? Visibility.Collapsed : Visibility.Visible
                 };
                 exportBtn.Click += delegate { ExportGroup(currentGrp); };
                 Grid.SetColumn(exportBtn, 2);
-                btnRow.Children.Add(exportBtn);
+                if (!isRecGroup)
+                {
+                    btnRow.Children.Add(exportBtn);
+                }
 
                 Grid.SetRow(btnRow, 3);
                 g.Children.Add(btnRow);
@@ -7086,7 +7090,7 @@ namespace FleetForge
             txtGroupDescInput.IsReadOnly = isRecommended;
 
             btnDeleteGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
-            if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Visible;
+            if (btnModalExportGroup != null) btnModalExportGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
 
             if (btnModalFilterTabAll != null && btnModalFilterTabSelected != null)
             {
@@ -7145,6 +7149,7 @@ namespace FleetForge
             if (btnModalFilterTabAll != null) btnModalFilterTabAll.Visibility = Visibility.Visible;
             if (btnModalFilterTabSelected != null) btnModalFilterTabSelected.Visibility = Visibility.Visible;
             if (panelEmojiChips != null) panelEmojiChips.Visibility = Visibility.Visible;
+            if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Visible;
         }
 
         private void PopulateModalAppChecklist(List<string> selectedAppIds)
@@ -7848,6 +7853,7 @@ namespace FleetForge
         private void ExportGroup(GroupModel grp)
         {
             if (grp == null) return;
+            if (string.Equals(grp.id, "recommended", StringComparison.OrdinalIgnoreCase)) return;
             try
             {
                 Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
