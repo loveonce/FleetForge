@@ -2726,7 +2726,14 @@ namespace FleetForge
                         <TextBlock x:Name=""TxtTargetRoleSubtitle"" Text=""Select a ready-made pack, or customize and export packs as needed.""
                                    FontSize=""11.5"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                     </StackPanel>
+                </Grid>
 
+                <UniformGrid x:Name=""RoleCardsGrid"" Columns=""2"" Margin=""0,0,0,14""/>
+
+                <!-- Bottom Pack Management Actions -->
+                <Grid Margin=""4,6,4,24"">
+                    <TextBlock Text=""Need a specialized workflow? Create or import customized packs anytime.""
+                               FontSize=""12"" Foreground=""#8A8A8A"" VerticalAlignment=""Center""/>
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                         <Button x:Name=""BtnImportPack"" Content=""Import Pack""
                                 Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
@@ -2738,8 +2745,6 @@ namespace FleetForge
                                 ToolTip=""Create a new custom app pack""/>
                     </StackPanel>
                 </Grid>
-
-                <UniformGrid x:Name=""RoleCardsGrid"" Columns=""2"" Margin=""0,0,0,10""/>
             </StackPanel>
         </ScrollViewer>
 
@@ -5943,6 +5948,7 @@ namespace FleetForge
 
         private void UpdateBottomBarVisibility()
         {
+            bool isSetupView = (currentView == "setup" || currentView == "roles");
             bool isLogsView = (currentView == "logs");
             bool isCloudView = (currentView == "cloud");
             bool isInstalling = (btnStop != null && btnStop.Visibility == Visibility.Visible);
@@ -5954,12 +5960,12 @@ namespace FleetForge
 
             if (btnInstall != null)
             {
-                btnInstall.Visibility = (isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
+                btnInstall.Visibility = (isSetupView || isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (borderBottomBar != null)
             {
-                if (isLogsView || isCloudView)
+                if (isSetupView || isLogsView || isCloudView)
                 {
                     borderBottomBar.Visibility = isInstalling ? Visibility.Visible : Visibility.Collapsed;
                 }
@@ -6320,6 +6326,20 @@ namespace FleetForge
                 RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
                 ApplyRecommendedDataModel(recModel);
             }
+        }
+
+        private bool IsRecommendedApp(AppModel a)
+        {
+            if (a == null) return false;
+            if (recommendedMasterAppIds != null && recommendedMasterAppIds.Contains(a.id)) return true;
+            if (!string.IsNullOrEmpty(a.downloadUrl)) return true;
+            if (config != null && config.groups != null && config.groups.Count > 0)
+            {
+                GroupModel g0 = config.groups[0];
+                if (string.Equals(g0.id, "recommended", StringComparison.OrdinalIgnoreCase) && g0.apps != null && g0.apps.Contains(a.id))
+                    return true;
+            }
+            return false;
         }
 
         private void CheckLiveRecommendedAppsUpdate()
@@ -6820,13 +6840,23 @@ namespace FleetForge
             foreach (GroupModel grp in config.groups)
             {
                 GroupModel currentGrp = grp;
+                bool isRecGroup = string.Equals(currentGrp.id, "recommended", StringComparison.OrdinalIgnoreCase);
+
                 Border card = new Border();
-                card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
+                if (isRecGroup && activeRoleId != currentGrp.id)
+                {
+                    card.Background = currentThemeIsLight ? HexBrush("#FFFBEB") : HexBrush("#241C10");
+                    card.BorderBrush = currentThemeIsLight ? HexBrush("#FCD34D") : HexBrush("#92400E");
+                }
+                else
+                {
+                    card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
+                    card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                }
                 card.CornerRadius = new CornerRadius(8);
                 card.Margin = new Thickness(6);
                 card.Padding = new Thickness(18, 16, 18, 16);
                 card.BorderThickness = new Thickness(1);
-                card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
 
                 Grid g = new Grid();
                 g.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
@@ -6874,8 +6904,6 @@ namespace FleetForge
                 Grid.SetColumn(titleStack, 0);
                 hdr.Children.Add(titleStack);
 
-                bool isRecGroup = string.Equals(currentGrp.id, "recommended", StringComparison.OrdinalIgnoreCase);
-
                 Border badge = new Border();
                 badge.Background = isRecGroup ?
                     (currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03")) :
@@ -6909,83 +6937,43 @@ namespace FleetForge
                     Text = currentGrp.description,
                     FontSize = 12,
                     Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0"),
-                    Margin = new Thickness(0, 8, 0, 10),
+                    Margin = new Thickness(0, 8, 0, 16),
                     TextWrapping = TextWrapping.Wrap,
                     LineHeight = 16
                 };
                 Grid.SetRow(desc, 1);
                 g.Children.Add(desc);
 
-                // App pills preview
-                WrapPanel wrap = new WrapPanel() { Margin = new Thickness(0, 0, 0, 14) };
-                int shown = 0;
-                foreach (string appId in currentGrp.apps)
-                {
-                    if (shown >= 5) break;
-                    AppModel matchApp = config.apps.Find(delegate (AppModel a) { return a.id == appId; });
-                    if (matchApp != null)
-                    {
-                        Border p = new Border();
-                        p.Background = currentThemeIsLight ? HexBrush("#F3F3F3") : HexBrush("#202020");
-                        p.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
-                        p.BorderThickness = new Thickness(1);
-                        p.CornerRadius = new CornerRadius(4);
-                        p.Padding = new Thickness(7, 3, 7, 3);
-                        p.Margin = new Thickness(0, 0, 5, 5);
-
-                        TextBlock pt = new TextBlock()
-                        {
-                            Text = matchApp.name,
-                            FontSize = 11,
-                            Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#D0D0D0")
-                        };
-                        p.Child = pt;
-                        wrap.Children.Add(p);
-                        shown++;
-                    }
-                }
-                if (currentGrp.apps.Count > 5)
-                {
-                    Border extraBorder = new Border();
-                    extraBorder.Background = currentThemeIsLight ? HexBrush("#EBF3FB") : HexBrush("#1E293B");
-                    extraBorder.BorderBrush = currentThemeIsLight ? HexBrush("#CCE4F7") : HexBrush("#334155");
-                    extraBorder.BorderThickness = new Thickness(1);
-                    extraBorder.CornerRadius = new CornerRadius(4);
-                    extraBorder.Padding = new Thickness(6, 3, 6, 3);
-                    extraBorder.Margin = new Thickness(0, 0, 5, 5);
-
-                    TextBlock extra = new TextBlock()
-                    {
-                        Text = "+" + (currentGrp.apps.Count - 5) + " more",
-                        FontSize = 10,
-                        FontWeight = FontWeights.Bold,
-                        Foreground = currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8")
-                    };
-                    extraBorder.Child = extra;
-                    wrap.Children.Add(extraBorder);
-                }
-                Grid.SetRow(wrap, 2);
-                g.Children.Add(wrap);
-
-                // Action Buttons Row: [ Choose This Pack ]  [ ✏️ Change Apps ]  [ 📤 Export ]
+                // Action Buttons Row: [ Install Selected Pack / Install Pack ]  [ Customize Apps ]  [ Export Pack ]
                 Grid btnRow = new Grid();
                 btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
                 btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
                 btnRow.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 
+                bool isSelected = (activeRoleId == currentGrp.id);
                 Button selectBtn = new Button()
                 {
-                    Content = "Select Pack",
-                    Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E"),
-                    Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF"),
+                    Content = isSelected ? "Install Selected Pack" : "Install Pack",
+                    Background = isSelected ? windowsAccentBrush : (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E")),
+                    Foreground = isSelected ? HexBrush("#FFFFFF") : (currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF")),
                     FontWeight = FontWeights.SemiBold,
                     FontSize = 12,
                     Padding = new Thickness(12, 6, 12, 6),
-                    BorderThickness = new Thickness(1),
+                    BorderThickness = isSelected ? new Thickness(0) : new Thickness(1),
                     BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D"),
                     Cursor = Cursors.Hand
                 };
-                selectBtn.Click += delegate { SelectRole(currentGrp.id); };
+                selectBtn.Click += delegate
+                {
+                    if (activeRoleId == currentGrp.id)
+                    {
+                        StartInstallation();
+                    }
+                    else
+                    {
+                        SelectRole(currentGrp.id);
+                    }
+                };
                 Grid.SetColumn(selectBtn, 0);
                 btnRow.Children.Add(selectBtn);
 
@@ -7032,20 +7020,47 @@ namespace FleetForge
 
                 card.Child = g;
 
+                card.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
+                {
+                    if (!e.Handled && !(e.OriginalSource is Button))
+                    {
+                        if (activeRoleId != currentGrp.id)
+                        {
+                            SelectRole(currentGrp.id);
+                        }
+                    }
+                };
+
                 card.MouseEnter += delegate
                 {
                     if (activeRoleId != currentGrp.id)
                     {
-                        card.Background = currentThemeIsLight ? HexBrush("#F9F9F9") : HexBrush("#2C2C2C");
-                        card.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#444444");
+                        if (isRecGroup)
+                        {
+                            card.Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#332310");
+                            card.BorderBrush = currentThemeIsLight ? HexBrush("#F59E0B") : HexBrush("#B45309");
+                        }
+                        else
+                        {
+                            card.Background = currentThemeIsLight ? HexBrush("#F9F9F9") : HexBrush("#2C2C2C");
+                            card.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#444444");
+                        }
                     }
                 };
                 card.MouseLeave += delegate
                 {
                     if (activeRoleId != currentGrp.id)
                     {
-                        card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                        card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                        if (isRecGroup)
+                        {
+                            card.Background = currentThemeIsLight ? HexBrush("#FFFBEB") : HexBrush("#241C10");
+                            card.BorderBrush = currentThemeIsLight ? HexBrush("#FCD34D") : HexBrush("#92400E");
+                        }
+                        else
+                        {
+                            card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
+                            card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                        }
                     }
                 };
                 roleCardsGrid.Children.Add(card);
@@ -7074,22 +7089,32 @@ namespace FleetForge
 
             foreach (RoleCardView rc in roleCards)
             {
+                bool isRec = string.Equals(rc.Group.id, "recommended", StringComparison.OrdinalIgnoreCase);
                 if (rc.Group.id == targetGrp.id)
                 {
                     rc.Card.BorderBrush = windowsAccentBrush;
                     rc.Card.BorderThickness = new Thickness(2);
                     rc.Card.Background = windowsAccentSubtleBrush;
-                    rc.SelectButton.Content = "Selected";
+                    rc.SelectButton.Content = "Install Selected Pack";
                     rc.SelectButton.Background = windowsAccentBrush;
                     rc.SelectButton.Foreground = HexBrush("#FFFFFF");
                     rc.SelectButton.BorderThickness = new Thickness(0);
                 }
                 else
                 {
-                    rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
-                    rc.Card.BorderThickness = new Thickness(1);
-                    rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                    rc.SelectButton.Content = "Select Pack";
+                    if (isRec)
+                    {
+                        rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFBEB") : HexBrush("#241C10");
+                        rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#FCD34D") : HexBrush("#92400E");
+                        rc.Card.BorderThickness = new Thickness(1);
+                    }
+                    else
+                    {
+                        rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                        rc.Card.BorderThickness = new Thickness(1);
+                        rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
+                    }
+                    rc.SelectButton.Content = "Install Pack";
                     rc.SelectButton.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
                     rc.SelectButton.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
                     rc.SelectButton.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
@@ -7170,6 +7195,7 @@ namespace FleetForge
             txtGroupDescInput.Text = "";
             btnDeleteGroup.Visibility = Visibility.Collapsed;
             if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Collapsed;
+            if (txtModalAppSearch != null) txtModalAppSearch.Visibility = Visibility.Visible;
 
             PopulateModalAppChecklist(new List<string>());
             groupModalOverlay.Visibility = Visibility.Visible;
@@ -7196,6 +7222,11 @@ namespace FleetForge
             {
                 btnModalFilterTabAll.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
                 btnModalFilterTabSelected.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            if (txtModalAppSearch != null)
+            {
+                txtModalAppSearch.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (panelEmojiChips != null) panelEmojiChips.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
@@ -7670,6 +7701,29 @@ namespace FleetForge
             };
             catPill.Child = catText;
             titleRow.Children.Add(catPill);
+
+            if (IsRecommendedApp(curApp))
+            {
+                Border recPill = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(4),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(6, 1, 6, 1)
+                };
+                TextBlock recText = new TextBlock()
+                {
+                    Text = "⭐ RECOMMENDED",
+                    FontSize = 9,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
+                };
+                recPill.Child = recText;
+                titleRow.Children.Add(recPill);
+            }
+
             sp.Children.Add(titleRow);
 
             TextBlock descText = new TextBlock()
@@ -8551,6 +8605,29 @@ namespace FleetForge
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
+
+            if (IsRecommendedApp(curApp))
+            {
+                Border recBadge = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(4),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(6, 1, 6, 1)
+                };
+                TextBlock txtRec = new TextBlock()
+                {
+                    Text = "⭐ RECOMMENDED",
+                    FontSize = 9,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
+                };
+                recBadge.Child = txtRec;
+                titleStack.Children.Add(recBadge);
+            }
+
             infoStack.Children.Add(titleStack);
 
             TextBlock txtDesc = new TextBlock()
@@ -8979,6 +9056,29 @@ namespace FleetForge
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
+
+            if (IsRecommendedApp(curApp))
+            {
+                Border recBadge = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(4),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(6, 1, 6, 1)
+                };
+                TextBlock txtRec = new TextBlock()
+                {
+                    Text = "⭐ RECOMMENDED",
+                    FontSize = 9,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
+                };
+                recBadge.Child = txtRec;
+                titleStack.Children.Add(recBadge);
+            }
+
             infoStack.Children.Add(titleStack);
 
             TextBlock txtDesc = new TextBlock()
