@@ -1,4 +1,4 @@
-{
+﻿{
   "_comment": "FleetForge Top Choice • Partner & Affiliate Software Catalog. Configure direct download URLs for software not present on Winget. Name, Category, and Description are shown in the UI (downloadUrl is strictly hidden from users). On install, FleetForge downloads the setup and executes it silently.",
   "version": "1.0",
   "group": {

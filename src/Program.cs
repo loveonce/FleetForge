@@ -2892,7 +2892,7 @@ namespace FleetForge
                             Padding=""22,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnInstall"" Content=""Install Selected Apps""
                             Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
-                            Padding=""28,10"" Cursor=""Hand"" BorderThickness=""0""/>
+                            Padding=""28,10"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -5830,6 +5830,7 @@ namespace FleetForge
                 SelectRole(activeRoleId);
             }
 
+            UpdateBottomBarVisibility();
             UpdateDwmTheme(isLight);
         }
 
