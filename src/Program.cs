@@ -2884,7 +2884,7 @@ namespace FleetForge
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,10"" Margin=""0,0,8,0""
                             Cursor=""Hand"" ToolTip=""Import a custom app pack (.json)""/>
                     <Button x:Name=""BtnCreateNewGroup"" Content=""Create New Pack""
-                            Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
+                            Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
                             Padding=""16,10"" Margin=""0,0,0,0"" Cursor=""Hand"" BorderThickness=""0""
                             ToolTip=""Create a new custom app pack""/>
                     <Button x:Name=""BtnStop"" Content=""Stop Install""
@@ -5406,6 +5406,17 @@ namespace FleetForge
             {
                 btnInstall.Background = isLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
                 btnInstall.Foreground = HexBrush("#FFFFFF");
+            }
+            if (btnCreateNewGroup != null)
+            {
+                btnCreateNewGroup.Background = isLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
+                btnCreateNewGroup.Foreground = HexBrush("#FFFFFF");
+            }
+            if (btnImportPack != null)
+            {
+                btnImportPack.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
+                btnImportPack.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnImportPack.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
             }
 
             // Modal Card
