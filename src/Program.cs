@@ -2768,7 +2768,7 @@ namespace FleetForge
                         Visibility=""Collapsed""/>
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                     <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
-                            Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12""/>
+                            Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnStop"" Content=""Stop Install""
                             Background=""#DC2626"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""22,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
@@ -5827,7 +5827,7 @@ namespace FleetForge
 
             if (btnOpenOfflineFolder != null)
             {
-                btnOpenOfflineFolder.Visibility = isLogsView ? Visibility.Collapsed : Visibility.Visible;
+                btnOpenOfflineFolder.Visibility = Visibility.Collapsed;
             }
 
             if (btnInstall != null)
