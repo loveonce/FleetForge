@@ -4109,13 +4109,13 @@ namespace FleetForge
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
                     menu.FontSize = 12;
 
-                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "✓  " : "    ") + "⭐ Selected Apps First" };
+                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "✓  " : "    ") + "⭐ Selected & Recommended First" };
                     MenuItem itmAlphaAsc = new MenuItem() { Header = (catalogSortMode == "alpha_asc" ? "✓  " : "    ") + "🔤 Name (A to Z)" };
                     MenuItem itmAlphaDesc = new MenuItem() { Header = (catalogSortMode == "alpha_desc" ? "✓  " : "    ") + "🔤 Name (Z to A)" };
                     MenuItem itmPopular = new MenuItem() { Header = (catalogSortMode == "popular" ? "✓  " : "    ") + "🔥 Most Popular" };
                     MenuItem itmCategory = new MenuItem() { Header = (catalogSortMode == "category" ? "✓  " : "    ") + "🏷️ By Category" };
 
-                    itmSelectedTop.Click += delegate { SetCatalogSort("selected_top", "Selected on Top"); };
+                    itmSelectedTop.Click += delegate { SetCatalogSort("selected_top", "Selected & Recommended"); };
                     itmAlphaAsc.Click += delegate { SetCatalogSort("alpha_asc", "A → Z"); };
                     itmAlphaDesc.Click += delegate { SetCatalogSort("alpha_desc", "Z → A"); };
                     itmPopular.Click += delegate { SetCatalogSort("popular", "Popular"); };
@@ -9306,9 +9306,9 @@ namespace FleetForge
                 case "selected_top":
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
-                        bool aSel = (a.id != null && selectedAppIds.Contains(a.id));
-                        bool bSel = (b.id != null && selectedAppIds.Contains(b.id));
-                        if (aSel != bSel) return aSel ? -1 : 1;
+                        int rankA = (a.id != null && selectedAppIds.Contains(a.id)) ? 0 : (IsRecommendedApp(a) ? 1 : 2);
+                        int rankB = (b.id != null && selectedAppIds.Contains(b.id)) ? 0 : (IsRecommendedApp(b) ? 1 : 2);
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
                     break;
@@ -9339,15 +9339,16 @@ namespace FleetForge
                 case "popular":
                 default:
                     EnsureAppDefaultIndices();
-                    if (appDefaultIndices != null)
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
-                        activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
-                        {
-                            int idxA = (a.id != null && appDefaultIndices.ContainsKey(a.id)) ? appDefaultIndices[a.id] : int.MaxValue;
-                            int idxB = (b.id != null && appDefaultIndices.ContainsKey(b.id)) ? appDefaultIndices[b.id] : int.MaxValue;
-                            return idxA.CompareTo(idxB);
-                        });
-                    }
+                        int rankA = (a.id != null && selectedAppIds.Contains(a.id)) ? 0 : (IsRecommendedApp(a) ? 1 : 2);
+                        int rankB = (b.id != null && selectedAppIds.Contains(b.id)) ? 0 : (IsRecommendedApp(b) ? 1 : 2);
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        int idxA = (a.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(a.id)) ? appDefaultIndices[a.id] : int.MaxValue;
+                        int idxB = (b.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(b.id)) ? appDefaultIndices[b.id] : int.MaxValue;
+                        return idxA.CompareTo(idxB);
+                    });
                     break;
             }
         }
