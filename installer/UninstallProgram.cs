@@ -77,8 +77,17 @@ namespace FleetForge
                 try { Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge", false); } catch { }
                 try { Registry.LocalMachine.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\InnovanaPreInstaller", false); } catch { }
 
-                // Self-deleting cmd trick
-                ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", string.Format("/c timeout /t 1 /nobreak >nul & rmdir /s /q \"{0}\"", appDir));
+                // Remove AppData\Local\FleetForge directory (logs, error-log, and session data)
+                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string fleetForgeAppData = Path.Combine(localAppData, "FleetForge");
+                if (Directory.Exists(fleetForgeAppData))
+                {
+                    try { Directory.Delete(fleetForgeAppData, true); } catch { }
+                }
+
+                // Self-deleting cmd trick (removes both appDir and any lingering AppData\Local\FleetForge files)
+                string cmdArgs = string.Format("/c timeout /t 1 /nobreak >nul & rmdir /s /q \"{0}\" & rmdir /s /q \"{1}\"", appDir, fleetForgeAppData);
+                ProcessStartInfo psi = new ProcessStartInfo("cmd.exe", cmdArgs);
                 psi.CreateNoWindow = true;
                 psi.UseShellExecute = false;
                 Process.Start(psi);

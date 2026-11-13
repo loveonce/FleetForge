@@ -1335,9 +1335,10 @@ namespace FleetForge
             }
             catch { }
 
-            string logDir = Path.Combine(baseDir, "logs");
-            if (!Directory.Exists(logDir)) { try { Directory.CreateDirectory(logDir); } catch { } }
-            string logFilePath = Path.Combine(logDir, "install-log.txt");
+            string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appDataDir = Path.Combine(localApp, "FleetForge");
+            if (!Directory.Exists(appDataDir)) { try { Directory.CreateDirectory(appDataDir); } catch { } }
+            string logFilePath = Path.Combine(appDataDir, "install-log.txt");
 
             Console.WriteLine(string.Format("[DEPLOY] Starting deployment of {0} package(s)... (Watchdog timeout: {1}m)", appsToInstall.Count, timeoutMins));
             Console.WriteLine("--------------------------------------------------------------------------------");
@@ -2054,6 +2055,7 @@ namespace FleetForge
         private string configPath;
         private string settingsPath;
         private string logFilePath;
+        private string errorLogPath;
         private string sessionStatePath;
         private string reportsDir;
         private string wingetCmd;
@@ -2916,23 +2918,27 @@ namespace FleetForge
             settingsPath = Path.Combine(appDir, "config", "settings.json");
             if (!File.Exists(settingsPath)) settingsPath = Path.Combine(appDir, "settings.json");
 
-            // 3. Log path (install-log.txt in logs/ or root)
-            string logsDir = Path.Combine(appDir, "logs");
-            if (!Directory.Exists(logsDir))
+            // 3. AppData Local Directory for all runtime logs, error logs, and session data
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appDataFolder = Path.Combine(localAppData, "FleetForge");
+            if (!Directory.Exists(appDataFolder))
             {
-                try { Directory.CreateDirectory(logsDir); } catch { }
+                try { Directory.CreateDirectory(appDataFolder); } catch { }
             }
-            logFilePath = Path.Combine(logsDir, "install-log.txt");
 
-            // 4. Session Persistence & Reports directories
-            string dataDir = Path.Combine(appDir, "data");
+            // Install and Error log files in %LOCALAPPDATA%\FleetForge
+            logFilePath = Path.Combine(appDataFolder, "install-log.txt");
+            errorLogPath = Path.Combine(appDataFolder, "error-log.txt");
+
+            // 4. Session Persistence & Temporary Reports directory in %LOCALAPPDATA%\FleetForge
+            string dataDir = Path.Combine(appDataFolder, "data");
             if (!Directory.Exists(dataDir))
             {
                 try { Directory.CreateDirectory(dataDir); } catch { }
             }
             sessionStatePath = Path.Combine(dataDir, "deployment_session.json");
 
-            reportsDir = Path.Combine(appDir, "reports");
+            reportsDir = Path.Combine(appDataFolder, "reports");
             if (!Directory.Exists(reportsDir))
             {
                 try { Directory.CreateDirectory(reportsDir); } catch { }
@@ -10374,6 +10380,24 @@ namespace FleetForge
                 File.AppendAllText(logFilePath, string.Format("[{0}] {1}\r\n", timestamp, message));
             }
             catch { }
+
+            // If message represents an error, failure, exception, or stderr, also record into error-log.txt
+            if (!string.IsNullOrEmpty(message) &&
+                (message.IndexOf("ERROR", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("[STDERR]", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Failed", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Timeout", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Exception", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(errorLogPath))
+                    {
+                        File.AppendAllText(errorLogPath, string.Format("[{0}] {1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), message));
+                    }
+                }
+                catch { }
+            }
         }
 
         // =========================================================================
