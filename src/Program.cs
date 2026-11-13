@@ -5908,12 +5908,56 @@ namespace FleetForge
             return "📁";
         }
 
+        private void DeduplicateGroups()
+        {
+            if (config == null || config.groups == null || config.groups.Count <= 1) return;
+
+            var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var uniqueGroups = new List<GroupModel>();
+            bool hasDuplicates = false;
+
+            foreach (GroupModel g in config.groups)
+            {
+                if (g == null) continue;
+                string gid = (g.id ?? "").Trim();
+                string gname = (g.name ?? "").Trim();
+
+                if (!string.IsNullOrEmpty(gid) && !seenIds.Contains(gid) && !seenNames.Contains(gname))
+                {
+                    seenIds.Add(gid);
+                    seenNames.Add(gname);
+                    uniqueGroups.Add(g);
+                }
+                else
+                {
+                    hasDuplicates = true;
+                }
+            }
+
+            if (hasDuplicates)
+            {
+                config.groups = uniqueGroups;
+                try
+                {
+                    if (File.Exists(configPath))
+                    {
+                        string cleanedJson = jsonSerializer.Serialize(config);
+                        File.WriteAllText(configPath, cleanedJson, Encoding.UTF8);
+                    }
+                }
+                catch { }
+            }
+        }
+
         private void EnsureCategories()
         {
             if (config == null) config = new ConfigModel();
             if (config.groups == null) config.groups = new List<GroupModel>();
             if (config.categories == null) config.categories = new List<CategoryModel>();
             if (config.apps == null) config.apps = new List<AppModel>();
+
+            DeduplicateGroups();
 
             foreach (GroupModel g in config.groups)
             {

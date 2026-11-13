@@ -796,7 +796,7 @@ namespace FleetForge
                         {
                             var customGroups = new ArrayList();
                             var builtInIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                                "developer", "office", "creative", "gamer", "system", "office_business", "gamer_creator", "essential"
+                                "developer", "office", "creative", "minimal", "essential", "gamer", "system", "office_business", "gamer_creator"
                             };
 
                             foreach (object gObj in existingGroups)
@@ -816,22 +816,52 @@ namespace FleetForge
                                 }
                             }
 
-                            if (customGroups.Count > 0)
+                            string newJson = File.ReadAllText(tempExtract, Encoding.UTF8);
+                            var newData = jss.Deserialize<Dictionary<string, object>>(newJson);
+                            if (newData != null && newData.ContainsKey("groups"))
                             {
-                                string newJson = File.ReadAllText(tempExtract, Encoding.UTF8);
-                                var newData = jss.Deserialize<Dictionary<string, object>>(newJson);
-                                if (newData != null && newData.ContainsKey("groups"))
+                                var newGroups = newData["groups"] as ArrayList;
+                                if (newGroups != null)
                                 {
-                                    var newGroups = newData["groups"] as ArrayList;
-                                    if (newGroups != null)
+                                    var existingGroupIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                                    var existingGroupNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                                    var uniqueNewGroups = new ArrayList();
+
+                                    foreach (object ng in newGroups)
                                     {
-                                        foreach (object cg in customGroups)
+                                        var dg = ng as Dictionary<string, object>;
+                                        if (dg != null)
                                         {
-                                            newGroups.Add(cg);
+                                            string nid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
+                                            string nname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
+                                            if (!existingGroupIds.Contains(nid) && !existingGroupNames.Contains(nname))
+                                            {
+                                                existingGroupIds.Add(nid);
+                                                existingGroupNames.Add(nname);
+                                                uniqueNewGroups.Add(ng);
+                                            }
                                         }
-                                        string mergedJson = jss.Serialize(newData);
-                                        File.WriteAllText(tempExtract, mergedJson, Encoding.UTF8);
                                     }
+
+                                    foreach (object cg in customGroups)
+                                    {
+                                        var dg = cg as Dictionary<string, object>;
+                                        if (dg != null)
+                                        {
+                                            string cid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
+                                            string cname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
+                                            if (!string.IsNullOrEmpty(cid) && !existingGroupIds.Contains(cid) && !existingGroupNames.Contains(cname) && !builtInIds.Contains(cid))
+                                            {
+                                                uniqueNewGroups.Add(cg);
+                                                existingGroupIds.Add(cid);
+                                                existingGroupNames.Add(cname);
+                                            }
+                                        }
+                                    }
+
+                                    newData["groups"] = uniqueNewGroups;
+                                    string mergedJson = jss.Serialize(newData);
+                                    File.WriteAllText(tempExtract, mergedJson, Encoding.UTF8);
                                 }
                             }
                         }
