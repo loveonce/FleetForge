@@ -26,9 +26,9 @@ using SysDraw = System.Drawing;
 [assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.6.2.0")]
-[assembly: AssemblyFileVersion("2.6.2.0")]
-[assembly: AssemblyInformationalVersion("2.6.2")]
+[assembly: AssemblyVersion("2.6.3.0")]
+[assembly: AssemblyFileVersion("2.6.3.0")]
+[assembly: AssemblyInformationalVersion("2.6.3")]
 
 namespace FleetForge
 {
@@ -763,7 +763,7 @@ namespace FleetForge
                 </Border>
                 <StackPanel VerticalAlignment=""Center"">
                     <TextBlock Text=""FLEETFORGE SETUP"" FontSize=""15"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                    <TextBlock Text=""Love Malhotra • Easy App Setup • v2.6.2"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
+                    <TextBlock Text=""Love Malhotra • Easy App Setup • v2.6.3"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,2,0,0""/>
                 </StackPanel>
             </StackPanel>
 
@@ -1564,7 +1564,7 @@ namespace FleetForge
                     {
                         key.SetValue("DisplayName", "FleetForge — One-Click App Setup & Software Manager");
                         key.SetValue("DisplayIcon", icoPath);
-                        key.SetValue("DisplayVersion", "2.6.2");
+                        key.SetValue("DisplayVersion", "2.6.3");
                         key.SetValue("Publisher", "Love Malhotra");
                         key.SetValue("HelpLink", "https://github.com/loveonce/FleetForge");
                         key.SetValue("URLInfoAbout", "https://github.com/loveonce/FleetForge");
@@ -1585,7 +1585,7 @@ namespace FleetForge
                     if (key != null)
                     {
                         key.SetValue("InstallLocation", installDir);
-                        key.SetValue("Version", "2.6.2");
+                        key.SetValue("Version", "2.6.3");
                     }
                 }
             }
@@ -1598,7 +1598,7 @@ namespace FleetForge
                     if (key != null)
                     {
                         key.SetValue("InstallLocation", installDir);
-                        key.SetValue("Version", "2.6.2");
+                        key.SetValue("Version", "2.6.3");
                     }
                 }
             }

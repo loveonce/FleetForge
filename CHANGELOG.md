@@ -4,6 +4,16 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.3] — 2026-11-13
+
+### Added
+- **System Tray Docking:** Minimizing the window docks FleetForge into the Windows System Tray (`NotifyIcon`) with custom icon, live progress tooltip, and native context menu (`Open FleetForge`, live status, `Exit FleetForge`).
+- **Windows 11 Fluent Toaster Notification Popup:** Active background downloads and installations display a sleek, interactive Windows 11 toast popup in the lower-right work area showing current app, real-time progress bar, and percentage. Clicking the toast restores FleetForge.
+- **Windows 11 Colorful Fluent Icon Badges:** Navigation rail and App Pack cards now feature vibrant theme-adaptive colorful icon badges (Coding Blue, Office Amber, Creative Purple, Emerald Green).
+- **Graceful Background Setup Prompt:** Closing FleetForge during active installation offers the choice to minimize to the System Tray without terminating ongoing setups.
+- **Directory Cleanup & Optimization:** Purged obsolete duplicates and verified zero-runtime standalone build pipeline.
+- **Version Lock:** Official release locked to **v2.6.3** across all binaries, setup wizard, and metadata.
+
 ## [2.6.2] — 2026-11-13
 
 ### Changed & Improved
