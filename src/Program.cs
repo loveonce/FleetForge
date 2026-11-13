@@ -1552,6 +1552,7 @@ namespace FleetForge
 
         // Catalog Page
         private Border borderHeaderSearch;
+        private TextBlock txtHeaderSearchIcon;
         private TextBox txtSearch;
         private Button btnClearSearch;
         private DispatcherTimer searchDebounceTimer;
@@ -2177,42 +2178,37 @@ namespace FleetForge
         </Grid.RowDefinitions>
 
         <!-- TOP BAR (Windows 11 Style) -->
-        <Border x:Name=""BorderTopBar"" Grid.Row=""0"" Background=""#242424"" Padding=""24,12"" BorderBrush=""#333333"" BorderThickness=""0,0,0,1"">
+        <Border x:Name=""BorderTopBar"" Grid.Row=""0"" Background=""#F3F3F3"" Padding=""28,12"" BorderBrush=""#E5E5E5"" BorderThickness=""0,0,0,1"">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width=""*""/>
                     <ColumnDefinition Width=""Auto""/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Centered Windows 11 Search Capsule Box -->
-                <Border x:Name=""BorderHeaderSearch"" Grid.Column=""0"" MaxWidth=""380"" Height=""34"" CornerRadius=""17""
-                        Background=""#1E1E1E"" BorderBrush=""#383838"" BorderThickness=""1""
+                <!-- Windows 11 Fluent Search Box (Distinct, High-Contrast Capsule) -->
+                <Border x:Name=""BorderHeaderSearch"" Grid.Column=""0"" Width=""440"" Height=""36"" CornerRadius=""18""
+                        Background=""#FFFFFF"" BorderBrush=""#B0B8C4"" BorderThickness=""1""
                         HorizontalAlignment=""Left"" VerticalAlignment=""Center"">
-                    <Grid Margin=""12,0,10,0"">
+                    <Grid Margin=""14,0,12,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""Auto""/>
                             <ColumnDefinition Width=""*""/>
                             <ColumnDefinition Width=""Auto""/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text=""🔍"" FontSize=""11"" Foreground=""#8A8A8A"" VerticalAlignment=""Center"" Margin=""0,0,8,0""/>
+                        <TextBlock x:Name=""TxtHeaderSearchIcon"" Text=""🔍"" FontSize=""12.5"" Foreground=""#475569"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
                         <TextBox x:Name=""TxtSearch"" Grid.Column=""1"" Height=""28"" Background=""Transparent""
-                                 Foreground=""#FFFFFF"" CaretBrush=""#4CC2FF"" BorderThickness=""0""
-                                 FontSize=""12"" VerticalContentAlignment=""Center"" Text=""Find an app, setting or pack...""/>
-                        <Button x:Name=""BtnClearSearch"" Grid.Column=""2"" Content=""✕"" Width=""18"" Height=""18""
-                                Background=""Transparent"" Foreground=""#8A8A8A"" BorderThickness=""0""
+                                 Foreground=""#0F172A"" CaretBrush=""#0067C0"" BorderThickness=""0""
+                                 FontSize=""12.5"" VerticalContentAlignment=""Center"" Text=""Find an app, setting or pack...""/>
+                        <Button x:Name=""BtnClearSearch"" Grid.Column=""2"" Content=""✕"" Width=""20"" Height=""20""
+                                Background=""Transparent"" Foreground=""#64748B"" BorderThickness=""0""
                                 Cursor=""Hand"" Visibility=""Collapsed"" Margin=""4,0,0,0"" ToolTip=""Clear search""/>
                     </Grid>
                 </Border>
 
-                <!-- Actions on Right (Clean buttons with NO icons/emojis!) -->
+                <!-- Actions on Right (Clean Windows 11 Help Menu button only) -->
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnQuickGuide"" Content=""How to Use"" Background=""#0078D4"" Foreground=""#FFFFFF"" BorderThickness=""0""
-                            FontWeight=""SemiBold"" FontSize=""12"" Padding=""16,7"" Margin=""0,0,8,0"" Cursor=""Hand""
-                            ToolTip=""Step-by-Step Interactive Guide"" VerticalAlignment=""Center""/>
-                    <Button x:Name=""BtnToggleTheme"" Content=""Theme"" Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
-                            FontSize=""12"" Padding=""14,7"" Margin=""0,0,8,0"" Cursor=""Hand"" ToolTip=""Toggle Windows Light / Dark Theme"" VerticalAlignment=""Center""/>
-                    <Button x:Name=""BtnHelpMenu"" Content=""Help ▾"" Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
-                            FontSize=""12"" Padding=""14,7"" Cursor=""Hand"" ToolTip=""Settings, About &amp; Updates"" VerticalAlignment=""Center""/>
+                    <Button x:Name=""BtnHelpMenu"" Content=""Help ▾"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#D1D5DB"" BorderThickness=""1""
+                            FontWeight=""SemiBold"" FontSize=""12"" Padding=""18,7"" Cursor=""Hand"" ToolTip=""How to Use, Settings, Updates &amp; About"" VerticalAlignment=""Center""/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -3196,6 +3192,7 @@ namespace FleetForge
             roleCardsGrid = (System.Windows.Controls.Primitives.UniformGrid)root.FindName("RoleCardsGrid");
 
             borderHeaderSearch = (Border)root.FindName("BorderHeaderSearch");
+            txtHeaderSearchIcon = (TextBlock)root.FindName("TxtHeaderSearchIcon");
             txtSearch = (TextBox)root.FindName("TxtSearch");
             btnClearSearch = (Button)root.FindName("BtnClearSearch");
             borderCategoryBar = (Border)root.FindName("BorderCategoryBar");
@@ -3303,11 +3300,12 @@ namespace FleetForge
                     menu.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E222A");
                     menu.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#333C4D");
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+                    menu.FontSize = 12.5;
 
-                    MenuItem itmTutorial = new MenuItem() { Header = "🎓  How to Use (Step-by-Step Guide)..." };
-                    MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? "🚀  New Update Available!..." : "🔄  Check for updates..." };
-                    MenuItem itmSettings = new MenuItem() { Header = "⚙️  Settings..." };
-                    MenuItem itmAbout = new MenuItem() { Header = "ℹ️  About FleetForge..." };
+                    MenuItem itmTutorial = new MenuItem() { Header = "How to Use (Interactive Guide)...", FontWeight = FontWeights.SemiBold };
+                    MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? "Check for Updates (New Version Available!)..." : "Check for Updates..." };
+                    MenuItem itmSettings = new MenuItem() { Header = "Settings..." };
+                    MenuItem itmAbout = new MenuItem() { Header = "About FleetForge..." };
 
                     itmTutorial.Click += (ms, me) => ShowTutorialModal();
                     itmUpdates.Click += (ms, me) => ShowUpdatesModal();
@@ -3774,6 +3772,11 @@ namespace FleetForge
             // Search events
             txtSearch.GotFocus += delegate
             {
+                if (borderHeaderSearch != null)
+                {
+                    borderHeaderSearch.BorderBrush = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#38BDF8");
+                    borderHeaderSearch.BorderThickness = new Thickness(1.5);
+                }
                 if (txtSearch.Text == "Find an app, setting or pack..." || txtSearch.Text == "Search applications...")
                 {
                     txtSearch.Text = "";
@@ -3782,12 +3785,34 @@ namespace FleetForge
             };
             txtSearch.LostFocus += delegate
             {
+                if (borderHeaderSearch != null)
+                {
+                    borderHeaderSearch.BorderBrush = currentThemeIsLight ? HexBrush("#B0B8C4") : HexBrush("#484848");
+                    borderHeaderSearch.BorderThickness = new Thickness(1);
+                }
                 if (string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
                     txtSearch.Text = "Find an app, setting or pack...";
-                    txtSearch.Foreground = currentThemeIsLight ? HexBrush("#94A3B8") : HexBrush("#707070");
+                    txtSearch.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
                 }
             };
+            if (borderHeaderSearch != null)
+            {
+                borderHeaderSearch.MouseEnter += delegate
+                {
+                    if (txtSearch != null && !txtSearch.IsFocused)
+                    {
+                        borderHeaderSearch.BorderBrush = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#606060");
+                    }
+                };
+                borderHeaderSearch.MouseLeave += delegate
+                {
+                    if (txtSearch != null && !txtSearch.IsFocused)
+                    {
+                        borderHeaderSearch.BorderBrush = currentThemeIsLight ? HexBrush("#B0B8C4") : HexBrush("#484848");
+                    }
+                };
+            }
             // Search Debounce Timer (250ms interval to prevent UI stutter over 16,349 packages)
             searchDebounceTimer = new DispatcherTimer();
             searchDebounceTimer.Interval = TimeSpan.FromMilliseconds(250);
@@ -4102,11 +4127,6 @@ namespace FleetForge
 
         private bool GetCurrentThemeIsLight()
         {
-            if (settings != null && !string.IsNullOrEmpty(settings.theme))
-            {
-                if (settings.theme.Equals("dark", StringComparison.OrdinalIgnoreCase)) return false;
-                if (settings.theme.Equals("light", StringComparison.OrdinalIgnoreCase)) return true;
-            }
             return IsWindowsLightTheme();
         }
 
@@ -4129,10 +4149,6 @@ namespace FleetForge
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    if (settings != null && !string.IsNullOrEmpty(settings.theme) && !settings.theme.Equals("system", StringComparison.OrdinalIgnoreCase))
-                    {
-                        return;
-                    }
                     ApplyTheme(IsWindowsLightTheme());
                 }));
             }
@@ -4677,8 +4693,8 @@ namespace FleetForge
             // Top Bar
             if (borderTopBar != null)
             {
-                borderTopBar.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#242424");
-                borderTopBar.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#333333");
+                borderTopBar.Background = isLight ? HexBrush("#F3F3F3") : HexBrush("#202020");
+                borderTopBar.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#2D2D2D");
             }
             if (txtPageTitle != null) txtPageTitle.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
             if (txtPageSubtitle != null) txtPageSubtitle.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0");
@@ -4758,12 +4774,30 @@ namespace FleetForge
             // Header Search Box
             if (borderHeaderSearch != null)
             {
-                borderHeaderSearch.Background = isLight ? HexBrush("#F1F5F9") : HexBrush("#1E1E1E");
-                borderHeaderSearch.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#383838");
+                borderHeaderSearch.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
+                borderHeaderSearch.BorderBrush = isLight ? HexBrush("#B0B8C4") : HexBrush("#484848");
+                borderHeaderSearch.BorderThickness = new Thickness(1);
+            }
+            if (txtHeaderSearchIcon != null)
+            {
+                txtHeaderSearchIcon.Foreground = isLight ? HexBrush("#475569") : HexBrush("#94A3B8");
             }
             if (txtSearch != null)
             {
-                txtSearch.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+                bool isPlaceholder = (txtSearch.Text == "Find an app, setting or pack..." || txtSearch.Text == "Search applications...");
+                if (isPlaceholder)
+                {
+                    txtSearch.Foreground = isLight ? HexBrush("#475569") : HexBrush("#94A3B8");
+                }
+                else
+                {
+                    txtSearch.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+                }
+                txtSearch.CaretBrush = isLight ? HexBrush("#0067C0") : HexBrush("#38BDF8");
+            }
+            if (btnClearSearch != null)
+            {
+                btnClearSearch.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
             }
             if (borderCategoryBar != null)
             {
@@ -5297,9 +5331,9 @@ namespace FleetForge
             }
             if (btnHelpMenu != null)
             {
-                btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
-                btnHelpMenu.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnHelpMenu.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
+                btnHelpMenu.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#404040");
+                btnHelpMenu.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
             }
 
             BuildEmojiChips();
