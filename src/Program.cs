@@ -21,6 +21,8 @@ using System.Windows.Threading;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
+using WinForms = System.Windows.Forms;
+using WinDrawing = System.Drawing;
 
 [assembly: AssemblyTitle("FleetForge")]
 [assembly: AssemblyDescription("FleetForge - Zero-Touch Machine Setup & Enterprise Software Deployment")]
@@ -1758,6 +1760,273 @@ namespace FleetForge
         }
     }
 
+    // =========================================================================
+    // Windows 11 Fluent Toaster Notification Popup
+    // =========================================================================
+    public class Windows11ToastWindow : Window
+    {
+        private TextBlock txtTitle;
+        private TextBlock txtDetail;
+        private ProgressBar pbProgress;
+        private TextBlock txtPercent;
+        private TextBlock txtStatusTag;
+        private Border rootBorder;
+        private DispatcherTimer autoCloseTimer;
+        private Action onRestoreCallback;
+        private Action onDismissCallback;
+        private bool isClosing = false;
+
+        public Windows11ToastWindow(bool isLight, Action onRestore, Action onDismiss, System.Windows.Media.Color accentColor)
+        {
+            this.onRestoreCallback = onRestore;
+            this.onDismissCallback = onDismiss;
+            this.WindowStyle = WindowStyle.None;
+            this.AllowsTransparency = true;
+            this.Background = System.Windows.Media.Brushes.Transparent;
+            this.ShowInTaskbar = false;
+            this.Topmost = true;
+            this.Width = 380;
+            this.Height = 118;
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            this.FontFamily = new System.Windows.Media.FontFamily("Segoe UI Variable Text, Segoe UI Variable, Segoe UI, sans-serif");
+
+            // Position at bottom-right of primary screen work area above taskbar
+            Rect wa = SystemParameters.WorkArea;
+            this.Left = wa.Right - this.Width - 16;
+            this.Top = wa.Bottom - this.Height - 16;
+
+            var bgBrush = isLight ?
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F8F9FA")) :
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#202020"));
+            var borderBrush = isLight ?
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#D1D5DB")) :
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#383838"));
+            var textBrush = isLight ?
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#111827")) :
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F3F4F6"));
+            var subtextBrush = isLight ?
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#6B7280")) :
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#9CA3AF"));
+            var trackBrush = isLight ?
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#E5E7EB")) :
+                new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#333333"));
+            var accentBrush = new SolidColorBrush(accentColor);
+
+            rootBorder = new Border
+            {
+                Background = bgBrush,
+                BorderBrush = borderBrush,
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Cursor = Cursors.Hand,
+                ToolTip = "Click to restore FleetForge",
+                Effect = new DropShadowEffect
+                {
+                    Color = System.Windows.Media.Colors.Black,
+                    Direction = 270,
+                    ShadowDepth = 6,
+                    BlurRadius = 24,
+                    Opacity = 0.35
+                }
+            };
+
+            rootBorder.MouseLeftButtonUp += (s, e) =>
+            {
+                if (isClosing) return;
+                if (onRestoreCallback != null) onRestoreCallback();
+                this.Close();
+            };
+
+            Grid mainGrid = new Grid { Margin = new Thickness(14, 10, 14, 12) };
+            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            mainGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            // Row 0: App Identity Header
+            Grid headerGrid = new Grid();
+            StackPanel headerLeft = new StackPanel { Orientation = Orientation.Horizontal };
+
+            Image imgIcon = new Image { Width = 16, Height = 16, VerticalAlignment = VerticalAlignment.Center };
+            try
+            {
+                ImageSource iconSource = MainWindow.LoadApplicationIcon();
+                if (iconSource != null) imgIcon.Source = iconSource;
+            }
+            catch { }
+            headerLeft.Children.Add(imgIcon);
+
+            TextBlock txtBrand = new TextBlock
+            {
+                Text = "FleetForge",
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = textBrush,
+                Margin = new Thickness(7, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            headerLeft.Children.Add(txtBrand);
+
+            TextBlock txtDot = new TextBlock
+            {
+                Text = "•",
+                FontSize = 11,
+                Foreground = subtextBrush,
+                Margin = new Thickness(6, 0, 6, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            headerLeft.Children.Add(txtDot);
+
+            txtStatusTag = new TextBlock
+            {
+                Text = "Background Setup",
+                FontSize = 11,
+                Foreground = accentBrush,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            headerLeft.Children.Add(txtStatusTag);
+            headerGrid.Children.Add(headerLeft);
+
+            Button btnClose = new Button
+            {
+                Content = "✕",
+                FontSize = 11,
+                Foreground = subtextBrush,
+                Background = System.Windows.Media.Brushes.Transparent,
+                BorderThickness = new Thickness(0),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Center,
+                Cursor = Cursors.Hand,
+                Padding = new Thickness(4, 2, 4, 2)
+            };
+            btnClose.Click += (s, e) =>
+            {
+                e.Handled = true;
+                if (onDismissCallback != null) onDismissCallback();
+                FadeOutAndClose();
+            };
+            headerGrid.Children.Add(btnClose);
+            Grid.SetRow(headerGrid, 0);
+            mainGrid.Children.Add(headerGrid);
+
+            // Row 1: Content details
+            StackPanel bodyPanel = new StackPanel { Margin = new Thickness(0, 6, 0, 6), VerticalAlignment = VerticalAlignment.Center };
+            txtTitle = new TextBlock
+            {
+                Text = "Preparing installation...",
+                FontSize = 13,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = textBrush,
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+            bodyPanel.Children.Add(txtTitle);
+
+            txtDetail = new TextBlock
+            {
+                Text = "Initializing background task...",
+                FontSize = 11,
+                Foreground = subtextBrush,
+                Margin = new Thickness(0, 2, 0, 0),
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+            bodyPanel.Children.Add(txtDetail);
+            Grid.SetRow(bodyPanel, 1);
+            mainGrid.Children.Add(bodyPanel);
+
+            // Row 2: Fluid Progress Bar
+            Grid progressGrid = new Grid { Margin = new Thickness(0, 2, 0, 0) };
+            progressGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            progressGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            Border pbBorder = new Border
+            {
+                CornerRadius = new CornerRadius(2),
+                ClipToBounds = true,
+                Background = trackBrush,
+                Height = 4,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 10, 0)
+            };
+
+            pbProgress = new ProgressBar
+            {
+                Height = 4,
+                Minimum = 0,
+                Maximum = 100,
+                Value = 0,
+                Background = System.Windows.Media.Brushes.Transparent,
+                Foreground = accentBrush,
+                BorderThickness = new Thickness(0)
+            };
+            pbBorder.Child = pbProgress;
+            Grid.SetColumn(pbBorder, 0);
+            progressGrid.Children.Add(pbBorder);
+
+            txtPercent = new TextBlock
+            {
+                Text = "0%",
+                FontSize = 11,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = accentBrush,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            Grid.SetColumn(txtPercent, 1);
+            progressGrid.Children.Add(txtPercent);
+
+            Grid.SetRow(progressGrid, 2);
+            mainGrid.Children.Add(progressGrid);
+
+            rootBorder.Child = mainGrid;
+            this.Content = rootBorder;
+
+            this.Opacity = 0;
+            this.Loaded += delegate
+            {
+                DoubleAnimation fadeIn = new DoubleAnimation(0, 1, TimeSpan.FromMilliseconds(220));
+                this.BeginAnimation(Window.OpacityProperty, fadeIn);
+            };
+        }
+
+        public void UpdateProgress(string title, string detail, int percent, bool isFinal = false)
+        {
+            if (isClosing) return;
+            txtTitle.Text = title ?? "";
+            txtDetail.Text = detail ?? "";
+            pbProgress.Value = Math.Max(0, Math.Min(100, percent));
+            txtPercent.Text = pbProgress.Value + "%";
+
+            if (isFinal)
+            {
+                txtStatusTag.Text = "Completed";
+                if (autoCloseTimer == null)
+                {
+                    autoCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(6) };
+                    autoCloseTimer.Tick += (s, e) =>
+                    {
+                        autoCloseTimer.Stop();
+                        FadeOutAndClose();
+                    };
+                    autoCloseTimer.Start();
+                }
+            }
+        }
+
+        public void FadeOutAndClose()
+        {
+            if (isClosing) return;
+            isClosing = true;
+            try
+            {
+                DoubleAnimation fadeOut = new DoubleAnimation(1, 0, TimeSpan.FromMilliseconds(250));
+                fadeOut.Completed += delegate { try { this.Close(); } catch { } };
+                this.BeginAnimation(Window.OpacityProperty, fadeOut);
+            }
+            catch
+            {
+                try { this.Close(); } catch { }
+            }
+        }
+    }
+
     public class MainWindow : Window
     {
         private string appDir;
@@ -1838,6 +2107,289 @@ namespace FleetForge
             }
             catch { }
         }
+
+        // =========================================================================
+        // System Tray Integration & Windows 11 Toaster Notifications
+        // =========================================================================
+        private WinForms.NotifyIcon _trayIcon = null;
+        private WinForms.MenuItem _trayStatusMenuItem = null;
+        private Windows11ToastWindow _toastWindow = null;
+        private bool isInstallRunning = false;
+        private string currentProcessingAppName = "";
+        private string currentProcessingAppStatus = "";
+        private int currentProcessingAppIndex = 0;
+        private int currentProcessingAppTotal = 0;
+        private int currentProcessingPercent = 0;
+        private string lastDismissedAppName = "";
+
+        private void InitializeTrayIcon()
+        {
+            try
+            {
+                _trayIcon = new WinForms.NotifyIcon();
+                _trayIcon.Text = "FleetForge — Ready";
+
+                WinDrawing.Icon appIco = null;
+                try
+                {
+                    var asm = Assembly.GetExecutingAssembly();
+                    using (Stream s = asm.GetManifestResourceStream("appicon.ico"))
+                    {
+                        if (s != null) appIco = new WinDrawing.Icon(s);
+                    }
+                }
+                catch { }
+
+                if (appIco == null)
+                {
+                    try
+                    {
+                        string exe = Process.GetCurrentProcess().MainModule.FileName;
+                        appIco = WinDrawing.Icon.ExtractAssociatedIcon(exe);
+                    }
+                    catch { }
+                }
+
+                if (appIco == null) appIco = WinDrawing.SystemIcons.Application;
+                _trayIcon.Icon = appIco;
+
+                WinForms.ContextMenu menu = new WinForms.ContextMenu();
+
+                WinForms.MenuItem openItem = new WinForms.MenuItem("Open FleetForge", delegate {
+                    Dispatcher.Invoke(new Action(RestoreFromTray));
+                });
+                openItem.DefaultItem = true;
+                menu.MenuItems.Add(openItem);
+
+                menu.MenuItems.Add(new WinForms.MenuItem("-"));
+
+                _trayStatusMenuItem = new WinForms.MenuItem("Status: Idle");
+                _trayStatusMenuItem.Enabled = false;
+                menu.MenuItems.Add(_trayStatusMenuItem);
+
+                menu.MenuItems.Add(new WinForms.MenuItem("-"));
+
+                WinForms.MenuItem exitItem = new WinForms.MenuItem("Exit FleetForge", delegate {
+                    Dispatcher.Invoke(new Action(ExitApplicationFromTray));
+                });
+                menu.MenuItems.Add(exitItem);
+
+                _trayIcon.ContextMenu = menu;
+
+                _trayIcon.DoubleClick += delegate {
+                    Dispatcher.Invoke(new Action(RestoreFromTray));
+                };
+                _trayIcon.Click += delegate(object s, EventArgs e) {
+                    WinForms.MouseEventArgs me = e as WinForms.MouseEventArgs;
+                    if (me != null && me.Button == WinForms.MouseButtons.Left)
+                    {
+                        Dispatcher.Invoke(new Action(RestoreFromTray));
+                    }
+                };
+
+                _trayIcon.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                AppendLog("[TRAY] Warning: Tray icon setup failed: " + ex.Message);
+            }
+        }
+
+        private void MainWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (this.WindowState == WindowState.Minimized)
+            {
+                this.ShowInTaskbar = false;
+                this.Hide();
+
+                if (_trayIcon != null) _trayIcon.Visible = true;
+
+                if (isInstallRunning)
+                {
+                    ShowWindows11Toast(
+                        string.Format("[{0}/{1}] {2}", currentProcessingAppIndex > 0 ? currentProcessingAppIndex : 1, currentProcessingAppTotal > 0 ? currentProcessingAppTotal : 1, string.IsNullOrEmpty(currentProcessingAppName) ? "Starting setup..." : currentProcessingAppName),
+                        currentProcessingAppStatus,
+                        currentProcessingPercent,
+                        false);
+                }
+            }
+            else if (this.WindowState == WindowState.Normal || this.WindowState == WindowState.Maximized)
+            {
+                this.ShowInTaskbar = true;
+                CloseWindows11Toast();
+            }
+        }
+
+        public void RestoreFromTray()
+        {
+            try
+            {
+                if (this.Visibility != Visibility.Visible)
+                {
+                    this.Show();
+                }
+                if (this.WindowState == WindowState.Minimized)
+                {
+                    this.WindowState = WindowState.Normal;
+                }
+                this.ShowInTaskbar = true;
+                this.Activate();
+                this.Topmost = true;
+                this.Topmost = false;
+                this.Focus();
+
+                CloseWindows11Toast();
+            }
+            catch { }
+        }
+
+        private void ExitApplicationFromTray()
+        {
+            if (isInstallRunning)
+            {
+                RestoreFromTray();
+                MessageBoxResult mbr = MessageBox.Show(
+                    "Software installation is currently running.\n\nAre you sure you want to cancel the installation and exit FleetForge?",
+                    "Exit FleetForge",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+                if (mbr != MessageBoxResult.Yes) return;
+
+                RequestStopInstallation();
+            }
+
+            DisposeTrayAndToast();
+            Application.Current.Shutdown();
+        }
+
+        private void DisposeTrayAndToast()
+        {
+            try
+            {
+                if (_trayIcon != null)
+                {
+                    _trayIcon.Visible = false;
+                    _trayIcon.Dispose();
+                    _trayIcon = null;
+                }
+            }
+            catch { }
+
+            try
+            {
+                CloseWindows11Toast();
+            }
+            catch { }
+        }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            if (isInstallRunning)
+            {
+                MessageBoxResult mbr = MessageBox.Show(
+                    "Software installation is currently running in background.\n\n• Click YES to minimize to the System Tray and continue setup.\n• Click NO to stop installation and exit.\n• Click CANCEL to stay in FleetForge.",
+                    "Installation in Progress — FleetForge",
+                    MessageBoxButton.YesNoCancel,
+                    MessageBoxImage.Question);
+
+                if (mbr == MessageBoxResult.Yes)
+                {
+                    e.Cancel = true;
+                    this.WindowState = WindowState.Minimized;
+                    return;
+                }
+                else if (mbr == MessageBoxResult.Cancel)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+                else
+                {
+                    RequestStopInstallation();
+                }
+            }
+
+            DisposeTrayAndToast();
+            base.OnClosing(e);
+        }
+
+        private void ShowWindows11Toast(string title, string detail, int percent, bool isFinal)
+        {
+            try
+            {
+                if (_toastWindow != null)
+                {
+                    _toastWindow.Close();
+                    _toastWindow = null;
+                }
+
+                _toastWindow = new Windows11ToastWindow(
+                    currentThemeIsLight,
+                    new Action(RestoreFromTray),
+                    new Action(delegate { lastDismissedAppName = currentProcessingAppName; }),
+                    windowsAccentColor);
+
+                _toastWindow.Closed += delegate { _toastWindow = null; };
+                _toastWindow.Show();
+                _toastWindow.UpdateProgress(title, detail, percent, isFinal);
+            }
+            catch { }
+        }
+
+        private void UpdateToastProgress(string title, string detail, int percent, bool isFinal = false)
+        {
+            Dispatcher.Invoke(new Action(delegate
+            {
+                try
+                {
+                    currentProcessingPercent = percent;
+                    currentProcessingAppStatus = detail;
+
+                    if (_trayIcon != null)
+                    {
+                        string shortTitle = (title != null && title.Length > 28) ? title.Substring(0, 25) + "..." : (title ?? "FleetForge");
+                        string trayTip = "FleetForge: " + shortTitle + " (" + percent + "%)";
+                        if (trayTip.Length > 63) trayTip = trayTip.Substring(0, 63);
+                        _trayIcon.Text = trayTip;
+
+                        if (_trayStatusMenuItem != null)
+                        {
+                            _trayStatusMenuItem.Text = shortTitle + " (" + percent + "%)";
+                        }
+                    }
+
+                    if (this.WindowState == WindowState.Minimized || this.Visibility != Visibility.Visible)
+                    {
+                        if (_toastWindow == null)
+                        {
+                            if (isFinal || currentProcessingAppName != lastDismissedAppName)
+                            {
+                                ShowWindows11Toast(title, detail, percent, isFinal);
+                            }
+                        }
+                        else
+                        {
+                            _toastWindow.UpdateProgress(title, detail, percent, isFinal);
+                        }
+                    }
+                }
+                catch { }
+            }));
+        }
+
+        private void CloseWindows11Toast()
+        {
+            try
+            {
+                if (_toastWindow != null)
+                {
+                    _toastWindow.Close();
+                    _toastWindow = null;
+                }
+            }
+            catch { }
+        }
+
 
         private Border borderSidebar;
         private Border borderBrandLogo;
@@ -2255,6 +2807,8 @@ namespace FleetForge
 
             this.SourceInitialized += delegate { UpdateDwmTheme(currentThemeIsLight); };
             this.Loaded += delegate { UpdateDwmTheme(currentThemeIsLight); };
+            InitializeTrayIcon();
+            this.StateChanged += MainWindow_StateChanged;
         }
 
         public static ImageSource LoadApplicationIcon()
@@ -4520,6 +5074,7 @@ namespace FleetForge
                 SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
                 this.Closed += delegate
                 {
+                    try { DisposeTrayAndToast(); } catch { }
                     try { SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged; } catch { }
                 };
             }
@@ -5896,7 +6451,13 @@ namespace FleetForge
                     ind.Visibility = Visibility.Visible;
                     ind.Background = windowsAccentBrush;
                 }
-                if (icon != null) icon.Foreground = windowsAccentBrush;
+                if (icon != null)
+                {
+                    if (icon == navIconSetup) icon.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+                    else if (icon == navIconCatalog) icon.Foreground = currentThemeIsLight ? HexBrush("#4F46E5") : HexBrush("#818CF8");
+                    else if (icon == navIconLogs) icon.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC");
+                    else icon.Foreground = windowsAccentBrush;
+                }
                 if (txt != null)
                 {
                     txt.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
@@ -5909,7 +6470,13 @@ namespace FleetForge
                 btn.BorderBrush = Brushes.Transparent;
                 btn.BorderThickness = new Thickness(0);
                 if (ind != null) ind.Visibility = Visibility.Collapsed;
-                if (icon != null) icon.Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#B0B0B0");
+                if (icon != null)
+                {
+                    if (icon == navIconSetup) icon.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+                    else if (icon == navIconCatalog) icon.Foreground = currentThemeIsLight ? HexBrush("#4F46E5") : HexBrush("#818CF8");
+                    else if (icon == navIconLogs) icon.Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC");
+                    else icon.Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#B0B0B0");
+                }
                 if (txt != null)
                 {
                     txt.Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#D0D0D0");
@@ -6949,13 +7516,49 @@ namespace FleetForge
                 hdr.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 
                 StackPanel titleStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+                string iconBg = currentThemeIsLight ? "#F1F5F9" : "#1E293B";
+                string iconBorder = currentThemeIsLight ? "#E2E8F0" : "#384358";
+                string iconFg = currentThemeIsLight ? "#0F172A" : "#F8FAFC";
+
+                string gid = (currentGrp.id ?? "").ToLowerInvariant();
+                if (gid.Contains("developer") || gid.Contains("dev"))
+                {
+                    iconBg = currentThemeIsLight ? "#EFF6FF" : "#1E3A8A";
+                    iconBorder = currentThemeIsLight ? "#BFDBFE" : "#1D4ED8";
+                    iconFg = currentThemeIsLight ? "#1D4ED8" : "#93C5FD";
+                }
+                else if (gid.Contains("office") || gid.Contains("productiv"))
+                {
+                    iconBg = currentThemeIsLight ? "#FFFBEB" : "#78350F";
+                    iconBorder = currentThemeIsLight ? "#FDE68A" : "#B45309";
+                    iconFg = currentThemeIsLight ? "#D97706" : "#FDE68A";
+                }
+                else if (gid.Contains("media") || gid.Contains("design"))
+                {
+                    iconBg = currentThemeIsLight ? "#F5F3FF" : "#4C1D95";
+                    iconBorder = currentThemeIsLight ? "#DDD6FE" : "#6D28D9";
+                    iconFg = currentThemeIsLight ? "#7C3AED" : "#DDD6FE";
+                }
+                else if (gid.Contains("minimal") || gid.Contains("essential"))
+                {
+                    iconBg = currentThemeIsLight ? "#ECFDF5" : "#064E3B";
+                    iconBorder = currentThemeIsLight ? "#A7F3D0" : "#047857";
+                    iconFg = currentThemeIsLight ? "#059669" : "#6EE7B7";
+                }
+                else if (isRecGroup || gid.Contains("recommend") || gid.Contains("partner"))
+                {
+                    iconBg = currentThemeIsLight ? "#FEF3C7" : "#451A03";
+                    iconBorder = currentThemeIsLight ? "#FDE68A" : "#78350F";
+                    iconFg = currentThemeIsLight ? "#B45309" : "#FBBF24";
+                }
+
                 Border iconBox = new Border()
                 {
-                    Width = 36,
-                    Height = 36,
-                    CornerRadius = new CornerRadius(6),
-                    Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#1E293B"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#384358"),
+                    Width = 38,
+                    Height = 38,
+                    CornerRadius = new CornerRadius(8),
+                    Background = HexBrush(iconBg),
+                    BorderBrush = HexBrush(iconBorder),
                     BorderThickness = new Thickness(1),
                     Margin = new Thickness(0, 0, 10, 0)
                 };
@@ -6964,7 +7567,7 @@ namespace FleetForge
                     Text = GetSafeGroupIcon(currentGrp),
                     FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
                     FontSize = 18,
-                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                    Foreground = HexBrush(iconFg),
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 };
@@ -9903,6 +10506,11 @@ namespace FleetForge
 
             isCancelled = false;
             currentProc = null;
+            isInstallRunning = true;
+            currentProcessingAppTotal = selectedApps.Count;
+            currentProcessingAppIndex = 0;
+            currentProcessingPercent = 0;
+            UpdateToastProgress("Starting Installation", string.Format("0 of {0} apps completed", selectedApps.Count), 0);
 
             btnInstall.Visibility = Visibility.Collapsed;
             btnStop.Visibility = Visibility.Visible;
@@ -9971,6 +10579,15 @@ namespace FleetForge
                     }
 
                     AppModel app = selectedApps[i];
+                    currentProcessingAppIndex = i + 1;
+                    currentProcessingAppName = app.name;
+                    int appStartPercent = (int)(((double)i / selectedApps.Count) * 100);
+                    currentProcessingPercent = appStartPercent;
+                    currentProcessingAppStatus = "Preparing installer...";
+                    UpdateToastProgress(
+                        string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                        "Preparing installer...",
+                        appStartPercent);
                     AppRowView item = appRows.Find(delegate(AppRowView r) { return r != null && r.App != null && r.App.id == app.id; });
 
                     Dispatcher.Invoke(new Action(delegate
@@ -10009,6 +10626,10 @@ namespace FleetForge
                         if (File.Exists(offlineFile))
                         {
                             AppendLog("Found offline setup: " + offlineFile);
+                            UpdateToastProgress(
+                                string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                "Installing offline package...",
+                                appStartPercent);
                             try
                             {
                                 ProcessStartInfo psi = new ProcessStartInfo(offlineFile, app.silentArgs ?? "");
@@ -10077,6 +10698,10 @@ namespace FleetForge
                     if (!installed && !isCancelled && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
                     {
                         AppendLog("Downloading setup package for: " + app.name + "...");
+                        UpdateToastProgress(
+                            string.Format("[{0}/{1}] Downloading {2}", i + 1, selectedApps.Count, app.name),
+                            "Downloading setup package from Cloud Delivery...",
+                            appStartPercent);
                         rec.installMethod = "Direct Cloud Delivery";
                         string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
                             app.offlineInstaller :
@@ -10100,6 +10725,10 @@ namespace FleetForge
                             {
                                 long kb = new FileInfo(downloadTarget).Length / 1024;
                                 AppendLog(string.Format("Downloaded {0} ({1:N0} KB). Starting silent background installation...", app.name, kb));
+                                UpdateToastProgress(
+                                    string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                    "Running silent background installer...",
+                                    appStartPercent);
 
                                 ProcessStartInfo psi;
                                 bool isMsi = downloadTarget.EndsWith(".msi", StringComparison.OrdinalIgnoreCase);
@@ -10196,6 +10825,10 @@ namespace FleetForge
                         else
                         {
                             AppendLog("Deploying package: " + app.name + " (" + app.id + ")...");
+                            UpdateToastProgress(
+                                string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                "Deploying via Package Delivery Engine...",
+                                appStartPercent);
                             string args = string.Format("install --id \"{0}\" -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity", app.id);
                             try
                             {
@@ -10319,6 +10952,13 @@ namespace FleetForge
                         if (progressBar != null) progressBar.Value = i + 1;
                     }));
 
+                    int appDonePercent = (int)(((double)(i + 1) / selectedApps.Count) * 100);
+                    currentProcessingPercent = appDonePercent;
+                    UpdateToastProgress(
+                        string.Format("[{0}/{1}] {2}", i + 1, selectedApps.Count, app.name),
+                        installed ? "Successfully installed." : "Setup finished.",
+                        appDonePercent);
+
                     if (isCancelled)
                     {
                         AppendLog("[STOPPED] Machine setup cancelled by user.");
@@ -10340,6 +10980,25 @@ namespace FleetForge
                 // Generate standalone compliance audit reports (HTML & JSON)
                 lastGeneratedReportPath = DeploymentReportGenerator.GenerateHtmlReport(currentSession, logFilePath);
                 DeploymentReportGenerator.GenerateJsonReport(currentSession);
+
+                isInstallRunning = false;
+                if (isCancelled)
+                {
+                    int rem = selectedApps.Count - success - failed;
+                    UpdateToastProgress(
+                        "Installation Paused",
+                        string.Format("{0} installed, {1} remaining", success, rem),
+                        currentProcessingPercent,
+                        isFinal: true);
+                }
+                else
+                {
+                    UpdateToastProgress(
+                        "✅ Machine Setup Completed!",
+                        string.Format("Successfully installed {0} of {1} apps", success, selectedApps.Count),
+                        100,
+                        isFinal: true);
+                }
 
                 AppendLog("==========================================================");
                 AppendLog(string.Format("Setup Ended! Succeeded: {0}, Failed/Timeout: {1}", success, failed));
