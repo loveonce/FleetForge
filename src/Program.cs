@@ -1986,7 +1986,7 @@ namespace FleetForge
             };
         }
 
-        public void UpdateProgress(string title, string detail, int percent, bool isFinal = false)
+        public void UpdateProgress(string title, string detail, int percent, bool isFinal = false, string statusTag = null)
         {
             if (isClosing) return;
             txtTitle.Text = title ?? "";
@@ -1994,12 +1994,33 @@ namespace FleetForge
             pbProgress.Value = Math.Max(0, Math.Min(100, percent));
             txtPercent.Text = pbProgress.Value + "%";
 
-            if (isFinal)
+            if (!string.IsNullOrEmpty(statusTag))
+            {
+                txtStatusTag.Text = statusTag;
+                if (statusTag.IndexOf("Interrupted", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    txtStatusTag.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#F59E0B"));
+                }
+                else if (statusTag.IndexOf("Fail", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    txtStatusTag.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#EF4444"));
+                }
+                else
+                {
+                    txtStatusTag.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#10B981"));
+                }
+            }
+            else if (isFinal)
             {
                 txtStatusTag.Text = "Completed";
+                txtStatusTag.Foreground = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#10B981"));
+            }
+
+            if (isFinal)
+            {
                 if (autoCloseTimer == null)
                 {
-                    autoCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(6) };
+                    autoCloseTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(9) };
                     autoCloseTimer.Tick += (s, e) =>
                     {
                         autoCloseTimer.Stop();
@@ -2313,7 +2334,7 @@ namespace FleetForge
             base.OnClosing(e);
         }
 
-        private void ShowWindows11Toast(string title, string detail, int percent, bool isFinal)
+        private void ShowWindows11Toast(string title, string detail, int percent, bool isFinal, string statusTag = null)
         {
             try
             {
@@ -2331,12 +2352,12 @@ namespace FleetForge
 
                 _toastWindow.Closed += delegate { _toastWindow = null; };
                 _toastWindow.Show();
-                _toastWindow.UpdateProgress(title, detail, percent, isFinal);
+                _toastWindow.UpdateProgress(title, detail, percent, isFinal, statusTag);
             }
             catch { }
         }
 
-        private void UpdateToastProgress(string title, string detail, int percent, bool isFinal = false)
+        private void UpdateToastProgress(string title, string detail, int percent, bool isFinal = false, string statusTag = null)
         {
             Dispatcher.Invoke(new Action(delegate
             {
@@ -2358,18 +2379,20 @@ namespace FleetForge
                         }
                     }
 
-                    if (this.WindowState == WindowState.Minimized || this.Visibility != Visibility.Visible)
+                    // Show or update toast
+                    // If final completion, ALWAYS show the toast so user gets the completion summary
+                    if (isFinal || this.WindowState == WindowState.Minimized || this.Visibility != Visibility.Visible)
                     {
                         if (_toastWindow == null)
                         {
                             if (isFinal || currentProcessingAppName != lastDismissedAppName)
                             {
-                                ShowWindows11Toast(title, detail, percent, isFinal);
+                                ShowWindows11Toast(title, detail, percent, isFinal, statusTag);
                             }
                         }
                         else
                         {
-                            _toastWindow.UpdateProgress(title, detail, percent, isFinal);
+                            _toastWindow.UpdateProgress(title, detail, percent, isFinal, statusTag);
                         }
                     }
                 }
@@ -10569,6 +10592,7 @@ namespace FleetForge
 
                 int success = 0;
                 int failed = 0;
+                int downloadCount = 0;
 
                 for (int i = 0; i < selectedApps.Count; i++)
                 {
@@ -10723,6 +10747,7 @@ namespace FleetForge
 
                             if (File.Exists(downloadTarget) && new FileInfo(downloadTarget).Length > 0)
                             {
+                                downloadCount++;
                                 long kb = new FileInfo(downloadTarget).Length / 1024;
                                 AppendLog(string.Format("Downloaded {0} ({1:N0} KB). Starting silent background installation...", app.name, kb));
                                 UpdateToastProgress(
@@ -10887,6 +10912,7 @@ namespace FleetForge
                                         {
                                             rec.status = "Installed";
                                             installed = true;
+                                            downloadCount++;
                                         }
                                         else
                                         {
@@ -10977,36 +11003,39 @@ namespace FleetForge
                     SaveSessionState();
                 }
 
-                // Generate standalone compliance audit reports (HTML & JSON)
-                lastGeneratedReportPath = DeploymentReportGenerator.GenerateHtmlReport(currentSession, logFilePath);
+                // Session state record saved to JSON (HTML report generation disabled per user preference)
                 DeploymentReportGenerator.GenerateJsonReport(currentSession);
 
                 isInstallRunning = false;
+
+                string completionStatus = "Complete";
                 if (isCancelled)
                 {
-                    int rem = selectedApps.Count - success - failed;
-                    UpdateToastProgress(
-                        "Installation Paused",
-                        string.Format("{0} installed, {1} remaining", success, rem),
-                        currentProcessingPercent,
-                        isFinal: true);
+                    completionStatus = "Interrupted";
                 }
-                else
+                else if (failed > 0 && success > 0)
                 {
-                    UpdateToastProgress(
-                        "✅ Machine Setup Completed!",
-                        string.Format("Successfully installed {0} of {1} apps", success, selectedApps.Count),
-                        100,
-                        isFinal: true);
+                    completionStatus = "Partial Failure";
+                }
+                else if (failed > 0 && success == 0)
+                {
+                    completionStatus = "Failed";
                 }
 
+                string toastTitle = isCancelled ? "⏹️ Setup Interrupted" :
+                    (failed == 0 ? "✅ Setup Complete" : "⚠️ Setup Finished with Issues");
+
+                string toastDetails = string.Format(
+                    "Selected: {0}  |  Installed: {1}  |  Downloaded: {2}  |  Status: {3}",
+                    selectedApps.Count,
+                    success,
+                    downloadCount,
+                    completionStatus);
+
                 AppendLog("==========================================================");
-                AppendLog(string.Format("Setup Ended! Succeeded: {0}, Failed/Timeout: {1}", success, failed));
+                AppendLog(string.Format("Setup Ended! Status: {0} (Selected: {1}, Installed: {2}, Downloaded: {3}, Failed: {4})",
+                    completionStatus, selectedApps.Count, success, downloadCount, failed));
                 AppendLog("Log file saved to: " + logFilePath);
-                if (!string.IsNullOrEmpty(lastGeneratedReportPath))
-                {
-                    AppendLog("Compliance Audit Report: " + lastGeneratedReportPath);
-                }
                 AppendLog("==========================================================");
 
                 Dispatcher.Invoke(new Action(delegate
@@ -11017,9 +11046,9 @@ namespace FleetForge
                     btnInstall.IsEnabled = true;
                     UpdateBottomBarVisibility();
 
-                    if (btnViewReport != null && !string.IsNullOrEmpty(lastGeneratedReportPath))
+                    if (btnViewReport != null)
                     {
-                        btnViewReport.Visibility = Visibility.Visible;
+                        btnViewReport.Visibility = Visibility.Collapsed;
                     }
 
                     btnCreateNewGroup.IsEnabled = true;
@@ -11031,31 +11060,20 @@ namespace FleetForge
                         if (rc.ExportButton != null) rc.ExportButton.IsEnabled = true;
                     }
 
-                    if (isCancelled)
+                    // Update bottom bar status
+                    if (txtStatus != null)
                     {
-                        int remaining = selectedApps.Count - success - failed;
-                        if (txtStatus != null) txtStatus.Text = string.Format("Setup Stopped ({0} Installed, {1} Remaining)", success, remaining);
-                        MessageBox.Show(
-                            string.Format("Installation was paused.\n\nInstalled: {0}\nRemaining: {2}\n\nYour progress is saved! You can resume anytime.", success, failed, remaining),
-                            "Installation Paused",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
+                        txtStatus.Text = string.Format("Setup {0} — Selected: {1}, Installed: {2}, Downloaded: {3}, Status: {4}",
+                            completionStatus, selectedApps.Count, success, downloadCount, completionStatus);
                     }
-                    else
-                    {
-                        if (txtStatus != null) txtStatus.Text = string.Format("Setup Complete! ({0} Succeeded, {1} Failed)", success, failed);
-                        MessageBoxResult reportChoice = MessageBox.Show(
-                            string.Format("All Done! App Installation Finished.\n\nInstalled Successfully: {0}\nFailed / Skipped: {1}\n\nInstallation summary saved to:\n{2}\n\nWould you like to view the installation summary now?",
-                                success, failed, lastGeneratedReportPath ?? logFilePath),
-                            "Installation Finished — FleetForge",
-                            MessageBoxButton.YesNo,
-                            MessageBoxImage.Information);
 
-                        if (reportChoice == MessageBoxResult.Yes && !string.IsNullOrEmpty(lastGeneratedReportPath) && File.Exists(lastGeneratedReportPath))
-                        {
-                            try { Process.Start(new ProcessStartInfo(lastGeneratedReportPath) { UseShellExecute = true }); } catch { }
-                        }
-                    }
+                    // Surface the Windows 11 Toaster Notification Popup with complete summary
+                    ShowWindows11Toast(
+                        toastTitle,
+                        toastDetails,
+                        isCancelled ? currentProcessingPercent : 100,
+                        isFinal: true,
+                        statusTag: completionStatus);
                 }));
             });
         }
