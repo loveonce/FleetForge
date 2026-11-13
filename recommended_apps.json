@@ -9,7 +9,7 @@
     "accentColor": "#F59E0B",
     "apps": [
       "bitguardian.Winriser",
-      "bitguardian.BitDriverUpdater"
+      "BitGuardian.BitDriverUpdater"
     ]
   },
   "apps": [
@@ -23,7 +23,7 @@
       "offlineInstaller": "wrsetup.exe"
     },
     {
-      "id": "bitguardian.BitDriverUpdater",
+      "id": "BitGuardian.BitDriverUpdater",
       "name": "Bit Driver Updater",
       "category": "utilities",
       "description": "Up-to-date drivers can improve performance, stability & security of your computer.",

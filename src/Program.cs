@@ -6277,6 +6277,8 @@ namespace FleetForge
                 foreach (AppModel a in recModel.apps)
                 {
                     if (a == null || string.IsNullOrEmpty(a.id)) continue;
+                    if (!string.IsNullOrEmpty(a.category)) a.category = NormalizeCategoryId(a.category);
+
                     AppModel existing = config.apps.Find(delegate (AppModel x) { return string.Equals(x.id, a.id, StringComparison.OrdinalIgnoreCase); });
                     if (existing == null)
                     {
@@ -6343,6 +6345,44 @@ namespace FleetForge
                 if (string.Equals(g0.id, "recommended", StringComparison.OrdinalIgnoreCase) && g0.apps != null && g0.apps.Contains(a.id))
                     return true;
             }
+            return false;
+        }
+
+        private string NormalizeCategoryId(string cat)
+        {
+            if (string.IsNullOrWhiteSpace(cat)) return "utilities";
+            string c = cat.Trim().ToLowerInvariant();
+
+            if (c == "all") return "all";
+
+            // Direct ID & keyword matches
+            if (c == "browsers" || c.Contains("browser")) return "browsers";
+            if (c == "development" || c.Contains("develop") || c.Contains("code")) return "development";
+            if (c == "communication" || c.Contains("communicat") || c.Contains("collab") || c.Contains("chat")) return "communication";
+            if (c == "productivity" || c.Contains("productiv") || c.Contains("office")) return "productivity";
+            if (c == "utilities" || c.Contains("utilit") || c.Contains("tool")) return "utilities";
+            if (c == "media" || c.Contains("creative") || c.Contains("video") || c.Contains("audio")) return "media";
+            if (c == "security" || c.Contains("secur") || c.Contains("privac") || c.Contains("antivirus")) return "security";
+            if (c == "cloud" || c.Contains("storage") || c.Contains("drive") || c.Contains("backup")) return "cloud";
+            if (c == "gaming" || c.Contains("game") || c.Contains("engine")) return "gaming";
+            if (c == "recommended" || c == "top choice" || c == "topchoice") return "utilities";
+
+            return c;
+        }
+
+        private bool MatchesCategory(AppModel a, string targetCat)
+        {
+            if (a == null) return false;
+            if (string.IsNullOrEmpty(targetCat) || string.Equals(targetCat, "all", StringComparison.OrdinalIgnoreCase)) return true;
+
+            string normTarget = NormalizeCategoryId(targetCat);
+            string normApp = NormalizeCategoryId(a.category);
+
+            if (string.Equals(normTarget, normApp, StringComparison.OrdinalIgnoreCase)) return true;
+
+            // Direct fallback
+            if (string.Equals(a.category ?? "", targetCat, StringComparison.OrdinalIgnoreCase)) return true;
+
             return false;
         }
 
@@ -8319,7 +8359,7 @@ namespace FleetForge
             foreach (CategoryModel cat in config.categories)
             {
                 CategoryModel curCat = cat;
-                int count = config.apps.FindAll(delegate (AppModel a) { return a.category == curCat.id; }).Count;
+                int count = config.apps.FindAll(delegate (AppModel a) { return MatchesCategory(a, curCat.id); }).Count;
                 Button cTab = CreateCategoryTabButton(curCat.id, GetSafeCategoryIcon(curCat), curCat.name, count, activeCategory == curCat.id);
                 categoryChipsPanel.Children.Add(cTab);
             }
@@ -9330,9 +9370,24 @@ namespace FleetForge
                 case "selected_top":
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
-                        int rankA = (a.id != null && selectedAppIds.Contains(a.id)) ? 0 : (IsRecommendedApp(a) ? 1 : 2);
-                        int rankB = (b.id != null && selectedAppIds.Contains(b.id)) ? 0 : (IsRecommendedApp(b) ? 1 : 2);
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (recA && selA) ? 0 : (recA ? 1 : (selA ? 2 : 3));
+                        int rankB = (recB && selB) ? 0 : (recB ? 1 : (selB ? 2 : 3));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
                     break;
@@ -9340,6 +9395,19 @@ namespace FleetForge
                 case "alpha_asc":
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        if (recA != recB) return recA ? -1 : 1;
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
                     break;
@@ -9347,6 +9415,10 @@ namespace FleetForge
                 case "alpha_desc":
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        if (recA != recB) return recA ? -1 : 1;
+
                         return string.Compare(b.name ?? "", a.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
                     break;
@@ -9354,6 +9426,10 @@ namespace FleetForge
                 case "category":
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        if (recA != recB) return recA ? -1 : 1;
+
                         int catComp = string.Compare(a.category ?? "", b.category ?? "", StringComparison.OrdinalIgnoreCase);
                         if (catComp != 0) return catComp;
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
@@ -9365,13 +9441,29 @@ namespace FleetForge
                     EnsureAppDefaultIndices();
                     activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
                     {
-                        int rankA = (a.id != null && selectedAppIds.Contains(a.id)) ? 0 : (IsRecommendedApp(a) ? 1 : 2);
-                        int rankB = (b.id != null && selectedAppIds.Contains(b.id)) ? 0 : (IsRecommendedApp(b) ? 1 : 2);
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (recA && selA) ? 0 : (recA ? 1 : (selA ? 2 : 3));
+                        int rankB = (recB && selB) ? 0 : (recB ? 1 : (selB ? 2 : 3));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
 
                         int idxA = (a.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(a.id)) ? appDefaultIndices[a.id] : int.MaxValue;
                         int idxB = (b.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(b.id)) ? appDefaultIndices[b.id] : int.MaxValue;
-                        return idxA.CompareTo(idxB);
+                        if (idxA != idxB) return idxA.CompareTo(idxB);
+
+                        return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
                     break;
             }
@@ -9405,6 +9497,7 @@ namespace FleetForge
             {
                 if (a == null) return false;
                 bool isRec = IsRecommendedApp(a);
+                bool matchCat = MatchesCategory(a, activeCategory);
 
                 if (!string.IsNullOrEmpty(lowerQuery))
                 {
@@ -9426,12 +9519,10 @@ namespace FleetForge
                     // If it is a custom database / recommended app that matches search, ALWAYS show it regardless of category!
                     if (isRec) return true;
 
-                    bool matchCat = (activeCategory == "all") || (a.category == activeCategory);
                     return matchCat;
                 }
                 else
                 {
-                    bool matchCat = (activeCategory == "all") || (a.category == activeCategory);
                     return matchCat;
                 }
             });
