@@ -71,6 +71,8 @@ ping -n 2 127.0.0.1 >nul 2>&1
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Xaml.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Web.Extensions.dll" ^
+    /reference:"System.Windows.Forms.dll" ^
+    /reference:"System.Drawing.dll" ^
     /reference:"System.dll" ^
     /reference:"System.Core.dll" ^
     ..\src\Program.cs ..\src\AppUrls.cs
