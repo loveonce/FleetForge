@@ -6,12 +6,12 @@
   "company": "Love Malhotra",
   "website": "https://www.google.com",
   "changelog": [
-    "Fixed update catalog merge to prevent duplicate Minimal Essentials pack",
-    "Enabled self-healing runtime catalog deduplication on application launch",
-    "Enhanced Check for Updates with active prompt notifications and always-interactive check button",
-    "Smart semantic version comparison engine for seamless update delivery",
-    "Windows 11 Fluent designer splash screen with native breathing and gliding animations",
-    "Automatic Windows 11 Light/Dark theme and dynamic accent color detection"
+    "Minimize to Windows System Tray (NotifyIcon) with interactive controls and background task awareness",
+    "Windows 11 Fluent Toaster Notification popup showing live progress and completion summary (Selected, Installed, Downloaded, Status)",
+    "Windows 11 colorful Fluent icon badges across navigation rail and pack cards",
+    "Bottom bar Stop button during setup and smart Finish button returning to originating screen",
+    "Relocated install-log.txt, error-log.txt, and session data to AppData\\Local\\FleetForge with complete purge on uninstall",
+    "Removed HTML report generation and blocking modal dialogs for a seamless deployment experience"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }
