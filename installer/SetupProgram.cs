@@ -321,6 +321,14 @@ namespace FleetForge
                     }
                     catch { }
 
+                    try
+                    {
+                        string rp = Path.Combine(dataDir, "recommended_apps.json");
+                        SetupEngine.SafeExtractResource("recommended_apps.json", rp);
+                        SetupEngine.SafeCopyFile(rp, Path.Combine(targetDir, "recommended_apps.json"));
+                    }
+                    catch { }
+
                     // 3. Extract or Preserve settings.json
                     UpdateTrayProgress("FleetForge Update: Preserving settings...");
                     string configDir = Path.Combine(targetDir, "config");
@@ -1074,6 +1082,14 @@ namespace FleetForge
                     }
                     catch { }
 
+                    try
+                    {
+                        string rp = Path.Combine(dataDir, "recommended_apps.json");
+                        SafeExtractResource("recommended_apps.json", rp);
+                        SafeCopyFile(rp, Path.Combine(targetDir, "recommended_apps.json"));
+                    }
+                    catch { }
+
                     // 4. Extract or Preserve settings.json
                     UpdateProgress(65, "Applying configuration preferences...");
                     string settingsPath = Path.Combine(configDir, "settings.json");
@@ -1353,7 +1369,7 @@ namespace FleetForge
                         {
                             var customGroups = new ArrayList();
                             var builtInIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                                "developer", "office", "creative", "minimal", "essential", "gamer", "system", "office_business", "gamer_creator"
+                                "recommended", "developer", "office", "creative", "minimal", "essential", "gamer", "system", "office_business", "gamer_creator"
                             };
 
                             foreach (object gObj in existingGroups)

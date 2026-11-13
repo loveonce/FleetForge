@@ -91,6 +91,19 @@ namespace FleetForge
         }
     }
 
+    public class RecommendedDataModel
+    {
+        public string version { get; set; }
+        public GroupModel group { get; set; }
+        public List<AppModel> apps { get; set; }
+
+        public RecommendedDataModel()
+        {
+            group = new GroupModel();
+            apps = new List<AppModel>();
+        }
+    }
+
     public class ConfigModel
     {
         public List<GroupModel> groups { get; set; }
@@ -1930,6 +1943,7 @@ namespace FleetForge
         private TextBox txtGroupNameInput;
         private TextBox txtGroupIconInput;
         private WrapPanel emojiChipsPanel;
+        private StackPanel panelEmojiChips;
         private TextBox txtGroupDescInput;
         private TextBox txtModalAppSearch;
         private Button btnModalFilterTabAll;
@@ -2120,8 +2134,10 @@ namespace FleetForge
         private int modalUnselectedRenderedCount = 0;
         private bool modalShowSelectedOnly = false;
         private string activeCategory = "all";
-        private string activeRoleId = "developer";
+        private string activeRoleId = "recommended";
         private string currentEditingGroupId = null;
+        private string recommendedAppsPath = null;
+        private List<string> recommendedMasterAppIds = new List<string>();
 
         public MainWindow(ConfigModel preloadedConfig = null, UpdateInfo preloadedUpdate = null)
         {
@@ -2134,6 +2150,7 @@ namespace FleetForge
             ApplyTheme(GetCurrentThemeIsLight());
             RegisterSystemThemeWatcher();
             CheckBackgroundUpdateOnStartup();
+            CheckLiveRecommendedAppsUpdate();
             CheckResumeSession();
             CheckFirstTimeTutorial();
 
@@ -2213,6 +2230,10 @@ namespace FleetForge
             // 1. Catalog path (apps.json in data/ or root)
             configPath = Path.Combine(appDir, "data", "apps.json");
             if (!File.Exists(configPath)) configPath = Path.Combine(appDir, "apps.json");
+
+            // 1b. Recommended & affiliate software database path
+            recommendedAppsPath = Path.Combine(appDir, "data", "recommended_apps.json");
+            if (!File.Exists(recommendedAppsPath)) recommendedAppsPath = Path.Combine(appDir, "recommended_apps.json");
 
             // 2. Settings path (settings.json in config/ or root)
             settingsPath = Path.Combine(appDir, "config", "settings.json");
@@ -2826,7 +2847,7 @@ namespace FleetForge
                 </Grid>
 
                 <!-- 2. Emoji Chips -->
-                <StackPanel Grid.Row=""2"" Margin=""0,0,0,12"">
+                <StackPanel x:Name=""PanelEmojiChips"" Grid.Row=""2"" Margin=""0,0,0,12"">
                     <TextBlock Text=""Quick Icon Select:"" FontSize=""10"" Foreground=""#707070"" Margin=""0,0,0,4""/>
                     <WrapPanel x:Name=""EmojiChipsPanel""/>
                 </StackPanel>
@@ -3518,6 +3539,7 @@ namespace FleetForge
             txtGroupNameInput = (TextBox)root.FindName("TxtGroupNameInput");
             txtGroupIconInput = (TextBox)root.FindName("TxtGroupIconInput");
             emojiChipsPanel = (WrapPanel)root.FindName("EmojiChipsPanel");
+            panelEmojiChips = (StackPanel)root.FindName("PanelEmojiChips");
             txtGroupDescInput = (TextBox)root.FindName("TxtGroupDescInput");
             txtModalAppSearch = (TextBox)root.FindName("TxtModalAppSearch");
             btnModalFilterTabAll = (Button)root.FindName("BtnModalFilterTabAll");
@@ -6025,6 +6047,7 @@ namespace FleetForge
             if (config.apps == null) config.apps = new List<AppModel>();
 
             DeduplicateGroups();
+            EnsureRecommendedPack();
 
             foreach (GroupModel g in config.groups)
             {
@@ -6050,6 +6073,206 @@ namespace FleetForge
                     c.icon = GetSafeCategoryIcon(c);
                 }
             }
+        }
+
+        private RecommendedDataModel LoadRecommendedDataFromDiskOrResource()
+        {
+            string json = null;
+            try
+            {
+                if (!string.IsNullOrEmpty(recommendedAppsPath) && File.Exists(recommendedAppsPath))
+                {
+                    json = File.ReadAllText(recommendedAppsPath, Encoding.UTF8);
+                }
+            }
+            catch { }
+
+            if (string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    Assembly asm = Assembly.GetExecutingAssembly();
+                    string[] resNames = asm.GetManifestResourceNames();
+                    foreach (string name in resNames)
+                    {
+                        if (name.EndsWith("recommended_apps.json", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (Stream s = asm.GetManifestResourceStream(name))
+                            {
+                                if (s != null)
+                                {
+                                    using (StreamReader r = new StreamReader(s, Encoding.UTF8))
+                                    {
+                                        json = r.ReadToEnd();
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    var ser = new JavaScriptSerializer();
+                    ser.MaxJsonLength = int.MaxValue;
+                    return ser.Deserialize<RecommendedDataModel>(json);
+                }
+                catch { }
+            }
+
+            var fallback = new RecommendedDataModel();
+            fallback.group = new GroupModel()
+            {
+                id = "recommended",
+                name = "Top Choice • Recommended",
+                icon = "⭐",
+                description = "Curated partner software, essential premium tools, and top-rated recommendations.",
+                accentColor = "#F59E0B",
+                apps = new List<string>() { "Google.Chrome", "7zip.7zip", "VideoLAN.VLC", "Notepad++.Notepad++", "voidtools.Everything" }
+            };
+            return fallback;
+        }
+
+        private void ApplyRecommendedDataModel(RecommendedDataModel recModel)
+        {
+            if (recModel == null || recModel.group == null) return;
+            if (config == null) config = new ConfigModel();
+            if (config.groups == null) config.groups = new List<GroupModel>();
+            if (config.apps == null) config.apps = new List<AppModel>();
+
+            GroupModel rg = recModel.group;
+            rg.id = "recommended";
+            if (string.IsNullOrEmpty(rg.name)) rg.name = "Top Choice • Recommended";
+            if (string.IsNullOrEmpty(rg.icon)) rg.icon = "⭐";
+            if (string.IsNullOrEmpty(rg.description)) rg.description = "Curated partner software, essential premium tools, and top-rated recommendations.";
+            if (string.IsNullOrEmpty(rg.accentColor)) rg.accentColor = "#F59E0B";
+
+            if (rg.apps != null)
+            {
+                recommendedMasterAppIds = new List<string>(rg.apps);
+            }
+
+            if (recModel.apps != null)
+            {
+                foreach (AppModel a in recModel.apps)
+                {
+                    if (a == null || string.IsNullOrEmpty(a.id)) continue;
+                    AppModel existing = config.apps.Find(delegate (AppModel x) { return string.Equals(x.id, a.id, StringComparison.OrdinalIgnoreCase); });
+                    if (existing == null)
+                    {
+                        config.apps.Add(a);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(a.name)) existing.name = a.name;
+                        if (!string.IsNullOrEmpty(a.category)) existing.category = a.category;
+                        if (!string.IsNullOrEmpty(a.description)) existing.description = a.description;
+                        if (!string.IsNullOrEmpty(a.silentArgs)) existing.silentArgs = a.silentArgs;
+                        if (!string.IsNullOrEmpty(a.offlineInstaller)) existing.offlineInstaller = a.offlineInstaller;
+                    }
+                }
+            }
+
+            config.groups.RemoveAll(delegate (GroupModel g) {
+                return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+            });
+
+            config.groups.Insert(0, rg);
+        }
+
+        private void EnsureRecommendedPack()
+        {
+            if (config == null) config = new ConfigModel();
+            if (config.groups == null) config.groups = new List<GroupModel>();
+
+            if (config.groups.Count > 0 && config.groups[0] != null && string.Equals(config.groups[0].id, "recommended", StringComparison.OrdinalIgnoreCase))
+            {
+                GroupModel existingRec = config.groups[0];
+                if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
+                {
+                    if (existingRec.apps != null) recommendedMasterAppIds = new List<string>(existingRec.apps);
+                }
+                return;
+            }
+
+            GroupModel foundRec = config.groups.Find(delegate (GroupModel g) {
+                return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+            });
+
+            if (foundRec != null)
+            {
+                config.groups.RemoveAll(delegate (GroupModel g) {
+                    return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+                });
+                config.groups.Insert(0, foundRec);
+                if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
+                {
+                    if (foundRec.apps != null) recommendedMasterAppIds = new List<string>(foundRec.apps);
+                }
+            }
+            else
+            {
+                RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
+                ApplyRecommendedDataModel(recModel);
+            }
+        }
+
+        private void CheckLiveRecommendedAppsUpdate()
+        {
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    string url = AppUrls.RecommendedAppsUrl;
+                    if (string.IsNullOrEmpty(url)) return;
+
+                    string directUrl = ConvertDirectUrl(url);
+                    using (WebClient wc = new WebClient())
+                    {
+                        wc.Encoding = Encoding.UTF8;
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
+                        string json = wc.DownloadString(directUrl);
+                        if (string.IsNullOrEmpty(json)) return;
+
+                        var ser = new JavaScriptSerializer();
+                        ser.MaxJsonLength = int.MaxValue;
+                        RecommendedDataModel remoteModel = ser.Deserialize<RecommendedDataModel>(json);
+                        if (remoteModel != null && remoteModel.group != null && remoteModel.group.apps != null && remoteModel.group.apps.Count > 0)
+                        {
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(recommendedAppsPath))
+                                {
+                                    string dir = Path.GetDirectoryName(recommendedAppsPath);
+                                    if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                                    File.WriteAllText(recommendedAppsPath, json, Encoding.UTF8);
+                                }
+                            }
+                            catch { }
+
+                            Dispatcher.Invoke(new Action(delegate
+                            {
+                                ApplyRecommendedDataModel(remoteModel);
+                                BuildRoleCards();
+                                if (currentView == "catalog")
+                                {
+                                    BuildCatalog();
+                                }
+                                if (activeRoleId == "recommended")
+                                {
+                                    SelectRole("recommended");
+                                }
+                            }));
+                        }
+                    }
+                }
+                catch { }
+            });
         }
 
         private void LoadConfigWithAutoSync()
@@ -6230,6 +6453,7 @@ namespace FleetForge
             presetsContainer.Children.Clear();
 
             List<PresetProfileItem> presets = new List<PresetProfileItem>();
+            presets.Add(new PresetProfileItem("recommended", "\u2B50", "Top Choice \u2022 Curated Partner Software", "FEATURED", "Live governed affiliate and partner software, essential premium tools, and top recommendations.", AppUrls.RecommendedAppsUrl));
             presets.Add(new PresetProfileItem("full", "\uD83C\uDF10", "Complete FleetForge Enterprise Library", "16,349 PACKAGES", "Entire official FleetForge cloud repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
             presets.Add(new PresetProfileItem("developer", "\uD83D\uDCBB", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", AppUrls.CloudSyncUrl));
             presets.Add(new PresetProfileItem("office", "\uD83D\uDCBC", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", AppUrls.CloudSyncUrl));
@@ -6550,19 +6774,27 @@ namespace FleetForge
                 Grid.SetColumn(titleStack, 0);
                 hdr.Children.Add(titleStack);
 
+                bool isRecGroup = string.Equals(currentGrp.id, "recommended", StringComparison.OrdinalIgnoreCase);
+
                 Border badge = new Border();
-                badge.Background = currentThemeIsLight ? HexBrush("#EBF3FB") : HexBrush("#1E293B");
-                badge.BorderBrush = currentThemeIsLight ? HexBrush("#CCE4F7") : HexBrush("#334155");
+                badge.Background = isRecGroup ?
+                    (currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03")) :
+                    (currentThemeIsLight ? HexBrush("#EBF3FB") : HexBrush("#1E293B"));
+                badge.BorderBrush = isRecGroup ?
+                    (currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F")) :
+                    (currentThemeIsLight ? HexBrush("#CCE4F7") : HexBrush("#334155"));
                 badge.BorderThickness = new Thickness(1);
                 badge.CornerRadius = new CornerRadius(4);
                 badge.Padding = new Thickness(8, 3, 8, 3);
                 badge.VerticalAlignment = VerticalAlignment.Center;
                 TextBlock cTxt = new TextBlock()
                 {
-                    Text = currentGrp.apps.Count + " apps",
+                    Text = isRecGroup ? (currentGrp.apps.Count + " partner apps") : (currentGrp.apps.Count + " apps"),
                     FontSize = 11,
                     FontWeight = FontWeights.SemiBold,
-                    Foreground = currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8")
+                    Foreground = isRecGroup ?
+                        (currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")) :
+                        (currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8"))
                 };
                 badge.Child = cTxt;
                 Grid.SetColumn(badge, 1);
@@ -6843,16 +7075,30 @@ namespace FleetForge
         private void OpenEditGroupModal(GroupModel grp)
         {
             currentEditingGroupId = grp.id;
-            txtModalTitle.Text = "Edit App Pack: " + grp.name;
+            bool isRecommended = string.Equals(grp.id, "recommended", StringComparison.OrdinalIgnoreCase);
+
+            txtModalTitle.Text = isRecommended ? "Customize Top Choice • Recommended Software" : ("Edit App Pack: " + grp.name);
             txtGroupNameInput.Text = grp.name;
+            txtGroupNameInput.IsReadOnly = isRecommended;
             txtGroupIconInput.Text = GetSafeGroupIcon(grp);
+            txtGroupIconInput.IsReadOnly = isRecommended;
             txtGroupDescInput.Text = grp.description;
-            btnDeleteGroup.Visibility = Visibility.Visible;
+            txtGroupDescInput.IsReadOnly = isRecommended;
+
+            btnDeleteGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Visible;
+
+            if (btnModalFilterTabAll != null && btnModalFilterTabSelected != null)
+            {
+                btnModalFilterTabAll.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
+                btnModalFilterTabSelected.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
+            }
+
+            if (panelEmojiChips != null) panelEmojiChips.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
 
             PopulateModalAppChecklist(grp.apps);
             groupModalOverlay.Visibility = Visibility.Visible;
-            txtGroupNameInput.Focus();
+            if (!isRecommended) txtGroupNameInput.Focus();
         }
 
         private void UpdateModalTabStyles()
@@ -6893,6 +7139,12 @@ namespace FleetForge
             modalUnselectedApps.Clear();
             modalSelectedAppIds.Clear();
             modalShowSelectedOnly = false;
+            txtGroupNameInput.IsReadOnly = false;
+            txtGroupIconInput.IsReadOnly = false;
+            txtGroupDescInput.IsReadOnly = false;
+            if (btnModalFilterTabAll != null) btnModalFilterTabAll.Visibility = Visibility.Visible;
+            if (btnModalFilterTabSelected != null) btnModalFilterTabSelected.Visibility = Visibility.Visible;
+            if (panelEmojiChips != null) panelEmojiChips.Visibility = Visibility.Visible;
         }
 
         private void PopulateModalAppChecklist(List<string> selectedAppIds)
@@ -6907,6 +7159,7 @@ namespace FleetForge
 
         private void FilterModalApps()
         {
+            bool isRecommended = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
             string q = txtModalAppSearch.Text != null ? txtModalAppSearch.Text.Trim() : "";
             if (q.Equals("filter software...", StringComparison.OrdinalIgnoreCase)) q = "";
 
@@ -6922,7 +7175,39 @@ namespace FleetForge
             List<AppModel> selectedAppsList = new List<AppModel>();
             List<AppModel> unselectedAppsList = new List<AppModel>();
 
-            if (string.IsNullOrEmpty(q))
+            if (isRecommended)
+            {
+                List<string> candidateIds = (recommendedMasterAppIds != null && recommendedMasterAppIds.Count > 0)
+                    ? recommendedMasterAppIds
+                    : (config.groups.Count > 0 && config.groups[0] != null && config.groups[0].apps != null ? config.groups[0].apps : new List<string>());
+
+                foreach (string id in candidateIds)
+                {
+                    AppModel foundApp;
+                    if (!appDict.TryGetValue(id, out foundApp))
+                    {
+                        foundApp = new AppModel() { id = id, name = id, category = "utilities", description = "Recommended partner software package" };
+                    }
+
+                    if (!string.IsNullOrEmpty(q))
+                    {
+                        bool match = (foundApp.name != null && foundApp.name.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                                     (foundApp.id != null && foundApp.id.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                                     (foundApp.description != null && foundApp.description.IndexOf(q, StringComparison.OrdinalIgnoreCase) >= 0);
+                        if (!match) continue;
+                    }
+
+                    if (modalSelectedAppIds.Contains(foundApp.id))
+                    {
+                        selectedAppsList.Add(foundApp);
+                    }
+                    else
+                    {
+                        unselectedAppsList.Add(foundApp);
+                    }
+                }
+            }
+            else if (string.IsNullOrEmpty(q))
             {
                 HashSet<string> addedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -6999,6 +7284,42 @@ namespace FleetForge
 
         private void RenderModalChecklist(List<AppModel> selectedApps, List<AppModel> unselectedApps)
         {
+            bool isRecommended = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
+
+            if (isRecommended)
+            {
+                if (selectedApps.Count > 0)
+                {
+                    Border selHeader = CreateModalSectionHeader(
+                        string.Format("⭐ CHECKED RECOMMENDED PACKAGES ({0})", selectedApps.Count),
+                        "These partner tools are checked and will be installed on your machine",
+                        true);
+                    modalAppsContainer.Children.Add(selHeader);
+
+                    foreach (AppModel a in selectedApps)
+                    {
+                        Border card = CreateModalAppCard(a);
+                        modalAppsContainer.Children.Add(card);
+                    }
+                }
+
+                if (unselectedApps.Count > 0)
+                {
+                    Border unselHeader = CreateModalSectionHeader(
+                        string.Format("○ UNCHECKED RECOMMENDED PACKAGES ({0})", unselectedApps.Count),
+                        "Click to check these recommended packages for installation",
+                        false);
+                    modalAppsContainer.Children.Add(unselHeader);
+
+                    foreach (AppModel a in unselectedApps)
+                    {
+                        Border card = CreateModalAppCard(a);
+                        modalAppsContainer.Children.Add(card);
+                    }
+                }
+                return;
+            }
+
             // Section 1: Selected Software (Always placed on top!)
             if (selectedApps.Count > 0)
             {
@@ -7259,6 +7580,7 @@ namespace FleetForge
             Grid.SetColumn(sp, 1);
             g.Children.Add(sp);
 
+            bool isRec = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
             Border statusBadge = new Border()
             {
                 Background = isChecked ?
@@ -7271,7 +7593,7 @@ namespace FleetForge
             };
             TextBlock statusBadgeText = new TextBlock()
             {
-                Text = isChecked ? "✓ SELECTED" : "+ ADD",
+                Text = isChecked ? "✓ SELECTED" : (isRec ? "○ UNCHECKED" : "+ ADD"),
                 FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 Foreground = isChecked ?
@@ -7292,6 +7614,7 @@ namespace FleetForge
             Action updateVisualState = new Action(delegate
             {
                 bool active = cb.IsChecked == true;
+                bool isRecMode = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
                 curBorder.Background = active ?
                     (currentThemeIsLight ? HexBrush("#F0F9FF") : HexBrush("#132537")) :
                     (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#181818"));
@@ -7301,7 +7624,7 @@ namespace FleetForge
                 curBadge.Background = active ?
                     (currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C4A6E")) :
                     (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#222222"));
-                curBadgeText.Text = active ? "✓ SELECTED" : "+ ADD";
+                curBadgeText.Text = active ? "✓ SELECTED" : (isRecMode ? "○ UNCHECKED" : "+ ADD");
                 curBadgeText.Foreground = active ?
                     (currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8")) :
                     (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#777777"));
@@ -7354,6 +7677,25 @@ namespace FleetForge
 
         private void SaveGroupModal()
         {
+            if (string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase))
+            {
+                GroupModel recGrp = config.groups.Find(delegate (GroupModel g) { return g.id == "recommended"; });
+                if (recGrp != null)
+                {
+                    recGrp.apps = new List<string>(modalSelectedAppIds);
+                }
+
+                SaveConfigToFile();
+                CloseGroupModal();
+
+                BuildRoleCards();
+                BuildCatalog();
+                SelectRole("recommended");
+
+                if (txtStatus != null) txtStatus.Text = string.Format("Top Choice: {0} software packages selected for installation.", modalSelectedAppIds.Count);
+                return;
+            }
+
             string name = txtGroupNameInput.Text.Trim();
             if (string.IsNullOrEmpty(name))
             {
@@ -7410,6 +7752,11 @@ namespace FleetForge
         private void DeleteGroupModal()
         {
             if (currentEditingGroupId == null) return;
+            if (string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("The Top Choice • Recommended pack is a protected system pack and cannot be deleted.", "Protected Pack", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             if (config.groups.Count <= 1)
             {
                 MessageBox.Show("You cannot delete the only remaining role group. At least one group is required.", "Cannot Delete", MessageBoxButton.OK, MessageBoxImage.Warning);

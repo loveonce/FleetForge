@@ -11,6 +11,7 @@ namespace FleetForge
         public string cloudSyncUrl { get; set; }
         public string updateCheckUrl { get; set; }
         public string updateDownloadUrl { get; set; }
+        public string recommendedAppsUrl { get; set; }
         public string companyWebsiteUrl { get; set; }
     }
 
@@ -31,7 +32,10 @@ namespace FleetForge
         // 3. Setup Installer Download URL (Executable downloaded when updating)
         public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";
 
-        // 4. Company Official Website
+        // 4. Recommended & Affiliate Partner Software Database URL (Live Governed)
+        public static string RecommendedAppsUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/recommended_apps.json";
+
+        // 5. Company Official Website
         public static string CompanyWebsiteUrl = "https://github.com/loveonce/FleetForge";
 
         // ========================================================================
@@ -106,6 +110,7 @@ namespace FleetForge
                         if (!string.IsNullOrEmpty(model.cloudSyncUrl)) CloudSyncUrl = model.cloudSyncUrl.Trim();
                         if (!string.IsNullOrEmpty(model.updateCheckUrl)) UpdateCheckUrl = model.updateCheckUrl.Trim();
                         if (!string.IsNullOrEmpty(model.updateDownloadUrl)) UpdateDownloadUrl = model.updateDownloadUrl.Trim();
+                        if (!string.IsNullOrEmpty(model.recommendedAppsUrl)) RecommendedAppsUrl = model.recommendedAppsUrl.Trim();
                         if (!string.IsNullOrEmpty(model.companyWebsiteUrl)) CompanyWebsiteUrl = model.companyWebsiteUrl.Trim();
                     }
                 }

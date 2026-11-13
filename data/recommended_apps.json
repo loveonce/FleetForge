@@ -1,0 +1,59 @@
+{
+  "version": "1.0",
+  "group": {
+    "id": "recommended",
+    "name": "Top Choice • Recommended",
+    "icon": "⭐",
+    "description": "Curated partner software, essential premium tools, and top-rated recommendations.",
+    "accentColor": "#F59E0B",
+    "apps": [
+      "Google.Chrome",
+      "7zip.7zip",
+      "VideoLAN.VLC",
+      "Notepad++.Notepad++",
+      "voidtools.Everything"
+    ]
+  },
+  "apps": [
+    {
+      "id": "Google.Chrome",
+      "name": "Google Chrome",
+      "category": "browsers",
+      "description": "Fast, secure web browser built by Google.",
+      "offlineInstaller": "ChromeStandaloneSetup64.exe",
+      "silentArgs": "/silent /install"
+    },
+    {
+      "id": "7zip.7zip",
+      "name": "7-Zip Archiver",
+      "category": "utilities",
+      "description": "High-compression ratio file archiver utility.",
+      "offlineInstaller": "7z-x64.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "VideoLAN.VLC",
+      "name": "VLC Media Player",
+      "category": "media",
+      "description": "Universal multimedia player for audio and video formats.",
+      "offlineInstaller": "vlc-setup.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "Notepad++.Notepad++",
+      "name": "Notepad++",
+      "category": "utilities",
+      "description": "Powerful lightweight code and text editor.",
+      "offlineInstaller": "npp.installer.exe",
+      "silentArgs": "/S"
+    },
+    {
+      "id": "voidtools.Everything",
+      "name": "Everything Search",
+      "category": "utilities",
+      "description": "Ultra-fast filename search utility for Windows.",
+      "offlineInstaller": "EverythingSetup.exe",
+      "silentArgs": "/S"
+    }
+  ]
+}

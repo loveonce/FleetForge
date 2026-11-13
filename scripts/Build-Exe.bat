@@ -13,11 +13,15 @@ set ICON_FILE=src\assets\appicon.ico
 set APP_URLS_JSON=app_urls.json
 if not exist "%APP_URLS_JSON%" set APP_URLS_JSON=config\app_urls.json
 
+set RECOMMENDED_JSON=data\recommended_apps.json
+if not exist "%RECOMMENDED_JSON%" set RECOMMENDED_JSON=recommended_apps.json
+
 echo ==========================================================
 echo        Building FleetForge Desktop Executable (.EXE)
 echo ==========================================================
 echo [Active Icon]: %ICON_FILE%
 echo [URLs Source]: %APP_URLS_JSON%
+echo [Recommended]: %RECOMMENDED_JSON%
 echo [1/2] Compiling C# WPF Application...
 taskkill /F /IM FleetForge.exe >nul 2>&1
 ping -n 2 127.0.0.1 >nul 2>&1
@@ -31,6 +35,7 @@ if exist FleetForge.exe (
     /win32icon:%ICON_FILE% ^
     /resource:%ICON_FILE%,appicon.ico ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
+    /resource:%RECOMMENDED_JSON%,recommended_apps.json ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationCore.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^
