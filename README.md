@@ -45,5 +45,3 @@ A single, self-contained Windows setup wizard that deploys FleetForge onto any P
    ```
 2. Select any role to load its pre-configured bundle, or check individual software in the **Applications Catalog**.
 3. Click **⚡ Set up this machine** — silent zero-touch background installation begins automatically.
-
----
