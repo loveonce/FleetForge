@@ -9375,8 +9375,13 @@ namespace FleetForge
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        int rankA = (recA && selA) ? 0 : (recA ? 1 : (selA ? 2 : 3));
-                        int rankB = (recB && selB) ? 0 : (recB ? 1 : (selB ? 2 : 3));
+                        // Priority:
+                        // 0: Selected + Recommended
+                        // 1: Selected + Standard
+                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
+                        // 3: Unselected + Standard
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
@@ -9397,7 +9402,12 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
-                        if (recA != recB) return recA ? -1 : 1;
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
                         {
@@ -9417,7 +9427,12 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
-                        if (recA != recB) return recA ? -1 : 1;
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         return string.Compare(b.name ?? "", a.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
@@ -9428,7 +9443,12 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
-                        if (recA != recB) return recA ? -1 : 1;
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         int catComp = string.Compare(a.category ?? "", b.category ?? "", StringComparison.OrdinalIgnoreCase);
                         if (catComp != 0) return catComp;
@@ -9446,8 +9466,13 @@ namespace FleetForge
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        int rankA = (recA && selA) ? 0 : (recA ? 1 : (selA ? 2 : 3));
-                        int rankB = (recB && selB) ? 0 : (recB ? 1 : (selB ? 2 : 3));
+                        // Priority:
+                        // 0: Selected + Recommended
+                        // 1: Selected + Standard
+                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
+                        // 3: Unselected + Standard
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
