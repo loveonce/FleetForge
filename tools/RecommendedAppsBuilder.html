@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetForge — Recommended & Affiliate Apps Builder</title>
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --sidebar-bg: #FFFFFF;
+      --border: #E2E8F0;
+      --border-focus: #3B82F6;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --primary-light: #EFF6FF;
+      --success: #10B981;
+      --success-light: #ECFDF5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEF2F2;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      color: #FFFFFF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0F172A;
+    }
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35);
+    }
+    .btn-success {
+      background: var(--success);
+      color: #FFFFFF;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+    .btn-secondary {
+      background: #FFFFFF;
+      border-color: var(--border);
+      color: #334155;
+    }
+    .btn-secondary:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+      color: #0F172A;
+    }
+    .btn-danger {
+      background: #FFFFFF;
+      border-color: #FCA5A5;
+      color: var(--danger);
+    }
+    .btn-danger:hover {
+      background: var(--danger-light);
+      border-color: var(--danger);
+    }
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px 28px 48px;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      gap: 24px;
+    }
+    @media (max-width: 1080px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Section Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1E293B;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    /* Form Fields */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .col-span-2 {
+      grid-column: span 2;
+    }
+    .col-span-3 {
+      grid-column: span 3;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .field-label span.req {
+      color: var(--danger);
+      margin-left: 2px;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .input, select, textarea {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: #0F172A;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      outline: none;
+      width: 100%;
+    }
+    .input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 52px;
+    }
+
+    /* Privacy Tag */
+    .badge-privacy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Software Item Card */
+    .app-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .app-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: var(--shadow-md);
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .app-num {
+      width: 26px;
+      height: 26px;
+      background: #EFF6FF;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 12px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app-title-preview {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1E293B;
+      flex: 1;
+      margin-left: 10px;
+    }
+    .app-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Quick Preset Pills */
+    .preset-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 5px;
+    }
+    .pill {
+      font-size: 11px;
+      background: #F1F5F9;
+      color: #334155;
+      padding: 2px 8px;
+      border-radius: 5px;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s;
+    }
+    .pill:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+      border-color: #CBD5E1;
+    }
+    .pill:active {
+      transform: scale(0.96);
+    }
+
+    /* Right Preview Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 86px;
+      height: calc(100vh - 110px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .preview-card {
+      background: #1E293B;
+      color: #F8FAFC;
+      border-radius: 12px;
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #334155;
+    }
+    .preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .json-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: #E2E8F0;
+      background: #0F172A;
+      padding: 12px;
+      border-radius: 8px;
+      flex: 1;
+      overflow: auto;
+      white-space: pre;
+      user-select: text;
+    }
+
+    /* Instruction / Fresher Guide Box */
+    .guide-banner {
+      background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+      border: 1px solid #BFDBFE;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .guide-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .guide-body h3 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1E3A8A;
+      margin-bottom: 3px;
+    }
+    .guide-body p {
+      font-size: 12px;
+      color: #1E40AF;
+      line-height: 1.45;
+    }
+    .guide-body ul {
+      margin-top: 6px;
+      margin-left: 18px;
+      font-size: 11.5px;
+      color: #1E40AF;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Modal for Import JSON */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal {
+      background: #FFFFFF;
+      border-radius: 12px;
+      max-width: 650px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+
+    /* Footer */
+    footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 14px 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    footer strong {
+      color: #1E293B;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-block">
+      <div class="brand-icon">⭐</div>
+      <div class="brand-text">
+        <h1>FleetForge Recommended Apps Builder</h1>
+        <p>Zero-Code Catalog Generator for Partner, Affiliate & Direct Setup Applications</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="openImportModal()">
+        📂 Import Existing JSON
+      </button>
+      <button class="btn btn-secondary" onclick="resetToFleetForgeDefaults()">
+        🔄 Reset Defaults
+      </button>
+      <button class="btn btn-secondary" onclick="copyJsonToClipboard()">
+        📋 Copy JSON
+      </button>
+      <button class="btn btn-primary" onclick="downloadRecommendedJson()">
+        📥 Download recommended_apps.json
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main>
+    <!-- Left Form Section -->
+    <section>
+      <!-- Quick Fresher Guide -->
+      <div class="guide-banner">
+        <div class="guide-icon">💡</div>
+        <div class="guide-body">
+          <h3>Quick Guide for Team & Freshers</h3>
+          <p>This tool creates the official <code>recommended_apps.json</code> file used by FleetForge. You can add any custom software, partner tools, or affiliate packages:</p>
+          <ul>
+            <li><strong>Category Dropdown:</strong> Select any of the 9 official FleetForge categories.</li>
+            <li><strong>Download URL:</strong> Direct link to <code>.exe</code> or <code>.msi</code>. FleetForge downloads it behind the scenes (<strong>URL is completely hidden from end users</strong>).</li>
+            <li><strong>Silent Arguments:</strong> Click any of the convenient preset pills (e.g., <code>/S</code> or <code>/VERYSILENT /NORESTART</code>) so installation runs automatically without popups.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- App Pack Settings Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>⚙️ Recommended Pack Settings (Group Header)</span>
+          <span style="font-size: 11.5px; color: var(--text-muted); font-weight: normal;">Always shown as first pinned pack in FleetForge Quick Setup</span>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">Pack Title <span class="req">*</span></label>
+            <input type="text" id="groupName" class="input" value="Top Choice • Recommended" placeholder="e.g. Top Choice • Recommended" oninput="updateLiveJson()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Group ID</label>
+            <input type="text" id="groupId" class="input" value="recommended" readonly style="background:#F1F5F9; color:#64748B;">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Emoji Icon</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="groupIcon" class="input" value="⭐" style="width:70px; text-align:center; font-size:16px;" oninput="updateLiveJson()">
+              <div class="preset-pills" style="margin-top:0; align-items:center;">
+                <span class="pill" onclick="setIcon('⭐')">⭐</span>
+                <span class="pill" onclick="setIcon('🚀')">🚀</span>
+                <span class="pill" onclick="setIcon('💎')">💎</span>
+                <span class="pill" onclick="setIcon('🔥')">🔥</span>
+                <span class="pill" onclick="setIcon('🏆')">🏆</span>
+                <span class="pill" onclick="setIcon('⚡')">⚡</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Accent Color</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="color" id="groupAccentColor" value="#F59E0B" style="width:42px; height:34px; padding:2px; border-radius:6px; cursor:pointer;" oninput="document.getElementById('groupAccentHex').value = this.value; updateLiveJson();">
+              <input type="text" id="groupAccentHex" class="input" value="#F59E0B" style="width:110px;" oninput="document.getElementById('groupAccentColor').value = this.value; updateLiveJson();">
+            </div>
+          </div>
+          <div class="field-group col-span-2">
+            <label class="field-label">Pack Description</label>
+            <input type="text" id="groupDesc" class="input" value="Curated partner software, essential premium tools, and top-rated recommendations." placeholder="Short description displayed on the card..." oninput="updateLiveJson()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications List Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <h2 style="font-size: 16px; font-weight: 700; color: #1E293B;">
+          📦 Applications in this Pack (<span id="appCount">0</span>)
+        </h2>
+        <button class="btn btn-primary" onclick="addNewApp()">
+          ➕ Add New Software
+        </button>
+      </div>
+
+      <!-- Container for Dynamic Application Cards -->
+      <div id="appsListContainer">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Add Button at the Bottom as Well -->
+      <div style="text-align: center; margin-top: 10px;">
+        <button class="btn btn-secondary" style="width: 100%; padding: 12px; font-size: 14px; border-style: dashed;" onclick="addNewApp()">
+          ➕ Add Another Software Item
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Sidebar with Live Preview & Export -->
+    <aside class="sidebar">
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="preview-title">
+            <span>📄</span> Live JSON Preview (Auto-Validated)
+          </div>
+          <span id="charCountBadge" style="font-size: 11px; color: #94A3B8;">0 bytes</span>
+        </div>
+        <div id="jsonPreview" class="json-code"></div>
+        <div style="margin-top: 12px; display: flex; gap: 8px;">
+          <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="copyJsonToClipboard()">
+            📋 Copy JSON
+          </button>
+          <button class="btn btn-primary btn-sm" style="flex: 1;" onclick="downloadRecommendedJson()">
+            📥 Download File
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Import Modal -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">📂 Import Existing recommended_apps.json</div>
+      <p style="font-size: 13px; color: var(--text-muted);">
+        Choose a file from your computer or paste existing JSON below to edit and update:
+      </p>
+      <div>
+        <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)" style="font-size: 13px;">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Or Paste JSON Content Directly:</label>
+        <textarea id="pasteJsonText" rows="10" placeholder='{ "group": {...}, "apps": [...] }' style="font-family: monospace; font-size: 12px;"></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+        <button class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="applyPastedJson()">Apply & Load Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div id="toast" class="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Action completed successfully</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment • Designed & Developed by <strong>Love Malhotra</strong>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // All 9 official categories supported by FleetForge
+    const CATEGORIES = [
+      { id: "browsers", label: "Web Browsers", icon: "🌐" },
+      { id: "development", label: "Development & Code", icon: "💻" },
+      { id: "utilities", label: "Utilities & Tools", icon: "🛠️" },
+      { id: "media", label: "Media & Creative", icon: "🎬" },
+      { id: "communication", label: "Communication & Collab", icon: "💬" },
+      { id: "productivity", label: "Productivity & Office", icon: "📄" },
+      { id: "security", label: "Security & Privacy", icon: "🛡️" },
+      { id: "cloud", label: "Cloud & Storage", icon: "☁️" },
+      { id: "gaming", label: "Gaming & Entertainment", icon: "🎮" }
+    ];
+
+    // Default Seed Data from FleetForge
+    const DEFAULT_DATA = {
+      _comment: "FleetForge Top Choice • Partner & Affiliate Software Catalog. Configure direct download URLs for software not present on Winget. Name, Category, and Description are shown in the UI (downloadUrl is strictly hidden from users). On install, FleetForge downloads the setup and executes it silently.",
+      version: "1.0",
+      group: {
+        id: "recommended",
+        name: "Top Choice • Recommended",
+        icon: "⭐",
+        description: "Curated partner software, essential premium tools, and top-rated recommendations.",
+        accentColor: "#F59E0B"
+      },
+      apps: [
+        {
+          id: "7zip.7zip",
+          name: "7-Zip Archiver",
+          category: "utilities",
+          description: "High-compression ratio file archiver utility.",
+          downloadUrl: "https://www.7-zip.org/a/7z2408-x64.exe",
+          silentArgs: "/S",
+          offlineInstaller: "7z-x64.exe"
+        },
+        {
+          id: "Notepad++.Notepad++",
+          name: "Notepad++",
+          category: "utilities",
+          description: "Powerful lightweight code and text editor.",
+          downloadUrl: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7/npp.8.7.Installer.x64.exe",
+          silentArgs: "/S",
+          offlineInstaller: "npp-installer.exe"
+        },
+        {
+          id: "voidtools.Everything",
+          name: "Everything Search",
+          category: "utilities",
+          description: "Ultra-fast filename search utility for Windows.",
+          downloadUrl: "https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe",
+          silentArgs: "/S",
+          offlineInstaller: "Everything-Setup.exe"
+        },
+        {
+          id: "VideoLAN.VLC",
+          name: "VLC Media Player",
+          category: "media",
+          description: "Universal multimedia player for audio and video formats.",
+          downloadUrl: "https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe",
+          silentArgs: "/S",
+          offlineInstaller: "vlc-setup.exe"
+        },
+        {
+          id: "Google.Chrome",
+          name: "Google Chrome",
+          category: "browsers",
+          description: "Fast, secure web browser built by Google.",
+          downloadUrl: "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
+          silentArgs: "/silent /install",
+          offlineInstaller: "ChromeStandaloneSetup64.exe"
+        }
+      ]
+    };
+
+    // State
+    let appsData = JSON.parse(JSON.stringify(DEFAULT_DATA.apps));
+
+    // Initialize on load
+    window.addEventListener("DOMContentLoaded", () => {
+      renderApps();
+      updateLiveJson();
+    });
+
+    function setIcon(emoji) {
+      document.getElementById("groupIcon").value = emoji;
+      updateLiveJson();
+    }
+
+    // Render all App Cards
+    function renderApps() {
+      const container = document.getElementById("appsListContainer");
+      container.innerHTML = "";
+      document.getElementById("appCount").textContent = appsData.length;
+
+      appsData.forEach((app, index) => {
+        const card = document.createElement("div");
+        card.className = "app-card";
+        card.id = `app-card-${index}`;
+
+        // Options for categories
+        const categoryOptions = CATEGORIES.map(cat => {
+          const selected = cat.id === (app.category || "utilities") ? "selected" : "";
+          return `<option value="${cat.id}" ${selected}>${cat.icon} ${cat.label} (${cat.id})</option>`;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="app-header">
+            <div class="app-num">${index + 1}</div>
+            <div class="app-title-preview" id="title-preview-${index}">
+              ${escapeHtml(app.name || "Untitled Application")}
+              <span style="font-weight: normal; font-size: 11px; color: var(--text-muted); margin-left: 8px;">
+                ${escapeHtml(app.id || "")}
+              </span>
+            </div>
+            <div class="app-controls">
+              <button class="btn btn-secondary btn-sm" title="Move Up" onclick="moveApp(${index}, -1)" ${index === 0 ? "disabled" : ""}>⬆️</button>
+              <button class="btn btn-secondary btn-sm" title="Move Down" onclick="moveApp(${index}, 1)" ${index === appsData.length - 1 ? "disabled" : ""}>⬇️</button>
+              <button class="btn btn-danger btn-sm" title="Delete" onclick="removeApp(${index})">🗑️ Delete</button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <!-- App Name -->
+            <div class="field-group">
+              <label class="field-label">Software Name <span class="req">*</span></label>
+              <input type="text" class="input" value="${escapeHtml(app.name || "")}" 
+                placeholder="e.g. Clean Master Pro" 
+                oninput="onAppNameChange(${index}, this.value)">
+            </div>
+
+            <!-- App ID -->
+            <div class="field-group">
+              <label class="field-label">
+                <span>Unique App ID <span class="req">*</span></span>
+                <span class="field-hint">e.g. Partner.CleanMaster</span>
+              </label>
+              <input type="text" class="input" id="app-id-${index}" value="${escapeHtml(app.id || "")}" 
+                placeholder="Vendor.PackageName" 
+                oninput="updateAppField(${index}, 'id', this.value)">
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="field-group">
+              <label class="field-label">Category (FleetForge Group) <span class="req">*</span></label>
+              <select onchange="updateAppField(${index}, 'category', this.value)">
+                ${categoryOptions}
+              </select>
+            </div>
+
+            <!-- Suggested Offline Setup Filename -->
+            <div class="field-group">
+              <label class="field-label">
+                <span>Offline Setup Filename</span>
+                <span class="field-hint">for cache & offline sync</span>
+              </label>
+              <input type="text" class="input" value="${escapeHtml(app.offlineInstaller || "")}" 
+                placeholder="e.g. setup.exe" 
+                oninput="updateAppField(${index}, 'offlineInstaller', this.value)">
+            </div>
+
+            <!-- Description -->
+            <div class="field-group col-span-2">
+              <label class="field-label">Software Description (Shown to Users)</label>
+              <textarea placeholder="Describe the software in 1-2 short sentences..." 
+                oninput="updateAppField(${index}, 'description', this.value)">${escapeHtml(app.description || "")}</textarea>
+            </div>
+
+            <!-- Direct Download URL (Secured / Hidden from users) -->
+            <div class="field-group col-span-2">
+              <div class="field-label">
+                <span>
+                  Setup Download URL (Direct .EXE / .MSI) <span class="req">*</span>
+                </span>
+                <span class="badge-privacy">🔒 Strictly Private (Hidden from End Users)</span>
+              </div>
+              <input type="text" class="input" value="${escapeHtml(app.downloadUrl || "")}" 
+                placeholder="https://example.com/downloads/setup.exe or Google Drive / GitHub Direct Link" 
+                oninput="updateAppField(${index}, 'downloadUrl', this.value)">
+              <div class="field-hint" style="margin-top: 3px;">
+                Direct HTTPS link where FleetForge can download the installer in the background. End users will never see this link.
+              </div>
+            </div>
+
+            <!-- Silent Installation Arguments -->
+            <div class="field-group col-span-2">
+              <label class="field-label">
+                <span>Silent Install Arguments</span>
+                <span class="field-hint">Switches passed to installer</span>
+              </label>
+              <input type="text" class="input" id="silent-args-${index}" value="${escapeHtml(app.silentArgs || "")}" 
+                placeholder="e.g. /S or /VERYSILENT /NORESTART" 
+                oninput="updateAppField(${index}, 'silentArgs', this.value)">
+              
+              <!-- Quick Preset Pills for Freshers -->
+              <div class="preset-pills">
+                <span style="font-size:11px; color:var(--text-muted); align-self:center;">Presets:</span>
+                <span class="pill" onclick="setPreset(${index}, '/S')">NSIS: /S</span>
+                <span class="pill" onclick="setPreset(${index}, '/VERYSILENT /NORESTART')">Inno: /VERYSILENT /NORESTART</span>
+                <span class="pill" onclick="setPreset(${index}, '/qn /norestart')">MSI: /qn /norestart</span>
+                <span class="pill" onclick="setPreset(${index}, '/silent /install')">Chrome/Generic: /silent /install</span>
+                <span class="pill" onclick="setPreset(${index}, '/s /v&quot;/qn&quot;')">InstallShield: /s /v"/qn"</span>
+                <span class="pill" onclick="setPreset(${index}, '')">Clear</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Handlers
+    function onAppNameChange(index, newName) {
+      appsData[index].name = newName;
+      document.getElementById(`title-preview-${index}`).innerHTML = `
+        ${escapeHtml(newName || "Untitled Application")}
+        <span style="font-weight: normal; font-size: 11px; color: var(--text-muted); margin-left: 8px;">
+          ${escapeHtml(appsData[index].id || "")}
+        </span>
+      `;
+
+      // Auto-generate ID if empty or default
+      if (!appsData[index].id || appsData[index].id.startsWith("Partner.")) {
+        const cleanSlug = newName.replace(/[^a-zA-Z0-9]/g, "");
+        if (cleanSlug) {
+          const generatedId = `Partner.${cleanSlug}`;
+          appsData[index].id = generatedId;
+          const idInput = document.getElementById(`app-id-${index}`);
+          if (idInput) idInput.value = generatedId;
+        }
+      }
+
+      // Auto-suggest offline installer name if empty
+      if (!appsData[index].offlineInstaller && newName) {
+        const cleanSlug = newName.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-");
+        appsData[index].offlineInstaller = `${cleanSlug}-setup.exe`;
+      }
+
+      updateLiveJson();
+    }
+
+    function updateAppField(index, field, value) {
+      appsData[index][field] = value;
+      updateLiveJson();
+    }
+
+    function setPreset(index, args) {
+      appsData[index].silentArgs = args;
+      const input = document.getElementById(`silent-args-${index}`);
+      if (input) input.value = args;
+      updateLiveJson();
+      showToast(`Applied preset: ${args || "(empty)"}`);
+    }
+
+    function addNewApp() {
+      const newApp = {
+        id: `Partner.App${appsData.length + 1}`,
+        name: "New Partner Application",
+        category: "utilities",
+        description: "Essential tool for Windows systems.",
+        downloadUrl: "https://",
+        silentArgs: "/S",
+        offlineInstaller: "installer.exe"
+      };
+      appsData.push(newApp);
+      renderApps();
+      updateLiveJson();
+      
+      // Scroll to new app card
+      const newCard = document.getElementById(`app-card-${appsData.length - 1}`);
+      if (newCard) {
+        newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      showToast("➕ Added new software item. Enter details!");
+    }
+
+    function removeApp(index) {
+      if (appsData.length <= 1) {
+        alert("At least one software must remain in the pack!");
+        return;
+      }
+      const appName = appsData[index].name || "this application";
+      if (confirm(`Are you sure you want to remove "${appName}"?`)) {
+        appsData.splice(index, 1);
+        renderApps();
+        updateLiveJson();
+        showToast("🗑️ Software removed.");
+      }
+    }
+
+    function moveApp(index, direction) {
+      const target = index + direction;
+      if (target < 0 || target >= appsData.length) return;
+      const temp = appsData[index];
+      appsData[index] = appsData[target];
+      appsData[target] = temp;
+      renderApps();
+      updateLiveJson();
+    }
+
+    // Build complete JSON Object
+    function buildCurrentJsonObject() {
+      const groupName = document.getElementById("groupName").value.trim() || "Top Choice • Recommended";
+      const groupIcon = document.getElementById("groupIcon").value.trim() || "⭐";
+      const groupDesc = document.getElementById("groupDesc").value.trim() || "Curated partner software, essential premium tools, and top-rated recommendations.";
+      const groupAccent = document.getElementById("groupAccentHex").value.trim() || "#F59E0B";
+
+      return {
+        _comment: "FleetForge Top Choice • Partner & Affiliate Software Catalog. Configure direct download URLs for software not present on Winget. Name, Category, and Description are shown in the UI (downloadUrl is strictly hidden from users). On install, FleetForge downloads the setup and executes it silently.",
+        version: "1.0",
+        group: {
+          id: "recommended",
+          name: groupName,
+          icon: groupIcon,
+          description: groupDesc,
+          accentColor: groupAccent,
+          apps: appsData.map(a => a.id)
+        },
+        apps: appsData
+      };
+    }
+
+    // Live JSON preview
+    function updateLiveJson() {
+      const obj = buildCurrentJsonObject();
+      const jsonString = JSON.stringify(obj, null, 2);
+      
+      const previewEl = document.getElementById("jsonPreview");
+      previewEl.textContent = jsonString;
+
+      const bytes = new Blob([jsonString]).size;
+      document.getElementById("charCountBadge").textContent = `${bytes} bytes • ${appsData.length} apps`;
+    }
+
+    // Copy to clipboard
+    function copyJsonToClipboard() {
+      const obj = buildCurrentJsonObject();
+      const jsonString = JSON.stringify(obj, null, 2);
+      navigator.clipboard.writeText(jsonString).then(() => {
+        showToast("📋 JSON copied to clipboard!");
+      }).catch(err => {
+        // Fallback
+        const textarea = document.createElement("textarea");
+        textarea.value = jsonString;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        showToast("📋 JSON copied to clipboard!");
+      });
+    }
+
+    // Direct Browser Download
+    function downloadRecommendedJson() {
+      // Validate first
+      for (let i = 0; i < appsData.length; i++) {
+        const app = appsData[i];
+        if (!app.name || !app.name.trim()) {
+          alert(`Application #${i + 1} is missing a Name! Please enter a name before downloading.`);
+          return;
+        }
+        if (!app.id || !app.id.trim()) {
+          alert(`Application "${app.name}" is missing an App ID!`);
+          return;
+        }
+        if (!app.downloadUrl || !app.downloadUrl.trim() || app.downloadUrl === "https://") {
+          alert(`Application "${app.name}" is missing a valid Download URL! Please provide a setup link.`);
+          return;
+        }
+      }
+
+      const obj = buildCurrentJsonObject();
+      const jsonString = JSON.stringify(obj, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "recommended_apps.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      showToast("📥 downloaded recommended_apps.json successfully!");
+    }
+
+    // Reset Defaults
+    function resetToFleetForgeDefaults() {
+      if (confirm("Reset all settings and software to FleetForge default state?")) {
+        document.getElementById("groupName").value = DEFAULT_DATA.group.name;
+        document.getElementById("groupIcon").value = DEFAULT_DATA.group.icon;
+        document.getElementById("groupDesc").value = DEFAULT_DATA.group.description;
+        document.getElementById("groupAccentColor").value = DEFAULT_DATA.group.accentColor;
+        document.getElementById("groupAccentHex").value = DEFAULT_DATA.group.accentColor;
+        appsData = JSON.parse(JSON.stringify(DEFAULT_DATA.apps));
+        renderApps();
+        updateLiveJson();
+        showToast("🔄 Reset to default recommended software.");
+      }
+    }
+
+    // Import Modal Functions
+    function openImportModal() {
+      document.getElementById("importModal").classList.add("open");
+    }
+    function closeImportModal() {
+      document.getElementById("importModal").classList.remove("open");
+      document.getElementById("pasteJsonText").value = "";
+      document.getElementById("fileInput").value = "";
+    }
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById("pasteJsonText").value = e.target.result;
+      };
+      reader.readAsText(file);
+    }
+    function applyPastedJson() {
+      const raw = document.getElementById("pasteJsonText").value.trim();
+      if (!raw) {
+        alert("Please paste or select a JSON file first.");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.group) {
+          if (parsed.group.name) document.getElementById("groupName").value = parsed.group.name;
+          if (parsed.group.icon) document.getElementById("groupIcon").value = parsed.group.icon;
+          if (parsed.group.description) document.getElementById("groupDesc").value = parsed.group.description;
+          if (parsed.group.accentColor) {
+            document.getElementById("groupAccentColor").value = parsed.group.accentColor;
+            document.getElementById("groupAccentHex").value = parsed.group.accentColor;
+          }
+        }
+        if (Array.isArray(parsed.apps) && parsed.apps.length > 0) {
+          appsData = parsed.apps.map(a => ({
+            id: a.id || "Vendor.App",
+            name: a.name || "Untitled Application",
+            category: a.category || "utilities",
+            description: a.description || "",
+            downloadUrl: a.downloadUrl || "",
+            silentArgs: a.silentArgs || "/S",
+            offlineInstaller: a.offlineInstaller || "setup.exe"
+          }));
+        }
+        renderApps();
+        updateLiveJson();
+        closeImportModal();
+        showToast("✅ Imported JSON successfully!");
+      } catch (err) {
+        alert("Invalid JSON format! Please check the syntax: " + err.message);
+      }
+    }
+
+    // Helper Toast
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    // HTML escape helper
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>
