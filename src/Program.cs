@@ -2047,10 +2047,10 @@ namespace FleetForge
                 <RowDefinition Height=""Auto""/>
             </Grid.RowDefinitions>
 
-            <!-- Brand Header & Windows 11 Profile -->
+            <!-- Brand Header -->
             <StackPanel Grid.Row=""0"" Margin=""2,0,2,14"">
                 <!-- App Title Row with Collapse Button -->
-                <Grid Margin=""0,0,0,10"">
+                <Grid Margin=""0,0,0,6"">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width=""Auto""/>
                         <ColumnDefinition Width=""*""/>
@@ -2074,28 +2074,6 @@ namespace FleetForge
                                    FontSize=""13"" Foreground=""#8E95A5"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                     </Button>
                 </Grid>
-
-                <!-- Windows 11 User Profile Block (as shown in Settings screenshot) -->
-                <Border x:Name=""BorderUserProfile"" Background=""#262626"" CornerRadius=""8"" Padding=""10,8"" BorderBrush=""#333333"" BorderThickness=""1"" Margin=""0,0,0,4"">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""Auto""/>
-                            <ColumnDefinition Width=""*""/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- User Avatar Circle -->
-                        <Border x:Name=""BorderUserAvatar"" Grid.Column=""0"" Width=""36"" Height=""36"" CornerRadius=""18"" Background=""#383838"" Margin=""0,0,10,0"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtUserAvatarIcon"" Text=""&#xE77B;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol""
-                                       FontSize=""18"" Foreground=""#CCCCCC"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        </Border>
-
-                        <!-- User Info -->
-                        <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtUserName"" Text=""Love Malhotra"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" TextTrimming=""CharacterEllipsis""/>
-                            <TextBlock x:Name=""TxtUserEmail"" Text=""love@innovana.com"" FontSize=""10.5"" Foreground=""#9E9E9E"" TextTrimming=""CharacterEllipsis"" Margin=""0,1,0,0""/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
             </StackPanel>
 
             <!-- Navigation Links -->
