@@ -188,7 +188,7 @@ namespace FleetForge
         public UpdateInfo()
         {
             version = "2.6.3";
-            versionCode = 261;
+            versionCode = 263;
             buildDate = "2026-11-13";
             title = "FleetForge v2.6.3 Enterprise IT Edition";
             company = "Love Malhotra";
@@ -2051,13 +2051,15 @@ namespace FleetForge
 
     public class MainWindow : Window
     {
+        public const string CurrentAppVersion = "2.6.3";
+        public const int CurrentAppVersionCode = 263;
+
         private string appDir;
         private string configPath;
         private string settingsPath;
         private string logFilePath;
         private string errorLogPath;
         private string sessionStatePath;
-        private string reportsDir;
         private string wingetCmd;
         private DeploymentSessionState currentSession = null;
         private string lastGeneratedReportPath = null;
@@ -2930,7 +2932,7 @@ namespace FleetForge
             logFilePath = Path.Combine(appDataFolder, "install-log.txt");
             errorLogPath = Path.Combine(appDataFolder, "error-log.txt");
 
-            // 4. Session Persistence & Temporary Reports directory in %LOCALAPPDATA%\FleetForge
+            // 4. Session Persistence in %LOCALAPPDATA%\FleetForge
             string dataDir = Path.Combine(appDataFolder, "data");
             if (!Directory.Exists(dataDir))
             {
@@ -2938,11 +2940,16 @@ namespace FleetForge
             }
             sessionStatePath = Path.Combine(dataDir, "deployment_session.json");
 
-            reportsDir = Path.Combine(appDataFolder, "reports");
-            if (!Directory.Exists(reportsDir))
+            // Strictly do NOT create reports directory or report files in AppData\Local\FleetForge
+            try
             {
-                try { Directory.CreateDirectory(reportsDir); } catch { }
+                string lingeringReportsDir = Path.Combine(appDataFolder, "reports");
+                if (Directory.Exists(lingeringReportsDir))
+                {
+                    Directory.Delete(lingeringReportsDir, true);
+                }
             }
+            catch { }
 
             jsonSerializer = new JavaScriptSerializer();
             jsonSerializer.MaxJsonLength = int.MaxValue;
@@ -5314,45 +5321,103 @@ namespace FleetForge
                 UpdateInfo info = null;
                 bool updateFound = false;
 
-                // 1. Try remote endpoints with multi-CDN fallback
-                string[] remoteEndpoints = new string[]
-                {
-                    AppUrls.UpdateCheckUrl,
-                    "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json",
-                    "https://raw.githack.com/loveonce/FleetForge/main/data/version.json",
-                    "https://cdn.statically.io/gh/loveonce/FleetForge/main/data/version.json",
-                    "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json"
-                };
-
                 try
                 {
                     ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | (SecurityProtocolType)12288 | (SecurityProtocolType)768 | SecurityProtocolType.Tls;
                 }
                 catch { }
 
-                foreach (string endpoint in remoteEndpoints)
+                int currentVersionNum = ParseVersionNumber(CurrentAppVersion);
+                int highestVersionNum = currentVersionNum;
+                UpdateInfo bestCandidate = null;
+
+                // Priority 1: GitHub Raw (Direct origin, instant updates, never stale)
+                // Priority 2: Configured UpdateCheckUrl
+                // Priority 3: GitHub REST API
+                // Priority 4: CDNs as fallbacks (with cache-buster)
+                string[] remoteEndpoints = new string[]
                 {
-                    if (string.IsNullOrEmpty(endpoint)) continue;
+                    "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json",
+                    AppUrls.UpdateCheckUrl,
+                    "https://api.github.com/repos/loveonce/FleetForge/releases/latest",
+                    "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json",
+                    "https://raw.githack.com/loveonce/FleetForge/main/data/version.json",
+                    "https://cdn.statically.io/gh/loveonce/FleetForge/main/data/version.json"
+                };
+
+                var ser = new JavaScriptSerializer();
+
+                foreach (string rawEndpoint in remoteEndpoints)
+                {
+                    if (string.IsNullOrEmpty(rawEndpoint)) continue;
                     try
                     {
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.3");
-                            string json = wc.DownloadString(endpoint);
-                            if (!string.IsNullOrEmpty(json))
+                            wc.Headers.Add("User-Agent", "FleetForge/" + CurrentAppVersion);
+                            wc.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+                            wc.Headers.Add("Pragma", "no-cache");
+                            wc.Headers.Add("Expires", "0");
+
+                            // Append cache buster to prevent local WinINet / intermediate proxy caching
+                            string queryUrl = rawEndpoint;
+                            if (!queryUrl.Contains("api.github.com"))
                             {
-                                var ser = new JavaScriptSerializer();
-                                info = ser.Deserialize<UpdateInfo>(json);
-                                if (info != null && !string.IsNullOrEmpty(info.version))
+                                string sep = queryUrl.Contains("?") ? "&" : "?";
+                                queryUrl = queryUrl + sep + "_cb=" + DateTime.UtcNow.Ticks;
+                            }
+
+                            string json = wc.DownloadString(queryUrl);
+                            if (string.IsNullOrEmpty(json)) continue;
+
+                            UpdateInfo parsed = null;
+                            if (rawEndpoint.Contains("api.github.com"))
+                            {
+                                try
                                 {
-                                    break;
+                                    var dict = ser.Deserialize<Dictionary<string, object>>(json);
+                                    if (dict != null && dict.ContainsKey("tag_name") && dict["tag_name"] != null)
+                                    {
+                                        string tag = dict["tag_name"].ToString().Trim().TrimStart('v', 'V');
+                                        if (!string.IsNullOrEmpty(tag))
+                                        {
+                                            parsed = new UpdateInfo();
+                                            parsed.version = tag;
+                                            parsed.versionCode = ParseVersionNumber(tag) / 100;
+                                            parsed.title = dict.ContainsKey("name") && dict["name"] != null ? dict["name"].ToString() : ("FleetForge v" + tag);
+                                            parsed.downloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";
+                                        }
+                                    }
+                                }
+                                catch { }
+                            }
+                            else
+                            {
+                                parsed = ser.Deserialize<UpdateInfo>(json);
+                            }
+
+                            if (parsed != null && !string.IsNullOrEmpty(parsed.version))
+                            {
+                                int candidateVerNum = ParseVersionNumber(parsed.version);
+                                if (candidateVerNum > highestVersionNum || (parsed.versionCode > 0 && parsed.versionCode > CurrentAppVersionCode))
+                                {
+                                    highestVersionNum = candidateVerNum;
+                                    bestCandidate = parsed;
+                                    updateFound = true;
+                                    break; // Found a confirmed newer release!
+                                }
+                                else if (bestCandidate == null)
+                                {
+                                    bestCandidate = parsed;
                                 }
                             }
                         }
                     }
                     catch { }
                 }
+
+                info = bestCandidate;
 
                 // 2. If remote not accessible, check local version.json for testing
                 if (info == null)
@@ -5363,22 +5428,19 @@ namespace FleetForge
                         if (!File.Exists(vPath)) vPath = Path.Combine(appDir, "version.json");
                         if (File.Exists(vPath))
                         {
-                            var ser = new JavaScriptSerializer();
                             string json = File.ReadAllText(vPath, Encoding.UTF8);
                             info = ser.Deserialize<UpdateInfo>(json);
+                            if (info != null)
+                            {
+                                int candidateVerNum = ParseVersionNumber(info.version);
+                                if (candidateVerNum > currentVersionNum || (info.versionCode > 0 && info.versionCode > CurrentAppVersionCode))
+                                {
+                                    updateFound = true;
+                                }
+                            }
                         }
                     }
                     catch { }
-                }
-
-                if (info != null)
-                {
-                    int currentVersionNum = ParseVersionNumber("2.6.3");
-                    int remoteVersionNum = ParseVersionNumber(info.version);
-                    if (remoteVersionNum > currentVersionNum || info.versionCode > 262)
-                    {
-                        updateFound = true;
-                    }
                 }
 
                 if (callback != null)
@@ -11050,9 +11112,6 @@ namespace FleetForge
                 {
                     SaveSessionState();
                 }
-
-                // Session state record saved to JSON (HTML report generation disabled per user preference)
-                DeploymentReportGenerator.GenerateJsonReport(currentSession);
 
                 isInstallRunning = false;
 

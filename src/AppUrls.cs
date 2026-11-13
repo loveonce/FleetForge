@@ -26,8 +26,8 @@ namespace FleetForge
         // 1. Cloud Synchronization URL (High-speed CDN mirrored JSON catalog link)
         public static string CloudSyncUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/apps.json";
 
-        // 2. Version Check URL (version.json containing latest version & changelog)
-        public static string UpdateCheckUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json";
+        // 2. Version Check URL (Direct raw GitHub origin URL - avoids CDN caching lags)
+        public static string UpdateCheckUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json";
 
         // 3. Setup Installer Download URL (Executable downloaded when updating)
         public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";

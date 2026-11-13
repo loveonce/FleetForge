@@ -1251,12 +1251,8 @@ namespace FleetForge
             if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
             string configDir = Path.Combine(targetDir, "config");
             if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
-            string logsDir = Path.Combine(targetDir, "logs");
-            if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
             string offlineDir = Path.Combine(targetDir, "offline_installers");
             if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
-            string reportsDir = Path.Combine(targetDir, "reports");
-            if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
         }
 
         public static void SafeExtractResource(string resourceName, string targetFilePath)
