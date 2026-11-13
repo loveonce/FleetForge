@@ -69,6 +69,7 @@ namespace FleetForge
         public string description { get; set; }
         public string offlineInstaller { get; set; }
         public string silentArgs { get; set; }
+        public string downloadUrl { get; set; }
     }
 
     public class PresetProfileItem
@@ -1424,6 +1425,104 @@ namespace FleetForge
                             rec.status = "Failed";
                             rec.errorDetails = ex.Message;
                         }
+                    }
+                }
+
+                if (!installed && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
+                {
+                    Console.WriteLine("    [DOWNLOAD] Downloading {0} setup package from direct URL...", app.name);
+                    rec.installMethod = "Direct Cloud Delivery";
+                    string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
+                        app.offlineInstaller :
+                        (Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe"));
+
+                    string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
+                    try { if (!Directory.Exists(downloadDir)) Directory.CreateDirectory(downloadDir); } catch { }
+                    string downloadTarget = Path.Combine(downloadDir, targetExeName);
+
+                    try
+                    {
+                        string directUrl = MainWindow.ConvertDirectUrl(app.downloadUrl);
+                        using (WebClient wc = new WebClient())
+                        {
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.1");
+                            wc.DownloadFile(directUrl, downloadTarget);
+                        }
+
+                        if (File.Exists(downloadTarget) && new FileInfo(downloadTarget).Length > 0)
+                        {
+                            Console.WriteLine("    [SETUP] Launching silent background installer for {0}...", app.name);
+                            ProcessStartInfo psi;
+                            bool isMsi = downloadTarget.EndsWith(".msi", StringComparison.OrdinalIgnoreCase);
+                            if (isMsi)
+                            {
+                                string msiArgs = string.Format("/i \"{0}\" /qn /norestart {1}", downloadTarget, app.silentArgs ?? "").Trim();
+                                psi = new ProcessStartInfo("msiexec.exe", msiArgs);
+                            }
+                            else
+                            {
+                                string exeArgs = !string.IsNullOrEmpty(app.silentArgs) ? app.silentArgs : "/S /silent /quiet /VERYSILENT /NORESTART";
+                                psi = new ProcessStartInfo(downloadTarget, exeArgs);
+                            }
+
+                            psi.CreateNoWindow = true;
+                            psi.UseShellExecute = false;
+
+                            using (Process p = Process.Start(psi))
+                            {
+                                int timeoutMs = timeoutMins * 60 * 1000;
+                                DateTime startProc = DateTime.Now;
+                                bool timedOut = false;
+                                while (!p.HasExited)
+                                {
+                                    if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
+                                    {
+                                        timedOut = true;
+                                        try { p.Kill(); } catch { }
+                                        break;
+                                    }
+                                    Thread.Sleep(500);
+                                }
+
+                                rec.durationSeconds = (DateTime.Now - startPkg).TotalSeconds;
+
+                                if (timedOut)
+                                {
+                                    rec.status = "Timeout";
+                                    rec.exitCode = -1;
+                                    rec.errorDetails = "Exceeded watchdog timeout limit";
+                                }
+                                else if (p.ExitCode == 0 || p.ExitCode == 3010)
+                                {
+                                    rec.status = "Installed";
+                                    rec.exitCode = p.ExitCode;
+                                    installed = true;
+                                    Console.WriteLine("    [SUCCESS] {0} installed successfully via direct setup.", app.name);
+                                }
+                                else
+                                {
+                                    rec.status = "Failed";
+                                    rec.exitCode = p.ExitCode;
+                                    Console.WriteLine("    [WARNING] {0} installer exited with code {1}.", app.name, p.ExitCode);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            rec.status = "Failed";
+                            rec.errorDetails = "Downloaded installer is empty or missing";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        rec.status = "Failed";
+                        rec.errorDetails = "Direct download failed: " + ex.Message;
+                        Console.WriteLine("    [ERROR] Download failed for {0}: {1}", app.name, ex.Message);
+                    }
+                    finally
+                    {
+                        try { if (File.Exists(downloadTarget)) File.Delete(downloadTarget); } catch { }
                     }
                 }
 
@@ -5917,7 +6016,7 @@ namespace FleetForge
             }
         }
 
-        private string ConvertDirectUrl(string rawUrl)
+        public static string ConvertDirectUrl(string rawUrl)
         {
             if (string.IsNullOrWhiteSpace(rawUrl)) return "";
             string url = rawUrl.Trim();
@@ -6174,6 +6273,7 @@ namespace FleetForge
                         if (!string.IsNullOrEmpty(a.description)) existing.description = a.description;
                         if (!string.IsNullOrEmpty(a.silentArgs)) existing.silentArgs = a.silentArgs;
                         if (!string.IsNullOrEmpty(a.offlineInstaller)) existing.offlineInstaller = a.offlineInstaller;
+                        if (!string.IsNullOrEmpty(a.downloadUrl)) existing.downloadUrl = a.downloadUrl;
                     }
                 }
             }
@@ -9698,6 +9798,116 @@ namespace FleetForge
                             {
                                 currentProc = null;
                             }
+                        }
+                    }
+
+                    if (!installed && !isCancelled && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
+                    {
+                        AppendLog("Downloading setup package for: " + app.name + "...");
+                        rec.installMethod = "Direct Cloud Delivery";
+                        string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
+                            app.offlineInstaller :
+                            (Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe"));
+
+                        string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
+                        try { if (!Directory.Exists(downloadDir)) Directory.CreateDirectory(downloadDir); } catch { }
+                        string downloadTarget = Path.Combine(downloadDir, targetExeName);
+
+                        try
+                        {
+                            string directUrl = MainWindow.ConvertDirectUrl(app.downloadUrl);
+                            using (WebClient wc = new WebClient())
+                            {
+                                wc.Encoding = Encoding.UTF8;
+                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.1");
+                                wc.DownloadFile(directUrl, downloadTarget);
+                            }
+
+                            if (File.Exists(downloadTarget) && new FileInfo(downloadTarget).Length > 0)
+                            {
+                                long kb = new FileInfo(downloadTarget).Length / 1024;
+                                AppendLog(string.Format("Downloaded {0} ({1:N0} KB). Starting silent background installation...", app.name, kb));
+
+                                ProcessStartInfo psi;
+                                bool isMsi = downloadTarget.EndsWith(".msi", StringComparison.OrdinalIgnoreCase);
+                                if (isMsi)
+                                {
+                                    string msiArgs = string.Format("/i \"{0}\" /qn /norestart {1}", downloadTarget, app.silentArgs ?? "").Trim();
+                                    psi = new ProcessStartInfo("msiexec.exe", msiArgs);
+                                }
+                                else
+                                {
+                                    string exeArgs = !string.IsNullOrEmpty(app.silentArgs) ? app.silentArgs : "/S /silent /quiet /VERYSILENT /NORESTART";
+                                    psi = new ProcessStartInfo(downloadTarget, exeArgs);
+                                }
+
+                                psi.CreateNoWindow = true;
+                                psi.UseShellExecute = false;
+
+                                using (Process p = Process.Start(psi))
+                                {
+                                    currentProc = p;
+                                    int timeoutMs = watchdogTimeoutMinutes * 60 * 1000;
+                                    DateTime startProc = DateTime.Now;
+                                    bool timedOut = false;
+                                    while (!p.HasExited)
+                                    {
+                                        if (isCancelled) { try { p.Kill(); } catch { } break; }
+                                        if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
+                                        {
+                                            timedOut = true;
+                                            try { p.Kill(); } catch { }
+                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Setup for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
+                                            break;
+                                        }
+                                        Thread.Sleep(500);
+                                    }
+
+                                    rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
+
+                                    if (timedOut)
+                                    {
+                                        rec.status = "Timeout";
+                                        rec.exitCode = -1;
+                                        rec.errorDetails = "Installer exceeded watchdog timeout limit";
+                                        installed = false;
+                                    }
+                                    else if (!isCancelled && p.HasExited)
+                                    {
+                                        rec.exitCode = p.ExitCode;
+                                        if (p.ExitCode == 0 || p.ExitCode == 3010)
+                                        {
+                                            rec.status = "Installed";
+                                            installed = true;
+                                            AppendLog(app.name + " installed successfully via Direct Cloud Delivery.");
+                                        }
+                                        else
+                                        {
+                                            rec.status = "Failed";
+                                            rec.errorDetails = "Exit code: " + p.ExitCode;
+                                            installed = false;
+                                            AppendLog(string.Format("Setup for {0} exited with code {1}.", app.name, p.ExitCode));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                rec.status = "Failed";
+                                rec.errorDetails = "Downloaded installer file is empty or missing";
+                                AppendLog("ERROR: Downloaded setup file for " + app.name + " is invalid.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            rec.status = "Failed";
+                            rec.errorDetails = "Direct download/install error: " + ex.Message;
+                            AppendLog("ERROR: Direct download failed for " + app.name + ": " + ex.Message);
+                        }
+                        finally
+                        {
+                            currentProc = null;
+                            try { if (File.Exists(downloadTarget)) File.Delete(downloadTarget); } catch { }
                         }
                     }
 

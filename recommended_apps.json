@@ -1,4 +1,5 @@
 {
+  "_comment": "FleetForge Top Choice • Partner & Affiliate Software Catalog. Configure direct download URLs for software not present on Winget. Name, Category, and Description are shown in the UI (downloadUrl is strictly hidden from users). On install, FleetForge downloads the setup and executes it silently.",
   "version": "1.0",
   "group": {
     "id": "recommended",
@@ -7,54 +8,58 @@
     "description": "Curated partner software, essential premium tools, and top-rated recommendations.",
     "accentColor": "#F59E0B",
     "apps": [
-      "Google.Chrome",
       "7zip.7zip",
-      "VideoLAN.VLC",
       "Notepad++.Notepad++",
-      "voidtools.Everything"
+      "voidtools.Everything",
+      "VideoLAN.VLC",
+      "Google.Chrome"
     ]
   },
   "apps": [
-    {
-      "id": "Google.Chrome",
-      "name": "Google Chrome",
-      "category": "browsers",
-      "description": "Fast, secure web browser built by Google.",
-      "offlineInstaller": "ChromeStandaloneSetup64.exe",
-      "silentArgs": "/silent /install"
-    },
     {
       "id": "7zip.7zip",
       "name": "7-Zip Archiver",
       "category": "utilities",
       "description": "High-compression ratio file archiver utility.",
-      "offlineInstaller": "7z-x64.exe",
-      "silentArgs": "/S"
-    },
-    {
-      "id": "VideoLAN.VLC",
-      "name": "VLC Media Player",
-      "category": "media",
-      "description": "Universal multimedia player for audio and video formats.",
-      "offlineInstaller": "vlc-setup.exe",
-      "silentArgs": "/S"
+      "downloadUrl": "https://www.7-zip.org/a/7z2408-x64.exe",
+      "silentArgs": "/S",
+      "offlineInstaller": "7z-x64.exe"
     },
     {
       "id": "Notepad++.Notepad++",
       "name": "Notepad++",
       "category": "utilities",
       "description": "Powerful lightweight code and text editor.",
-      "offlineInstaller": "npp.installer.exe",
-      "silentArgs": "/S"
+      "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7/npp.8.7.Installer.x64.exe",
+      "silentArgs": "/S",
+      "offlineInstaller": "npp-installer.exe"
     },
     {
       "id": "voidtools.Everything",
       "name": "Everything Search",
       "category": "utilities",
       "description": "Ultra-fast filename search utility for Windows.",
-      "offlineInstaller": "EverythingSetup.exe",
-      "silentArgs": "/S"
+      "downloadUrl": "https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe",
+      "silentArgs": "/S",
+      "offlineInstaller": "Everything-Setup.exe"
+    },
+    {
+      "id": "VideoLAN.VLC",
+      "name": "VLC Media Player",
+      "category": "media",
+      "description": "Universal multimedia player for audio and video formats.",
+      "downloadUrl": "https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe",
+      "silentArgs": "/S",
+      "offlineInstaller": "vlc-setup.exe"
+    },
+    {
+      "id": "Google.Chrome",
+      "name": "Google Chrome",
+      "category": "browsers",
+      "description": "Fast, secure web browser built by Google.",
+      "downloadUrl": "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
+      "silentArgs": "/silent /install",
+      "offlineInstaller": "ChromeStandaloneSetup64.exe"
     }
   ]
 }
-
