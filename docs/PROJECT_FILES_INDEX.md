@@ -19,7 +19,7 @@ FleetForge/
 ├── 📂 data/                            # Application Catalogs & Presets
 │   ├── apps.json                       # Curated Roles, Categories & Packages Catalog Index
 │   ├── sample_apps.json                # Starter Presets & Reference Definitions
-│   └── version.json                    # GitHub Auto-Update Release Manifest (v2.5.0)
+│   └── version.json                    # GitHub Auto-Update Release Manifest (v2.6.0)
 │
 ├── 📂 config/                          # Configuration & Enterprise Settings
 │   ├── app_urls.json                   # Cloud Sync & Auto-Update URLs Configuration
