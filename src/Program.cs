@@ -2728,23 +2728,7 @@ namespace FleetForge
                     </StackPanel>
                 </Grid>
 
-                <UniformGrid x:Name=""RoleCardsGrid"" Columns=""2"" Margin=""0,0,0,14""/>
-
-                <!-- Bottom Pack Management Actions -->
-                <Grid Margin=""4,6,4,24"">
-                    <TextBlock Text=""Need a specialized workflow? Create or import customized packs anytime.""
-                               FontSize=""12"" Foreground=""#8A8A8A"" VerticalAlignment=""Center""/>
-                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                        <Button x:Name=""BtnImportPack"" Content=""Import Pack""
-                                Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
-                                FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,8"" Margin=""0,0,8,0""
-                                Cursor=""Hand"" ToolTip=""Import a custom app pack (.json)""/>
-                        <Button x:Name=""BtnCreateNewGroup"" Content=""Create New Pack""
-                                Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
-                                Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0""
-                                ToolTip=""Create a new custom app pack""/>
-                    </StackPanel>
-                </Grid>
+                <UniformGrid x:Name=""RoleCardsGrid"" Columns=""2"" Margin=""0,0,0,10""/>
             </StackPanel>
         </ScrollViewer>
 
@@ -2886,18 +2870,27 @@ namespace FleetForge
                     <ColumnDefinition Width=""*""/>
                     <ColumnDefinition Width=""Auto""/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name=""BtnSearchWingetOnlineBottom"" Grid.Column=""0"" Content=""Search Online Apps""
-                        Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
-                        Padding=""14,10"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
-                        HorizontalAlignment=""Left"" VerticalAlignment=""Center""
-                        Visibility=""Collapsed""/>
+                <StackPanel Grid.Column=""0"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                    <Button x:Name=""BtnSearchWingetOnlineBottom"" Content=""Search Online Apps""
+                            Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
+                            Padding=""14,10"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
+                            Visibility=""Collapsed""/>
+                    <Button x:Name=""BtnImportPack"" Content=""Import Pack""
+                            Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
+                            FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,10"" Margin=""0,0,8,0""
+                            Cursor=""Hand"" ToolTip=""Import a custom app pack (.json)""/>
+                    <Button x:Name=""BtnCreateNewGroup"" Content=""Create New Pack""
+                            Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
+                            Padding=""16,10"" Cursor=""Hand"" BorderThickness=""0""
+                            ToolTip=""Create a new custom app pack""/>
+                </StackPanel>
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                     <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
                             Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnStop"" Content=""Stop Install""
                             Background=""#DC2626"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""22,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnInstall"" Content=""Install Selected Apps""
+                    <Button x:Name=""BtnInstall"" Content=""Install Selected Pack""
                             Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""28,10"" Cursor=""Hand"" BorderThickness=""0""/>
                 </StackPanel>
@@ -5949,6 +5942,7 @@ namespace FleetForge
         private void UpdateBottomBarVisibility()
         {
             bool isSetupView = (currentView == "setup" || currentView == "roles");
+            bool isCatalogView = (currentView == "catalog");
             bool isLogsView = (currentView == "logs");
             bool isCloudView = (currentView == "cloud");
             bool isInstalling = (btnStop != null && btnStop.Visibility == Visibility.Visible);
@@ -5958,14 +5952,27 @@ namespace FleetForge
                 btnOpenOfflineFolder.Visibility = Visibility.Collapsed;
             }
 
+            if (btnImportPack != null)
+            {
+                btnImportPack.Visibility = isSetupView ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (btnCreateNewGroup != null)
+            {
+                btnCreateNewGroup.Visibility = isSetupView ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (btnSearchWingetOnlineBottom != null)
+            {
+                btnSearchWingetOnlineBottom.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
+            }
+
             if (btnInstall != null)
             {
-                btnInstall.Visibility = (isSetupView || isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
+                btnInstall.Visibility = (isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (borderBottomBar != null)
             {
-                if (isSetupView || isLogsView || isCloudView)
+                if (isLogsView || isCloudView)
                 {
                     borderBottomBar.Visibility = isInstalling ? Visibility.Visible : Visibility.Collapsed;
                 }
@@ -5974,6 +5981,8 @@ namespace FleetForge
                     borderBottomBar.Visibility = Visibility.Visible;
                 }
             }
+
+            UpdateCount();
         }
 
         private void LoadSettings()
@@ -9519,13 +9528,16 @@ namespace FleetForge
             if (txtCount != null) txtCount.Text = string.Format("Selected: {0:N0} of {1:N0} apps", selectedAppIds.Count, config.apps.Count);
             if (btnInstall != null)
             {
+                bool isSetupView = (currentView == "setup" || currentView == "roles");
                 if (selectedAppIds.Count > 0)
                 {
-                    btnInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                    btnInstall.Content = isSetupView
+                        ? string.Format("Install Selected Pack ({0})", selectedAppIds.Count)
+                        : string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
                 }
                 else
                 {
-                    btnInstall.Content = "Install Selected Apps";
+                    btnInstall.Content = isSetupView ? "Install Selected Pack" : "Install Selected Apps";
                 }
                 btnInstall.Background = windowsAccentBrush;
             }
