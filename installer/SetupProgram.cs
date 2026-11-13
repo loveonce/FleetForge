@@ -15,6 +15,8 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using WinForms = System.Windows.Forms;
+using SysDraw = System.Drawing;
 
 [assembly: AssemblyTitle("FleetForge Setup Wizard")]
 [assembly: AssemblyDescription("FleetForge - Self-Extracting Enterprise Setup Wizard")]
@@ -100,9 +102,44 @@ namespace FleetForge
             }
         }
 
+        private static bool HasArg(string[] args, string flag)
+        {
+            if (args == null) return false;
+            foreach (string a in args)
+            {
+                if (string.Equals(a, flag, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+            return false;
+        }
+
+        private static string GetArgValue(string[] args, string flag)
+        {
+            if (args == null) return null;
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase) && i + 1 < args.Length)
+                {
+                    return args[i + 1].Trim('\"');
+                }
+                if (args[i].StartsWith(flag + "=", StringComparison.OrdinalIgnoreCase))
+                {
+                    return args[i].Substring(flag.Length + 1).Trim('\"');
+                }
+                if (args[i].StartsWith(flag + ":", StringComparison.OrdinalIgnoreCase))
+                {
+                    return args[i].Substring(flag.Length + 1).Trim('\"');
+                }
+            }
+            return null;
+        }
+
         [STAThread]
         public static void Main(string[] args)
         {
+            bool isSilentOrUpdate = HasArg(args, "/update") || HasArg(args, "/silent") || HasArg(args, "/tray")
+                                 || HasArg(args, "-update") || HasArg(args, "-silent") || HasArg(args, "-tray")
+                                 || HasArg(args, "--update") || HasArg(args, "--silent") || HasArg(args, "--tray");
+
             // Forcibly require and self-elevate to Administrator privileges
             if (!IsAdministrator())
             {
@@ -125,13 +162,33 @@ namespace FleetForge
                 }
                 catch
                 {
-                    MessageBox.Show(
-                        "Administrator permissions are strictly required to install or update FleetForge.\n\nPlease approve the Windows UAC Administrator prompt to proceed.",
-                        "Administrator Elevation Required",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
+                    if (!isSilentOrUpdate)
+                    {
+                        MessageBox.Show(
+                            "Administrator permissions are strictly required to install or update FleetForge.\n\nPlease approve the Windows UAC Administrator prompt to proceed.",
+                            "Administrator Elevation Required",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+                    }
                     return;
                 }
+            }
+
+            if (isSilentOrUpdate)
+            {
+                // Silent Tray Auto-Update Mode: Do NOT open SetupWindow GUI!
+                // Runs silently in Windows System Tray (Notification Area)
+                string targetDir = GetArgValue(args, "/dir");
+                if (string.IsNullOrEmpty(targetDir)) targetDir = GetArgValue(args, "-dir");
+                if (string.IsNullOrEmpty(targetDir) || !Directory.Exists(targetDir))
+                {
+                    targetDir = SetupWindow.DetectExistingInstallPath();
+                }
+
+                WinForms.Application.EnableVisualStyles();
+                WinForms.Application.SetCompatibleTextRenderingDefault(false);
+                WinForms.Application.Run(new TrayInstallerContext(targetDir));
+                return;
             }
 
             bool isFirst;
@@ -144,6 +201,221 @@ namespace FleetForge
 
             SetupProgram app = new SetupProgram();
             app.Run(new SetupWindow());
+        }
+    }
+
+    public class TrayInstallerContext : WinForms.ApplicationContext
+    {
+        private WinForms.NotifyIcon trayIcon;
+        private string targetDir;
+
+        public TrayInstallerContext(string targetDir)
+        {
+            this.targetDir = targetDir;
+            InitializeTray();
+            StartSilentInstallation();
+        }
+
+        private void InitializeTray()
+        {
+            trayIcon = new WinForms.NotifyIcon();
+            trayIcon.Icon = SetupEngine.LoadEmbeddedAppIcon();
+            trayIcon.Text = "FleetForge Auto-Updater";
+            trayIcon.Visible = true;
+
+            var menu = new WinForms.ContextMenu();
+            var itemStatus = new WinForms.MenuItem("FleetForge Updating in Background...");
+            itemStatus.Enabled = false;
+            menu.MenuItems.Add(itemStatus);
+            trayIcon.ContextMenu = menu;
+
+            trayIcon.DoubleClick += delegate
+            {
+                try
+                {
+                    if (trayIcon != null)
+                    {
+                        trayIcon.ShowBalloonTip(2000, "FleetForge Updating", "FleetForge is currently updating in the background.\nPlease wait a moment...", WinForms.ToolTipIcon.Info);
+                    }
+                }
+                catch { }
+            };
+
+            try
+            {
+                trayIcon.BalloonTipTitle = "FleetForge Updating";
+                trayIcon.BalloonTipText = "Installing latest update in background...\nFleetForge will launch automatically once finished.";
+                trayIcon.BalloonTipIcon = WinForms.ToolTipIcon.Info;
+                trayIcon.ShowBalloonTip(3000);
+            }
+            catch { }
+        }
+
+        private void UpdateTrayProgress(string text)
+        {
+            try
+            {
+                if (trayIcon != null)
+                {
+                    if (text.Length > 63) text = text.Substring(0, 63);
+                    trayIcon.Text = text;
+                }
+            }
+            catch { }
+        }
+
+        private void StartSilentInstallation()
+        {
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                try
+                {
+                    // 0. Wait up to 5 seconds for previous FleetForge instances to exit gracefully
+                    int waits = 0;
+                    while (Process.GetProcessesByName("FleetForge").Length > 0 && waits < 15)
+                    {
+                        Thread.Sleep(300);
+                        waits++;
+                    }
+
+                    // Force kill if any process is still lingering so files are unlocked
+                    foreach (string pName in new string[] { "FleetForge", "Uninstall" })
+                    {
+                        foreach (Process p in Process.GetProcessesByName(pName))
+                        {
+                            try { p.Kill(); p.WaitForExit(2000); } catch { }
+                        }
+                    }
+
+                    // Ensure targetDir is valid
+                    if (string.IsNullOrWhiteSpace(targetDir) || !Directory.Exists(targetDir))
+                    {
+                        targetDir = SetupWindow.DetectExistingInstallPath();
+                    }
+                    if (string.IsNullOrWhiteSpace(targetDir))
+                    {
+                        string pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                        targetDir = Path.Combine(pf, "FleetForge");
+                    }
+                    targetDir = targetDir.Trim().Trim('\"').TrimEnd('\\');
+
+                    UpdateTrayProgress("FleetForge Update: Preparing files...");
+                    SetupEngine.EnsureDirectories(targetDir);
+
+                    // 1. Extract & Overwrite FleetForge.exe
+                    UpdateTrayProgress("FleetForge Update: Updating program files...");
+                    string exePath = Path.Combine(targetDir, "FleetForge.exe");
+                    SetupEngine.SafeExtractResource("FleetForge.exe", exePath);
+
+                    // 2. Extract & Merge apps.json
+                    UpdateTrayProgress("FleetForge Update: Updating software catalog...");
+                    string dataDir = Path.Combine(targetDir, "data");
+                    string appsPath = Path.Combine(dataDir, "apps.json");
+                    SetupEngine.ExtractAndMergeCatalog(appsPath, Path.Combine(targetDir, "apps.json"));
+
+                    try
+                    {
+                        string sp = Path.Combine(dataDir, "sample_apps.json");
+                        SetupEngine.SafeExtractResource("sample_apps.json", sp);
+                        SetupEngine.SafeCopyFile(sp, Path.Combine(targetDir, "sample_apps.json"));
+                    }
+                    catch { }
+
+                    // 3. Extract or Preserve settings.json
+                    UpdateTrayProgress("FleetForge Update: Preserving settings...");
+                    string configDir = Path.Combine(targetDir, "config");
+                    string settingsPath = Path.Combine(configDir, "settings.json");
+                    SetupEngine.ExtractOrPreserveSettings(settingsPath, Path.Combine(targetDir, "settings.json"));
+
+                    try
+                    {
+                        string urlsPath = Path.Combine(configDir, "app_urls.json");
+                        SetupEngine.SafeExtractResource("app_urls.json", urlsPath);
+                        SetupEngine.SafeCopyFile(urlsPath, Path.Combine(targetDir, "app_urls.json"));
+                    }
+                    catch { }
+
+                    // 4. Extract appicon.ico
+                    string icoPath = Path.Combine(targetDir, "appicon.ico");
+                    SetupEngine.SafeExtractResource("appicon.ico", icoPath);
+
+                    // 5. Extract Uninstall.exe
+                    string uninstallExePath = Path.Combine(targetDir, "Uninstall.exe");
+                    SetupEngine.SafeExtractResource("Uninstall.exe", uninstallExePath);
+
+                    // 6. Update Shortcuts
+                    UpdateTrayProgress("FleetForge Update: Updating shortcuts...");
+                    string deskPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "FleetForge.lnk");
+                    SetupEngine.CreateShortcut(deskPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                    string userDesk = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "FleetForge.lnk");
+                    if (File.Exists(userDesk))
+                    {
+                        SetupEngine.CreateShortcut(userDesk, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                    }
+
+                    string startPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), "FleetForge.lnk");
+                    SetupEngine.CreateShortcut(startPath, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                    string userStart = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "FleetForge.lnk");
+                    if (File.Exists(userStart))
+                    {
+                        SetupEngine.CreateShortcut(userStart, exePath, targetDir, icoPath, "FleetForge — One-Click App Setup & Software Manager");
+                    }
+
+                    // 7. Register in Windows Add/Remove Programs
+                    SetupEngine.RegisterInAddRemovePrograms(targetDir, uninstallExePath, icoPath);
+
+                    // 8. Completed!
+                    UpdateTrayProgress("FleetForge Update: Complete!");
+                    try
+                    {
+                        if (trayIcon != null)
+                        {
+                            trayIcon.BalloonTipTitle = "FleetForge Updated";
+                            trayIcon.BalloonTipText = "FleetForge has been updated successfully!\nRelaunching application...";
+                            trayIcon.BalloonTipIcon = WinForms.ToolTipIcon.Info;
+                            trayIcon.ShowBalloonTip(2000);
+                        }
+                    }
+                    catch { }
+
+                    Thread.Sleep(1200);
+
+                    // Launch updated FleetForge.exe
+                    SetupEngine.LaunchInstalledApp(targetDir);
+
+                    Thread.Sleep(800);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        if (trayIcon != null)
+                        {
+                            trayIcon.BalloonTipTitle = "FleetForge Update Error";
+                            trayIcon.BalloonTipText = "Error during update: " + ex.Message;
+                            trayIcon.BalloonTipIcon = WinForms.ToolTipIcon.Error;
+                            trayIcon.ShowBalloonTip(5000);
+                        }
+                        WinForms.MessageBox.Show("Auto-update failed: " + ex.Message, "FleetForge Update Error", WinForms.MessageBoxButtons.OK, WinForms.MessageBoxIcon.Error);
+                    }
+                    catch { }
+                }
+                finally
+                {
+                    try
+                    {
+                        if (trayIcon != null)
+                        {
+                            trayIcon.Visible = false;
+                            trayIcon.Dispose();
+                            trayIcon = null;
+                        }
+                    }
+                    catch { }
+
+                    ExitThread();
+                }
+            });
         }
     }
 
@@ -688,207 +960,22 @@ namespace FleetForge
 
         private void SafeExtractResource(string resourceName, string targetFilePath)
         {
-            // Clear ReadOnly attribute if file already exists
-            if (File.Exists(targetFilePath))
-            {
-                try
-                {
-                    FileAttributes fa = File.GetAttributes(targetFilePath);
-                    if ((fa & FileAttributes.ReadOnly) != 0)
-                    {
-                        File.SetAttributes(targetFilePath, fa & ~FileAttributes.ReadOnly);
-                    }
-                }
-                catch { }
-            }
-
-            int retries = 0;
-            while (retries < 5)
-            {
-                try
-                {
-                    ExtractResource(resourceName, targetFilePath);
-                    return;
-                }
-                catch (IOException)
-                {
-                    retries++;
-                    if (retries >= 5)
-                    {
-                        // Fallback rename trick if file is temporarily locked
-                        try
-                        {
-                            string oldTmp = targetFilePath + ".old_" + Environment.TickCount;
-                            if (File.Exists(oldTmp)) File.Delete(oldTmp);
-                            File.Move(targetFilePath, oldTmp);
-                            ExtractResource(resourceName, targetFilePath);
-                            try { File.Delete(oldTmp); } catch { }
-                            return;
-                        }
-                        catch { }
-                        throw;
-                    }
-                    Thread.Sleep(200);
-                }
-            }
+            SetupEngine.SafeExtractResource(resourceName, targetFilePath);
         }
 
         private void SafeCopyFile(string source, string dest)
         {
-            if (!File.Exists(source)) return;
-            if (File.Exists(dest))
-            {
-                try
-                {
-                    FileAttributes fa = File.GetAttributes(dest);
-                    if ((fa & FileAttributes.ReadOnly) != 0)
-                    {
-                        File.SetAttributes(dest, fa & ~FileAttributes.ReadOnly);
-                    }
-                }
-                catch { }
-            }
-            for (int i = 0; i < 5; i++)
-            {
-                try
-                {
-                    File.Copy(source, dest, true);
-                    return;
-                }
-                catch (IOException)
-                {
-                    if (i == 4)
-                    {
-                        try
-                        {
-                            string oldTmp = dest + ".old_" + Environment.TickCount;
-                            File.Move(dest, oldTmp);
-                            File.Copy(source, dest, true);
-                            try { File.Delete(oldTmp); } catch { }
-                            return;
-                        }
-                        catch { }
-                    }
-                    Thread.Sleep(200);
-                }
-            }
+            SetupEngine.SafeCopyFile(source, dest);
         }
 
         private void ExtractAndMergeCatalog(string appsDataPath, string appsRootPath)
         {
-            string tempExtract = appsDataPath + ".tmp";
-            SafeExtractResource("apps.json", tempExtract);
-
-            try
-            {
-                string existingPath = File.Exists(appsDataPath) ? appsDataPath : (File.Exists(appsRootPath) ? appsRootPath : null);
-                if (existingPath != null)
-                {
-                    string existingJson = File.ReadAllText(existingPath, Encoding.UTF8);
-                    var jss = new JavaScriptSerializer();
-                    jss.MaxJsonLength = int.MaxValue;
-                    var existingData = jss.Deserialize<Dictionary<string, object>>(existingJson);
-
-                    if (existingData != null && existingData.ContainsKey("groups"))
-                    {
-                        var existingGroups = existingData["groups"] as ArrayList;
-                        if (existingGroups != null)
-                        {
-                            var customGroups = new ArrayList();
-                            var builtInIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
-                                "developer", "office", "creative", "minimal", "essential", "gamer", "system", "office_business", "gamer_creator"
-                            };
-
-                            foreach (object gObj in existingGroups)
-                            {
-                                var g = gObj as Dictionary<string, object>;
-                                if (g != null && g.ContainsKey("id"))
-                                {
-                                    string gid = Convert.ToString(g["id"]);
-                                    bool isCustom = false;
-                                    if (g.ContainsKey("is_custom") && Convert.ToBoolean(g["is_custom"])) isCustom = true;
-                                    else if (!builtInIds.Contains(gid)) isCustom = true;
-
-                                    if (isCustom)
-                                    {
-                                        customGroups.Add(g);
-                                    }
-                                }
-                            }
-
-                            string newJson = File.ReadAllText(tempExtract, Encoding.UTF8);
-                            var newData = jss.Deserialize<Dictionary<string, object>>(newJson);
-                            if (newData != null && newData.ContainsKey("groups"))
-                            {
-                                var newGroups = newData["groups"] as ArrayList;
-                                if (newGroups != null)
-                                {
-                                    var existingGroupIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                                    var existingGroupNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                                    var uniqueNewGroups = new ArrayList();
-
-                                    foreach (object ng in newGroups)
-                                    {
-                                        var dg = ng as Dictionary<string, object>;
-                                        if (dg != null)
-                                        {
-                                            string nid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
-                                            string nname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
-                                            if (!existingGroupIds.Contains(nid) && !existingGroupNames.Contains(nname))
-                                            {
-                                                existingGroupIds.Add(nid);
-                                                existingGroupNames.Add(nname);
-                                                uniqueNewGroups.Add(ng);
-                                            }
-                                        }
-                                    }
-
-                                    foreach (object cg in customGroups)
-                                    {
-                                        var dg = cg as Dictionary<string, object>;
-                                        if (dg != null)
-                                        {
-                                            string cid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
-                                            string cname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
-                                            if (!string.IsNullOrEmpty(cid) && !existingGroupIds.Contains(cid) && !existingGroupNames.Contains(cname) && !builtInIds.Contains(cid))
-                                            {
-                                                uniqueNewGroups.Add(cg);
-                                                existingGroupIds.Add(cid);
-                                                existingGroupNames.Add(cname);
-                                            }
-                                        }
-                                    }
-
-                                    newData["groups"] = uniqueNewGroups;
-                                    string mergedJson = jss.Serialize(newData);
-                                    File.WriteAllText(tempExtract, mergedJson, Encoding.UTF8);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch { }
-
-            SafeCopyFile(tempExtract, appsDataPath);
-            SafeCopyFile(tempExtract, appsRootPath);
-            try { File.Delete(tempExtract); } catch { }
+            SetupEngine.ExtractAndMergeCatalog(appsDataPath, appsRootPath);
         }
 
         private void ExtractOrPreserveSettings(string settingsConfigPath, string settingsRootPath)
         {
-            string existingPath = File.Exists(settingsConfigPath) ? settingsConfigPath : (File.Exists(settingsRootPath) ? settingsRootPath : null);
-            if (existingPath == null)
-            {
-                SafeExtractResource("settings.json", settingsConfigPath);
-                SafeCopyFile(settingsConfigPath, settingsRootPath);
-            }
-            else
-            {
-                // Preserve existing user configuration
-                if (!File.Exists(settingsConfigPath)) SafeCopyFile(existingPath, settingsConfigPath);
-                if (!File.Exists(settingsRootPath)) SafeCopyFile(existingPath, settingsRootPath);
-            }
+            SetupEngine.ExtractOrPreserveSettings(settingsConfigPath, settingsRootPath);
         }
 
         private void StartInstallationProcess()
@@ -1100,6 +1187,269 @@ namespace FleetForge
 
         private void ExtractResource(string resourceName, string targetFilePath)
         {
+            SetupEngine.ExtractResource(resourceName, targetFilePath);
+        }
+
+        private void CreateShortcut(string shortcutPath, string targetPath, string workingDir, string iconPath, string description)
+        {
+            SetupEngine.CreateShortcut(shortcutPath, targetPath, workingDir, iconPath, description);
+        }
+
+        private void RegisterInAddRemovePrograms(string installDir, string uninstallExePath, string icoPath)
+        {
+            SetupEngine.RegisterInAddRemovePrograms(installDir, uninstallExePath, icoPath);
+        }
+
+        private void LaunchInstalledApp(string installDir)
+        {
+            SetupEngine.LaunchInstalledApp(installDir);
+        }
+    }
+
+    public static class SetupEngine
+    {
+        public static SysDraw.Icon LoadEmbeddedAppIcon()
+        {
+            try
+            {
+                Assembly asm = Assembly.GetExecutingAssembly();
+                foreach (string n in asm.GetManifestResourceNames())
+                {
+                    if (n.Equals("appicon.ico", StringComparison.OrdinalIgnoreCase) || n.EndsWith(".appicon.ico", StringComparison.OrdinalIgnoreCase))
+                    {
+                        using (Stream s = asm.GetManifestResourceStream(n))
+                        {
+                            if (s != null) return new SysDraw.Icon(s);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return SysDraw.SystemIcons.Application;
+        }
+
+        public static void EnsureDirectories(string targetDir)
+        {
+            if (!Directory.Exists(targetDir)) Directory.CreateDirectory(targetDir);
+            string dataDir = Path.Combine(targetDir, "data");
+            if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
+            string configDir = Path.Combine(targetDir, "config");
+            if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
+            string logsDir = Path.Combine(targetDir, "logs");
+            if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
+            string offlineDir = Path.Combine(targetDir, "offline_installers");
+            if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
+            string reportsDir = Path.Combine(targetDir, "reports");
+            if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
+        }
+
+        public static void SafeExtractResource(string resourceName, string targetFilePath)
+        {
+            // Clear ReadOnly attribute if file already exists
+            if (File.Exists(targetFilePath))
+            {
+                try
+                {
+                    FileAttributes fa = File.GetAttributes(targetFilePath);
+                    if ((fa & FileAttributes.ReadOnly) != 0)
+                    {
+                        File.SetAttributes(targetFilePath, fa & ~FileAttributes.ReadOnly);
+                    }
+                }
+                catch { }
+            }
+
+            int retries = 0;
+            while (retries < 5)
+            {
+                try
+                {
+                    ExtractResource(resourceName, targetFilePath);
+                    return;
+                }
+                catch (IOException)
+                {
+                    retries++;
+                    if (retries >= 5)
+                    {
+                        // Fallback rename trick if file is temporarily locked
+                        try
+                        {
+                            string oldTmp = targetFilePath + ".old_" + Environment.TickCount;
+                            if (File.Exists(oldTmp)) File.Delete(oldTmp);
+                            File.Move(targetFilePath, oldTmp);
+                            ExtractResource(resourceName, targetFilePath);
+                            try { File.Delete(oldTmp); } catch { }
+                            return;
+                        }
+                        catch { }
+                        throw;
+                    }
+                    Thread.Sleep(200);
+                }
+            }
+        }
+
+        public static void SafeCopyFile(string source, string dest)
+        {
+            if (!File.Exists(source)) return;
+            if (File.Exists(dest))
+            {
+                try
+                {
+                    FileAttributes fa = File.GetAttributes(dest);
+                    if ((fa & FileAttributes.ReadOnly) != 0)
+                    {
+                        File.SetAttributes(dest, fa & ~FileAttributes.ReadOnly);
+                    }
+                }
+                catch { }
+            }
+            for (int i = 0; i < 5; i++)
+            {
+                try
+                {
+                    File.Copy(source, dest, true);
+                    return;
+                }
+                catch (IOException)
+                {
+                    if (i == 4)
+                    {
+                        try
+                        {
+                            string oldTmp = dest + ".old_" + Environment.TickCount;
+                            File.Move(dest, oldTmp);
+                            File.Copy(source, dest, true);
+                            try { File.Delete(oldTmp); } catch { }
+                            return;
+                        }
+                        catch { }
+                    }
+                    Thread.Sleep(200);
+                }
+            }
+        }
+
+        public static void ExtractAndMergeCatalog(string appsDataPath, string appsRootPath)
+        {
+            string tempExtract = appsDataPath + ".tmp";
+            SafeExtractResource("apps.json", tempExtract);
+
+            try
+            {
+                string existingPath = File.Exists(appsDataPath) ? appsDataPath : (File.Exists(appsRootPath) ? appsRootPath : null);
+                if (existingPath != null)
+                {
+                    string existingJson = File.ReadAllText(existingPath, Encoding.UTF8);
+                    var jss = new JavaScriptSerializer();
+                    jss.MaxJsonLength = int.MaxValue;
+                    var existingData = jss.Deserialize<Dictionary<string, object>>(existingJson);
+
+                    if (existingData != null && existingData.ContainsKey("groups"))
+                    {
+                        var existingGroups = existingData["groups"] as ArrayList;
+                        if (existingGroups != null)
+                        {
+                            var customGroups = new ArrayList();
+                            var builtInIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase) {
+                                "developer", "office", "creative", "minimal", "essential", "gamer", "system", "office_business", "gamer_creator"
+                            };
+
+                            foreach (object gObj in existingGroups)
+                            {
+                                var g = gObj as Dictionary<string, object>;
+                                if (g != null && g.ContainsKey("id"))
+                                {
+                                    string gid = Convert.ToString(g["id"]);
+                                    bool isCustom = false;
+                                    if (g.ContainsKey("is_custom") && Convert.ToBoolean(g["is_custom"])) isCustom = true;
+                                    else if (!builtInIds.Contains(gid)) isCustom = true;
+
+                                    if (isCustom)
+                                    {
+                                        customGroups.Add(g);
+                                    }
+                                }
+                            }
+
+                            string newJson = File.ReadAllText(tempExtract, Encoding.UTF8);
+                            var newData = jss.Deserialize<Dictionary<string, object>>(newJson);
+                            if (newData != null && newData.ContainsKey("groups"))
+                            {
+                                var newGroups = newData["groups"] as ArrayList;
+                                if (newGroups != null)
+                                {
+                                    var existingGroupIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                                    var existingGroupNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                                    var uniqueNewGroups = new ArrayList();
+
+                                    foreach (object ng in newGroups)
+                                    {
+                                        var dg = ng as Dictionary<string, object>;
+                                        if (dg != null)
+                                        {
+                                            string nid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
+                                            string nname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
+                                            if (!existingGroupIds.Contains(nid) && !existingGroupNames.Contains(nname))
+                                            {
+                                                existingGroupIds.Add(nid);
+                                                existingGroupNames.Add(nname);
+                                                uniqueNewGroups.Add(ng);
+                                            }
+                                        }
+                                    }
+
+                                    foreach (object cg in customGroups)
+                                    {
+                                        var dg = cg as Dictionary<string, object>;
+                                        if (dg != null)
+                                        {
+                                            string cid = dg.ContainsKey("id") ? Convert.ToString(dg["id"]) : "";
+                                            string cname = dg.ContainsKey("name") ? Convert.ToString(dg["name"]) : "";
+                                            if (!string.IsNullOrEmpty(cid) && !existingGroupIds.Contains(cid) && !existingGroupNames.Contains(cname) && !builtInIds.Contains(cid))
+                                            {
+                                                uniqueNewGroups.Add(cg);
+                                                existingGroupIds.Add(cid);
+                                                existingGroupNames.Add(cname);
+                                            }
+                                        }
+                                    }
+
+                                    newData["groups"] = uniqueNewGroups;
+                                    string mergedJson = jss.Serialize(newData);
+                                    File.WriteAllText(tempExtract, mergedJson, Encoding.UTF8);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            SafeCopyFile(tempExtract, appsDataPath);
+            SafeCopyFile(tempExtract, appsRootPath);
+            try { File.Delete(tempExtract); } catch { }
+        }
+
+        public static void ExtractOrPreserveSettings(string settingsConfigPath, string settingsRootPath)
+        {
+            string existingPath = File.Exists(settingsConfigPath) ? settingsConfigPath : (File.Exists(settingsRootPath) ? settingsRootPath : null);
+            if (existingPath == null)
+            {
+                SafeExtractResource("settings.json", settingsConfigPath);
+                SafeCopyFile(settingsConfigPath, settingsRootPath);
+            }
+            else
+            {
+                // Preserve existing user configuration
+                if (!File.Exists(settingsConfigPath)) SafeCopyFile(existingPath, settingsConfigPath);
+                if (!File.Exists(settingsRootPath)) SafeCopyFile(existingPath, settingsRootPath);
+            }
+        }
+
+        public static void ExtractResource(string resourceName, string targetFilePath)
+        {
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] names = asm.GetManifestResourceNames();
             string match = null;
@@ -1150,7 +1500,7 @@ namespace FleetForge
             }
         }
 
-        private void CreateShortcut(string shortcutPath, string targetPath, string workingDir, string iconPath, string description)
+        public static void CreateShortcut(string shortcutPath, string targetPath, string workingDir, string iconPath, string description)
         {
             try
             {
@@ -1188,7 +1538,7 @@ namespace FleetForge
             }
         }
 
-        private void RegisterInAddRemovePrograms(string installDir, string uninstallExePath, string icoPath)
+        public static void RegisterInAddRemovePrograms(string installDir, string uninstallExePath, string icoPath)
         {
             try
             {
@@ -1239,7 +1589,7 @@ namespace FleetForge
             catch { }
         }
 
-        private void LaunchInstalledApp(string installDir)
+        public static void LaunchInstalledApp(string installDir)
         {
             try
             {

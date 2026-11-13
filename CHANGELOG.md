@@ -6,6 +6,7 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ## [2.6.1] — 2026-11-13
 ### Fixed & Improved
+- **Silent Background System Tray Auto-Installer:** When updating an existing installation, FleetForge displays the download progress directly inside the app, and transitions seamlessly to the Windows System Tray (`NotifyIcon`) at installation time. The installer screen is completely suppressed in favor of native tray notifications and background silent installation, automatically relaunching the updated FleetForge application upon completion.
 - **Prevent Duplicate App Packs on Update:** Fixed installer catalog merge logic by registering `"minimal"` in the built-in system pack whitelist and enforcing unique pack IDs and names during setup, permanently eliminating duplicate "Minimal Essentials" cards.
 - **Self-Healing Runtime Catalog Deduplication:** Added automatic startup validation in `EnsureCategories()` and `LoadConfigWithAutoSync()` that scans and sanitizes any duplicate groups from local `data/apps.json`.
 - **Interactive Check for Updates & Prompt Notifications:** The "Check for Updates" button remains active and interactive during manual checks without disabling. Added clear dialog prompts notifying the user when their installation is fully up to date or offering 1-click update installation when a new version is released.

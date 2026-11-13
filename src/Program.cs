@@ -4696,27 +4696,40 @@ namespace FleetForge
                                         var res = MessageBox.Show("Remote GitHub release download could not complete (" + e.Error.Message + ").\n\nWould you like to test the update workflow using the local setup package?", "Auto-Updater", MessageBoxButton.YesNo, MessageBoxImage.Question);
                                         if (res == MessageBoxResult.Yes)
                                         {
-                                            Process.Start(new ProcessStartInfo(localSetup) { UseShellExecute = true });
-                                            Application.Current.Shutdown();
+                                            try
+                                            {
+                                                ProcessStartInfo psi = new ProcessStartInfo(localSetup);
+                                                psi.Arguments = string.Format("/update /silent /dir \"{0}\"", appDir);
+                                                psi.UseShellExecute = true;
+                                                psi.Verb = "runas";
+                                                Process.Start(psi);
+                                                Application.Current.Shutdown();
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                MessageBox.Show("Could not launch updater: " + ex.Message, "Launch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                            }
                                         }
                                     }
                                     return;
                                 }
 
-                                if (txtDownloadStatus != null) txtDownloadStatus.Text = "Download complete! Launching FleetForge Setup...";
+                                if (txtDownloadStatus != null) txtDownloadStatus.Text = "Download complete! Starting background update in system tray...";
                                 if (pbUpdateDownload != null) pbUpdateDownload.Value = 100;
                                 Thread.Sleep(500);
 
                                 try
                                 {
                                     ProcessStartInfo psi = new ProcessStartInfo(tempInstaller);
+                                    psi.Arguments = string.Format("/update /silent /dir \"{0}\"", appDir);
                                     psi.UseShellExecute = true;
+                                    psi.Verb = "runas";
                                     Process.Start(psi);
                                     Application.Current.Shutdown();
                                 }
                                 catch (Exception ex)
                                 {
-                                    MessageBox.Show("Could not launch downloaded setup: " + ex.Message, "Launch Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    MessageBox.Show("Could not launch updater: " + ex.Message, "Launch Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 }
                             }));
                         };
