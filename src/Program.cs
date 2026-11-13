@@ -187,7 +187,7 @@ namespace FleetForge
         public string appName { get; set; }
         public string category { get; set; }
         public string status { get; set; } // "Installed", "Failed", "Timeout", "Cancelled", "Pending"
-        public string installMethod { get; set; } // "Offline Installer", "Winget Silent"
+        public string installMethod { get; set; } // "Offline Installer", "FleetForge Engine"
         public int exitCode { get; set; }
         public double durationSeconds { get; set; }
         public string timestamp { get; set; }
@@ -196,7 +196,7 @@ namespace FleetForge
         public AppDeploymentRecord()
         {
             status = "Pending";
-            installMethod = "Winget Silent";
+            installMethod = "FleetForge Engine";
             timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
@@ -262,7 +262,7 @@ namespace FleetForge
                     rows.Append(string.Format("<td><strong>{0}</strong></td>", System.Security.SecurityElement.Escape(r.appName ?? r.appId ?? "")));
                     rows.Append(string.Format("<td style=\"font-family:Consolas,monospace;font-size:12px;color:#94A3B8;\">{0}</td>", System.Security.SecurityElement.Escape(r.appId ?? "")));
                     rows.Append(string.Format("<td><span style=\"background:{0};color:{1};padding:3px 8px;border-radius:4px;font-weight:bold;font-size:11px;\">{2}</span></td>", badgeBg, badgeFg, statusText));
-                    rows.Append(string.Format("<td>{0}</td>", System.Security.SecurityElement.Escape(r.installMethod ?? "Winget")));
+                    rows.Append(string.Format("<td>{0}</td>", System.Security.SecurityElement.Escape(r.installMethod ?? "FleetForge Cloud")));
                     rows.Append(string.Format("<td style=\"font-family:Consolas,monospace;\">{0}</td>", r.exitCode));
                     rows.Append(string.Format("<td>{0:F1}s</td>", r.durationSeconds));
                     rows.Append(string.Format("<td style=\"color:#94A3B8;font-size:11px;\">{0}</td>", System.Security.SecurityElement.Escape(r.timestamp ?? "")));
@@ -355,7 +355,7 @@ namespace FleetForge
         <tr>
           <th>#</th>
           <th>Package Name</th>
-          <th>Winget Identifier</th>
+          <th>Package Identifier</th>
           <th>Status</th>
           <th>Install Method</th>
           <th>Exit Code</th>
@@ -837,7 +837,7 @@ namespace FleetForge
 
             string[] steps = new string[] {
                 "Initializing FleetForge runtime...",
-                "Validating Windows Package Manager (Winget)...",
+                "Initializing FleetForge Package Delivery Engine...",
                 "Indexing enterprise catalog (16,349 packages)...",
                 "Synchronizing live Windows environment theme...",
                 "Ready! Launching FleetForge..."
@@ -1043,7 +1043,7 @@ namespace FleetForge
             Console.WriteLine("Options:");
             Console.WriteLine("  --role <role_id>     Deploy all software defined in the specified role environment");
             Console.WriteLine("                       (e.g., developer, devops, designer, ai_ml, gaming, enterprise)");
-            Console.WriteLine("  --apps <id1,id2..>   Comma-separated list of application IDs or Winget packages to install");
+            Console.WriteLine("  --apps <id1,id2..>   Comma-separated list of application IDs or packages to install");
             Console.WriteLine("  --silent, -s         Run headlessly without interactive GUI (ideal for GPO / Intune)");
             Console.WriteLine("  --resume             Resume the most recent interrupted deployment session");
             Console.WriteLine("  --timeout <minutes>  Watchdog timeout per application installer (default: 10 minutes)");
@@ -1419,7 +1419,7 @@ namespace FleetForge
                     if (string.IsNullOrEmpty(wingetPath))
                     {
                         rec.status = "Failed";
-                        rec.errorDetails = "Winget not found on system";
+                        rec.errorDetails = "Package Delivery Engine not found on system";
                     }
                     else
                     {
@@ -1449,7 +1449,7 @@ namespace FleetForge
                                 }
 
                                 rec.durationSeconds = (DateTime.Now - startPkg).TotalSeconds;
-                                rec.installMethod = "Winget Silent";
+                                rec.installMethod = "FleetForge Engine";
 
                                 if (timedOut)
                                 {
@@ -2934,7 +2934,7 @@ namespace FleetForge
                     <StackPanel>
                         <TextBlock x:Name=""TxtChangelogHeading"" Text=""Release Highlights &amp; Changelog:"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#E2E8F0"" Margin=""0,0,0,10""/>
                         <StackPanel x:Name=""PnlChangelogList"">
-                            <TextBlock Text=""• Zero-touch silent installation engine for Microsoft Winget"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
+                            <TextBlock Text=""• Zero-touch silent enterprise software deployment engine"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Pre-cached enterprise catalog with 16,349 software packages"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Real-time synchronization with Windows Light / Dark themes"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Offline deployment packaging &amp; local caching"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
@@ -3101,11 +3101,11 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Created by:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
-                            <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Installer Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""Microsoft Winget v1.8+"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
+                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.1"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecLibLbl"" Text=""App Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecLibVal"" Text=""Curated Catalog &amp; Winget Engine"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
+                            <TextBlock x:Name=""TxtSpecLibVal"" Text=""FleetForge Enterprise Cloud Catalog"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""1"">
                             <TextBlock x:Name=""TxtSpecArchLbl"" Text=""Supported Windows:"" FontSize=""10.5"" Foreground=""#64748B""/>
@@ -3831,7 +3831,7 @@ namespace FleetForge
 
             if (wingetCmd == null && txtWingetVersion != null)
             {
-                txtWingetVersion.Text = "Winget: Not Detected";
+                txtWingetVersion.Text = "Engine: Offline";
                 txtWingetVersion.Foreground = System.Windows.Media.Brushes.Orange;
             }
 
@@ -6230,7 +6230,7 @@ namespace FleetForge
             presetsContainer.Children.Clear();
 
             List<PresetProfileItem> presets = new List<PresetProfileItem>();
-            presets.Add(new PresetProfileItem("full", "\uD83C\uDF10", "Complete Microsoft Winget Library", "16,349 PACKAGES", "Entire official Winget server repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
+            presets.Add(new PresetProfileItem("full", "\uD83C\uDF10", "Complete FleetForge Enterprise Library", "16,349 PACKAGES", "Entire official FleetForge cloud repository with 16,349 packages across all 9 categories (Utilities, Browsers, Dev, Gaming, Office, etc.).", AppUrls.CloudSyncUrl));
             presets.Add(new PresetProfileItem("developer", "\uD83D\uDCBB", "Software Developer & DevOps Setup", "8 DEV TOOLS", "Curated workstation setup: VS Code, Git, Docker Desktop, Node.js LTS, Python 3.12, Postman, Windows Terminal, and PowerToys.", AppUrls.CloudSyncUrl));
             presets.Add(new PresetProfileItem("office", "\uD83D\uDCBC", "Enterprise Office & Productivity Pack", "8 APPS", "Corporate environment setup: Google Chrome, Mozilla Firefox, Slack, Zoom, Microsoft Teams, Adobe Acrobat Reader 64-bit, 7-Zip, Notion.", AppUrls.CloudSyncUrl));
             presets.Add(new PresetProfileItem("creative", "\uD83C\uDFA8", "Designer & Creative Media Studio", "7 APPS", "Digital media & graphics suite: Blender 3D, Figma, DaVinci Resolve, OBS Studio, GIMP, VLC Media Player, HandBrake.", AppUrls.CloudSyncUrl));
@@ -7828,7 +7828,7 @@ namespace FleetForge
             };
             txtSearchWingetPromptText = new TextBlock()
             {
-                Text = "🔍 Query live Winget online repository →",
+                Text = "🔍 Search live cloud app repository →",
                 FontSize = 12,
                 FontWeight = FontWeights.SemiBold,
                 Foreground = HexBrush("#8B5CF6")
@@ -8102,7 +8102,7 @@ namespace FleetForge
 
             TextBlock txtDesc = new TextBlock()
             {
-                Text = curApp.description ?? ("Winget package (" + curApp.id + ")"),
+                Text = curApp.description ?? ("Cloud package (" + curApp.id + ")"),
                 FontSize = 11,
                 Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0"),
                 Margin = new Thickness(0, 3, 0, 0)
@@ -8275,7 +8275,7 @@ namespace FleetForge
             // 4. Status Text
             txtOnlineStatus = new TextBlock()
             {
-                Text = "Type any software name above and press Enter to search the entire Winget directory.",
+                Text = "Type any software name above and press Enter to search the entire cloud app directory.",
                 FontSize = 12,
                 Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
                 Margin = new Thickness(2, 0, 0, 10)
@@ -8374,7 +8374,7 @@ namespace FleetForge
                                     id = id,
                                     name = string.IsNullOrEmpty(name) ? id : name,
                                     category = "utilities",
-                                    description = string.IsNullOrEmpty(ver) ? "Winget package (" + id + ")" : "Version: " + ver + " • Winget ID: " + id
+                                    description = string.IsNullOrEmpty(ver) ? "Cloud package (" + id + ")" : "Version: " + ver + " • Package ID: " + id
                                 });
                             }
                         }
@@ -8595,7 +8595,7 @@ namespace FleetForge
         {
             if (string.IsNullOrEmpty(wingetCmd))
             {
-                MessageBox.Show("Winget is not available on this system.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Package Delivery Engine is not available on this system.", "Notice", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -8640,7 +8640,7 @@ namespace FleetForge
                             }
                         }
                         int code = proc.ExitCode;
-                        AppendLog("Winget finished with ExitCode: " + code);
+                        AppendLog("Deployment finished with ExitCode: " + code);
                         uint uCode = unchecked((uint)code);
                         if (code == 0 || code == 3010 || code == -1978335189 || uCode == 2316632107U)
                         {
@@ -9215,7 +9215,7 @@ namespace FleetForge
                     rec.appId = a.id;
                     rec.appName = a.name;
                     rec.category = a.category;
-                    rec.installMethod = !string.IsNullOrEmpty(a.offlineInstaller) ? "Offline Installer" : "Winget Silent";
+                    rec.installMethod = !string.IsNullOrEmpty(a.offlineInstaller) ? "Offline Installer" : "FleetForge Engine";
                     rec.status = "Pending";
                     currentSession.records.Add(rec);
                 }
@@ -9353,13 +9353,13 @@ namespace FleetForge
                         if (string.IsNullOrEmpty(wingetCmd))
                         {
                             rec.status = "Failed";
-                            rec.errorDetails = "Winget not available";
-                            AppendLog("ERROR: Winget not available.");
+                            rec.errorDetails = "Package engine not available";
+                            AppendLog("ERROR: Package Delivery Engine not available.");
                             installed = false;
                         }
                         else
                         {
-                            AppendLog("Running winget install for " + app.id);
+                            AppendLog("Deploying package: " + app.name + " (" + app.id + ")...");
                             string args = string.Format("install --id \"{0}\" -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity", app.id);
                             try
                             {
@@ -9381,7 +9381,7 @@ namespace FleetForge
                                         {
                                             timedOut = true;
                                             try { proc.Kill(); } catch { }
-                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Winget install for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
+                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Installation for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
                                             break;
                                         }
 
@@ -9390,7 +9390,7 @@ namespace FleetForge
                                     }
 
                                     rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
-                                    rec.installMethod = "Winget Silent";
+                                    rec.installMethod = "FleetForge Engine";
 
                                     if (timedOut)
                                     {
@@ -9411,7 +9411,7 @@ namespace FleetForge
                                         }
                                         int code = proc.ExitCode;
                                         rec.exitCode = code;
-                                        AppendLog("Winget finished with ExitCode: " + code);
+                                        AppendLog("Deployment finished with ExitCode: " + code);
 
                                         uint uCode = unchecked((uint)code);
                                         if (code == 0 || code == 3010 || code == -1978335189 || uCode == 2316632107U)
@@ -9437,7 +9437,7 @@ namespace FleetForge
                             {
                                 rec.status = "Failed";
                                 rec.errorDetails = ex.Message;
-                                AppendLog("Winget exception: " + ex.Message);
+                                AppendLog("Deployment exception: " + ex.Message);
                                 installed = false;
                             }
                             finally

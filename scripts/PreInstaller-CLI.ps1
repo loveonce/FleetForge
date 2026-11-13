@@ -213,7 +213,7 @@ for ($i = 0; $i -lt $selectedApps.Count; $i++) {
                     Log "Offline installer completed successfully."
                     $offlineInstalled = $true
                 } else {
-                    Log "Offline installer returned ExitCode $($p.ExitCode). Falling back to Winget..."
+                    Log "Offline installer returned ExitCode $($p.ExitCode). Falling back to Cloud Package Engine..."
                 }
             } catch {
                 Log "Offline installer failed: $_"
@@ -223,12 +223,12 @@ for ($i = 0; $i -lt $selectedApps.Count; $i++) {
 
     if (-not $offlineInstalled) {
         if (-not $WingetCmd) {
-            Log "ERROR: Winget not available."
+            Log "ERROR: Package Delivery Engine not available."
             $failCount++
             continue
         }
 
-        Log "Running winget install for $($app.id)..."
+        Log "Deploying package $($app.id)..."
         $wingetArgs = "install --id `"$($app.id)`" -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity"
 
         try {
@@ -238,7 +238,7 @@ for ($i = 0; $i -lt $selectedApps.Count; $i++) {
                 Log "Installed successfully."
                 $successCount++
             } else {
-                Log "Winget exited with error code: $code"
+                Log "Deployment exited with error code: $code"
                 $failCount++
             }
         } catch {

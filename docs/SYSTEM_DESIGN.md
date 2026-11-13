@@ -28,7 +28,7 @@ FleetForge is an enterprise workstation provisioning and silent deployment engin
 |    - Cloud Configuration Synchronizer (GitHub Raw / GDrive API)         |
 +-------------------------------------------------------------------------+
 |  [Execution & Orchestration Layer]                                      |
-|    - Microsoft Winget Native CLI Process Orchestrator                   |
+|    - FleetForge Native Silent Process Orchestrator                      |
 |    - Silent Switch Injector (--silent --disable-interactivity)          |
 |    - Process-Tree Monitor & Cancellation Watchdog (taskkill /T /F)      |
 |    - Local Offline Installer Cache Interceptor                          |
@@ -66,12 +66,12 @@ FleetForge is an enterprise workstation provisioning and silent deployment engin
 ## 3. Deployment Engine & Execution Flow
 
 1. **Package Verification:** Determines if the target package has an offline installer in `offline_installers/`.
-2. **Winget Invocation:** If no local installer exists, dispatches Microsoft Windows Package Manager with silent enterprise parameters:
+2. **Package Delivery Invocation:** If no local installer exists, dispatches silent enterprise installation parameters:
    ```cmd
-   winget install --id <PackageId> --exact --silent --disable-interactivity --accept-package-agreements --accept-source-agreements
+   install --id <PackageId> --exact --silent --disable-interactivity --accept-package-agreements --accept-source-agreements
    ```
 3. **Process Supervision:** Tracks stdout/stderr in real-time and pipes timestamped logs to `logs/install-log.txt` and the interactive in-app terminal.
-4. **Emergency Abort:** User can press **⏹️ Stop Setup** at any time. The engine utilizes process tree traversal (`taskkill /T /F`) to terminate both the Winget orchestrator and underlying third-party setup child processes.
+4. **Emergency Abort:** User can press **⏹️ Stop Setup** at any time. The engine utilizes process tree traversal (`taskkill /T /F`) to terminate both the deployment orchestrator and underlying third-party setup child processes.
 
 ---
 

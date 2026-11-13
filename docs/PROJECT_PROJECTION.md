@@ -16,7 +16,7 @@ To become the de facto zero-touch workstation provisioning and deployment standa
 ### Phase 1: Core Foundation (Completed — v1.0 to v2.4)
 - [x] Native WPF C# Single-File Executable (`FleetForge.exe`) without external runtime dependencies.
 - [x] Single-file self-extracting setup wizard (`FleetForge-Setup.exe`).
-- [x] Pre-cached local index containing 16,349 Microsoft Winget applications.
+- [x] Pre-cached local index containing 16,349 software packages.
 - [x] Live Windows OS Light/Dark theme synchronization engine.
 - [x] Collapsible sidebar navigation (68px collapsed mode / 250px expanded mode).
 - [x] Custom role group builder with dynamic software checklist and JSON export.

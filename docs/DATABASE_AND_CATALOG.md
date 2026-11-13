@@ -10,7 +10,7 @@
 
 FleetForge separates application data into two primary collections within a unified JSON manifest:
 1. **`groups`**: Role-based software profiles (e.g., Software Developer, UI/UX Designer, DevOps Engineer).
-2. **`apps`**: Complete indexed catalog of all available Winget packages with metadata and installation parameters.
+2. **`apps`**: Complete indexed catalog of all available packages with metadata and installation parameters.
 
 ```
 +------------------------------------------------------------------+
@@ -24,7 +24,7 @@ FleetForge separates application data into two primary collections within a unif
 |     + apps: List<string> (Foreign Key IDs mapping to AppModel.id)|
 +------------------------------------------------------------------+
 | - apps: List<AppModel>                                           |
-|     + id: string (Winget Package Identifier, e.g. "Git.Git")     |
+|     + id: string (Package Identifier, e.g. "Git.Git")            |
 |     + name: string (Human-Readable Software Name)                |
 |     + category: string (Taxonomy Bucket)                         |
 |     + description: string                                        |
@@ -95,5 +95,5 @@ When FleetForge resolves catalogs at runtime:
 2. **Tier 2:** Root Fallback (`apps.json`).
 3. **Tier 3:** Embedded Binary Cache (embedded during compilation).
 4. **Tier 4:** Cloud Synchronized Index (GitHub Raw / GDrive API if configured in `config/settings.json`).
-5. **Tier 5:** Dynamic Online Winget Search (Real-time live queries against Microsoft's package index for uncataloged packages).
+5. **Tier 5:** Dynamic Online Cloud Search (Real-time live queries against cloud package repository for uncataloged packages).
 

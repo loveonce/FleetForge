@@ -52,7 +52,7 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 - **Interactive Update Center:** Automatic GitHub release checking, version comparison, and 1-click in-place update download.
 - **Structured Project Architecture:** Complete folder separation (`data/`, `config/`, `scripts/`, `logs/`, `docs/`, `installer/`).
 - **Master Build Automation (`Build-All.bat`):** 1-Click compiler for both portable client and setup wizard.
-- **Expanded Software Catalog:** 16,349 Microsoft Winget software packages indexed in `data/apps.json`.
+- **Expanded Software Catalog:** 16,349 software packages indexed in `data/apps.json`.
 - **Master Application Icon (`src/assets/appicon.ico`):** Multi-resolution 13-frame icon (16x16 to 768x768).
 
 ### Improved

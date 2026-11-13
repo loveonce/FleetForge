@@ -7,7 +7,7 @@
 
 ## 1. Overview & Objectives
 
-FleetForge features an automated update engine that ensures client workstations run the latest deployment definitions, Winget parameter improvements, and security patches without requiring manual re-installation by IT administrators.
+FleetForge features an automated update engine that ensures client workstations run the latest deployment definitions, package delivery improvements, and security patches without requiring manual re-installation by IT administrators.
 
 ---
 
@@ -22,7 +22,7 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
   "title": "FleetForge v2.6.1 Enterprise IT Edition",
   "company": "Love Malhotra",
   "changelog": [
-    "Zero-touch silent installation engine for Microsoft Winget",
+    "Zero-touch silent enterprise software deployment engine",
     "Restored clean UTF-8 unicode categories and role icons",
     "Single-instance enforcement with active window foreground restoration",
     "Live Windows OS Light/Dark theme synchronization",

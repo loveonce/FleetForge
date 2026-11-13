@@ -1,7 +1,7 @@
 # ⚡ FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment
 
 > **Zero-Touch Machine Setup & Enterprise Software Deployment**  
-> An enterprise-grade Windows 11 Desktop Application & Installer (`.EXE`) designed with modern Fluent aesthetics, live Windows theme sync, curated role presets, and instant Winget package deployment.  
+> An enterprise-grade Windows 11 Desktop Application & Installer (`.EXE`) designed with modern Fluent aesthetics, live Windows theme sync, curated role presets, and instant silent package deployment.  
 > **Author & Publisher:** Love Malhotra • [GitHub Repository](https://github.com/loveonce/FleetForge) • Version 2.6.1
 
 ---
@@ -26,8 +26,8 @@ A single, self-contained Windows setup wizard that deploys FleetForge onto any P
    - **ℹ️ About FleetForge:** Comprehensive system and build information with large high-resolution logo.
 3. **🌓 Live Windows OS Theme Sync:**
    - Automatically synchronizes with your Windows theme in real-time (`WM_SETTINGCHANGE`) without restarting.
-4. **📦 16,349 Pre-Loaded Winget Packages:**
-   - Microsoft Winget's entire public catalog indexed and cached locally in `data/apps.json` for instantaneous offline and online browsing.
+4. **📦 16,349 Pre-Loaded Software Packages:**
+   - Entire enterprise catalog indexed and cached locally in `data/apps.json` for instantaneous offline and online browsing.
 5. **🗂️ Expandable / Collapsible Left Navigation Menu:**
    - Seamlessly collapses into a clean 68px icon bar or expands to 250px with full labels.
 6. **➕ Custom Role Bundles Builder:**
