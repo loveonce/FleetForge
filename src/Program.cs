@@ -2709,7 +2709,7 @@ namespace FleetForge
                 </Border>
 
                 <!-- Quick Actions: Export Sample & Edit Local -->
-                <StackPanel Orientation=""Horizontal"">
+                <StackPanel Orientation=""Horizontal"" Visibility=""Collapsed"">
                     <Button x:Name=""BtnExportSampleJson"" Content=""Export App List"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
                             Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12"" FontWeight=""SemiBold""/>
                     <Button x:Name=""BtnOpenLocalCatalog"" Content=""Open App List"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
@@ -5823,6 +5823,7 @@ namespace FleetForge
         private void UpdateBottomBarVisibility()
         {
             bool isLogsView = (currentView == "logs");
+            bool isCloudView = (currentView == "cloud");
             bool isInstalling = (btnStop != null && btnStop.Visibility == Visibility.Visible);
 
             if (btnOpenOfflineFolder != null)
@@ -5832,12 +5833,12 @@ namespace FleetForge
 
             if (btnInstall != null)
             {
-                btnInstall.Visibility = (isLogsView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
+                btnInstall.Visibility = (isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (borderBottomBar != null)
             {
-                if (isLogsView)
+                if (isLogsView || isCloudView)
                 {
                     borderBottomBar.Visibility = isInstalling ? Visibility.Visible : Visibility.Collapsed;
                 }
