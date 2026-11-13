@@ -4230,13 +4230,14 @@ namespace FleetForge
             {
                 if (e.Key == Key.Enter)
                 {
-                    string q = txtSearch.Text.Trim();
-                    if (!string.IsNullOrEmpty(q) && q != "search applications...")
+                    if (searchDebounceTimer != null) searchDebounceTimer.Stop();
+                    string t = txtSearch.Text;
+                    bool hasText = !string.IsNullOrEmpty(t) && t != "Find an app, setting or pack..." && t != "Search applications...";
+                    if (hasText && currentView != "catalog")
                     {
-                        SetCategoryFilter("winget_online");
-                        if (txtOnlineSearchInput != null) txtOnlineSearchInput.Text = q;
-                        RunWingetOnlineSearch(q);
+                        SwitchView("catalog");
                     }
+                    ApplyFilters();
                 }
             };
 
@@ -6304,36 +6305,30 @@ namespace FleetForge
         {
             if (config == null) config = new ConfigModel();
             if (config.groups == null) config.groups = new List<GroupModel>();
+            if (config.apps == null) config.apps = new List<AppModel>();
 
-            if (config.groups.Count > 0 && config.groups[0] != null && string.Equals(config.groups[0].id, "recommended", StringComparison.OrdinalIgnoreCase))
+            RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
+            if (recModel != null)
             {
-                GroupModel existingRec = config.groups[0];
-                if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
-                {
-                    if (existingRec.apps != null) recommendedMasterAppIds = new List<string>(existingRec.apps);
-                }
-                return;
-            }
-
-            GroupModel foundRec = config.groups.Find(delegate (GroupModel g) {
-                return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
-            });
-
-            if (foundRec != null)
-            {
-                config.groups.RemoveAll(delegate (GroupModel g) {
-                    return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
-                });
-                config.groups.Insert(0, foundRec);
-                if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
-                {
-                    if (foundRec.apps != null) recommendedMasterAppIds = new List<string>(foundRec.apps);
-                }
+                ApplyRecommendedDataModel(recModel);
             }
             else
             {
-                RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
-                ApplyRecommendedDataModel(recModel);
+                GroupModel foundRec = config.groups.Find(delegate (GroupModel g) {
+                    return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+                });
+
+                if (foundRec != null)
+                {
+                    config.groups.RemoveAll(delegate (GroupModel g) {
+                        return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+                    });
+                    config.groups.Insert(0, foundRec);
+                    if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
+                    {
+                        if (foundRec.apps != null) recommendedMasterAppIds = new List<string>(foundRec.apps);
+                    }
+                }
             }
         }
 
@@ -8935,16 +8930,45 @@ namespace FleetForge
                         return;
                     }
 
-                    if (foundApps.Count == 0)
+                    List<AppModel> matchingCustom = new List<AppModel>();
+                    if (config != null && config.apps != null)
+                    {
+                        string qClean = (query ?? "").Replace(" ", "").ToLowerInvariant();
+                        string qLower = (query ?? "").ToLowerInvariant();
+                        matchingCustom = config.apps.FindAll(delegate(AppModel a)
+                        {
+                            if (a == null || !IsRecommendedApp(a)) return false;
+                            string name = a.name ?? "";
+                            string id = a.id ?? "";
+                            string desc = a.description ?? "";
+                            string off = a.offlineInstaller ?? "";
+                            return name.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   id.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   desc.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   off.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   name.Replace(" ", "").IndexOf(qClean, StringComparison.OrdinalIgnoreCase) >= 0;
+                        });
+                    }
+
+                    int totalCount = foundApps.Count + matchingCustom.Count;
+                    if (totalCount == 0)
                     {
                         txtOnlineStatus.Text = string.Format("No apps found matching '{0}'. Try searching with another name.", query);
                         return;
                     }
 
-                    txtOnlineStatus.Text = string.Format("Found {0} app(s) online matching '{1}':", foundApps.Count, query);
+                    txtOnlineStatus.Text = string.Format("Found {0} app(s) matching '{1}':", totalCount, query);
+
+                    foreach (AppModel recApp in matchingCustom)
+                    {
+                        Border card = CreateAppCard(recApp);
+                        onlineResultsPanel.Children.Add(card);
+                    }
 
                     foreach (AppModel app in foundApps)
                     {
+                        if (matchingCustom.Exists(delegate (AppModel m) { return string.Equals(m.id, app.id, StringComparison.OrdinalIgnoreCase); }))
+                            continue;
                         AppModel curApp = app;
                         Border card = CreateWingetAppCard(curApp);
                         onlineResultsPanel.Children.Add(card);
@@ -9357,29 +9381,59 @@ namespace FleetForge
         {
             if (activeCategory == "winget_online") return;
 
-            string query = txtSearch.Text.Trim().ToLower();
-            if (query == "find an app, setting or pack..." || query == "search applications...") query = "";
-
-            if (!string.IsNullOrEmpty(query))
+            string rawQuery = txtSearch != null ? txtSearch.Text.Trim() : "";
+            if (rawQuery.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
+                rawQuery.Equals("search applications...", StringComparison.OrdinalIgnoreCase))
             {
-                bannerSearchWingetPrompt.Visibility = Visibility.Visible;
-                txtSearchWingetPromptText.Text = string.Format("🔍 Can't find '{0}'? Search millions of apps online →", txtSearch.Text.Trim());
+                rawQuery = "";
+            }
+
+            if (!string.IsNullOrEmpty(rawQuery))
+            {
+                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Visible;
+                if (txtSearchWingetPromptText != null) txtSearchWingetPromptText.Text = string.Format("🔍 Can't find '{0}'? Search millions of apps online →", rawQuery);
             }
             else
             {
-                bannerSearchWingetPrompt.Visibility = Visibility.Collapsed;
+                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Collapsed;
             }
+
+            string cleanQuery = rawQuery.Replace(" ", "").ToLowerInvariant();
+            string lowerQuery = rawQuery.ToLowerInvariant();
 
             activeFilteredApps = config.apps.FindAll(delegate (AppModel a)
             {
-                bool matchCat = (activeCategory == "all") || (a.category == activeCategory);
-                if (!matchCat) return false;
+                if (a == null) return false;
+                bool isRec = IsRecommendedApp(a);
 
-                if (string.IsNullOrEmpty(query)) return true;
+                if (!string.IsNullOrEmpty(lowerQuery))
+                {
+                    string aName = a.name ?? "";
+                    string aId = a.id ?? "";
+                    string aDesc = a.description ?? "";
+                    string aOff = a.offlineInstaller ?? "";
 
-                return (a.name != null && a.name.ToLower().Contains(query)) ||
-                       (a.id != null && a.id.ToLower().Contains(query)) ||
-                       (a.description != null && a.description.ToLower().Contains(query));
+                    bool matchQuery =
+                        aName.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aId.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aDesc.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aOff.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aName.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aId.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                    if (!matchQuery) return false;
+
+                    // If it is a custom database / recommended app that matches search, ALWAYS show it regardless of category!
+                    if (isRec) return true;
+
+                    bool matchCat = (activeCategory == "all") || (a.category == activeCategory);
+                    return matchCat;
+                }
+                else
+                {
+                    bool matchCat = (activeCategory == "all") || (a.category == activeCategory);
+                    return matchCat;
+                }
             });
 
             SortFilteredApps();

@@ -5,61 +5,31 @@
     "id": "recommended",
     "name": "Top Choice • Recommended",
     "icon": "⭐",
-    "description": "Curated partner software, essential premium tools, and top-rated recommendations.",
+    "description": "Curated software, essential premium tools, and top-rated recommendations.",
     "accentColor": "#F59E0B",
     "apps": [
-      "7zip.7zip",
-      "Notepad++.Notepad++",
-      "voidtools.Everything",
-      "VideoLAN.VLC",
-      "Google.Chrome"
+      "bitguardian.Winriser",
+      "bitguardian.BitDriverUpdater"
     ]
   },
   "apps": [
     {
-      "id": "7zip.7zip",
-      "name": "7-Zip Archiver",
+      "id": "bitguardian.Winriser",
+      "name": "Win Riser",
       "category": "utilities",
-      "description": "High-compression ratio file archiver utility.",
-      "downloadUrl": "https://www.7-zip.org/a/7z2408-x64.exe",
+      "description": "Ultimate Windows Security and Performance Tool.",
+      "downloadUrl": "https://cdn.winriser.com/winriser/app/build/1031001/wrsetup.exe",
       "silentArgs": "/S",
-      "offlineInstaller": "7z-x64.exe"
+      "offlineInstaller": "wrsetup.exe"
     },
     {
-      "id": "Notepad++.Notepad++",
-      "name": "Notepad++",
+      "id": "bitguardian.BitDriverUpdater",
+      "name": "Bit Driver Updater",
       "category": "utilities",
-      "description": "Powerful lightweight code and text editor.",
-      "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7/npp.8.7.Installer.x64.exe",
+      "description": "Up-to-date drivers can improve performance, stability & security of your computer.",
+      "downloadUrl": "https://webcf.bitdriverupdater.com/bitdrvupdt/instlr/build/10040/bitdurtsetup.exe",
       "silentArgs": "/S",
-      "offlineInstaller": "npp-installer.exe"
-    },
-    {
-      "id": "voidtools.Everything",
-      "name": "Everything Search",
-      "category": "utilities",
-      "description": "Ultra-fast filename search utility for Windows.",
-      "downloadUrl": "https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe",
-      "silentArgs": "/S",
-      "offlineInstaller": "Everything-Setup.exe"
-    },
-    {
-      "id": "VideoLAN.VLC",
-      "name": "VLC Media Player",
-      "category": "media",
-      "description": "Universal multimedia player for audio and video formats.",
-      "downloadUrl": "https://get.videolan.org/vlc/3.0.21/win64/vlc-3.0.21-win64.exe",
-      "silentArgs": "/S",
-      "offlineInstaller": "vlc-setup.exe"
-    },
-    {
-      "id": "Google.Chrome",
-      "name": "Google Chrome",
-      "category": "browsers",
-      "description": "Fast, secure web browser built by Google.",
-      "downloadUrl": "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
-      "silentArgs": "/silent /install",
-      "offlineInstaller": "ChromeStandaloneSetup64.exe"
+      "offlineInstaller": "bitdurtsetup.exe"
     }
   ]
 }
