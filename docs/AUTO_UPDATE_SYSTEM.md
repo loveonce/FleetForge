@@ -17,9 +17,9 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
 
 ```json
 {
-  "version": "2.5.0",
-  "buildDate": "2026-11-12",
-  "title": "FleetForge v2.5.0 Enterprise IT Edition",
+  "version": "2.6.0",
+  "buildDate": "2026-11-13",
+  "title": "FleetForge v2.6.0 Enterprise IT Edition",
   "company": "Love Malhotra",
   "changelog": [
     "Zero-touch silent installation engine for Microsoft Winget",

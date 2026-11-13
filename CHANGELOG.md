@@ -4,6 +4,19 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.0] — 2026-11-13
+### Added & Redesigned
+- **Windows 11 Fluent Designer Splash Screen:** Completely redesigned startup splash with a frosted Mica floating card (`480×270`), squircle brand container with gentle breathing scale pulse (`1.0` ↔ `1.055`), glowing halo animation, fluid progress bar gliding (`DoubleAnimation` on `ProgressBar.ValueProperty`), and silky smooth entrance/exit transitions.
+- **Dynamic Windows 11 Theme & Accent Synchronization:** Automatic detection of Windows Light and Dark themes via `AppsUseLightTheme` registry query and live accent color extraction from Windows DWM (`AccentColor`), with adaptive luminance compensation ensuring high-contrast clarity across any Windows theme.
+- **Enhanced Windows 11 Search Capsule:** Redesigned top search bar into a prominent `440px` pill capsule with `18px` corner radius, instant live search filtering, and high contrast across both Light and Dark modes.
+- **Streamlined Navigation & Header:** Relocated "How to Use" guide into the top-right "Help ▾" menu, removed manual theme switch button for pure automatic OS theme sync, and removed redundant profile card and Quick Setup hero blocks.
+- **Interactive First-Time Tutorial Modal:** High-contrast 3-step walkthrough modal for non-technical and first-time users with crisp typography in both Light and Dark themes.
+- **Multi-Drive Installation Detection:** Automated detection of existing software installations across secondary storage drives (e.g., `D:\`) prior to setup execution, preventing duplicate installations and managing overwrite behaviors.
+- **Ready-Made App Pack Import & Export:** Built-in JSON export for custom app packs and an Import dialog with collision detection, duplicate warnings, and overwrite/ignore choices.
+- **Version Lock:** Official release locked to **v2.6.0** across all portable binaries, setup wizards, and documentation.
+
+---
+
 ## [2.5.0] — 2026-11-12
 ### Added & Updated Branding
 - **Publisher & Author:** Officially published and branded by **Love Malhotra** ([GitHub: loveonce](https://github.com/loveonce/FleetForge)).

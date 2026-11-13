@@ -1,16 +1,16 @@
 {
-  "version": "2.5.0",
-  "buildDate": "2026-11-12",
-  "title": "FleetForge v2.5.0 Enterprise IT Edition",
+  "version": "2.6.0",
+  "buildDate": "2026-11-13",
+  "title": "FleetForge v2.6.0 Enterprise IT Edition",
   "company": "Love Malhotra",
   "website": "https://github.com/loveonce/FleetForge",
   "changelog": [
-    "Official publication and branding by Love Malhotra",
-    "Native UTF-8 Emoji and symbol rendering for all categories and role environments",
-    "Single-instance enforcement with active window foreground restoration",
-    "Purged legacy uncurated packages and optimized binary installer footprint",
-    "Direct cloud catalog synchronization with GitHub repository releases",
-    "Zero-touch silent installation engine for Microsoft Winget"
+    "Redesigned Windows 11 Fluent designer splash screen with native breathing and gliding animations",
+    "Automatic Windows 11 Light/Dark theme and dynamic accent color detection",
+    "High-contrast Windows 11 pill capsule search bar with instant package filtering",
+    "Reorganized header: How to Use guide relocated to Help menu, manual theme toggle automated",
+    "Streamlined Quick Setup view and enhanced first-time interactive tutorial modal",
+    "Zero-touch silent installation engine for Microsoft Winget with multi-drive install detection"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }
