@@ -2221,35 +2221,6 @@ namespace FleetForge
                 <TextBlock x:Name=""TxtPageBigSubtitle"" Text=""Choose an app pack below or review individual applications to set up this computer in one click.""
                            FontSize=""12.5"" Foreground=""#A0A0A0"" Margin=""0,0,0,18""/>
 
-                <!-- HERO STATUS CARD (Styled like 'Updates available' in Windows 11 screenshot!) -->
-                <Border x:Name=""BorderHeroStatusCard"" Background=""#262626"" CornerRadius=""8"" Padding=""20,16"" BorderBrush=""#383838"" BorderThickness=""1"" Margin=""0,0,0,18"">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""Auto""/>
-                            <ColumnDefinition Width=""*""/>
-                            <ColumnDefinition Width=""Auto""/>
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Large Circular Status Badge Icon -->
-                        <Border x:Name=""BorderHeroStatusIcon"" Grid.Column=""0"" Width=""48"" Height=""48"" CornerRadius=""24"" Background=""#1E3A5F"" Margin=""0,0,16,0"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtHeroStatusIcon"" Text=""&#xE770;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol""
-                                       FontSize=""22"" Foreground=""#38BDF8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        </Border>
-
-                        <!-- Status Details -->
-                        <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtHeroStatusTitle"" Text=""Ready to Install"" FontSize=""16"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                            <TextBlock x:Name=""TxtHeroStatusSubtitle"" Text=""Software Developer pack selected • 8 apps ready for 1-click silent installation""
-                                       FontSize=""12"" Foreground=""#A0A0A0"" Margin=""0,3,0,0""/>
-                        </StackPanel>
-
-                        <!-- Primary Action Button (Windows 11 Style, NO ICON!) -->
-                        <Button x:Name=""BtnHeroInstall"" Grid.Column=""2"" Content=""Install Selected Apps""
-                                Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
-                                Padding=""24,10"" Cursor=""Hand"" BorderThickness=""0"" VerticalAlignment=""Center""/>
-                    </Grid>
-                </Border>
-
                 <!-- Session Resume Alert Banner (Conditional) -->
                 <Border x:Name=""BannerResumeSetup"" Background=""#2B2313"" CornerRadius=""8"" Padding=""16,12"" BorderBrush=""#854D0E"" BorderThickness=""1"" Margin=""0,0,0,16"" Visibility=""Collapsed"">
                     <Grid>
