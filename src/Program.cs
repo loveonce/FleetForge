@@ -1733,20 +1733,62 @@ namespace FleetForge
         private Grid modalTutorialOverlay;
         private Border borderTutorialCard;
         private TextBlock txtModalTutorialTitle;
+        private TextBlock txtModalTutorialSubtitle;
         private Button btnCloseTutorial;
+
+        // Tutorial Stepper Pills
+        private Border badgeTutStep1;
+        private TextBlock txtTutStep1Badge;
+        private Border badgeTutStep2;
+        private TextBlock txtTutStep2Badge;
+        private Border badgeTutStep3;
+        private TextBlock txtTutStep3Badge;
+
         private StackPanel pnlTutorialStep1;
         private StackPanel pnlTutorialStep2;
         private StackPanel pnlTutorialStep3;
+
+        // Step 1
         private Border cardTutStep1Hero;
+        private TextBlock txtTutStep1HeroTitle;
+        private TextBlock txtTutStep1HeroDesc;
         private Border cardTutStep1Box1;
+        private TextBlock txtTutStep1Box1Title;
+        private TextBlock txtTutStep1Box1Desc;
         private Border cardTutStep1Box2;
+        private TextBlock txtTutStep1Box2Title;
+        private TextBlock txtTutStep1Box2Desc;
         private Border cardTutStep1Box3;
+        private TextBlock txtTutStep1Box3Title;
+        private TextBlock txtTutStep1Box3Desc;
+
+        // Step 2
         private Border cardTutStep2Box1;
+        private Border borderTutStep2Num1;
+        private TextBlock txtTutStep2Box1Title;
+        private TextBlock txtTutStep2Box1Desc;
         private Border cardTutStep2Box2;
+        private Border borderTutStep2Num2;
+        private TextBlock txtTutStep2Box2Title;
+        private TextBlock txtTutStep2Box2Desc;
         private Border cardTutStep2Box3;
+        private Border borderTutStep2Num3;
+        private TextBlock txtTutStep2Box3Title;
+        private TextBlock txtTutStep2Box3Desc;
+
+        // Step 3
         private Border cardTutStep3Box1;
+        private TextBlock txtTutStep3Box1Title;
+        private TextBlock txtTutStep3Box1Desc;
         private Border cardTutStep3Box2;
+        private TextBlock txtTutStep3Box2Title;
+        private TextBlock txtTutStep3Box2Desc;
         private Border cardTutStep3Box3;
+        private TextBlock txtTutStep3Box3Title;
+        private TextBlock txtTutStep3Box3Desc;
+
+        // Footer
+        private Border borderTutorialStepIndicator;
         private TextBlock txtTutorialStepIndicator;
         private Button btnTutorialBack;
         private Button btnTutorialNext;
@@ -2835,29 +2877,48 @@ namespace FleetForge
                 <!-- Title Row -->
                 <Grid Margin=""0,0,0,16"">
                     <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
-                        <Border Width=""32"" Height=""32"" CornerRadius=""8"" Background=""#0078D4"" Margin=""0,0,10,0"">
-                            <TextBlock Text=""🎓"" FontSize=""16"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                        <Border Width=""34"" Height=""34"" CornerRadius=""8"" Background=""#0078D4"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                            <TextBlock Text=""🎓"" FontSize=""18"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                         </Border>
                         <StackPanel VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtModalTutorialTitle"" Text=""Welcome to FleetForge!"" FontSize=""17"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
-                            <TextBlock Text=""Learn how to set up this computer in 3 easy steps"" FontSize=""11"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtModalTutorialTitle"" Text=""Welcome to FleetForge!"" FontSize=""18"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
+                            <TextBlock x:Name=""TxtModalTutorialSubtitle"" Text=""Learn how to set up your PC in 3 simple steps"" FontSize=""12"" Foreground=""#94A3B8"" Margin=""0,2,0,0""/>
                         </StackPanel>
                     </StackPanel>
                     <Button x:Name=""BtnCloseTutorial"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""15"" FontWeight=""Bold""
                             Width=""32"" Height=""32"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
                 </Grid>
 
+                <!-- Interactive 3-Step Breadcrumb Bar -->
+                <Grid Margin=""0,0,0,16"">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition Width=""*""/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name=""BadgeTutStep1"" Grid.Column=""0"" CornerRadius=""6"" Padding=""10,7"" Margin=""0,0,4,0"" Cursor=""Hand"">
+                        <TextBlock x:Name=""TxtTutStep1Badge"" Text=""1. Welcome &amp; Benefits"" FontSize=""11"" FontWeight=""SemiBold"" HorizontalAlignment=""Center""/>
+                    </Border>
+                    <Border x:Name=""BadgeTutStep2"" Grid.Column=""1"" CornerRadius=""6"" Padding=""10,7"" Margin=""2,0,2,0"" Cursor=""Hand"">
+                        <TextBlock x:Name=""TxtTutStep2Badge"" Text=""2. How It Works"" FontSize=""11"" FontWeight=""SemiBold"" HorizontalAlignment=""Center""/>
+                    </Border>
+                    <Border x:Name=""BadgeTutStep3"" Grid.Column=""2"" CornerRadius=""6"" Padding=""10,7"" Margin=""4,0,0,0"" Cursor=""Hand"">
+                        <TextBlock x:Name=""TxtTutStep3Badge"" Text=""3. Useful Pro Tips"" FontSize=""11"" FontWeight=""SemiBold"" HorizontalAlignment=""Center""/>
+                    </Border>
+                </Grid>
+
                 <!-- STEP 1 CONTENT: WHAT IS FLEETFORGE -->
                 <StackPanel x:Name=""PnlTutorialStep1"" Visibility=""Visible"">
-                    <Border x:Name=""CardTutStep1Hero"" Background=""#11141A"" CornerRadius=""10"" Padding=""16,14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
+                    <Border x:Name=""CardTutStep1Hero"" Background=""#11141A"" CornerRadius=""10"" Padding=""18,14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
                         <StackPanel>
-                            <TextBlock Text=""🚀 The Easiest Way to Set Up Your Windows PC"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,6""/>
-                            <TextBlock Text=""No more downloading installers one by one, clicking 'Next, Next, Next', or worrying about fake download buttons. FleetForge downloads and installs all your favorite programs safely in 1 click.""
-                                       FontSize=""12"" Foreground=""#CBD5E1"" TextWrapping=""Wrap"" LineHeight=""18""/>
+                            <TextBlock x:Name=""TxtTutStep1HeroTitle"" Text=""The Easiest Way to Set Up Your Windows PC"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,6""/>
+                            <TextBlock x:Name=""TxtTutStep1HeroDesc"" Text=""No more downloading installers one by one, clicking 'Next, Next, Next', or worrying about fake download buttons. FleetForge downloads and installs all your favorite programs safely in 1 click.""
+                                       FontSize=""12"" Foreground=""#CBD5E1"" TextWrapping=""Wrap"" LineHeight=""19""/>
                         </StackPanel>
                     </Border>
 
-                    <Grid Margin=""0,0,0,16"">
+                    <Grid Margin=""0,0,0,18"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""*""/>
                             <ColumnDefinition Width=""*""/>
@@ -2865,26 +2926,26 @@ namespace FleetForge
                         </Grid.ColumnDefinitions>
 
                         <!-- Box 1 -->
-                        <Border x:Name=""CardTutStep1Box1"" Grid.Column=""0"" Background=""#11141A"" CornerRadius=""8"" Padding=""12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,6,0"">
+                        <Border x:Name=""CardTutStep1Box1"" Grid.Column=""0"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,6,0"">
                             <StackPanel>
-                                <TextBlock Text=""🛡️ 100% Safe"" FontWeight=""Bold"" FontSize=""12"" Foreground=""#34D399"" Margin=""0,0,0,4""/>
-                                <TextBlock Text=""Downloads directly from official verified publishers."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                                <TextBlock x:Name=""TxtTutStep1Box1Title"" Text=""100% Verified Safe"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#34D399"" Margin=""0,0,0,4""/>
+                                <TextBlock x:Name=""TxtTutStep1Box1Desc"" Text=""Downloads directly from official Microsoft and vendor sources."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" LineHeight=""16""/>
                             </StackPanel>
                         </Border>
 
                         <!-- Box 2 -->
-                        <Border x:Name=""CardTutStep1Box2"" Grid.Column=""1"" Background=""#11141A"" CornerRadius=""8"" Padding=""12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""3,0,3,0"">
+                        <Border x:Name=""CardTutStep1Box2"" Grid.Column=""1"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""3,0,3,0"">
                             <StackPanel>
-                                <TextBlock Text=""⚡ Zero Popups"" FontWeight=""Bold"" FontSize=""12"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
-                                <TextBlock Text=""Installs quietly in the background without annoying questions."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                                <TextBlock x:Name=""TxtTutStep1Box2Title"" Text=""Zero Popups &amp; Silent"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#38BDF8"" Margin=""0,0,0,4""/>
+                                <TextBlock x:Name=""TxtTutStep1Box2Desc"" Text=""Installs quietly in the background without annoying questions or toolbars."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" LineHeight=""16""/>
                             </StackPanel>
                         </Border>
 
                         <!-- Box 3 -->
-                        <Border x:Name=""CardTutStep1Box3"" Grid.Column=""2"" Background=""#11141A"" CornerRadius=""8"" Padding=""12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""6,0,0,0"">
+                        <Border x:Name=""CardTutStep1Box3"" Grid.Column=""2"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,12"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""6,0,0,0"">
                             <StackPanel>
-                                <TextBlock Text=""🆓 Totally Free"" FontWeight=""Bold"" FontSize=""12"" Foreground=""#FBBF24"" Margin=""0,0,0,4""/>
-                                <TextBlock Text=""No registration, no subscriptions, and zero ads."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                                <TextBlock x:Name=""TxtTutStep1Box3Title"" Text=""Completely Free &amp; Open"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FBBF24"" Margin=""0,0,0,4""/>
+                                <TextBlock x:Name=""TxtTutStep1Box3Desc"" Text=""No registration, no subscriptions, zero ads, and 100% free forever."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" LineHeight=""16""/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -2899,12 +2960,12 @@ namespace FleetForge
                                 <ColumnDefinition Width=""Auto""/>
                                 <ColumnDefinition Width=""*""/>
                             </Grid.ColumnDefinitions>
-                            <Border Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#0078D4"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                            <Border x:Name=""BorderTutStep2Num1"" Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#0078D4"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
                                 <TextBlock Text=""1"" FontWeight=""Bold"" FontSize=""13"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                             </Border>
                             <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                                <TextBlock Text=""Choose an App Pack"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
-                                <TextBlock Text=""Pick a pack that fits what you use this PC for (Home, Office, Developer, etc.). It pre-selects the best apps for you."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
+                                <TextBlock x:Name=""TxtTutStep2Box1Title"" Text=""Choose an App Pack"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
+                                <TextBlock x:Name=""TxtTutStep2Box1Desc"" Text=""Pick a pack that fits what you use this PC for (Home, Office, Developer, etc.). It pre-selects the best apps for you."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -2916,12 +2977,12 @@ namespace FleetForge
                                 <ColumnDefinition Width=""Auto""/>
                                 <ColumnDefinition Width=""*""/>
                             </Grid.ColumnDefinitions>
-                            <Border Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#0284C7"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                            <Border x:Name=""BorderTutStep2Num2"" Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#0284C7"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
                                 <TextBlock Text=""2"" FontWeight=""Bold"" FontSize=""13"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                             </Border>
                             <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                                <TextBlock Text=""Add or Remove Apps (You're in Control)"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
-                                <TextBlock Text=""Want to customize? Click 'Change Apps' on any card, or use the 'All Apps' tab to search over 16,000 software packages."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
+                                <TextBlock x:Name=""TxtTutStep2Box2Title"" Text=""Add or Remove Apps (You're in Control)"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
+                                <TextBlock x:Name=""TxtTutStep2Box2Desc"" Text=""Want to customize? Click 'Change Apps' on any card, or use the 'All Apps' tab to search over 16,000 software packages."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -2933,12 +2994,12 @@ namespace FleetForge
                                 <ColumnDefinition Width=""Auto""/>
                                 <ColumnDefinition Width=""*""/>
                             </Grid.ColumnDefinitions>
-                            <Border Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#10B981"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                            <Border x:Name=""BorderTutStep2Num3"" Width=""28"" Height=""28"" CornerRadius=""14"" Background=""#10B981"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
                                 <TextBlock Text=""3"" FontWeight=""Bold"" FontSize=""13"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                             </Border>
                             <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
-                                <TextBlock Text=""Click 'Install Selected Apps' and Relax"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
-                                <TextBlock Text=""Hit the big blue Install button at the bottom. FleetForge downloads and installs everything automatically. Grab a cup of tea!"" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
+                                <TextBlock x:Name=""TxtTutStep2Box3Title"" Text=""Click 'Install Selected Apps' and Relax"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FFFFFF""/>
+                                <TextBlock x:Name=""TxtTutStep2Box3Desc"" Text=""Hit the big blue Install button at the bottom. FleetForge downloads and installs everything automatically. Grab a cup of tea!"" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap"" Margin=""0,2,0,0""/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -2949,24 +3010,24 @@ namespace FleetForge
                     <!-- Tip 1 -->
                     <Border x:Name=""CardTutStep3Box1"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,8"">
                         <StackPanel>
-                            <TextBlock Text=""🔍 Looking for a Specific Program?"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#38BDF8"" Margin=""0,0,0,2""/>
-                            <TextBlock Text=""Click 'All Apps' on the left menu. You can search for WhatsApp, Zoom, Discord, Adobe Reader, or anything else you need."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                            <TextBlock x:Name=""TxtTutStep3Box1Title"" Text=""🔍 Looking for a Specific Program?"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#38BDF8"" Margin=""0,0,0,2""/>
+                            <TextBlock x:Name=""TxtTutStep3Box1Desc"" Text=""Click 'All Apps' on the left menu. You can search for WhatsApp, Zoom, Discord, Adobe Reader, or anything else you need."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
                         </StackPanel>
                     </Border>
 
                     <!-- Tip 2 -->
                     <Border x:Name=""CardTutStep3Box2"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,8"">
                         <StackPanel>
-                            <TextBlock Text=""💾 Save or Share Your Favorite Packs"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#34D399"" Margin=""0,0,0,2""/>
-                            <TextBlock Text=""Click the 'Export' button on any pack to save it as a file. You can bring it to a new computer and click 'Import Pack' anytime."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                            <TextBlock x:Name=""TxtTutStep3Box2Title"" Text=""💾 Save or Share Your Favorite Packs"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#34D399"" Margin=""0,0,0,2""/>
+                            <TextBlock x:Name=""TxtTutStep3Box2Desc"" Text=""Click the 'Export' button on any pack to save it as a file. You can bring it to a new computer and click 'Import Pack' anytime."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
                         </StackPanel>
                     </Border>
 
                     <!-- Tip 3 -->
                     <Border x:Name=""CardTutStep3Box3"" Background=""#11141A"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,16"">
                         <StackPanel>
-                            <TextBlock Text=""🌙 Dark or Light Theme Anytime"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FBBF24"" Margin=""0,0,0,2""/>
-                            <TextBlock Text=""Click the Sun / Moon icon at the top right anytime to pick whichever theme is most comfortable for your eyes."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
+                            <TextBlock x:Name=""TxtTutStep3Box3Title"" Text=""🌙 Dark or Light Theme Anytime"" FontWeight=""Bold"" FontSize=""12.5"" Foreground=""#FBBF24"" Margin=""0,0,0,2""/>
+                            <TextBlock x:Name=""TxtTutStep3Box3Desc"" Text=""Click the Sun / Moon icon at the top right anytime to pick whichever theme is most comfortable for your eyes."" FontSize=""11"" Foreground=""#94A3B8"" TextWrapping=""Wrap""/>
                         </StackPanel>
                     </Border>
                 </StackPanel>
@@ -2984,8 +3045,10 @@ namespace FleetForge
                               FontSize=""11"" Foreground=""#8A8A8A"" VerticalAlignment=""Center"" Cursor=""Hand""/>
 
                     <!-- Step Indicator -->
-                    <TextBlock x:Name=""TxtTutorialStepIndicator"" Grid.Column=""1"" Text=""Step 1 of 3""
-                               FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#38BDF8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                    <Border x:Name=""BorderTutorialStepIndicator"" Grid.Column=""1"" CornerRadius=""12"" Padding=""12,4"" HorizontalAlignment=""Center"" VerticalAlignment=""Center"">
+                        <TextBlock x:Name=""TxtTutorialStepIndicator"" Text=""Step 1 of 3""
+                                   FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#38BDF8"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                    </Border>
 
                     <!-- Action Buttons -->
                     <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
@@ -3537,24 +3600,70 @@ namespace FleetForge
             modalTutorialOverlay = (Grid)root.FindName("ModalTutorialOverlay");
             borderTutorialCard = (Border)root.FindName("BorderTutorialCard");
             txtModalTutorialTitle = (TextBlock)root.FindName("TxtModalTutorialTitle");
+            txtModalTutorialSubtitle = (TextBlock)root.FindName("TxtModalTutorialSubtitle");
             btnCloseTutorial = (Button)root.FindName("BtnCloseTutorial");
+
+            // Tutorial Stepper Pills
+            badgeTutStep1 = (Border)root.FindName("BadgeTutStep1");
+            txtTutStep1Badge = (TextBlock)root.FindName("TxtTutStep1Badge");
+            badgeTutStep2 = (Border)root.FindName("BadgeTutStep2");
+            txtTutStep2Badge = (TextBlock)root.FindName("TxtTutStep2Badge");
+            badgeTutStep3 = (Border)root.FindName("BadgeTutStep3");
+            txtTutStep3Badge = (TextBlock)root.FindName("TxtTutStep3Badge");
+
             pnlTutorialStep1 = (StackPanel)root.FindName("PnlTutorialStep1");
             pnlTutorialStep2 = (StackPanel)root.FindName("PnlTutorialStep2");
             pnlTutorialStep3 = (StackPanel)root.FindName("PnlTutorialStep3");
+
+            // Step 1 controls
             cardTutStep1Hero = (Border)root.FindName("CardTutStep1Hero");
+            txtTutStep1HeroTitle = (TextBlock)root.FindName("TxtTutStep1HeroTitle");
+            txtTutStep1HeroDesc = (TextBlock)root.FindName("TxtTutStep1HeroDesc");
             cardTutStep1Box1 = (Border)root.FindName("CardTutStep1Box1");
+            txtTutStep1Box1Title = (TextBlock)root.FindName("TxtTutStep1Box1Title");
+            txtTutStep1Box1Desc = (TextBlock)root.FindName("TxtTutStep1Box1Desc");
             cardTutStep1Box2 = (Border)root.FindName("CardTutStep1Box2");
+            txtTutStep1Box2Title = (TextBlock)root.FindName("TxtTutStep1Box2Title");
+            txtTutStep1Box2Desc = (TextBlock)root.FindName("TxtTutStep1Box2Desc");
             cardTutStep1Box3 = (Border)root.FindName("CardTutStep1Box3");
+            txtTutStep1Box3Title = (TextBlock)root.FindName("TxtTutStep1Box3Title");
+            txtTutStep1Box3Desc = (TextBlock)root.FindName("TxtTutStep1Box3Desc");
+
+            // Step 2 controls
             cardTutStep2Box1 = (Border)root.FindName("CardTutStep2Box1");
+            borderTutStep2Num1 = (Border)root.FindName("BorderTutStep2Num1");
+            txtTutStep2Box1Title = (TextBlock)root.FindName("TxtTutStep2Box1Title");
+            txtTutStep2Box1Desc = (TextBlock)root.FindName("TxtTutStep2Box1Desc");
             cardTutStep2Box2 = (Border)root.FindName("CardTutStep2Box2");
+            borderTutStep2Num2 = (Border)root.FindName("BorderTutStep2Num2");
+            txtTutStep2Box2Title = (TextBlock)root.FindName("TxtTutStep2Box2Title");
+            txtTutStep2Box2Desc = (TextBlock)root.FindName("TxtTutStep2Box2Desc");
             cardTutStep2Box3 = (Border)root.FindName("CardTutStep2Box3");
+            borderTutStep2Num3 = (Border)root.FindName("BorderTutStep2Num3");
+            txtTutStep2Box3Title = (TextBlock)root.FindName("TxtTutStep2Box3Title");
+            txtTutStep2Box3Desc = (TextBlock)root.FindName("TxtTutStep2Box3Desc");
+
+            // Step 3 controls
             cardTutStep3Box1 = (Border)root.FindName("CardTutStep3Box1");
+            txtTutStep3Box1Title = (TextBlock)root.FindName("TxtTutStep3Box1Title");
+            txtTutStep3Box1Desc = (TextBlock)root.FindName("TxtTutStep3Box1Desc");
             cardTutStep3Box2 = (Border)root.FindName("CardTutStep3Box2");
+            txtTutStep3Box2Title = (TextBlock)root.FindName("TxtTutStep3Box2Title");
+            txtTutStep3Box2Desc = (TextBlock)root.FindName("TxtTutStep3Box2Desc");
             cardTutStep3Box3 = (Border)root.FindName("CardTutStep3Box3");
+            txtTutStep3Box3Title = (TextBlock)root.FindName("TxtTutStep3Box3Title");
+            txtTutStep3Box3Desc = (TextBlock)root.FindName("TxtTutStep3Box3Desc");
+
+            // Footer controls
+            borderTutorialStepIndicator = (Border)root.FindName("BorderTutorialStepIndicator");
             txtTutorialStepIndicator = (TextBlock)root.FindName("TxtTutorialStepIndicator");
             btnTutorialBack = (Button)root.FindName("BtnTutorialBack");
             btnTutorialNext = (Button)root.FindName("BtnTutorialNext");
             chkDontShowTutorialAgain = (CheckBox)root.FindName("ChkDontShowTutorialAgain");
+
+            if (badgeTutStep1 != null) badgeTutStep1.MouseLeftButtonUp += delegate { currentTutorialStep = 1; UpdateTutorialStepView(); };
+            if (badgeTutStep2 != null) badgeTutStep2.MouseLeftButtonUp += delegate { currentTutorialStep = 2; UpdateTutorialStepView(); };
+            if (badgeTutStep3 != null) badgeTutStep3.MouseLeftButtonUp += delegate { currentTutorialStep = 3; UpdateTutorialStepView(); };
 
             if (btnQuickGuide != null) btnQuickGuide.Click += delegate { ShowTutorialModal(); };
             if (btnCloseTutorial != null) btnCloseTutorial.Click += delegate { CloseTutorialModal(); };
@@ -4379,9 +4488,22 @@ namespace FleetForge
             pnlTutorialStep2.Visibility = currentTutorialStep == 2 ? Visibility.Visible : Visibility.Collapsed;
             pnlTutorialStep3.Visibility = currentTutorialStep == 3 ? Visibility.Visible : Visibility.Collapsed;
 
+            // Update Stepper Pills
+            UpdateTutorialStepperPill(badgeTutStep1, txtTutStep1Badge, currentTutorialStep == 1);
+            UpdateTutorialStepperPill(badgeTutStep2, txtTutStep2Badge, currentTutorialStep == 2);
+            UpdateTutorialStepperPill(badgeTutStep3, txtTutStep3Badge, currentTutorialStep == 3);
+
             if (txtTutorialStepIndicator != null)
             {
                 txtTutorialStepIndicator.Text = string.Format("Step {0} of 3", currentTutorialStep);
+                txtTutorialStepIndicator.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+            }
+
+            if (borderTutorialStepIndicator != null)
+            {
+                borderTutorialStepIndicator.Background = currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C2438");
+                borderTutorialStepIndicator.BorderBrush = currentThemeIsLight ? HexBrush("#BAE6FD") : HexBrush("#0369A1");
+                borderTutorialStepIndicator.BorderThickness = new Thickness(1);
             }
 
             if (btnTutorialBack != null)
@@ -4393,6 +4515,27 @@ namespace FleetForge
             {
                 btnTutorialNext.Content = currentTutorialStep == 3 ? "Got It, Let's Start" : "Next Step";
                 btnTutorialNext.Background = currentTutorialStep == 3 ? HexBrush("#10B981") : (currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"));
+            }
+        }
+
+        private void UpdateTutorialStepperPill(Border badge, TextBlock label, bool isActive)
+        {
+            if (badge == null || label == null) return;
+            if (isActive)
+            {
+                badge.Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
+                badge.BorderBrush = currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8");
+                badge.BorderThickness = new Thickness(1);
+                label.Foreground = HexBrush("#FFFFFF");
+                label.FontWeight = FontWeights.Bold;
+            }
+            else
+            {
+                badge.Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#1E222A");
+                badge.BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#2D3342");
+                badge.BorderThickness = new Thickness(1);
+                label.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
+                label.FontWeight = FontWeights.SemiBold;
             }
         }
 
@@ -5070,13 +5213,42 @@ namespace FleetForge
                 borderTutorialCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#181B22");
                 borderTutorialCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#2D3342");
             }
-            if (txtModalTutorialTitle != null) txtModalTutorialTitle.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-            if (btnCloseTutorial != null) btnCloseTutorial.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#8A8A8A");
+            if (txtModalTutorialTitle != null) txtModalTutorialTitle.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (txtModalTutorialSubtitle != null) txtModalTutorialSubtitle.Foreground = isLight ? HexBrush("#475569") : HexBrush("#94A3B8");
+            if (btnCloseTutorial != null) btnCloseTutorial.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#8A8A8A");
+
+            // Tutorial Step 1
             if (cardTutStep1Hero != null)
             {
                 cardTutStep1Hero.Background = isLight ? HexBrush("#F0F9FF") : HexBrush("#11141A");
                 cardTutStep1Hero.BorderBrush = isLight ? HexBrush("#BAE6FD") : HexBrush("#232938");
             }
+            if (txtTutStep1HeroTitle != null) txtTutStep1HeroTitle.Foreground = isLight ? HexBrush("#0369A1") : HexBrush("#38BDF8");
+            if (txtTutStep1HeroDesc != null) txtTutStep1HeroDesc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#CBD5E1");
+
+            if (txtTutStep1Box1Title != null) txtTutStep1Box1Title.Foreground = isLight ? HexBrush("#047857") : HexBrush("#34D399");
+            if (txtTutStep1Box1Desc != null) txtTutStep1Box1Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep1Box2Title != null) txtTutStep1Box2Title.Foreground = isLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+            if (txtTutStep1Box2Desc != null) txtTutStep1Box2Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep1Box3Title != null) txtTutStep1Box3Title.Foreground = isLight ? HexBrush("#D97706") : HexBrush("#FBBF24");
+            if (txtTutStep1Box3Desc != null) txtTutStep1Box3Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+
+            // Tutorial Step 2
+            if (txtTutStep2Box1Title != null) txtTutStep2Box1Title.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (txtTutStep2Box1Desc != null) txtTutStep2Box1Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep2Box2Title != null) txtTutStep2Box2Title.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (txtTutStep2Box2Desc != null) txtTutStep2Box2Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep2Box3Title != null) txtTutStep2Box3Title.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (txtTutStep2Box3Desc != null) txtTutStep2Box3Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+
+            // Tutorial Step 3
+            if (txtTutStep3Box1Title != null) txtTutStep3Box1Title.Foreground = isLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+            if (txtTutStep3Box1Desc != null) txtTutStep3Box1Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep3Box2Title != null) txtTutStep3Box2Title.Foreground = isLight ? HexBrush("#047857") : HexBrush("#34D399");
+            if (txtTutStep3Box2Desc != null) txtTutStep3Box2Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+            if (txtTutStep3Box3Title != null) txtTutStep3Box3Title.Foreground = isLight ? HexBrush("#D97706") : HexBrush("#FBBF24");
+            if (txtTutStep3Box3Desc != null) txtTutStep3Box3Desc.Foreground = isLight ? HexBrush("#334155") : HexBrush("#94A3B8");
+
             Border[] tutBoxes = new Border[] {
                 cardTutStep1Box1, cardTutStep1Box2, cardTutStep1Box3,
                 cardTutStep2Box1, cardTutStep2Box2, cardTutStep2Box3,
@@ -5109,6 +5281,8 @@ namespace FleetForge
                 btnQuickGuide.Background = isLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
                 btnQuickGuide.Foreground = HexBrush("#FFFFFF");
             }
+
+            UpdateTutorialStepView();
 
             if (txtToggleThemeIcon != null)
             {
