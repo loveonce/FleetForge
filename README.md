@@ -39,11 +39,7 @@ A single, self-contained Windows setup wizard that deploys FleetForge onto any P
 
 ## 🚀 How to Run
 
-1. Double-click:
-   ```text
-   FleetForge.exe
-   ```
-   Or run the installer wizard:
+1. Run the installer wizard:
    ```text
    FleetForge-Setup.exe
    ```

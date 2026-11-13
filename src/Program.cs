@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -427,6 +428,8 @@ namespace FleetForge
     // =========================================================================
     // Startup Splash Screen & Main Entry Point
     // =========================================================================
+    // WINDOWS 11 FLUENT DESIGNER SPLASH SCREEN WITH SMOOTH ANIMATIONS
+    // =========================================================================
     public class FleetForgeSplashScreen : Window
     {
         private ProgressBar progressBar;
@@ -439,6 +442,12 @@ namespace FleetForge
         private ConfigModel preloadedConfig = null;
         private UpdateInfo preloadedUpdate = null;
         private bool isPreloadComplete = false;
+        private bool isExiting = false;
+
+        private ScaleTransform cardScale;
+        private TranslateTransform cardTranslate;
+        private ScaleTransform logoScale;
+        private DropShadowEffect logoGlow;
 
         public FleetForgeSplashScreen(Action<ConfigModel, UpdateInfo> onComplete)
         {
@@ -447,80 +456,353 @@ namespace FleetForge
             this.AllowsTransparency = true;
             this.Background = Brushes.Transparent;
             this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.Width = 520;
-            this.Height = 290;
+            this.Width = 540;
+            this.Height = 330;
             this.Topmost = true;
             this.ShowInTaskbar = false;
+            this.Opacity = 0.0;
 
-            string xaml = @"
-<Grid x:Name=""RootGrid"" Background=""#202020""
-      xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-      xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-    <Border Background=""#202020"" CornerRadius=""12"" BorderBrush=""#383838"" BorderThickness=""1"" Padding=""32,28"">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height=""*""/>
-                <RowDefinition Height=""Auto""/>
-                <RowDefinition Height=""Auto""/>
-            </Grid.RowDefinitions>
+            this.MouseLeftButtonDown += (s, e) =>
+            {
+                try { this.DragMove(); } catch { }
+            };
 
-            <!-- Brand Section -->
-            <StackPanel Grid.Row=""0"" VerticalAlignment=""Center"" HorizontalAlignment=""Center"">
-                <Border Width=""52"" Height=""52"" Background=""Transparent"" BorderThickness=""0"" HorizontalAlignment=""Center"" Margin=""0,0,0,10"">
-                    <Grid>
-                        <Image x:Name=""ImgSplashLogo"" Width=""44"" Height=""44"" RenderOptions.BitmapScalingMode=""HighQuality"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                        <TextBlock x:Name=""TxtFallbackSplash"" Text=""⚡"" FontSize=""28"" Foreground=""#0078D4"" HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Visibility=""Collapsed""/>
-                    </Grid>
-                </Border>
+            bool isLight = MainWindow.IsWindowsLightTheme();
+            Color accentColor = MainWindow.GetWindowsAccentColor();
+            SolidColorBrush accentBrush = new SolidColorBrush(accentColor);
+            SolidColorBrush accentVividBrush;
+            if (isLight)
+            {
+                accentVividBrush = accentBrush;
+            }
+            else
+            {
+                double lum = (0.299 * accentColor.R + 0.587 * accentColor.G + 0.114 * accentColor.B) / 255.0;
+                if (lum < 0.45)
+                {
+                    byte rV = (byte)Math.Min(255, (int)accentColor.R + 65);
+                    byte gV = (byte)Math.Min(255, (int)accentColor.G + 85);
+                    byte bV = (byte)Math.Min(255, (int)accentColor.B + 95);
+                    accentVividBrush = new SolidColorBrush(Color.FromRgb(rV, gV, bV));
+                }
+                else
+                {
+                    accentVividBrush = accentBrush;
+                }
+            }
 
-                <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Center"">
-                    <TextBlock Text=""FLEET"" FontSize=""24"" FontWeight=""Bold"" Foreground=""#FFFFFF"" FontFamily=""Segoe UI Variable Text, Segoe UI Variable, Segoe UI""/>
-                    <TextBlock Text=""FORGE"" FontSize=""24"" FontWeight=""Bold"" Foreground=""#38BDF8"" FontFamily=""Segoe UI Variable Text, Segoe UI Variable, Segoe UI""/>
-                    <Border Background=""#272727"" BorderBrush=""#383838"" BorderThickness=""1"" CornerRadius=""4"" Padding=""6,2"" Margin=""10,0,0,0"" VerticalAlignment=""Center"">
-                        <TextBlock Text=""v2.5.0"" FontSize=""10"" FontWeight=""Bold"" Foreground=""#A0A0A0""/>
-                    </Border>
-                </StackPanel>
+            Grid root = new Grid();
+            root.Background = Brushes.Transparent;
 
-                <TextBlock Text=""Love Malhotra • One-Click App Setup""
-                           FontSize=""11.5"" Foreground=""#A0A0A0"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
-            </StackPanel>
+            Border mainCard = new Border();
+            mainCard.Width = 480;
+            mainCard.Height = 270;
+            mainCard.CornerRadius = new CornerRadius(16);
+            mainCard.HorizontalAlignment = HorizontalAlignment.Center;
+            mainCard.VerticalAlignment = VerticalAlignment.Center;
+            mainCard.Padding = new Thickness(30, 22, 30, 18);
+            mainCard.RenderTransformOrigin = new Point(0.5, 0.5);
 
-            <!-- Loading Step & Progress -->
-            <StackPanel Grid.Row=""1"" Margin=""0,18,0,0"">
-                <Grid Margin=""0,0,0,8"">
-                    <TextBlock x:Name=""TxtStatus"" Text=""Starting FleetForge..."" FontSize=""11"" Foreground=""#38BDF8""/>
-                    <TextBlock x:Name=""TxtPercent"" Text=""20%"" FontSize=""11"" Foreground=""#A0A0A0"" HorizontalAlignment=""Right""/>
-                </Grid>
-                <ProgressBar x:Name=""ProgressBar"" Height=""4"" Background=""#2D2D2D"" Foreground=""#0078D4"" Value=""20"" Maximum=""100"" BorderThickness=""0""/>
-            </StackPanel>
+            TransformGroup cardTg = new TransformGroup();
+            cardScale = new ScaleTransform(0.93, 0.93);
+            cardTranslate = new TranslateTransform(0, 12);
+            cardTg.Children.Add(cardScale);
+            cardTg.Children.Add(cardTranslate);
+            mainCard.RenderTransform = cardTg;
 
-            <TextBlock Grid.Row=""2"" Text=""Windows 11 Edition • Fast App Installer""
-                       FontSize=""10"" Foreground=""#64748B"" HorizontalAlignment=""Center"" Margin=""0,12,0,0""/>
-        </Grid>
-    </Border>
-</Grid>";
+            DropShadowEffect cardShadow = new DropShadowEffect();
+            cardShadow.BlurRadius = isLight ? 28 : 34;
+            cardShadow.Direction = 270;
+            cardShadow.ShadowDepth = 8;
+            cardShadow.Color = Colors.Black;
+            cardShadow.Opacity = isLight ? 0.20 : 0.50;
+            mainCard.Effect = cardShadow;
 
-            Grid root = (Grid)XamlReader.Parse(xaml);
-            this.Content = root;
+            if (isLight)
+            {
+                LinearGradientBrush bg = new LinearGradientBrush();
+                bg.StartPoint = new Point(0, 0);
+                bg.EndPoint = new Point(0, 1);
+                bg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#FFFFFF"), 0.0));
+                bg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#F4F6F9"), 1.0));
+                mainCard.Background = bg;
 
-            progressBar = (ProgressBar)root.FindName("ProgressBar");
-            txtStatus = (TextBlock)root.FindName("TxtStatus");
-            txtPercent = (TextBlock)root.FindName("TxtPercent");
-            imgSplashLogo = (Image)root.FindName("ImgSplashLogo");
-            TextBlock txtFallback = (TextBlock)root.FindName("TxtFallbackSplash");
+                LinearGradientBrush border = new LinearGradientBrush();
+                border.StartPoint = new Point(0, 0);
+                border.EndPoint = new Point(0, 1);
+                border.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#E2E8F0"), 0.0));
+                border.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#CBD5E1"), 1.0));
+                mainCard.BorderBrush = border;
+                mainCard.BorderThickness = new Thickness(1);
+            }
+            else
+            {
+                LinearGradientBrush bg = new LinearGradientBrush();
+                bg.StartPoint = new Point(0, 0);
+                bg.EndPoint = new Point(0, 1);
+                bg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#222225"), 0.0));
+                bg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#171719"), 1.0));
+                mainCard.Background = bg;
+
+                LinearGradientBrush border = new LinearGradientBrush();
+                border.StartPoint = new Point(0, 0);
+                border.EndPoint = new Point(0, 1);
+                border.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#44444A"), 0.0));
+                border.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2B2B30"), 1.0));
+                mainCard.BorderBrush = border;
+                mainCard.BorderThickness = new Thickness(1);
+            }
+
+            Grid contentGrid = new Grid();
+            contentGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+            contentGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+            contentGrid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+
+            // 1. Brand Section
+            StackPanel brandStack = new StackPanel();
+            brandStack.VerticalAlignment = VerticalAlignment.Center;
+            brandStack.HorizontalAlignment = HorizontalAlignment.Center;
+
+            Border logoBorder = new Border();
+            logoBorder.Width = 52;
+            logoBorder.Height = 52;
+            logoBorder.CornerRadius = new CornerRadius(14);
+            logoBorder.BorderThickness = new Thickness(1.5);
+            logoBorder.HorizontalAlignment = HorizontalAlignment.Center;
+            logoBorder.Margin = new Thickness(0, 0, 0, 8);
+            logoBorder.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            logoScale = new ScaleTransform(1.0, 1.0);
+            logoBorder.RenderTransform = logoScale;
+
+            logoGlow = new DropShadowEffect();
+            logoGlow.BlurRadius = 16;
+            logoGlow.Direction = 0;
+            logoGlow.ShadowDepth = 0;
+            logoGlow.Color = accentColor;
+            logoGlow.Opacity = isLight ? 0.30 : 0.45;
+            logoBorder.Effect = logoGlow;
+
+            if (isLight)
+            {
+                LinearGradientBrush lbg = new LinearGradientBrush();
+                lbg.StartPoint = new Point(0, 0);
+                lbg.EndPoint = new Point(0, 1);
+                lbg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#F8FAFC"), 0.0));
+                lbg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#EEF2F6"), 1.0));
+                logoBorder.Background = lbg;
+                logoBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
+            }
+            else
+            {
+                LinearGradientBrush lbg = new LinearGradientBrush();
+                lbg.StartPoint = new Point(0, 0);
+                lbg.EndPoint = new Point(0, 1);
+                lbg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#2C2C30"), 0.0));
+                lbg.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#1D1D20"), 1.0));
+                logoBorder.Background = lbg;
+                logoBorder.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#4B4B52"));
+            }
+
+            Grid logoGrid = new Grid();
+            imgSplashLogo = new Image();
+            imgSplashLogo.Width = 40;
+            imgSplashLogo.Height = 40;
+            RenderOptions.SetBitmapScalingMode(imgSplashLogo, BitmapScalingMode.HighQuality);
+
+            TextBlock txtFallback = new TextBlock();
+            txtFallback.Text = "⚡";
+            txtFallback.FontSize = 26;
+            txtFallback.Foreground = accentVividBrush;
+            txtFallback.HorizontalAlignment = HorizontalAlignment.Center;
+            txtFallback.VerticalAlignment = VerticalAlignment.Center;
+            txtFallback.Visibility = Visibility.Collapsed;
 
             ImageSource iconSrc = MainWindow.LoadApplicationIcon();
-            if (iconSrc != null && imgSplashLogo != null)
+            if (iconSrc != null)
             {
                 imgSplashLogo.Source = iconSrc;
                 this.Icon = iconSrc;
             }
-            else if (txtFallback != null)
+            else
             {
                 txtFallback.Visibility = Visibility.Visible;
             }
 
-            // Asynchronously preload 2.8MB catalog & version info in background worker
+            logoGrid.Children.Add(imgSplashLogo);
+            logoGrid.Children.Add(txtFallback);
+            logoBorder.Child = logoGrid;
+            brandStack.Children.Add(logoBorder);
+
+            // Title Line: FLEET + FORGE + v2.5.0
+            StackPanel titleLine = new StackPanel();
+            titleLine.Orientation = Orientation.Horizontal;
+            titleLine.HorizontalAlignment = HorizontalAlignment.Center;
+
+            TextBlock txtFleet = new TextBlock();
+            txtFleet.Text = "FLEET";
+            txtFleet.FontSize = 23;
+            txtFleet.FontWeight = FontWeights.Bold;
+            txtFleet.FontFamily = new FontFamily("Segoe UI Variable Display, Segoe UI Variable, Segoe UI");
+            txtFleet.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#0F172A" : "#FFFFFF"));
+            titleLine.Children.Add(txtFleet);
+
+            TextBlock txtForge = new TextBlock();
+            txtForge.Text = "FORGE";
+            txtForge.FontSize = 23;
+            txtForge.FontWeight = FontWeights.Bold;
+            txtForge.FontFamily = new FontFamily("Segoe UI Variable Display, Segoe UI Variable, Segoe UI");
+            txtForge.Foreground = accentVividBrush;
+            titleLine.Children.Add(txtForge);
+
+            Border verBadge = new Border();
+            verBadge.BorderThickness = new Thickness(1);
+            verBadge.CornerRadius = new CornerRadius(5);
+            verBadge.Padding = new Thickness(6, 2, 6, 2);
+            verBadge.Margin = new Thickness(8, 0, 0, 0);
+            verBadge.VerticalAlignment = VerticalAlignment.Center;
+            verBadge.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#F1F5F9" : "#28282D"));
+            verBadge.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#CBD5E1" : "#3E3E46"));
+
+            TextBlock txtVer = new TextBlock();
+            txtVer.Text = "v2.5.0";
+            txtVer.FontSize = 10;
+            txtVer.FontWeight = FontWeights.Bold;
+            txtVer.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#475569" : "#A1A1AA"));
+            verBadge.Child = txtVer;
+            titleLine.Children.Add(verBadge);
+            brandStack.Children.Add(titleLine);
+
+            // Designer attribution line
+            StackPanel desLine = new StackPanel();
+            desLine.Orientation = Orientation.Horizontal;
+            desLine.HorizontalAlignment = HorizontalAlignment.Center;
+            desLine.Margin = new Thickness(0, 3, 0, 0);
+
+            TextBlock txtDes1 = new TextBlock();
+            txtDes1.Text = "Designed & Developed by ";
+            txtDes1.FontSize = 11;
+            txtDes1.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#64748B" : "#94A3B8"));
+            desLine.Children.Add(txtDes1);
+
+            TextBlock txtDes2 = new TextBlock();
+            txtDes2.Text = "Love Malhotra";
+            txtDes2.FontSize = 11;
+            txtDes2.FontWeight = FontWeights.SemiBold;
+            txtDes2.Foreground = accentVividBrush;
+            desLine.Children.Add(txtDes2);
+            brandStack.Children.Add(desLine);
+
+            Grid.SetRow(brandStack, 0);
+            contentGrid.Children.Add(brandStack);
+
+            // 2. Loading Step & Progress
+            StackPanel progStack = new StackPanel();
+            progStack.Margin = new Thickness(0, 14, 0, 0);
+
+            Grid labelGrid = new Grid();
+            labelGrid.Margin = new Thickness(0, 0, 0, 6);
+
+            txtStatus = new TextBlock();
+            txtStatus.Text = "Initializing FleetForge runtime...";
+            txtStatus.FontSize = 11.5;
+            txtStatus.FontWeight = FontWeights.SemiBold;
+            txtStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#0F172A" : "#E2E8F0"));
+            labelGrid.Children.Add(txtStatus);
+
+            txtPercent = new TextBlock();
+            txtPercent.Text = "20%";
+            txtPercent.FontSize = 11.5;
+            txtPercent.FontWeight = FontWeights.SemiBold;
+            txtPercent.Foreground = accentVividBrush;
+            txtPercent.HorizontalAlignment = HorizontalAlignment.Right;
+            labelGrid.Children.Add(txtPercent);
+            progStack.Children.Add(labelGrid);
+
+            // Custom modern rounded ProgressBar
+            progressBar = new ProgressBar();
+            progressBar.Height = 6;
+            progressBar.Maximum = 100;
+            progressBar.Value = 20;
+            progressBar.BorderThickness = new Thickness(0);
+            progressBar.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#E2E8F0" : "#28282D"));
+            progressBar.Foreground = accentVividBrush;
+
+            ControlTemplate template = new ControlTemplate(typeof(ProgressBar));
+            FrameworkElementFactory track = new FrameworkElementFactory(typeof(Border), "PART_Track");
+            track.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(ProgressBar.BackgroundProperty));
+            track.SetValue(Border.CornerRadiusProperty, new CornerRadius(3));
+
+            FrameworkElementFactory indicator = new FrameworkElementFactory(typeof(Border), "PART_Indicator");
+            indicator.SetValue(Border.HorizontalAlignmentProperty, HorizontalAlignment.Left);
+            indicator.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(ProgressBar.ForegroundProperty));
+            indicator.SetValue(Border.CornerRadiusProperty, new CornerRadius(3));
+            track.AppendChild(indicator);
+
+            template.VisualTree = track;
+            progressBar.Template = template;
+            progStack.Children.Add(progressBar);
+
+            Grid.SetRow(progStack, 1);
+            contentGrid.Children.Add(progStack);
+
+            // 3. Footer tag
+            TextBlock txtFooter = new TextBlock();
+            txtFooter.Text = "Windows 11 Edition • Fast Enterprise Deployment";
+            txtFooter.FontSize = 10;
+            txtFooter.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#94A3B8" : "#71717A"));
+            txtFooter.HorizontalAlignment = HorizontalAlignment.Center;
+            txtFooter.Margin = new Thickness(0, 12, 0, 0);
+
+            Grid.SetRow(txtFooter, 2);
+            contentGrid.Children.Add(txtFooter);
+
+            mainCard.Child = contentGrid;
+            root.Children.Add(mainCard);
+            this.Content = root;
+
+            // Setup entrance and pulse animations on Loaded
+            this.Loaded += (s, e) =>
+            {
+                // Entrance animations
+                DoubleAnimation fadeIn = new DoubleAnimation(0.0, 1.0, TimeSpan.FromMilliseconds(320));
+                fadeIn.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
+                this.BeginAnimation(Window.OpacityProperty, fadeIn);
+
+                DoubleAnimation scaleXAnim = new DoubleAnimation(0.93, 1.0, TimeSpan.FromMilliseconds(350));
+                scaleXAnim.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
+                cardScale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleXAnim);
+
+                DoubleAnimation scaleYAnim = new DoubleAnimation(0.93, 1.0, TimeSpan.FromMilliseconds(350));
+                scaleYAnim.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
+                cardScale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleYAnim);
+
+                DoubleAnimation transYAnim = new DoubleAnimation(12.0, 0.0, TimeSpan.FromMilliseconds(350));
+                transYAnim.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
+                cardTranslate.BeginAnimation(TranslateTransform.YProperty, transYAnim);
+
+                // Breathing pulse animation on brand icon
+                DoubleAnimation pulseX = new DoubleAnimation(1.0, 1.055, TimeSpan.FromMilliseconds(1300));
+                pulseX.AutoReverse = true;
+                pulseX.RepeatBehavior = RepeatBehavior.Forever;
+                pulseX.EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut };
+                logoScale.BeginAnimation(ScaleTransform.ScaleXProperty, pulseX);
+
+                DoubleAnimation pulseY = new DoubleAnimation(1.0, 1.055, TimeSpan.FromMilliseconds(1300));
+                pulseY.AutoReverse = true;
+                pulseY.RepeatBehavior = RepeatBehavior.Forever;
+                pulseY.EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut };
+                logoScale.BeginAnimation(ScaleTransform.ScaleYProperty, pulseY);
+
+                double baseGlow = logoGlow.Opacity;
+                DoubleAnimation glowPulse = new DoubleAnimation(baseGlow, baseGlow * 1.5, TimeSpan.FromMilliseconds(1300));
+                glowPulse.AutoReverse = true;
+                glowPulse.RepeatBehavior = RepeatBehavior.Forever;
+                glowPulse.EasingFunction = new SineEase() { EasingMode = EasingMode.EaseInOut };
+                logoGlow.BeginAnimation(DropShadowEffect.OpacityProperty, glowPulse);
+            };
+
+            // Preload 2.8MB catalog & version info in background worker
             ThreadPool.QueueUserWorkItem(delegate
             {
                 try
@@ -563,14 +845,14 @@ namespace FleetForge
             int[] percents = new int[] { 25, 50, 75, 90, 100 };
 
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(80);
+            timer.Interval = TimeSpan.FromMilliseconds(160);
             timer.Tick += (s, e) =>
             {
                 step++;
                 if (step < steps.Length - 1)
                 {
                     txtStatus.Text = steps[step];
-                    progressBar.Value = percents[step];
+                    AnimateProgress(percents[step]);
                     if (txtPercent != null) txtPercent.Text = percents[step] + "%";
                 }
                 else
@@ -578,23 +860,55 @@ namespace FleetForge
                     if (!isPreloadComplete && step < 25)
                     {
                         txtStatus.Text = "Loading enterprise catalog (16,349 packages)...";
-                        progressBar.Value = 92;
+                        AnimateProgress(92);
                         if (txtPercent != null) txtPercent.Text = "92%";
                         return;
                     }
 
+                    if (isExiting) return;
+                    isExiting = true;
                     timer.Stop();
                     txtStatus.Text = steps[steps.Length - 1];
-                    progressBar.Value = 100;
+                    AnimateProgress(100);
                     if (txtPercent != null) txtPercent.Text = "100%";
 
-                    if (onComplete != null)
+                    // Exit animation
+                    DoubleAnimation fadeOut = new DoubleAnimation(1.0, 0.0, TimeSpan.FromMilliseconds(200));
+                    fadeOut.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseIn };
+
+                    DoubleAnimation exitScaleX = new DoubleAnimation(1.0, 1.03, TimeSpan.FromMilliseconds(200));
+                    exitScaleX.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseIn };
+                    DoubleAnimation exitScaleY = new DoubleAnimation(1.0, 1.03, TimeSpan.FromMilliseconds(200));
+                    exitScaleY.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseIn };
+
+                    fadeOut.Completed += (s2, e2) =>
                     {
-                        onComplete(preloadedConfig, preloadedUpdate);
-                    }
+                        try
+                        {
+                            if (onComplete != null)
+                            {
+                                onComplete(preloadedConfig, preloadedUpdate);
+                            }
+                        }
+                        catch { }
+                    };
+
+                    cardScale.BeginAnimation(ScaleTransform.ScaleXProperty, exitScaleX);
+                    cardScale.BeginAnimation(ScaleTransform.ScaleYProperty, exitScaleY);
+                    this.BeginAnimation(Window.OpacityProperty, fadeOut);
                 }
             };
             timer.Start();
+        }
+
+        private void AnimateProgress(double targetValue)
+        {
+            if (progressBar != null)
+            {
+                DoubleAnimation pAnim = new DoubleAnimation(targetValue, TimeSpan.FromMilliseconds(150));
+                pAnim.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
+                progressBar.BeginAnimation(ProgressBar.ValueProperty, pAnim);
+            }
         }
     }
 
@@ -1463,7 +1777,7 @@ namespace FleetForge
         private SolidColorBrush windowsAccentSubtleBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EBF3FB"));
         private SolidColorBrush windowsAccentBorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CCE4F7"));
 
-        private Color GetWindowsAccentColor()
+        public static Color GetWindowsAccentColor()
         {
             try
             {
@@ -4018,7 +4332,7 @@ namespace FleetForge
         // =========================================================================
         // THEME MANAGEMENT & WINDOWS THEME DETECTION
         // =========================================================================
-        private bool IsWindowsLightTheme()
+        public static bool IsWindowsLightTheme()
         {
             try
             {
