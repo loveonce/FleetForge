@@ -2067,6 +2067,7 @@ namespace FleetForge
 
         // UI References - Navigation & Views
         private string currentView = "setup";
+        private string previousViewBeforeInstall = "setup";
         private Button navBtnSetup;
         private Button navBtnCatalog;
         private Button navBtnCloud;
@@ -3452,6 +3453,9 @@ namespace FleetForge
                             Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
                             Padding=""14,10"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
                             Visibility=""Collapsed""/>
+                </StackPanel>
+                <StackPanel Grid.Column=""1"" Orientation=""Vertical"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
+                    <TextBlock x:Name=""TxtStatus"" Text="""" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#A0A0A0"" VerticalAlignment=""Center"" TextTrimming=""CharacterEllipsis""/>
                 </StackPanel>
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                     <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
@@ -4897,7 +4901,24 @@ namespace FleetForge
 
             // Start Installation Event
             btnInstall.Click += delegate { StartInstallation(); };
-            btnStop.Click += delegate { RequestStopInstallation(); };
+            btnStop.Click += delegate
+            {
+                string contentStr = (btnStop.Content != null) ? btnStop.Content.ToString() : "";
+                if (contentStr.IndexOf("Finish", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    string targetView = !string.IsNullOrEmpty(previousViewBeforeInstall) ? previousViewBeforeInstall : "setup";
+                    SwitchView(targetView);
+
+                    btnStop.Content = "⏹️ Stop Install";
+                    btnStop.Background = HexBrush("#DC2626");
+                    btnStop.Visibility = Visibility.Collapsed;
+                    UpdateBottomBarVisibility();
+                }
+                else
+                {
+                    RequestStopInstallation();
+                }
+            };
 
             // Create New Group & Import Pack Events
             if (btnImportPack != null) btnImportPack.Click += delegate { ImportGroup(); };
@@ -10525,6 +10546,7 @@ namespace FleetForge
                 if (res != MessageBoxResult.Yes) return;
             }
 
+            previousViewBeforeInstall = currentView;
             SwitchView("logs");
 
             isCancelled = false;
@@ -10539,6 +10561,8 @@ namespace FleetForge
             btnStop.Visibility = Visibility.Visible;
             btnStop.IsEnabled = true;
             btnStop.Content = "⏹️ Stop Install";
+            btnStop.Background = HexBrush("#DC2626");
+            btnStop.Foreground = HexBrush("#FFFFFF");
             UpdateBottomBarVisibility();
             if (btnViewReport != null) btnViewReport.Visibility = Visibility.Collapsed;
 
@@ -11040,9 +11064,12 @@ namespace FleetForge
 
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    btnStop.Visibility = Visibility.Collapsed;
+                    btnStop.Visibility = Visibility.Visible;
                     btnStop.IsEnabled = true;
-                    btnStop.Content = "⏹️ Stop Install";
+                    btnStop.Content = "✓ Finish";
+                    btnStop.Background = windowsAccentBrush;
+                    btnStop.Foreground = HexBrush("#FFFFFF");
+                    btnInstall.Visibility = Visibility.Collapsed;
                     btnInstall.IsEnabled = true;
                     UpdateBottomBarVisibility();
 
