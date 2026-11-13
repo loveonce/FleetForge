@@ -4709,23 +4709,45 @@ namespace FleetForge
                 UpdateInfo info = null;
                 bool updateFound = false;
 
-                // 1. Try remote GitHub version.json
-                string updateUrl = AppUrls.UpdateCheckUrl;
+                // 1. Try remote endpoints with multi-CDN fallback
+                string[] remoteEndpoints = new string[]
+                {
+                    AppUrls.UpdateCheckUrl,
+                    "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json",
+                    "https://raw.githack.com/loveonce/FleetForge/main/data/version.json",
+                    "https://cdn.statically.io/gh/loveonce/FleetForge/main/data/version.json",
+                    "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json"
+                };
+
                 try
                 {
-                    using (WebClient wc = new WebClient())
-                    {
-                        wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
-                        string json = wc.DownloadString(updateUrl);
-                        if (!string.IsNullOrEmpty(json))
-                        {
-                            var ser = new JavaScriptSerializer();
-                            info = ser.Deserialize<UpdateInfo>(json);
-                        }
-                    }
+                    ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | (SecurityProtocolType)12288 | (SecurityProtocolType)768 | SecurityProtocolType.Tls;
                 }
                 catch { }
+
+                foreach (string endpoint in remoteEndpoints)
+                {
+                    if (string.IsNullOrEmpty(endpoint)) continue;
+                    try
+                    {
+                        using (WebClient wc = new WebClient())
+                        {
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
+                            string json = wc.DownloadString(endpoint);
+                            if (!string.IsNullOrEmpty(json))
+                            {
+                                var ser = new JavaScriptSerializer();
+                                info = ser.Deserialize<UpdateInfo>(json);
+                                if (info != null && !string.IsNullOrEmpty(info.version))
+                                {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
 
                 // 2. If remote not accessible, check local version.json for testing
                 if (info == null)
@@ -4748,7 +4770,7 @@ namespace FleetForge
                 {
                     int currentVersionNum = ParseVersionNumber("2.6.2");
                     int remoteVersionNum = ParseVersionNumber(info.version);
-                    if (remoteVersionNum > currentVersionNum || info.versionCode > 261)
+                    if (remoteVersionNum > currentVersionNum || info.versionCode > 262)
                     {
                         updateFound = true;
                     }

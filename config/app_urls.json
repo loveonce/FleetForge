@@ -1,8 +1,8 @@
 {
   "_description": "FleetForge Cloud Synchronization and Version Update Configuration. Edit these URLs before building the application or setup installer.",
-  "cloudSyncUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json",
-  "updateCheckUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json",
+  "cloudSyncUrl": "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/apps.json",
+  "updateCheckUrl": "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json",
   "updateDownloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe",
-  "recommendedAppsUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/recommended_apps.json",
-  "companyWebsiteUrl": "https://Google.com/"
+  "recommendedAppsUrl": "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/recommended_apps.json",
+  "companyWebsiteUrl": "https://github.com/loveonce/FleetForge"
 }

@@ -23,20 +23,20 @@ namespace FleetForge
         // You can change the URLs directly in this file OR in 'app_urls.json' /
         // 'config/app_urls.json' before building the setup.
 
-        // 1. Cloud Synchronization URL (Raw JSON catalog link)
-        public static string CloudSyncUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/apps.json";
+        // 1. Cloud Synchronization URL (High-speed CDN mirrored JSON catalog link)
+        public static string CloudSyncUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/apps.json";
 
         // 2. Version Check URL (version.json containing latest version & changelog)
-        public static string UpdateCheckUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json";
+        public static string UpdateCheckUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/version.json";
 
         // 3. Setup Installer Download URL (Executable downloaded when updating)
         public static string UpdateDownloadUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe";
 
         // 4. Recommended & Affiliate Partner Software Database URL (Live Governed)
-        public static string RecommendedAppsUrl = "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/recommended_apps.json";
+        public static string RecommendedAppsUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/recommended_apps.json";
 
         // 5. Company Official Website
-        public static string CompanyWebsiteUrl = "https://github.com/loveonce/FleetForge";
+        public static string CompanyWebsiteUrl = "https://www.google.com";
 
         // ========================================================================
         // LOADER: Automatically loads and merges from app_urls.json if available

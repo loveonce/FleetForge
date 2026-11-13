@@ -1,10 +1,10 @@
 {
   "version": "2.6.2",
-  "versionCode": 261,
+  "versionCode": 262,
   "buildDate": "2026-11-13",
   "title": "FleetForge v2.6.2 Enterprise IT Edition",
   "company": "Love Malhotra",
-  "website": "https://github.com/loveonce/FleetForge",
+  "website": "https://www.google.com",
   "changelog": [
     "Fixed update catalog merge to prevent duplicate Minimal Essentials pack",
     "Enabled self-healing runtime catalog deduplication on application launch",
