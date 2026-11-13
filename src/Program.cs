@@ -2540,8 +2540,8 @@ namespace FleetForge
                     </Grid>
                 </Button>
 
-                <!-- Nav 3: Cloud Sync -->
-                <Button x:Name=""NavBtnCloud"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync"">
+                <!-- Nav 3: Cloud Sync (Hidden from sidebar; auto-syncs in background on every launch) -->
+                <Button x:Name=""NavBtnCloud"" Visibility=""Collapsed"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
@@ -5200,8 +5200,8 @@ namespace FleetForge
             // Update Navigation items
             UpdateNavState(navBtnSetup, navIndSetup, navIconSetup, navTxtSetup, currentView == "setup");
             UpdateNavState(navBtnCatalog, navIndCatalog, navIconCatalog, navTxtCatalog, currentView == "catalog");
-            UpdateNavState(navBtnCloud, navIndCloud, navIconCloud, navTxtCloud, currentView == "cloud");
             UpdateNavState(navBtnLogs, navIndLogs, navIconLogs, navTxtLogs, currentView == "logs");
+            if (navBtnCloud != null) navBtnCloud.Visibility = Visibility.Collapsed;
 
             // Setup Page Hero Banner
             if (borderHero != null)
@@ -5857,7 +5857,7 @@ namespace FleetForge
 
         private void UpdateNavState(Button btn, Border ind, TextBlock icon, TextBlock txt, bool isActive)
         {
-            if (btn == null) return;
+            if (btn == null || btn.Visibility == Visibility.Collapsed) return;
             if (isActive)
             {
                 btn.Background = currentThemeIsLight ? HexBrush("#EAEAEA") : HexBrush("#2C2C2C");
@@ -5900,8 +5900,8 @@ namespace FleetForge
 
             UpdateNavState(navBtnSetup, navIndSetup, navIconSetup, navTxtSetup, viewName == "setup");
             UpdateNavState(navBtnCatalog, navIndCatalog, navIconCatalog, navTxtCatalog, viewName == "catalog");
-            UpdateNavState(navBtnCloud, navIndCloud, navIconCloud, navTxtCloud, viewName == "cloud");
             UpdateNavState(navBtnLogs, navIndLogs, navIconLogs, navTxtLogs, viewName == "logs");
+            if (navBtnCloud != null) navBtnCloud.Visibility = Visibility.Collapsed;
 
             if (borderHeaderSearch != null)
             {
@@ -6415,14 +6415,15 @@ namespace FleetForge
             if (txtTopSyncStatus != null) txtTopSyncStatus.Text = "Local Cache";
             if (txtNavCloudStatus != null) txtNavCloudStatus.Text = "Local";
 
-            // Asynchronously sync from cloud Git link on launch if enabled
-            if (settings.autoSyncOnLaunch && !string.IsNullOrWhiteSpace(settings.cloudConfigUrl) && !settings.cloudConfigUrl.Contains("your-username"))
+            // Asynchronously sync from cloud Git link in background on every launch
+            string syncUrl = !string.IsNullOrWhiteSpace(settings.cloudConfigUrl) ? settings.cloudConfigUrl : AppUrls.CloudSyncUrl;
+            if (!string.IsNullOrWhiteSpace(syncUrl) && !syncUrl.Contains("your-username"))
             {
                 ThreadPool.QueueUserWorkItem(delegate
                 {
                     try
                     {
-                        string directUrl = ConvertDirectUrl(settings.cloudConfigUrl);
+                        string directUrl = ConvertDirectUrl(syncUrl);
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
