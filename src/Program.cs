@@ -2875,22 +2875,22 @@ namespace FleetForge
                             Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
                             Padding=""14,10"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
                             Visibility=""Collapsed""/>
+                </StackPanel>
+                <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
+                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
+                            Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnImportPack"" Content=""Import Pack""
                             Background=""#2D2D2D"" Foreground=""#FFFFFF"" BorderBrush=""#3D3D3D"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,10"" Margin=""0,0,8,0""
                             Cursor=""Hand"" ToolTip=""Import a custom app pack (.json)""/>
                     <Button x:Name=""BtnCreateNewGroup"" Content=""Create New Pack""
                             Background=""#10B981"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""12""
-                            Padding=""16,10"" Cursor=""Hand"" BorderThickness=""0""
+                            Padding=""16,10"" Margin=""0,0,0,0"" Cursor=""Hand"" BorderThickness=""0""
                             ToolTip=""Create a new custom app pack""/>
-                </StackPanel>
-                <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
-                            Padding=""14,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnStop"" Content=""Stop Install""
                             Background=""#DC2626"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""22,10"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnInstall"" Content=""Install Selected Pack""
+                    <Button x:Name=""BtnInstall"" Content=""Install Selected Apps""
                             Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""28,10"" Cursor=""Hand"" BorderThickness=""0""/>
                 </StackPanel>
@@ -5968,7 +5968,7 @@ namespace FleetForge
 
             if (btnInstall != null)
             {
-                btnInstall.Visibility = (isLogsView || isCloudView || isInstalling) ? Visibility.Collapsed : Visibility.Visible;
+                btnInstall.Visibility = (isLogsView || isCloudView || isInstalling || isSetupView) ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (borderBottomBar != null)
@@ -9700,17 +9700,22 @@ namespace FleetForge
             if (btnInstall != null)
             {
                 bool isSetupView = (currentView == "setup" || currentView == "roles");
-                if (selectedAppIds.Count > 0)
+                if (isSetupView)
                 {
-                    btnInstall.Content = isSetupView
-                        ? string.Format("Install Selected Pack ({0})", selectedAppIds.Count)
-                        : string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                    btnInstall.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    btnInstall.Content = isSetupView ? "Install Selected Pack" : "Install Selected Apps";
+                    if (selectedAppIds.Count > 0)
+                    {
+                        btnInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                    }
+                    else
+                    {
+                        btnInstall.Content = "Install Selected Apps";
+                    }
+                    btnInstall.Background = windowsAccentBrush;
                 }
-                btnInstall.Background = windowsAccentBrush;
             }
             if (btnHeroInstall != null)
             {
