@@ -30,9 +30,9 @@ using Microsoft.Win32.SafeHandles;
 [assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.6.0.0")]
-[assembly: AssemblyFileVersion("2.6.0.0")]
-[assembly: AssemblyInformationalVersion("2.6.0")]
+[assembly: AssemblyVersion("2.6.1.0")]
+[assembly: AssemblyFileVersion("2.6.1.0")]
+[assembly: AssemblyInformationalVersion("2.6.1")]
 
 namespace FleetForge
 {
@@ -171,10 +171,10 @@ namespace FleetForge
 
         public UpdateInfo()
         {
-            version = "2.6.0";
-            versionCode = 260;
+            version = "2.6.1";
+            versionCode = 261;
             buildDate = "2026-11-13";
-            title = "FleetForge v2.6.0 Enterprise IT Edition";
+            title = "FleetForge v2.6.1 Enterprise IT Edition";
             company = "Love Malhotra";
             downloadUrl = AppUrls.UpdateDownloadUrl;
             changelog = new List<string>();
@@ -311,7 +311,7 @@ namespace FleetForge
     </div>
     <div class=""badge-org"">
       <div>LOVE MALHOTRA</div>
-      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.0 Engine</div>
+      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.1 Engine</div>
     </div>
   </div>
 
@@ -634,7 +634,7 @@ namespace FleetForge
             logoBorder.Child = logoGrid;
             brandStack.Children.Add(logoBorder);
 
-            // Title Line: FLEET + FORGE + v2.6.0
+            // Title Line: FLEET + FORGE + v2.6.1
             StackPanel titleLine = new StackPanel();
             titleLine.Orientation = Orientation.Horizontal;
             titleLine.HorizontalAlignment = HorizontalAlignment.Center;
@@ -665,7 +665,7 @@ namespace FleetForge
             verBadge.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#CBD5E1" : "#3E3E46"));
 
             TextBlock txtVer = new TextBlock();
-            txtVer.Text = "v2.6.0";
+            txtVer.Text = "v2.6.1";
             txtVer.FontSize = 10;
             txtVer.FontWeight = FontWeights.Bold;
             txtVer.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#475569" : "#A1A1AA"));
@@ -1063,7 +1063,7 @@ namespace FleetForge
         {
             Console.WriteLine();
             Console.WriteLine("================================================================================");
-            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.0");
+            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.1");
             Console.WriteLine("  Love Malhotra • Windows 11 Automated Deployment");
             Console.WriteLine("================================================================================");
             Console.WriteLine();
@@ -2924,7 +2924,7 @@ namespace FleetForge
                         </Border>
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
                             <TextBlock x:Name=""TxtUpdateTitle"" Text=""You are running the latest version!"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#34D399""/>
-                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.0 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
+                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.1 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -3079,7 +3079,7 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.0 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.1 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -4426,9 +4426,27 @@ namespace FleetForge
             }
         }
 
+        private static int ParseVersionNumber(string ver)
+        {
+            if (string.IsNullOrEmpty(ver)) return 0;
+            try
+            {
+                string digitsOnly = System.Text.RegularExpressions.Regex.Replace(ver, "[^0-9.]", "");
+                string[] parts = digitsOnly.Split('.');
+                int major = parts.Length > 0 ? int.Parse(parts[0]) : 0;
+                int minor = parts.Length > 1 ? int.Parse(parts[1]) : 0;
+                int patch = parts.Length > 2 ? int.Parse(parts[2]) : 0;
+                return major * 10000 + minor * 100 + patch;
+            }
+            catch { return 0; }
+        }
+
         private void RunInteractiveUpdateCheck()
         {
-            if (btnCheckUpdatesAgain != null) btnCheckUpdatesAgain.IsEnabled = false;
+            if (btnCheckUpdatesAgain != null)
+            {
+                btnCheckUpdatesAgain.Content = "Checking...";
+            }
             if (pathUpdateStatusIcon != null)
             {
                 pathUpdateStatusIcon.Data = Geometry.Parse("M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z");
@@ -4451,7 +4469,10 @@ namespace FleetForge
             {
                 Dispatcher.Invoke(new Action(delegate
                 {
-                    if (btnCheckUpdatesAgain != null) btnCheckUpdatesAgain.IsEnabled = true;
+                    if (btnCheckUpdatesAgain != null)
+                    {
+                        btnCheckUpdatesAgain.Content = "Check for Updates";
+                    }
 
                     if (info != null)
                     {
@@ -4500,6 +4521,18 @@ namespace FleetForge
                             btnDownloadInstall.Visibility = Visibility.Visible;
                             btnDownloadInstall.Content = "Download & Install v" + info.version;
                         }
+
+                        // User prompt for update available
+                        var promptRes = MessageBox.Show(
+                            string.Format("A new version of FleetForge is available!\n\nVersion: v{0}\nRelease Date: {1}\n\nWould you like to download and install this update now?", info.version, info.buildDate ?? "Today"),
+                            "Update Available — FleetForge",
+                            MessageBoxButton.YesNo,
+                            MessageBoxImage.Information);
+
+                        if (promptRes == MessageBoxResult.Yes)
+                        {
+                            StartAutomaticUpdateDownload(info.downloadUrl);
+                        }
                     }
                     else
                     {
@@ -4520,11 +4553,29 @@ namespace FleetForge
                         }
                         if (txtUpdateDetail != null)
                         {
-                            txtUpdateDetail.Text = "FleetForge v2.6.0 (Enterprise IT Edition • Love Malhotra) is up to date.";
+                            txtUpdateDetail.Text = "FleetForge v2.6.1 (Enterprise IT Edition • Love Malhotra) is up to date.";
                         }
                         if (btnDownloadInstall != null)
                         {
                             btnDownloadInstall.Visibility = Visibility.Collapsed;
+                        }
+
+                        // User prompt when no update found
+                        if (info != null)
+                        {
+                            MessageBox.Show(
+                                "You are running the latest version of FleetForge (v2.6.1).\n\nNo newer updates were found.",
+                                "No Update Found — FleetForge",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show(
+                                "Could not connect to the release server.\n\nPlease check your internet connection and try again.",
+                                "Update Check — FleetForge",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Warning);
                         }
                     }
                 }));
@@ -4545,7 +4596,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.0");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
                         string json = wc.DownloadString(updateUrl);
                         if (!string.IsNullOrEmpty(json))
                         {
@@ -4575,7 +4626,9 @@ namespace FleetForge
 
                 if (info != null)
                 {
-                    if (info.versionCode > 240)
+                    int currentVersionNum = ParseVersionNumber("2.6.1");
+                    int remoteVersionNum = ParseVersionNumber(info.version);
+                    if (remoteVersionNum > currentVersionNum || info.versionCode > 261)
                     {
                         updateFound = true;
                     }
@@ -4609,7 +4662,7 @@ namespace FleetForge
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.0");
+                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.1");
                         wc.DownloadProgressChanged += (s, e) =>
                         {
                             Dispatcher.Invoke(new Action(delegate
@@ -6016,7 +6069,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.0");
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
                             string json = wc.DownloadString(directUrl);
                             var ser = new JavaScriptSerializer();
                             ser.MaxJsonLength = int.MaxValue;
@@ -6084,7 +6137,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.0");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
                         string json = wc.DownloadString(directUrl);
                         newConfig = jsonSerializer.Deserialize<ConfigModel>(json);
                         if (newConfig != null && newConfig.apps != null && newConfig.apps.Count > 0)

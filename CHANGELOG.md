@@ -4,6 +4,16 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.1] — 2026-11-13
+### Fixed & Improved
+- **Prevent Duplicate App Packs on Update:** Fixed installer catalog merge logic by registering `"minimal"` in the built-in system pack whitelist and enforcing unique pack IDs and names during setup, permanently eliminating duplicate "Minimal Essentials" cards.
+- **Self-Healing Runtime Catalog Deduplication:** Added automatic startup validation in `EnsureCategories()` and `LoadConfigWithAutoSync()` that scans and sanitizes any duplicate groups from local `data/apps.json`.
+- **Interactive Check for Updates & Prompt Notifications:** The "Check for Updates" button remains active and interactive during manual checks without disabling. Added clear dialog prompts notifying the user when their installation is fully up to date or offering 1-click update installation when a new version is released.
+- **Smart Semantic Version Comparison:** Upgraded update comparison to dynamic semantic version numbers (`ParseVersionNumber`) supporting minor, major, and patch version transitions.
+- **Version Lock:** Official release locked to **v2.6.1** across all portable binaries, setup wizards, and documentation.
+
+---
+
 ## [2.6.0] — 2026-11-13
 ### Added & Redesigned
 - **Windows 11 Fluent Designer Splash Screen:** Completely redesigned startup splash with a frosted Mica floating card (`480×270`), squircle brand container with gentle breathing scale pulse (`1.0` ↔ `1.055`), glowing halo animation, fluid progress bar gliding (`DoubleAnimation` on `ProgressBar.ValueProperty`), and silky smooth entrance/exit transitions.

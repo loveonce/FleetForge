@@ -1,16 +1,17 @@
 {
-  "version": "2.6.0",
+  "version": "2.6.1",
+  "versionCode": 261,
   "buildDate": "2026-11-13",
-  "title": "FleetForge v2.6.0 Enterprise IT Edition",
+  "title": "FleetForge v2.6.1 Enterprise IT Edition",
   "company": "Love Malhotra",
   "website": "https://github.com/loveonce/FleetForge",
   "changelog": [
-    "Redesigned Windows 11 Fluent designer splash screen with native breathing and gliding animations",
-    "Automatic Windows 11 Light/Dark theme and dynamic accent color detection",
-    "High-contrast Windows 11 pill capsule search bar with instant package filtering",
-    "Reorganized header: How to Use guide relocated to Help menu, manual theme toggle automated",
-    "Streamlined Quick Setup view and enhanced first-time interactive tutorial modal",
-    "Zero-touch silent installation engine for Microsoft Winget with multi-drive install detection"
+    "Fixed update catalog merge to prevent duplicate Minimal Essentials pack",
+    "Enabled self-healing runtime catalog deduplication on application launch",
+    "Enhanced Check for Updates with active prompt notifications and always-interactive check button",
+    "Smart semantic version comparison engine for seamless update delivery",
+    "Windows 11 Fluent designer splash screen with native breathing and gliding animations",
+    "Automatic Windows 11 Light/Dark theme and dynamic accent color detection"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }

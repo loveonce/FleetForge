@@ -17,9 +17,9 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
 
 ```json
 {
-  "version": "2.6.0",
+  "version": "2.6.1",
   "buildDate": "2026-11-13",
-  "title": "FleetForge v2.6.0 Enterprise IT Edition",
+  "title": "FleetForge v2.6.1 Enterprise IT Edition",
   "company": "Love Malhotra",
   "changelog": [
     "Zero-touch silent installation engine for Microsoft Winget",
@@ -41,7 +41,7 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
 1. When `FleetForge.exe` is launched, a lightweight background worker (`ThreadPool.QueueUserWorkItem`) pings the GitHub version manifest without blocking the splash screen or UI rendering.
 2. If a newer semantic version is detected (`serverVersion > currentVersion`):
    - Sets a global update indicator.
-   - The top bar **`[ ❔ Help ▾ ]`** button displays an active notification dot: `Update Available (v2.6.0)`.
+   - The top bar **`[ ❔ Help ▾ ]`** button displays an active notification dot: `Update Available (v2.6.1)`.
 
 ### Tier 2: Interactive In-App Update Center
 1. The user opens the **Check for Updates** dialog from the Help menu.
