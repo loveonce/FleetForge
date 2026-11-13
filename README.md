@@ -2,7 +2,7 @@
 
 > **Zero-Touch Machine Setup & Enterprise Software Deployment**  
 > An enterprise-grade Windows 11 Desktop Application & Installer (`.EXE`) designed with modern Fluent aesthetics, live Windows theme sync, curated role presets, and instant silent package deployment.  
-> **Author & Publisher:** Love Malhotra • [GitHub Repository](https://github.com/loveonce/FleetForge) • Version 2.6.1
+> **Author & Publisher:** Love Malhotra • [GitHub Repository](https://github.com/loveonce/FleetForge) • Version 2.6.2
 
 ---
 

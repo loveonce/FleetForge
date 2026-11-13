@@ -8,11 +8,21 @@
     "description": "Curated software, essential premium tools, and top-rated recommendations.",
     "accentColor": "#F59E0B",
     "apps": [
+      "isolve.iSecureVPN",
       "bitguardian.Winriser",
       "BitGuardian.BitDriverUpdater"
     ]
   },
   "apps": [
+    {
+      "id": "isolve.iSecureVPN",
+      "name": "iSecure VPN",
+      "category": "security",
+      "description": "iSecure VPN protects your connection so you can browse, stream, and work without worry.",
+      "downloadUrl": "https://cdn.isecurevpn.com/isecurevpn/v1005/isecurevpnsetup.exe",
+      "silentArgs": "/S",
+      "offlineInstaller": "isecurevpnsetup.exe"
+    },
     {
       "id": "bitguardian.Winriser",
       "name": "Win Riser",

@@ -4,6 +4,14 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.2] — 2026-11-13
+
+### Changed & Improved
+- **Clean Catalog Navigation:** Navigating to "All Applications" (Catalog view) now presents an unselected, clean checklist (0 selected apps) instead of pre-selecting tools from the active Quick Setup app package.
+- **Independent Selection Architecture:** App pack installations in Quick Setup install directly from the pack card, while catalog checkboxes remain entirely dedicated to user-driven custom application selections.
+- **Recommended Visibility:** Top Choice recommended tools (Win Riser, Bit Driver Updater, iSecure VPN) remain highlighted at the top of the catalog and their respective categories in an unselected state ready for one-click selection.
+- **Version Lock:** Official release locked to **v2.6.2** across all portable binaries, setup wizards, and documentation.
+
 ## [2.6.1] — 2026-11-13
 ### Fixed & Improved
 - **Silent Background System Tray Auto-Installer:** When updating an existing installation, FleetForge displays the download progress directly inside the app, and transitions seamlessly to the Windows System Tray (`NotifyIcon`) at installation time. The installer screen is completely suppressed in favor of native tray notifications and background silent installation, automatically relaunching the updated FleetForge application upon completion.

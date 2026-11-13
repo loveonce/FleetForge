@@ -30,9 +30,9 @@ using Microsoft.Win32.SafeHandles;
 [assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.6.1.0")]
-[assembly: AssemblyFileVersion("2.6.1.0")]
-[assembly: AssemblyInformationalVersion("2.6.1")]
+[assembly: AssemblyVersion("2.6.2.0")]
+[assembly: AssemblyFileVersion("2.6.2.0")]
+[assembly: AssemblyInformationalVersion("2.6.2")]
 
 namespace FleetForge
 {
@@ -185,10 +185,10 @@ namespace FleetForge
 
         public UpdateInfo()
         {
-            version = "2.6.1";
+            version = "2.6.2";
             versionCode = 261;
             buildDate = "2026-11-13";
-            title = "FleetForge v2.6.1 Enterprise IT Edition";
+            title = "FleetForge v2.6.2 Enterprise IT Edition";
             company = "Love Malhotra";
             downloadUrl = AppUrls.UpdateDownloadUrl;
             changelog = new List<string>();
@@ -325,7 +325,7 @@ namespace FleetForge
     </div>
     <div class=""badge-org"">
       <div>LOVE MALHOTRA</div>
-      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.1 Engine</div>
+      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.2 Engine</div>
     </div>
   </div>
 
@@ -648,7 +648,7 @@ namespace FleetForge
             logoBorder.Child = logoGrid;
             brandStack.Children.Add(logoBorder);
 
-            // Title Line: FLEET + FORGE + v2.6.1
+            // Title Line: FLEET + FORGE + v2.6.2
             StackPanel titleLine = new StackPanel();
             titleLine.Orientation = Orientation.Horizontal;
             titleLine.HorizontalAlignment = HorizontalAlignment.Center;
@@ -679,7 +679,7 @@ namespace FleetForge
             verBadge.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#CBD5E1" : "#3E3E46"));
 
             TextBlock txtVer = new TextBlock();
-            txtVer.Text = "v2.6.1";
+            txtVer.Text = "v2.6.2";
             txtVer.FontSize = 10;
             txtVer.FontWeight = FontWeights.Bold;
             txtVer.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#475569" : "#A1A1AA"));
@@ -1077,7 +1077,7 @@ namespace FleetForge
         {
             Console.WriteLine();
             Console.WriteLine("================================================================================");
-            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.1");
+            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.2");
             Console.WriteLine("  Love Malhotra • Windows 11 Automated Deployment");
             Console.WriteLine("================================================================================");
             Console.WriteLine();
@@ -1446,7 +1446,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.1");
+                            wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.2");
                             wc.DownloadFile(directUrl, downloadTarget);
                         }
 
@@ -3042,7 +3042,7 @@ namespace FleetForge
                         </Border>
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
                             <TextBlock x:Name=""TxtUpdateTitle"" Text=""You are running the latest version!"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#34D399""/>
-                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.1 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
+                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.2 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -3197,7 +3197,7 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.1 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.2 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -3220,7 +3220,7 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.1"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.2"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecLibLbl"" Text=""App Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecLibVal"" Text=""FleetForge Enterprise Cloud Catalog"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
@@ -4673,7 +4673,7 @@ namespace FleetForge
                         }
                         if (txtUpdateDetail != null)
                         {
-                            txtUpdateDetail.Text = "FleetForge v2.6.1 (Enterprise IT Edition • Love Malhotra) is up to date.";
+                            txtUpdateDetail.Text = "FleetForge v2.6.2 (Enterprise IT Edition • Love Malhotra) is up to date.";
                         }
                         if (btnDownloadInstall != null)
                         {
@@ -4684,7 +4684,7 @@ namespace FleetForge
                         if (info != null)
                         {
                             MessageBox.Show(
-                                "You are running the latest version of FleetForge (v2.6.1).\n\nNo newer updates were found.",
+                                "You are running the latest version of FleetForge (v2.6.2).\n\nNo newer updates were found.",
                                 "No Update Found — FleetForge",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
@@ -4716,7 +4716,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
                         string json = wc.DownloadString(updateUrl);
                         if (!string.IsNullOrEmpty(json))
                         {
@@ -4746,7 +4746,7 @@ namespace FleetForge
 
                 if (info != null)
                 {
-                    int currentVersionNum = ParseVersionNumber("2.6.1");
+                    int currentVersionNum = ParseVersionNumber("2.6.2");
                     int remoteVersionNum = ParseVersionNumber(info.version);
                     if (remoteVersionNum > currentVersionNum || info.versionCode > 261)
                     {
@@ -4782,7 +4782,7 @@ namespace FleetForge
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.1");
+                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.2");
                         wc.DownloadProgressChanged += (s, e) =>
                         {
                             Dispatcher.Invoke(new Action(delegate
@@ -6399,7 +6399,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
                         string json = wc.DownloadString(directUrl);
                         if (string.IsNullOrEmpty(json)) return;
 
@@ -6471,7 +6471,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
                             string json = wc.DownloadString(directUrl);
                             var ser = new JavaScriptSerializer();
                             ser.MaxJsonLength = int.MaxValue;
@@ -6539,7 +6539,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.1");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.2");
                         string json = wc.DownloadString(directUrl);
                         newConfig = jsonSerializer.Deserialize<ConfigModel>(json);
                         if (newConfig != null && newConfig.apps != null && newConfig.apps.Count > 0)
@@ -7010,14 +7010,11 @@ namespace FleetForge
                 };
                 selectBtn.Click += delegate
                 {
-                    if (activeRoleId == currentGrp.id)
-                    {
-                        StartInstallation();
-                    }
-                    else
+                    if (activeRoleId != currentGrp.id)
                     {
                         SelectRole(currentGrp.id);
                     }
+                    StartInstallation(false, currentGrp.apps, currentGrp.id, currentGrp.name);
                 };
                 Grid.SetColumn(selectBtn, 0);
                 btnRow.Children.Add(selectBtn);
@@ -7167,65 +7164,7 @@ namespace FleetForge
                 }
             }
 
-            isUpdatingSelection = true;
-            try
-            {
-                selectedAppIds.Clear();
-                if (targetGrp != null)
-                {
-                    foreach (string id in targetGrp.apps) selectedAppIds.Add(id);
-                }
-
-                if (localCardsContainer != null)
-                {
-                    foreach (UIElement child in localCardsContainer.Children)
-                    {
-                        Border card = child as Border;
-                        if (card != null && card.Tag is AppModel)
-                        {
-                            AppModel app = card.Tag as AppModel;
-                            Grid g = card.Child as Grid;
-                            if (g != null && g.Children.Count > 0)
-                            {
-                                CheckBox cb = g.Children[0] as CheckBox;
-                                if (cb != null)
-                                {
-                                    bool isSel = selectedAppIds.Contains(app.id);
-                                    cb.IsChecked = isSel;
-                                    if (isSel)
-                                    {
-                                        card.Background = currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42");
-                                        card.BorderBrush = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF");
-                                    }
-                                    else
-                                    {
-                                        card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                                        card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                isUpdatingSelection = false;
-            }
-
-            UpdateCount();
-            UpdateMasterCheckboxState();
-            UpdateHeaderCount();
-            if (txtStatus != null) txtStatus.Text = "Role selected: " + targetGrp.name;
-
-            if (currentView == "catalog")
-            {
-                ApplyFilters();
-            }
-            else
-            {
-                catalogNeedsRefresh = true;
-            }
+            if (txtStatus != null && targetGrp != null) txtStatus.Text = "App pack selected: " + targetGrp.name;
         }
 
         // =========================================================================
@@ -9733,7 +9672,8 @@ namespace FleetForge
             {
                 GroupModel act = config != null && config.groups != null ? config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }) : null;
                 string packName = act != null ? act.name : "Custom Selection";
-                txtHeroStatusSubtitle.Text = string.Format("{0} apps selected from \"{1}\". Click Install to proceed.", selectedAppIds.Count, packName);
+                int packAppCount = (act != null && act.apps != null) ? act.apps.Count : 0;
+                txtHeroStatusSubtitle.Text = string.Format("{0} apps selected from \"{1}\". Click Install to proceed.", packAppCount, packName);
             }
         }
 
@@ -9884,17 +9824,23 @@ namespace FleetForge
 
         private void StartInstallation()
         {
-            StartInstallation(false);
+            StartInstallation(false, null, null, null);
         }
 
         private void StartInstallation(bool isResume)
         {
+            StartInstallation(isResume, null, null, null);
+        }
+
+        private void StartInstallation(bool isResume, List<string> packAppIds, string overrideRoleId = null, string overrideRoleName = null)
+        {
             List<AppModel> selectedApps = new List<AppModel>();
+            HashSet<string> targetIdSet = (packAppIds != null) ? new HashSet<string>(packAppIds) : selectedAppIds;
             if (config != null && config.apps != null)
             {
                 foreach (AppModel a in config.apps)
                 {
-                    if (selectedAppIds.Contains(a.id)) selectedApps.Add(a);
+                    if (targetIdSet.Contains(a.id)) selectedApps.Add(a);
                 }
             }
 
@@ -9906,8 +9852,12 @@ namespace FleetForge
 
             if (!isResume)
             {
+                string confirmMsg = !string.IsNullOrEmpty(overrideRoleName)
+                    ? string.Format("Ready to install {0} app(s) from \"{1}\" on your computer.\n\nDo you want to start now?", selectedApps.Count, overrideRoleName)
+                    : string.Format("Ready to install {0} selected app(s) on your computer.\n\nDo you want to start now?", selectedApps.Count);
+
                 MessageBoxResult res = MessageBox.Show(
-                    string.Format("Ready to install {0} selected app(s) on your computer.\n\nDo you want to start now?", selectedApps.Count),
+                    confirmMsg,
                     "Install Apps",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
@@ -9946,10 +9896,10 @@ namespace FleetForge
             if (!isResume || currentSession == null)
             {
                 currentSession = new DeploymentSessionState();
-                currentSession.roleId = activeRoleId ?? "custom";
-                currentSession.roleName = (activeRoleId != null && config != null && config.groups != null) ?
+                currentSession.roleId = overrideRoleId ?? (activeRoleId ?? "custom");
+                currentSession.roleName = overrideRoleName ?? ((activeRoleId != null && config != null && config.groups != null) ?
                     (config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }) != null ?
-                     config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }).name : activeRoleId) : "Custom Workstation";
+                     config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }).name : activeRoleId) : "Custom Workstation");
                 currentSession.totalCount = selectedApps.Count;
                 foreach (AppModel a in selectedApps)
                 {
@@ -10108,7 +10058,7 @@ namespace FleetForge
                             using (WebClient wc = new WebClient())
                             {
                                 wc.Encoding = Encoding.UTF8;
-                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.1");
+                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.2");
                                 wc.DownloadFile(directUrl, downloadTarget);
                             }
 
