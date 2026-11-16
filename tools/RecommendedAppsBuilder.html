@@ -636,10 +636,13 @@
         <!-- Rendered dynamically by JavaScript -->
       </div>
 
-      <!-- Add Button at the Bottom -->
-      <div style="text-align: center; margin-top: 8px;">
-        <button class="btn btn-secondary" style="width: 100%; padding: 10px; font-size: 13px; border-style: dashed;" onclick="addNewApp()">
-          ➕ Add Another Software Package
+      <!-- Add Buttons at the Bottom -->
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button class="btn btn-primary" style="flex: 2; padding: 10px; font-size: 13px;" onclick="addNewApp()">
+          🔍 Search &amp; Add Software from apps.json (16,350 Packages)
+        </button>
+        <button class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 13px; border-style: dashed;" onclick="addManualEmptyApp()">
+          ➕ Add Blank Card
         </button>
       </div>
     </section>
@@ -910,8 +913,8 @@
           <div class="app-header">
             <div class="app-num">${index + 1}</div>
             <div class="app-title-preview" id="title-preview-${index}">
-              <span>${escapeHtml(app.name || "Untitled Application")}</span>
-              <span style="font-weight: normal; font-size: 11px; color: var(--text-muted);">[${escapeHtml(app.id || "")}]</span>
+              <span style="font-weight:700;">${escapeHtml(app.name || "Untitled Application")}</span>
+              <span style="font-weight: normal; font-size: 11px; color: var(--text-muted); font-family:monospace;">[${escapeHtml(app.id || "No ID")}]</span>
               ${badgesHtml}
             </div>
             <div class="app-controls">
@@ -921,82 +924,124 @@
             </div>
           </div>
 
-          <div class="form-grid">
-            <div class="field-group">
-              <label class="field-label">
-                <span>Software Name <span class="req">*</span></span>
-                <span class="field-hint" style="color:#0066FF; cursor:pointer; font-weight:600;" onclick="openOverrideModalForIndex(${index})" title="Search 16,350 apps from apps.json">🔍 Fetch from apps.json</span>
+          <!-- STEP 1: Select Software from Winget Catalog (Auto-Fills Everything) -->
+          <div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:12px; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+              <label class="field-label" style="font-size:12.5px; font-weight:700; color:#0F172A; margin:0;">
+                <span>🔍 1. Select Software Name from Winget Catalog <span class="req">*</span></span>
               </label>
-              <div class="autocomplete-wrapper">
-                <input type="text" class="input" id="input-name-${index}" value="${escapeHtml(app.name || "")}" 
-                  placeholder="e.g. Google Chrome, NordVPN (Type to search apps.json)" 
-                  autocomplete="off"
-                  oninput="onSoftwareNameInput(${index}, this.value)"
-                  onfocus="onSoftwareNameInput(${index}, this.value)">
-                <div class="autocomplete-list" id="autocomplete-name-${index}"></div>
+              <button class="btn btn-secondary btn-sm" type="button" onclick="openOverrideModalForIndex(${index})" style="padding:4px 10px; font-size:11px;">
+                📂 Browse All 16,350 Packages
+              </button>
+            </div>
+            <p style="font-size:11.5px; color:#64748B; margin-bottom:8px;">
+              Type any software name (e.g. <em>Chrome, AnyDesk, VLC, WinRAR, Python, Discord, Zoom</em>). Selecting it will automatically fill its <strong>Winget ID</strong>, <strong>Category</strong>, <strong>Installer EXE</strong>, and <strong>Silent Flags</strong>!
+            </p>
+            <div class="autocomplete-wrapper">
+              <input type="text" class="input" id="input-name-${index}" value="${escapeHtml(app.name || "")}" 
+                placeholder="Type software name to search apps.json..." 
+                autocomplete="off"
+                style="font-size:13.5px; font-weight:600; padding:9px 12px; border-color:#94A3B8; background:#FFFFFF;"
+                oninput="onSoftwareNameInput(${index}, this.value)"
+                onfocus="onSoftwareNameInput(${index}, this.value)">
+              <div class="autocomplete-list" id="autocomplete-name-${index}"></div>
+            </div>
+
+            <!-- Auto-Configured Status Banner -->
+            <div id="matched-banner-${index}" style="background:#ECFDF5; border:1px solid #A7F3D0; border-radius:6px; padding:8px 12px; margin-top:8px; display:${app.id ? 'flex' : 'none'}; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+              <div style="font-size:11.5px; color:#065F46;">
+                <strong>Auto-Configured:</strong> Winget ID: <code style="background:#D1FAE5; padding:1px 5px; border-radius:3px;">${escapeHtml(app.id || "")}</code> • Category: <strong>${escapeHtml(app.category || "utilities")}</strong> • EXE: <strong>${escapeHtml(app.offlineInstaller || "setup.exe")}</strong>
               </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">
-                <span>Unique App ID (Winget or Custom ID) <span class="req">*</span></span>
-                <span class="field-hint">e.g. Google.Chrome</span>
-              </label>
-              <div class="autocomplete-wrapper">
-                <input type="text" class="input" id="input-id-${index}" value="${escapeHtml(app.id || "")}" 
-                  placeholder="Vendor.PackageName (Type to search apps.json)" 
-                  autocomplete="off"
-                  oninput="onAppIdInput(${index}, this.value)">
-                <div class="autocomplete-list" id="autocomplete-id-${index}"></div>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">Category (FleetForge Group) <span class="req">*</span></label>
-              <select id="select-cat-${index}" onchange="updateAppField(${index}, 'category', this.value)">
-                ${categoryOptions}
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">
-                <span>Direct Download URL (EXE/MSI)</span>
-                <span class="field-hint">Optional: Silent cloud install</span>
-              </label>
-              <input type="text" class="input" value="${escapeHtml(app.downloadUrl || "")}" 
-                placeholder="https://dl.vendor.com/setup.exe" 
-                oninput="updateAppField(${index}, 'downloadUrl', this.value)">
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">
-                <span>Affiliate Web Redirect URL (Browser Discount / Signup)</span>
-                <span class="field-hint">Opens in browser on install (VPNs/SaaS)</span>
-              </label>
-              <input type="text" class="input" value="${escapeHtml(app.affiliateWebUrl || "")}" 
-                placeholder="https://nordvpn.com/special-deal/?coupon=..." 
-                oninput="updateAppField(${index}, 'affiliateWebUrl', this.value)">
-            </div>
-
-            <div class="field-group">
-              <label class="field-label">Silent Install Arguments</label>
-              <input type="text" class="input" value="${escapeHtml(app.silentArgs || "")}" 
-                placeholder="e.g. /silent /install or /S" 
-                oninput="updateAppField(${index}, 'silentArgs', this.value)">
-              <div class="preset-pills">
-                <span class="pill" onclick="setPresetArgs(${index}, '/silent /install')">/silent /install</span>
-                <span class="pill" onclick="setPresetArgs(${index}, '/S')">/S</span>
-                <span class="pill" onclick="setPresetArgs(${index}, '/VERYSILENT /NORESTART')">/VERYSILENT</span>
-                <span class="pill" onclick="setPresetArgs(${index}, '/qn /norestart')">/qn</span>
-              </div>
-            </div>
-
-            <div class="field-group col-span-2">
-              <label class="field-label">Short Description</label>
-              <textarea class="input" placeholder="Short description displayed on card..." 
-                oninput="updateAppField(${index}, 'description', this.value)">${escapeHtml(app.description || "")}</textarea>
+              <span class="badge" style="background:#059669; color:#FFFFFF; font-size:10px; font-weight:700;">Ready for Affiliate Link ✨</span>
             </div>
           </div>
+
+          <!-- STEP 2: Paste Your Affiliate Link (Highlighted Section) -->
+          <div style="background:#FAF5FF; border:1.5px solid #C084FC; border-radius:8px; padding:12px 14px; margin-bottom:12px;">
+            <div style="font-size:12px; font-weight:800; color:#7E22CE; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <span>💰</span> STEP 2: PASTE YOUR AFFILIATE URL HERE
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <label class="field-label" style="color:#581C87; font-weight:700;">
+                  <span>Direct Download URL (Affiliate EXE/MSI)</span>
+                  <span class="field-hint">FleetForge downloads and installs silently</span>
+                </label>
+                <input type="text" class="input" id="input-download-${index}" value="${escapeHtml(app.downloadUrl || "")}" 
+                  placeholder="https://affiliate.vendor.com/download/setup.exe" 
+                  style="border-color:#D8B4FE; background:#FFFFFF; font-size:12.5px;"
+                  oninput="updateAppField(${index}, 'downloadUrl', this.value)">
+              </div>
+
+              <div>
+                <label class="field-label" style="color:#581C87; font-weight:700;">
+                  <span>Affiliate Web Redirect URL (Browser Discount / Referral)</span>
+                  <span class="field-hint">Idea 2: Opens in browser while installing (VPNs, SaaS)</span>
+                </label>
+                <input type="text" class="input" id="input-web-${index}" value="${escapeHtml(app.affiliateWebUrl || "")}" 
+                  placeholder="https://vendor.com/partner-deal/?aff=YOURCODE" 
+                  style="border-color:#D8B4FE; background:#FFFFFF; font-size:12.5px;"
+                  oninput="updateAppField(${index}, 'affiliateWebUrl', this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Collapsible Technical Details (Pre-Filled & Fully Configured) -->
+          <details style="border:1px solid var(--border); border-radius:7px; padding:8px 12px; background:#FFFFFF;">
+            <summary style="font-size:11.5px; font-weight:600; color:#64748B; cursor:pointer; user-select:none;">
+              ⚙️ View / Edit Technical Details (Winget ID, Category, EXE Installer, Silent Flags, Description)
+            </summary>
+            <div class="form-grid" style="margin-top:12px;">
+              <div class="field-group">
+                <label class="field-label">
+                  <span>Unique App ID (Winget ID) <span class="req">*</span></span>
+                </label>
+                <div class="autocomplete-wrapper">
+                  <input type="text" class="input" id="input-id-${index}" value="${escapeHtml(app.id || "")}" 
+                    placeholder="Vendor.PackageName" 
+                    autocomplete="off"
+                    oninput="onAppIdInput(${index}, this.value)">
+                  <div class="autocomplete-list" id="autocomplete-id-${index}"></div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Category (FleetForge Group) <span class="req">*</span></label>
+                <select id="select-cat-${index}" onchange="updateAppField(${index}, 'category', this.value)">
+                  ${categoryOptions}
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Installer EXE File Name</label>
+                <input type="text" class="input" id="input-exe-${index}" value="${escapeHtml(app.offlineInstaller || "")}" 
+                  placeholder="setup.exe or ChromeStandaloneSetup64.exe" 
+                  oninput="updateAppField(${index}, 'offlineInstaller', this.value)">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Silent Install Arguments</label>
+                <input type="text" class="input" id="input-args-${index}" value="${escapeHtml(app.silentArgs || "")}" 
+                  placeholder="e.g. /S or /silent /install" 
+                  oninput="updateAppField(${index}, 'silentArgs', this.value)">
+                <div class="preset-pills">
+                  <span class="pill" onclick="setPresetArgs(${index}, '/S')">/S</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/SILENT')">/SILENT</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/VERYSILENT /NORESTART')">/VERYSILENT</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/qn')">/qn</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/silent /install')">/silent /install</span>
+                </div>
+              </div>
+
+              <div class="field-group col-span-2">
+                <label class="field-label">Short Description</label>
+                <input type="text" class="input" id="input-desc-${index}" value="${escapeHtml(app.description || "")}" 
+                  placeholder="One line summary for users" 
+                  oninput="updateAppField(${index}, 'description', this.value)">
+              </div>
+            </div>
+          </details>
         `;
         container.appendChild(card);
       });
@@ -1403,13 +1448,13 @@
       const list = getCurrentAppsList();
       if (!list[index]) return;
 
-      // Auto-fetch: Software Name, Unique App ID, Category, Description
+      // Auto-fetch: Software Name, Unique App ID, Category, EXE Installer, Silent Flags, Description
       list[index].name = matched.name;
       list[index].id = matched.id;
       list[index].category = matched.category || "utilities";
-      if (!list[index].description || list[index].description.trim() === "") {
-        list[index].description = matched.desc || (matched.name + " package");
-      }
+      list[index].offlineInstaller = matched.exe || (matched.id.split('.').pop() + "-setup.exe");
+      list[index].silentArgs = matched.args || "/S";
+      list[index].description = matched.desc || (matched.name + " package");
 
       // Update input fields on card
       const nameInp = document.getElementById(`input-name-${index}`);
@@ -1418,8 +1463,24 @@
       if (idInp) idInp.value = matched.id;
       const catSel = document.getElementById(`select-cat-${index}`);
       if (catSel) catSel.value = matched.category || "utilities";
+      const exeInp = document.getElementById(`input-exe-${index}`);
+      if (exeInp) exeInp.value = list[index].offlineInstaller;
+      const argsInp = document.getElementById(`input-args-${index}`);
+      if (argsInp) argsInp.value = list[index].silentArgs;
       const descInp = document.getElementById(`input-desc-${index}`);
       if (descInp) descInp.value = list[index].description;
+
+      // Show matched banner
+      const banner = document.getElementById(`matched-banner-${index}`);
+      if (banner) {
+        banner.style.display = "flex";
+        banner.innerHTML = `
+          <div style="font-size:11.5px; color:#065F46;">
+            <strong>Auto-Configured:</strong> Winget ID: <code style="background:#D1FAE5; padding:1px 5px; border-radius:3px;">${escapeHtml(matched.id)}</code> • Category: <strong>${escapeHtml(matched.category || 'utilities')}</strong> • EXE: <strong>${escapeHtml(list[index].offlineInstaller)}</strong>
+          </div>
+          <span class="badge" style="background:#059669; color:#FFFFFF; font-size:10px; font-weight:700;">Ready for Affiliate Link ✨</span>
+        `;
+      }
 
       // Close all autocompletes
       closeAllAutocompletes();
@@ -1427,7 +1488,15 @@
       // Refresh preview and JSON
       updatePreviewTitle(index);
       updateLiveJson();
-      showToast(`⚡ Auto-fetched [${matched.name}] from apps.json!`);
+      renderApps(); // re-render card in place with clean layout
+
+      // Focus on Affiliate download URL input
+      setTimeout(() => {
+        const downloadInp = document.getElementById(`input-download-${index}`);
+        if (downloadInp) downloadInp.focus();
+      }, 50);
+
+      showToast(`⚡ Auto-fetched [${matched.name}]! Now paste your affiliate URL.`);
     }
 
     function closeAllAutocompletes() {
@@ -1555,14 +1624,16 @@
         return;
       }
 
-      // Add as new software package with Software Name, Unique App ID, Category & Description auto-fetched from apps.json
+      // Add as new software package with Software Name, Unique App ID, Category, EXE & Silent Args auto-fetched from apps.json
       list.push({
         id: preset.id,
         name: preset.name,
         category: preset.category || "utilities",
         description: preset.desc || (preset.name + " package"),
         downloadUrl: "",
-        affiliateWebUrl: ""
+        affiliateWebUrl: "",
+        offlineInstaller: preset.exe || (preset.id.split('.').pop() + "-setup.exe"),
+        silentArgs: preset.args || "/S"
       });
 
       renderApps();
