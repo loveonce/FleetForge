@@ -1092,6 +1092,17 @@ namespace FleetForge
                     }
                     catch { }
 
+                    try
+                    {
+                        string cp = Path.Combine(dataDir, "custom_apps.json");
+                        if (!File.Exists(cp))
+                        {
+                            SafeExtractResource("custom_apps.json", cp);
+                            SafeCopyFile(cp, Path.Combine(targetDir, "custom_apps.json"));
+                        }
+                    }
+                    catch { }
+
                     // 4. Extract or Preserve settings.json
                     UpdateProgress(65, "Applying configuration preferences...");
                     string settingsPath = Path.Combine(configDir, "settings.json");

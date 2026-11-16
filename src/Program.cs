@@ -107,6 +107,22 @@ namespace FleetForge
         }
     }
 
+    public class CustomCatalogModel
+    {
+        public string version { get; set; }
+        public string name { get; set; }
+        public string description { get; set; }
+        public List<AppModel> apps { get; set; }
+
+        public CustomCatalogModel()
+        {
+            version = "1.0";
+            name = "Custom & Affiliate Apps Catalog";
+            description = "User-defined software packages and customized direct download affiliate URLs.";
+            apps = new List<AppModel>();
+        }
+    }
+
     public class ConfigModel
     {
         public List<GroupModel> groups { get; set; }
@@ -1187,6 +1203,69 @@ namespace FleetForge
             {
                 string json = File.ReadAllText(configPath, Encoding.UTF8);
                 config = ser.Deserialize<ConfigModel>(json);
+
+                // 3-Tier Merge with Deduplication for CLI mode (Recommended -> Custom -> Base)
+                HashSet<string> cliSeenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                List<AppModel> cliMergedApps = new List<AppModel>();
+
+                string recPath = Path.Combine(baseDir, "data", "recommended_apps.json");
+                if (!File.Exists(recPath)) recPath = Path.Combine(baseDir, "recommended_apps.json");
+                if (File.Exists(recPath))
+                {
+                    try
+                    {
+                        string rJson = File.ReadAllText(recPath, Encoding.UTF8);
+                        RecommendedDataModel rdm = ser.Deserialize<RecommendedDataModel>(rJson);
+                        if (rdm != null && rdm.apps != null)
+                        {
+                            foreach (AppModel ra in rdm.apps)
+                            {
+                                if (ra != null && !string.IsNullOrEmpty(ra.id) && !cliSeenIds.Contains(ra.id))
+                                {
+                                    cliSeenIds.Add(ra.id);
+                                    cliMergedApps.Add(ra);
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                string custPath = Path.Combine(baseDir, "data", "custom_apps.json");
+                if (!File.Exists(custPath)) custPath = Path.Combine(baseDir, "custom_apps.json");
+                if (File.Exists(custPath))
+                {
+                    try
+                    {
+                        string cJson = File.ReadAllText(custPath, Encoding.UTF8);
+                        CustomCatalogModel ccm = ser.Deserialize<CustomCatalogModel>(cJson);
+                        if (ccm != null && ccm.apps != null)
+                        {
+                            foreach (AppModel ca in ccm.apps)
+                            {
+                                if (ca != null && !string.IsNullOrEmpty(ca.id) && !cliSeenIds.Contains(ca.id))
+                                {
+                                    cliSeenIds.Add(ca.id);
+                                    cliMergedApps.Add(ca);
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                if (config != null && config.apps != null)
+                {
+                    foreach (AppModel ba in config.apps)
+                    {
+                        if (ba != null && !string.IsNullOrEmpty(ba.id) && !cliSeenIds.Contains(ba.id))
+                        {
+                            cliSeenIds.Add(ba.id);
+                            cliMergedApps.Add(ba);
+                        }
+                    }
+                    config.apps = cliMergedApps;
+                }
             }
             catch (Exception ex)
             {
@@ -2785,6 +2864,39 @@ namespace FleetForge
         private string currentEditingGroupId = null;
         private string recommendedAppsPath = null;
         private List<string> recommendedMasterAppIds = new List<string>();
+        private string customAppsPath = null;
+        private List<string> customMasterAppIds = new List<string>();
+        private List<AppModel> baseCatalogApps = null;
+        private List<AppModel> builderCustomApps = new List<AppModel>();
+        private AppModel builderEditingApp = null;
+
+        // Modal: Custom App & Affiliate Builder
+        private Grid modalCustomAppBuilderOverlay;
+        private Border borderCustomAppBuilderCard;
+        private TextBlock txtModalAppBuilderTitle;
+        private Border borderBuilderFormCard;
+        private Border borderBuilderListCard;
+        private TextBox txtBuilderSearchCatalog;
+        private Button btnBuilderSearchFind;
+        private ListBox lstBuilderSearchResults;
+        private TextBox txtBuilderAppId;
+        private TextBox txtBuilderAppName;
+        private ComboBox cmbBuilderCategory;
+        private TextBox txtBuilderDownloadUrl;
+        private TextBox txtBuilderSilentArgs;
+        private TextBox txtBuilderDesc;
+        private Button btnBuilderAddUpdate;
+        private Button btnBuilderClearForm;
+        private TextBlock txtBuilderFormStatus;
+        private TextBlock txtBuilderCustomListHeader;
+        private StackPanel pnlBuilderCustomAppsList;
+        private Button btnBuilderImportJson;
+        private Button btnBuilderExportJson;
+        private Button btnBuilderCancel;
+        private Button btnBuilderSaveAndApply;
+        private Button btnCloseAppBuilder;
+        private Button btnBottomAppBuilder;
+        private Button btnOpenAppBuilder;
 
         public MainWindow(ConfigModel preloadedConfig = null, UpdateInfo preloadedUpdate = null)
         {
@@ -2873,7 +2985,19 @@ namespace FleetForge
 
         private void InitializePaths()
         {
-            appDir = AppDomain.CurrentDomain.BaseDirectory;
+            try
+            {
+                string asmLoc = Assembly.GetExecutingAssembly().Location;
+                if (!string.IsNullOrEmpty(asmLoc))
+                {
+                    appDir = Path.GetDirectoryName(asmLoc);
+                }
+            }
+            catch { }
+            if (string.IsNullOrEmpty(appDir))
+            {
+                appDir = AppDomain.CurrentDomain.BaseDirectory;
+            }
             AppUrls.Initialize(appDir);
 
             // 1. Catalog path (apps.json in data/ or root)
@@ -2883,6 +3007,10 @@ namespace FleetForge
             // 1b. Recommended & affiliate software database path
             recommendedAppsPath = Path.Combine(appDir, "data", "recommended_apps.json");
             if (!File.Exists(recommendedAppsPath)) recommendedAppsPath = Path.Combine(appDir, "recommended_apps.json");
+
+            // 1c. Custom apps & affiliate overrides database path
+            customAppsPath = Path.Combine(appDir, "data", "custom_apps.json");
+            if (!File.Exists(customAppsPath)) customAppsPath = Path.Combine(appDir, "custom_apps.json");
 
             // 2. Settings path (settings.json in config/ or root)
             settingsPath = Path.Combine(appDir, "config", "settings.json");
@@ -3535,6 +3663,11 @@ namespace FleetForge
                             Background=""#FFFFFF"" Foreground=""#0066FF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" FontSize=""12""
                             Visibility=""Collapsed""/>
+                    <Button x:Name=""BtnBottomAppBuilder"" Content=""🛠️  App Builder""
+                            Background=""#FFFFFF"" Foreground=""#7C3AED"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
+                            FontWeight=""SemiBold"" Padding=""16,8"" Margin=""10,0,0,0"" Cursor=""Hand"" FontSize=""12""
+                            ToolTip=""Open Affiliate &amp; Custom App Builder to customize software URLs""
+                            Visibility=""Collapsed""/>
                 </StackPanel>
 
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
@@ -3807,8 +3940,12 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSettingCatalogInfo"" Text=""16,349 Apps Available in Local Library"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                             <TextBlock x:Name=""TxtSettingCatalogSource"" Text=""Source: Official Microsoft Windows App Store"" FontSize=""11"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
                         </StackPanel>
-                        <Button x:Name=""BtnExportCatalog"" Grid.Column=""1"" Content=""Export App List"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" VerticalAlignment=""Center""/>
+                        <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                            <Button x:Name=""BtnOpenAppBuilder"" Content=""🛠️ App Builder"" Background=""#FFFFFF"" Foreground=""#7C3AED"" BorderBrush=""#CBD5E1""
+                                    FontWeight=""SemiBold"" Padding=""14,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
+                            <Button x:Name=""BtnExportCatalog"" Content=""Export App List"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                    FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -4094,6 +4231,142 @@ namespace FleetForge
                     </StackPanel>
                 </Grid>
             </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ========================================================================= -->
+    <!-- MODAL: CUSTOM APP & AFFILIATE BUILDER                                     -->
+    <!-- ========================================================================= -->
+    <Grid x:Name=""ModalCustomAppBuilderOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
+        <Border x:Name=""BorderCustomAppBuilderCard"" Width=""880"" MaxHeight=""680"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+                HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""24"">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=""Auto""/>
+                    <RowDefinition Height=""Auto""/>
+                    <RowDefinition Height=""*""/>
+                    <RowDefinition Height=""Auto""/>
+                </Grid.RowDefinitions>
+
+                <!-- Row 0: Title &amp; Close -->
+                <Grid Grid.Row=""0"" Margin=""0,0,0,14"">
+                    <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                        <Border Width=""34"" Height=""34"" Background=""#7C3AED"" CornerRadius=""8"" Margin=""0,0,12,0"" VerticalAlignment=""Center"">
+                            <TextBlock Text=""🛠️"" FontSize=""16"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                        </Border>
+                        <StackPanel VerticalAlignment=""Center"">
+                            <StackPanel Orientation=""Horizontal"">
+                                <TextBlock x:Name=""TxtModalAppBuilderTitle"" Text=""Custom App &amp; Affiliate Builder"" FontSize=""17"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
+                                <Border Background=""#2E1065"" CornerRadius=""5"" Padding=""8,2"" Margin=""10,0,0,0"" VerticalAlignment=""Center"" BorderThickness=""1"" BorderBrush=""#581C87"">
+                                    <TextBlock Text=""Direct URL Override"" FontSize=""10"" FontWeight=""SemiBold"" Foreground=""#D8B4FE""/>
+                                </Border>
+                            </StackPanel>
+                            <TextBlock Text=""Customize download URLs, silent flags, or add software without touching the main database."" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,2,0,0""/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button x:Name=""BtnCloseAppBuilder"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""15"" FontWeight=""Bold""
+                            Width=""32"" Height=""32"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Top""/>
+                </Grid>
+
+                <!-- Row 1: Add / Edit Form Card -->
+                <Border x:Name=""BorderBuilderFormCard"" Grid.Row=""1"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,12"">
+                    <StackPanel>
+                        <!-- Auto-fill Search from 16,349 apps -->
+                        <TextBlock Text=""🔍 QUICK AUTO-FILL FROM MAIN CATALOG (16,349 APPS):"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,6""/>
+                        <Grid Margin=""0,0,0,6"">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=""*""/>
+                                <ColumnDefinition Width=""Auto""/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name=""TxtBuilderSearchCatalog"" Grid.Column=""0"" Height=""30"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                     BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""8,4"" FontSize=""11"" VerticalContentAlignment=""Center""/>
+                            <Button x:Name=""BtnBuilderSearchFind"" Grid.Column=""1"" Content=""Search Apps"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                    FontWeight=""SemiBold"" Padding=""14,4"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11""/>
+                        </Grid>
+                        <ListBox x:Name=""LstBuilderSearchResults"" MaxHeight=""100"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                 BorderBrush=""#3B82F6"" BorderThickness=""1"" FontSize=""11"" Margin=""0,0,0,8"" Visibility=""Collapsed""/>
+
+                        <!-- Two Column Input Grid -->
+                        <Grid Margin=""0,4,0,8"">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=""*""/>
+                                <ColumnDefinition Width=""16""/>
+                                <ColumnDefinition Width=""*""/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Column 0 -->
+                            <StackPanel Grid.Column=""0"">
+                                <TextBlock Text=""App ID (Winget or Unique ID):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderAppId"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
+
+                                <TextBlock Text=""App Name (Display Name):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderAppName"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
+
+                                <TextBlock Text=""Category:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <ComboBox x:Name=""CmbBuilderCategory"" Height=""28"" Background=""#0B0D11"" Foreground=""#11141A"" FontSize=""11""/>
+                            </StackPanel>
+
+                            <!-- Column 1 -->
+                            <StackPanel Grid.Column=""2"">
+                                <TextBlock Text=""Direct Download URL (Affiliate / CDN URL):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderDownloadUrl"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
+
+                                <TextBlock Text=""Silent Install Flags (e.g. /VERYSILENT /NORESTART or /S):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderSilentArgs"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
+
+                                <TextBlock Text=""Short Description:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderDesc"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center""/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Form Action Row -->
+                        <Grid Margin=""0,4,0,0"">
+                            <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"">
+                                <Button x:Name=""BtnBuilderAddUpdate"" Content=""+ Add / Update App"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                                        FontWeight=""Bold"" Padding=""16,6"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" Margin=""0,0,8,0""/>
+                                <Button x:Name=""BtnBuilderClearForm"" Content=""Clear Form"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                        FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11""/>
+                            </StackPanel>
+                            <TextBlock x:Name=""TxtBuilderFormStatus"" Text="""" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#10B981"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Row 2: Configured Custom Apps List -->
+                <Grid Grid.Row=""2"" Margin=""0,0,0,12"">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=""Auto""/>
+                        <RowDefinition Height=""*""/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name=""TxtBuilderCustomListHeader"" Grid.Row=""0"" Text=""CONFIGURED CUSTOM &amp; AFFILIATE APPS (0)"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#A855F7"" Margin=""0,0,0,6""/>
+                    <Border x:Name=""BorderBuilderListCard"" Grid.Row=""1"" Background=""#11141A"" CornerRadius=""8"" BorderBrush=""#232938"" BorderThickness=""1"" Padding=""6"">
+                        <ScrollViewer MaxHeight=""135"" VerticalScrollBarVisibility=""Auto"">
+                            <StackPanel x:Name=""PnlBuilderCustomAppsList""/>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <!-- Row 3: Bottom Action Toolbar -->
+                <Grid Grid.Row=""3"">
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"">
+                        <Button x:Name=""BtnBuilderImportJson"" Content=""📂 Import JSON"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" Margin=""0,0,8,0""/>
+                        <Button x:Name=""BtnBuilderExportJson"" Content=""💾 Export JSON"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
+                    </StackPanel>
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
+                        <Button x:Name=""BtnBuilderCancel"" Content=""Close"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""18,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" Margin=""0,0,10,0""/>
+                        <Button x:Name=""BtnBuilderSaveAndApply"" Content=""💾 Save &amp; Apply Changes"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                                FontWeight=""Bold"" Padding=""22,6"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
         </Border>
     </Grid>
 </Grid>
@@ -4382,16 +4655,19 @@ namespace FleetForge
                     menu.FontSize = 12.5;
 
                     MenuItem itmTutorial = new MenuItem() { Header = "How to Use (Interactive Guide)...", FontWeight = FontWeights.SemiBold };
+                    MenuItem itmBuilder = new MenuItem() { Header = "🛠️ Custom App Builder (Affiliate Links)...", FontWeight = FontWeights.SemiBold };
                     MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? "Check for Updates (New Version Available!)..." : "Check for Updates..." };
                     MenuItem itmSettings = new MenuItem() { Header = "Settings..." };
                     MenuItem itmAbout = new MenuItem() { Header = "About FleetForge..." };
 
                     itmTutorial.Click += (ms, me) => ShowTutorialModal();
+                    itmBuilder.Click += (ms, me) => ShowCustomAppBuilderModal();
                     itmUpdates.Click += (ms, me) => ShowUpdatesModal();
                     itmSettings.Click += (ms, me) => ShowSettingsModal();
                     itmAbout.Click += (ms, me) => ShowAboutModal();
 
                     menu.Items.Add(itmTutorial);
+                    menu.Items.Add(itmBuilder);
                     menu.Items.Add(new Separator());
                     menu.Items.Add(itmUpdates);
                     menu.Items.Add(itmSettings);
@@ -4475,6 +4751,15 @@ namespace FleetForge
             txtSettingCatalogInfo = (TextBlock)root.FindName("TxtSettingCatalogInfo");
             txtSettingCatalogSource = (TextBlock)root.FindName("TxtSettingCatalogSource");
             btnExportCatalog = (Button)root.FindName("BtnExportCatalog");
+            btnOpenAppBuilder = (Button)root.FindName("BtnOpenAppBuilder");
+            if (btnOpenAppBuilder != null)
+            {
+                btnOpenAppBuilder.Click += (s, e) =>
+                {
+                    if (modalSettingsOverlay != null) modalSettingsOverlay.Visibility = Visibility.Collapsed;
+                    ShowCustomAppBuilderModal();
+                };
+            }
 
             btnCancelSettings = (Button)root.FindName("BtnCancelSettings");
             btnSaveSettings = (Button)root.FindName("BtnSaveSettings");
@@ -4755,6 +5040,61 @@ namespace FleetForge
                     }
                 };
             }
+
+            // Modal: Custom App & Affiliate Builder
+            modalCustomAppBuilderOverlay = (Grid)root.FindName("ModalCustomAppBuilderOverlay");
+            borderCustomAppBuilderCard = (Border)root.FindName("BorderCustomAppBuilderCard");
+            txtModalAppBuilderTitle = (TextBlock)root.FindName("TxtModalAppBuilderTitle");
+            borderBuilderFormCard = (Border)root.FindName("BorderBuilderFormCard");
+            borderBuilderListCard = (Border)root.FindName("BorderBuilderListCard");
+            txtBuilderSearchCatalog = (TextBox)root.FindName("TxtBuilderSearchCatalog");
+            btnBuilderSearchFind = (Button)root.FindName("BtnBuilderSearchFind");
+            lstBuilderSearchResults = (ListBox)root.FindName("LstBuilderSearchResults");
+            txtBuilderAppId = (TextBox)root.FindName("TxtBuilderAppId");
+            txtBuilderAppName = (TextBox)root.FindName("TxtBuilderAppName");
+            cmbBuilderCategory = (ComboBox)root.FindName("CmbBuilderCategory");
+            txtBuilderDownloadUrl = (TextBox)root.FindName("TxtBuilderDownloadUrl");
+            txtBuilderSilentArgs = (TextBox)root.FindName("TxtBuilderSilentArgs");
+            txtBuilderDesc = (TextBox)root.FindName("TxtBuilderDesc");
+            btnBuilderAddUpdate = (Button)root.FindName("BtnBuilderAddUpdate");
+            btnBuilderClearForm = (Button)root.FindName("BtnBuilderClearForm");
+            txtBuilderFormStatus = (TextBlock)root.FindName("TxtBuilderFormStatus");
+            txtBuilderCustomListHeader = (TextBlock)root.FindName("TxtBuilderCustomListHeader");
+            pnlBuilderCustomAppsList = (StackPanel)root.FindName("PnlBuilderCustomAppsList");
+            btnBuilderImportJson = (Button)root.FindName("BtnBuilderImportJson");
+            btnBuilderExportJson = (Button)root.FindName("BtnBuilderExportJson");
+            btnBuilderCancel = (Button)root.FindName("BtnBuilderCancel");
+            btnBuilderSaveAndApply = (Button)root.FindName("BtnBuilderSaveAndApply");
+            btnCloseAppBuilder = (Button)root.FindName("BtnCloseAppBuilder");
+            btnBottomAppBuilder = (Button)root.FindName("BtnBottomAppBuilder");
+
+            if (btnCloseAppBuilder != null) btnCloseAppBuilder.Click += (s, e) => CloseCustomAppBuilderModal();
+            if (btnBuilderCancel != null) btnBuilderCancel.Click += (s, e) => CloseCustomAppBuilderModal();
+            if (modalCustomAppBuilderOverlay != null)
+            {
+                modalCustomAppBuilderOverlay.MouseDown += (s, e) =>
+                {
+                    if (e.OriginalSource == modalCustomAppBuilderOverlay) CloseCustomAppBuilderModal();
+                };
+            }
+            if (btnBuilderSearchFind != null) btnBuilderSearchFind.Click += (s, e) => OnBuilderCatalogSearch();
+            if (txtBuilderSearchCatalog != null)
+            {
+                txtBuilderSearchCatalog.KeyDown += (s, e) =>
+                {
+                    if (e.Key == Key.Enter) OnBuilderCatalogSearch();
+                };
+            }
+            if (lstBuilderSearchResults != null)
+            {
+                lstBuilderSearchResults.SelectionChanged += (s, e) => OnBuilderSearchResultSelected();
+            }
+            if (btnBuilderAddUpdate != null) btnBuilderAddUpdate.Click += (s, e) => OnBuilderAddUpdate();
+            if (btnBuilderClearForm != null) btnBuilderClearForm.Click += (s, e) => ClearBuilderForm();
+            if (btnBuilderSaveAndApply != null) btnBuilderSaveAndApply.Click += (s, e) => OnBuilderSaveAndApply();
+            if (btnBuilderImportJson != null) btnBuilderImportJson.Click += (s, e) => OnBuilderImportJson();
+            if (btnBuilderExportJson != null) btnBuilderExportJson.Click += (s, e) => OnBuilderExportJson();
+            if (btnBottomAppBuilder != null) btnBottomAppBuilder.Click += (s, e) => ShowCustomAppBuilderModal();
 
             // Sidebar Toggle Event
             if (btnToggleSidebar != null)
@@ -6420,6 +6760,47 @@ namespace FleetForge
                 btnExportCatalog.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 btnExportCatalog.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
+            if (btnOpenAppBuilder != null)
+            {
+                btnOpenAppBuilder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnOpenAppBuilder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnOpenAppBuilder.Foreground = HexBrush("#7C3AED");
+            }
+            if (btnBottomAppBuilder != null)
+            {
+                btnBottomAppBuilder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnBottomAppBuilder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnBottomAppBuilder.Foreground = HexBrush("#7C3AED");
+            }
+            if (borderCustomAppBuilderCard != null)
+            {
+                borderCustomAppBuilderCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#181B22");
+                borderCustomAppBuilderCard.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#2D3342");
+            }
+            if (txtModalAppBuilderTitle != null)
+            {
+                txtModalAppBuilderTitle.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            }
+            if (borderBuilderFormCard != null)
+            {
+                borderBuilderFormCard.Background = isLight ? HexBrush("#F8FAFC") : HexBrush("#11141A");
+                borderBuilderFormCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#232938");
+            }
+            if (borderBuilderListCard != null)
+            {
+                borderBuilderListCard.Background = isLight ? HexBrush("#F8FAFC") : HexBrush("#11141A");
+                borderBuilderListCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#232938");
+            }
+            Brush inputBg = isLight ? HexBrush("#FFFFFF") : HexBrush("#0B0D11");
+            Brush inputBorder = isLight ? HexBrush("#CBD5E1") : HexBrush("#252B38");
+            Brush inputFg = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (txtBuilderSearchCatalog != null) { txtBuilderSearchCatalog.Background = inputBg; txtBuilderSearchCatalog.BorderBrush = inputBorder; txtBuilderSearchCatalog.Foreground = inputFg; }
+            if (txtBuilderAppId != null) { txtBuilderAppId.Background = inputBg; txtBuilderAppId.BorderBrush = inputBorder; txtBuilderAppId.Foreground = inputFg; }
+            if (txtBuilderAppName != null) { txtBuilderAppName.Background = inputBg; txtBuilderAppName.BorderBrush = inputBorder; txtBuilderAppName.Foreground = inputFg; }
+            if (txtBuilderDownloadUrl != null) { txtBuilderDownloadUrl.Background = inputBg; txtBuilderDownloadUrl.BorderBrush = inputBorder; txtBuilderDownloadUrl.Foreground = inputFg; }
+            if (txtBuilderSilentArgs != null) { txtBuilderSilentArgs.Background = inputBg; txtBuilderSilentArgs.BorderBrush = inputBorder; txtBuilderSilentArgs.Foreground = inputFg; }
+            if (txtBuilderDesc != null) { txtBuilderDesc.Background = inputBg; txtBuilderDesc.BorderBrush = inputBorder; txtBuilderDesc.Foreground = inputFg; }
+            if (cmbBuilderCategory != null) { cmbBuilderCategory.Background = inputBg; cmbBuilderCategory.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF"); }
 
             if (btnCancelSettings != null)
             {
@@ -6797,6 +7178,10 @@ namespace FleetForge
             {
                 btnSearchWingetOnlineBottom.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
             }
+            if (btnBottomAppBuilder != null)
+            {
+                btnBottomAppBuilder.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (stackBottomSelectedPackInfo != null)
             {
@@ -7009,7 +7394,7 @@ namespace FleetForge
             if (config.apps == null) config.apps = new List<AppModel>();
 
             DeduplicateGroups();
-            EnsureRecommendedPack();
+            EnsureCatalogHierarchy();
 
             foreach (GroupModel g in config.groups)
             {
@@ -7095,104 +7480,729 @@ namespace FleetForge
                 icon = "⭐",
                 description = "Curated partner software, essential premium tools, and top-rated recommendations.",
                 accentColor = "#F59E0B",
-                apps = new List<string>() { "Google.Chrome", "7zip.7zip", "VideoLAN.VLC", "Notepad++.Notepad++", "voidtools.Everything" }
+                apps = new List<string>() { "isolve.iSecureVPN", "bitguardian.Winriser", "BitGuardian.BitDriverUpdater" }
             };
             return fallback;
         }
 
-        private void ApplyRecommendedDataModel(RecommendedDataModel recModel)
+        private CustomCatalogModel LoadCustomDataFromDiskOrResource()
         {
-            if (recModel == null || recModel.group == null) return;
+            string json = null;
+            try
+            {
+                if (!string.IsNullOrEmpty(customAppsPath) && File.Exists(customAppsPath))
+                {
+                    json = File.ReadAllText(customAppsPath, Encoding.UTF8);
+                }
+            }
+            catch { }
+
+            if (string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    Assembly asm = Assembly.GetExecutingAssembly();
+                    string[] resNames = asm.GetManifestResourceNames();
+                    foreach (string name in resNames)
+                    {
+                        if (name.EndsWith("custom_apps.json", StringComparison.OrdinalIgnoreCase))
+                        {
+                            using (Stream s = asm.GetManifestResourceStream(name))
+                            {
+                                if (s != null)
+                                {
+                                    using (StreamReader r = new StreamReader(s, Encoding.UTF8))
+                                    {
+                                        json = r.ReadToEnd();
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            if (!string.IsNullOrEmpty(json))
+            {
+                try
+                {
+                    var ser = new JavaScriptSerializer();
+                    ser.MaxJsonLength = int.MaxValue;
+                    return ser.Deserialize<CustomCatalogModel>(json);
+                }
+                catch { }
+            }
+
+            return new CustomCatalogModel();
+        }
+
+        private void EnsureCatalogHierarchy()
+        {
             if (config == null) config = new ConfigModel();
             if (config.groups == null) config.groups = new List<GroupModel>();
             if (config.apps == null) config.apps = new List<AppModel>();
 
-            GroupModel rg = recModel.group;
-            rg.id = "recommended";
-            if (string.IsNullOrEmpty(rg.name)) rg.name = "Top Choice • Recommended";
-            if (string.IsNullOrEmpty(rg.icon)) rg.icon = "⭐";
-            if (string.IsNullOrEmpty(rg.description)) rg.description = "Curated partner software, essential premium tools, and top-rated recommendations.";
-            if (string.IsNullOrEmpty(rg.accentColor)) rg.accentColor = "#F59E0B";
-
-            if (rg.apps != null)
+            if (baseCatalogApps == null || baseCatalogApps.Count == 0)
             {
-                recommendedMasterAppIds = new List<string>(rg.apps);
+                baseCatalogApps = new List<AppModel>(config.apps);
             }
 
-            if (recModel.apps != null)
+            // 1. Load Recommended Apps
+            RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
+            recommendedMasterAppIds.Clear();
+            if (recModel != null && recModel.group != null)
             {
-                foreach (AppModel a in recModel.apps)
-                {
-                    if (a == null || string.IsNullOrEmpty(a.id)) continue;
-                    if (!string.IsNullOrEmpty(a.category)) a.category = NormalizeCategoryId(a.category);
+                GroupModel rg = recModel.group;
+                rg.id = "recommended";
+                if (string.IsNullOrEmpty(rg.name)) rg.name = "Top Choice • Recommended";
+                if (string.IsNullOrEmpty(rg.icon)) rg.icon = "⭐";
+                if (string.IsNullOrEmpty(rg.description)) rg.description = "Curated partner software, essential premium tools, and top-rated recommendations.";
+                if (string.IsNullOrEmpty(rg.accentColor)) rg.accentColor = "#F59E0B";
 
-                    AppModel existing = config.apps.Find(delegate (AppModel x) { return string.Equals(x.id, a.id, StringComparison.OrdinalIgnoreCase); });
-                    if (existing == null)
+                if (rg.apps != null)
+                {
+                    recommendedMasterAppIds = new List<string>(rg.apps);
+                }
+
+                config.groups.RemoveAll(delegate (GroupModel g) {
+                    return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
+                });
+                config.groups.Insert(0, rg);
+            }
+
+            // 2. Load Custom Apps
+            CustomCatalogModel customModel = LoadCustomDataFromDiskOrResource();
+            customMasterAppIds.Clear();
+            if (customModel != null && customModel.apps != null)
+            {
+                foreach (AppModel ca in customModel.apps)
+                {
+                    if (ca != null && !string.IsNullOrEmpty(ca.id) && !customMasterAppIds.Contains(ca.id))
                     {
-                        config.apps.Add(a);
+                        customMasterAppIds.Add(ca.id);
+                    }
+                }
+            }
+
+            // 3. Strict 3-Tier Merge with Deduplication (Priority: Recommended -> Custom -> Base apps.json)
+            HashSet<string> seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            List<AppModel> mergedApps = new List<AppModel>();
+
+            if (recModel != null && recModel.apps != null)
+            {
+                foreach (AppModel ra in recModel.apps)
+                {
+                    if (ra == null || string.IsNullOrEmpty(ra.id)) continue;
+                    if (!string.IsNullOrEmpty(ra.category)) ra.category = NormalizeCategoryId(ra.category);
+                    if (!seenIds.Contains(ra.id))
+                    {
+                        seenIds.Add(ra.id);
+                        mergedApps.Add(ra);
+                    }
+                }
+            }
+
+            if (customModel != null && customModel.apps != null)
+            {
+                foreach (AppModel ca in customModel.apps)
+                {
+                    if (ca == null || string.IsNullOrEmpty(ca.id)) continue;
+                    if (!string.IsNullOrEmpty(ca.category)) ca.category = NormalizeCategoryId(ca.category);
+                    if (!seenIds.Contains(ca.id))
+                    {
+                        seenIds.Add(ca.id);
+                        mergedApps.Add(ca);
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(a.name)) existing.name = a.name;
-                        if (!string.IsNullOrEmpty(a.category)) existing.category = a.category;
-                        if (!string.IsNullOrEmpty(a.description)) existing.description = a.description;
-                        if (!string.IsNullOrEmpty(a.silentArgs)) existing.silentArgs = a.silentArgs;
-                        if (!string.IsNullOrEmpty(a.offlineInstaller)) existing.offlineInstaller = a.offlineInstaller;
-                        if (!string.IsNullOrEmpty(a.downloadUrl)) existing.downloadUrl = a.downloadUrl;
+                        AppModel existing = mergedApps.Find(delegate(AppModel x) { return string.Equals(x.id, ca.id, StringComparison.OrdinalIgnoreCase); });
+                        if (existing != null)
+                        {
+                            if (!string.IsNullOrEmpty(ca.downloadUrl)) existing.downloadUrl = ca.downloadUrl;
+                            if (!string.IsNullOrEmpty(ca.silentArgs)) existing.silentArgs = ca.silentArgs;
+                        }
                     }
                 }
             }
 
-            config.groups.RemoveAll(delegate (GroupModel g) {
-                return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
-            });
-
-            config.groups.Insert(0, rg);
-        }
-
-        private void EnsureRecommendedPack()
-        {
-            if (config == null) config = new ConfigModel();
-            if (config.groups == null) config.groups = new List<GroupModel>();
-            if (config.apps == null) config.apps = new List<AppModel>();
-
-            RecommendedDataModel recModel = LoadRecommendedDataFromDiskOrResource();
-            if (recModel != null)
+            if (baseCatalogApps != null)
             {
-                ApplyRecommendedDataModel(recModel);
-            }
-            else
-            {
-                GroupModel foundRec = config.groups.Find(delegate (GroupModel g) {
-                    return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
-                });
-
-                if (foundRec != null)
+                foreach (AppModel ba in baseCatalogApps)
                 {
-                    config.groups.RemoveAll(delegate (GroupModel g) {
-                        return g != null && string.Equals(g.id, "recommended", StringComparison.OrdinalIgnoreCase);
-                    });
-                    config.groups.Insert(0, foundRec);
-                    if (recommendedMasterAppIds == null || recommendedMasterAppIds.Count == 0)
+                    if (ba == null || string.IsNullOrEmpty(ba.id)) continue;
+                    if (!seenIds.Contains(ba.id))
                     {
-                        if (foundRec.apps != null) recommendedMasterAppIds = new List<string>(foundRec.apps);
+                        seenIds.Add(ba.id);
+                        mergedApps.Add(ba);
                     }
                 }
             }
+
+            config.apps = mergedApps;
+            EnsureAppDefaultIndices(true);
         }
 
         private bool IsRecommendedApp(AppModel a)
         {
-            if (a == null) return false;
-            if (recommendedMasterAppIds != null && recommendedMasterAppIds.Contains(a.id)) return true;
-            if (!string.IsNullOrEmpty(a.downloadUrl)) return true;
+            if (a == null || string.IsNullOrEmpty(a.id)) return false;
+            if (recommendedMasterAppIds != null && recommendedMasterAppIds.Exists(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); })) return true;
             if (config != null && config.groups != null && config.groups.Count > 0)
             {
                 GroupModel g0 = config.groups[0];
-                if (string.Equals(g0.id, "recommended", StringComparison.OrdinalIgnoreCase) && g0.apps != null && g0.apps.Contains(a.id))
+                if (string.Equals(g0.id, "recommended", StringComparison.OrdinalIgnoreCase) && g0.apps != null && g0.apps.Exists(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }))
                     return true;
             }
             return false;
+        }
+
+        private bool IsCustomApp(AppModel a)
+        {
+            if (a == null || string.IsNullOrEmpty(a.id)) return false;
+            if (customMasterAppIds != null && customMasterAppIds.Exists(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); })) return true;
+            return false;
+        }
+
+        // =========================================================================
+        // CUSTOM APP & AFFILIATE BUILDER MODAL LOGIC
+        // =========================================================================
+        private void ShowCustomAppBuilderModal()
+        {
+            if (modalCustomAppBuilderOverlay == null) return;
+
+            if (cmbBuilderCategory != null && cmbBuilderCategory.Items.Count == 0)
+            {
+                cmbBuilderCategory.Items.Add("browsers");
+                cmbBuilderCategory.Items.Add("development");
+                cmbBuilderCategory.Items.Add("utilities");
+                cmbBuilderCategory.Items.Add("productivity");
+                cmbBuilderCategory.Items.Add("communication");
+                cmbBuilderCategory.Items.Add("media");
+                cmbBuilderCategory.Items.Add("security");
+                cmbBuilderCategory.Items.Add("cloud");
+                cmbBuilderCategory.Items.Add("gaming");
+                cmbBuilderCategory.SelectedIndex = 2;
+            }
+
+            CustomCatalogModel ccm = LoadCustomDataFromDiskOrResource();
+            builderCustomApps = (ccm != null && ccm.apps != null) ? new List<AppModel>(ccm.apps) : new List<AppModel>();
+
+            ClearBuilderForm();
+            if (txtBuilderSearchCatalog != null) txtBuilderSearchCatalog.Text = "";
+            if (lstBuilderSearchResults != null)
+            {
+                lstBuilderSearchResults.ItemsSource = null;
+                lstBuilderSearchResults.Visibility = Visibility.Collapsed;
+            }
+
+            RenderBuilderCustomAppsList();
+            modalCustomAppBuilderOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void CloseCustomAppBuilderModal()
+        {
+            if (modalCustomAppBuilderOverlay != null)
+            {
+                modalCustomAppBuilderOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ClearBuilderForm()
+        {
+            if (txtBuilderAppId != null) txtBuilderAppId.Text = "";
+            if (txtBuilderAppName != null) txtBuilderAppName.Text = "";
+            if (txtBuilderDownloadUrl != null) txtBuilderDownloadUrl.Text = "";
+            if (txtBuilderSilentArgs != null) txtBuilderSilentArgs.Text = "";
+            if (txtBuilderDesc != null) txtBuilderDesc.Text = "";
+            if (cmbBuilderCategory != null && cmbBuilderCategory.Items.Count > 0) cmbBuilderCategory.SelectedIndex = 2;
+            builderEditingApp = null;
+            if (btnBuilderAddUpdate != null) btnBuilderAddUpdate.Content = "+ Add / Update App";
+            if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "";
+        }
+
+        private void OnBuilderCatalogSearch()
+        {
+            if (txtBuilderSearchCatalog == null || lstBuilderSearchResults == null) return;
+            string query = txtBuilderSearchCatalog.Text.Trim().ToLowerInvariant();
+            if (string.IsNullOrEmpty(query))
+            {
+                lstBuilderSearchResults.ItemsSource = null;
+                lstBuilderSearchResults.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            List<AppModel> pool = baseCatalogApps != null ? baseCatalogApps : (config != null ? config.apps : null);
+            if (pool == null) return;
+
+            List<string> displayItems = new List<string>();
+            List<AppModel> matchApps = new List<AppModel>();
+
+            foreach (AppModel a in pool)
+            {
+                if (a == null) continue;
+                string aName = (a.name ?? "").ToLowerInvariant();
+                string aId = (a.id ?? "").ToLowerInvariant();
+                if (aName.Contains(query) || aId.Contains(query))
+                {
+                    matchApps.Add(a);
+                    displayItems.Add(string.Format("{0}  [{1}]  ({2})", a.name, a.id, a.category ?? "utilities"));
+                    if (matchApps.Count >= 20) break;
+                }
+            }
+
+            if (matchApps.Count > 0)
+            {
+                lstBuilderSearchResults.Tag = matchApps;
+                lstBuilderSearchResults.ItemsSource = displayItems;
+                lstBuilderSearchResults.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                lstBuilderSearchResults.ItemsSource = null;
+                lstBuilderSearchResults.Visibility = Visibility.Collapsed;
+                if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "No apps found matching '" + query + "'";
+            }
+        }
+
+        private void OnBuilderSearchResultSelected()
+        {
+            if (lstBuilderSearchResults == null || lstBuilderSearchResults.SelectedIndex < 0) return;
+            List<AppModel> matchApps = lstBuilderSearchResults.Tag as List<AppModel>;
+            if (matchApps == null || lstBuilderSearchResults.SelectedIndex >= matchApps.Count) return;
+
+            AppModel selected = matchApps[lstBuilderSearchResults.SelectedIndex];
+            if (selected == null) return;
+
+            if (txtBuilderAppId != null) txtBuilderAppId.Text = selected.id ?? "";
+            if (txtBuilderAppName != null) txtBuilderAppName.Text = selected.name ?? "";
+            if (txtBuilderDesc != null) txtBuilderDesc.Text = selected.description ?? "";
+            if (txtBuilderSilentArgs != null) txtBuilderSilentArgs.Text = selected.silentArgs ?? "";
+
+            if (cmbBuilderCategory != null && !string.IsNullOrEmpty(selected.category))
+            {
+                string normCat = NormalizeCategoryId(selected.category);
+                for (int i = 0; i < cmbBuilderCategory.Items.Count; i++)
+                {
+                    if (string.Equals(cmbBuilderCategory.Items[i].ToString(), normCat, StringComparison.OrdinalIgnoreCase))
+                    {
+                        cmbBuilderCategory.SelectedIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            AppModel existingCust = builderCustomApps.Find(x => string.Equals(x.id, selected.id, StringComparison.OrdinalIgnoreCase));
+            if (existingCust != null && txtBuilderDownloadUrl != null)
+            {
+                txtBuilderDownloadUrl.Text = existingCust.downloadUrl ?? "";
+                if (!string.IsNullOrEmpty(existingCust.silentArgs) && txtBuilderSilentArgs != null)
+                    txtBuilderSilentArgs.Text = existingCust.silentArgs;
+            }
+
+            lstBuilderSearchResults.Visibility = Visibility.Collapsed;
+            if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "Auto-filled from " + selected.name;
+        }
+
+        private void OnBuilderAddUpdate()
+        {
+            if (txtBuilderAppId == null || txtBuilderAppName == null) return;
+            string id = txtBuilderAppId.Text.Trim();
+            string name = txtBuilderAppName.Text.Trim();
+
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(name))
+            {
+                if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "⚠ App ID and App Name are required!";
+                return;
+            }
+
+            string cat = cmbBuilderCategory != null && cmbBuilderCategory.SelectedItem != null ? cmbBuilderCategory.SelectedItem.ToString() : "utilities";
+            string downloadUrl = txtBuilderDownloadUrl != null ? txtBuilderDownloadUrl.Text.Trim() : "";
+            string silentArgs = txtBuilderSilentArgs != null ? txtBuilderSilentArgs.Text.Trim() : "";
+            string desc = txtBuilderDesc != null ? txtBuilderDesc.Text.Trim() : "";
+
+            AppModel target = builderEditingApp;
+            if (target == null)
+            {
+                target = builderCustomApps.Find(x => string.Equals(x.id, id, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (target != null)
+            {
+                target.id = id;
+                target.name = name;
+                target.category = cat;
+                target.downloadUrl = downloadUrl;
+                target.silentArgs = silentArgs;
+                target.description = desc;
+                if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "✓ Updated: " + name;
+            }
+            else
+            {
+                AppModel newApp = new AppModel()
+                {
+                    id = id,
+                    name = name,
+                    category = cat,
+                    downloadUrl = downloadUrl,
+                    silentArgs = silentArgs,
+                    description = desc
+                };
+                builderCustomApps.Add(newApp);
+                if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "✓ Added: " + name;
+            }
+
+            ClearBuilderForm();
+            RenderBuilderCustomAppsList();
+        }
+
+        private void RenderBuilderCustomAppsList()
+        {
+            if (pnlBuilderCustomAppsList == null) return;
+            pnlBuilderCustomAppsList.Children.Clear();
+
+            if (txtBuilderCustomListHeader != null)
+            {
+                txtBuilderCustomListHeader.Text = string.Format("CONFIGURED CUSTOM & AFFILIATE APPS ({0})", builderCustomApps != null ? builderCustomApps.Count : 0);
+            }
+
+            if (builderCustomApps == null || builderCustomApps.Count == 0)
+            {
+                TextBlock emptyTxt = new TextBlock()
+                {
+                    Text = "No custom apps added yet. Use the search box above to auto-fill, or click 'Import JSON'.",
+                    FontSize = 11,
+                    Foreground = HexBrush("#64748B"),
+                    Padding = new Thickness(12, 16, 12, 16),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                pnlBuilderCustomAppsList.Children.Add(emptyTxt);
+                return;
+            }
+
+            bool isLight = currentThemeIsLight;
+
+            for (int idx = 0; idx < builderCustomApps.Count; idx++)
+            {
+                AppModel app = builderCustomApps[idx];
+                AppModel curApp = app;
+
+                Border rowCard = new Border()
+                {
+                    Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E222A"),
+                    BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#2D3748"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(6),
+                    Padding = new Thickness(10, 6, 10, 6),
+                    Margin = new Thickness(0, 0, 0, 5)
+                };
+
+                Grid rowGrid = new Grid();
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(200) });
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+
+                // Col 0: Name, ID, Category
+                StackPanel col0 = new StackPanel() { VerticalAlignment = VerticalAlignment.Center };
+                StackPanel titleRow = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+                TextBlock txtTitle = new TextBlock()
+                {
+                    Text = curApp.name ?? "Untitled App",
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 11.5,
+                    Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF"),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    MaxWidth = 140
+                };
+                Border catBadge = new Border()
+                {
+                    Background = isLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
+                    CornerRadius = new CornerRadius(4),
+                    Padding = new Thickness(5, 1, 5, 1),
+                    Margin = new Thickness(6, 0, 0, 0)
+                };
+                TextBlock txtCat = new TextBlock()
+                {
+                    Text = (curApp.category ?? "util").ToUpperInvariant(),
+                    FontSize = 8.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = HexBrush("#0066FF")
+                };
+                catBadge.Child = txtCat;
+                titleRow.Children.Add(txtTitle);
+                titleRow.Children.Add(catBadge);
+
+                TextBlock txtId = new TextBlock()
+                {
+                    Text = curApp.id,
+                    FontSize = 10,
+                    Foreground = HexBrush("#64748B"),
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    Margin = new Thickness(0, 1, 0, 0)
+                };
+                col0.Children.Add(titleRow);
+                col0.Children.Add(txtId);
+                Grid.SetColumn(col0, 0);
+                rowGrid.Children.Add(col0);
+
+                // Col 1: URL & Args
+                StackPanel col1 = new StackPanel() { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 10, 0) };
+                if (!string.IsNullOrEmpty(curApp.downloadUrl))
+                {
+                    StackPanel urlStack = new StackPanel() { Orientation = Orientation.Horizontal };
+                    Border affBadge = new Border()
+                    {
+                        Background = isLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
+                        CornerRadius = new CornerRadius(4),
+                        Padding = new Thickness(5, 1, 5, 1),
+                        Margin = new Thickness(0, 0, 6, 0)
+                    };
+                    TextBlock txtAff = new TextBlock() { Text = "⚡ Direct Download", FontSize = 9, FontWeight = FontWeights.Bold, Foreground = HexBrush("#7C3AED") };
+                    affBadge.Child = txtAff;
+                    TextBlock txtUrl = new TextBlock()
+                    {
+                        Text = curApp.downloadUrl,
+                        FontSize = 10,
+                        Foreground = isLight ? HexBrush("#475569") : HexBrush("#94A3B8"),
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        MaxWidth = 320,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    urlStack.Children.Add(affBadge);
+                    urlStack.Children.Add(txtUrl);
+                    col1.Children.Add(urlStack);
+                }
+                else
+                {
+                    TextBlock txtWinget = new TextBlock()
+                    {
+                        Text = "📦 Standard Winget Engine (No Direct URL Override)",
+                        FontSize = 10,
+                        Foreground = HexBrush("#64748B")
+                    };
+                    col1.Children.Add(txtWinget);
+                }
+
+                if (!string.IsNullOrEmpty(curApp.silentArgs))
+                {
+                    TextBlock txtArgs = new TextBlock()
+                    {
+                        Text = "Silent: " + curApp.silentArgs,
+                        FontSize = 9.5,
+                        Foreground = HexBrush("#64748B"),
+                        Margin = new Thickness(0, 1, 0, 0)
+                    };
+                    col1.Children.Add(txtArgs);
+                }
+                Grid.SetColumn(col1, 1);
+                rowGrid.Children.Add(col1);
+
+                // Col 2: Action Buttons
+                StackPanel col2 = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+                Button btnEdit = new Button()
+                {
+                    Content = "✏️ Edit",
+                    Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547"),
+                    Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                    BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569"),
+                    BorderThickness = new Thickness(1),
+                    FontWeight = FontWeights.SemiBold,
+                    FontSize = 10.5,
+                    Padding = new Thickness(10, 3, 10, 3),
+                    Margin = new Thickness(0, 0, 6, 0),
+                    Cursor = Cursors.Hand
+                };
+                btnEdit.Click += delegate
+                {
+                    builderEditingApp = curApp;
+                    if (txtBuilderAppId != null) txtBuilderAppId.Text = curApp.id ?? "";
+                    if (txtBuilderAppName != null) txtBuilderAppName.Text = curApp.name ?? "";
+                    if (txtBuilderDownloadUrl != null) txtBuilderDownloadUrl.Text = curApp.downloadUrl ?? "";
+                    if (txtBuilderSilentArgs != null) txtBuilderSilentArgs.Text = curApp.silentArgs ?? "";
+                    if (txtBuilderDesc != null) txtBuilderDesc.Text = curApp.description ?? "";
+                    if (cmbBuilderCategory != null && !string.IsNullOrEmpty(curApp.category))
+                    {
+                        string normCat = NormalizeCategoryId(curApp.category);
+                        for (int i = 0; i < cmbBuilderCategory.Items.Count; i++)
+                        {
+                            if (string.Equals(cmbBuilderCategory.Items[i].ToString(), normCat, StringComparison.OrdinalIgnoreCase))
+                            {
+                                cmbBuilderCategory.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    if (btnBuilderAddUpdate != null) btnBuilderAddUpdate.Content = "✓ Update App";
+                    if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "Editing: " + curApp.name;
+                };
+
+                Button btnDel = new Button()
+                {
+                    Content = "🗑️",
+                    Background = isLight ? HexBrush("#FEE2E2") : HexBrush("#450A0A"),
+                    Foreground = HexBrush("#DC2626"),
+                    BorderBrush = isLight ? HexBrush("#FECACA") : HexBrush("#7F1D1D"),
+                    BorderThickness = new Thickness(1),
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 10.5,
+                    Padding = new Thickness(8, 3, 8, 3),
+                    Cursor = Cursors.Hand,
+                    ToolTip = "Remove from custom list"
+                };
+                btnDel.Click += delegate
+                {
+                    builderCustomApps.Remove(curApp);
+                    if (builderEditingApp == curApp) ClearBuilderForm();
+                    RenderBuilderCustomAppsList();
+                    if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "Removed: " + curApp.name;
+                };
+
+                col2.Children.Add(btnEdit);
+                col2.Children.Add(btnDel);
+                Grid.SetColumn(col2, 2);
+                rowGrid.Children.Add(col2);
+
+                rowCard.Child = rowGrid;
+                pnlBuilderCustomAppsList.Children.Add(rowCard);
+            }
+        }
+
+        private void OnBuilderSaveAndApply()
+        {
+            try
+            {
+                CustomCatalogModel ccm = new CustomCatalogModel();
+                ccm.apps = builderCustomApps != null ? builderCustomApps : new List<AppModel>();
+                string json = jsonSerializer.Serialize(ccm);
+
+                string targetPath = customAppsPath;
+                if (string.IsNullOrEmpty(targetPath)) targetPath = Path.Combine(appDir, "data", "custom_apps.json");
+                string dir = Path.GetDirectoryName(targetPath);
+                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+                File.WriteAllText(targetPath, json, Encoding.UTF8);
+
+                EnsureCatalogHierarchy();
+                BuildCatalog();
+
+                CloseCustomAppBuilderModal();
+                MessageBox.Show(
+                    string.Format("Custom catalog successfully saved and applied!\n\n• {0} Custom / Affiliate packages loaded.\n• Deduplication applied against base catalog.\n• Your download URLs are now active.", ccm.apps.Count),
+                    "Catalog Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save custom catalog: " + ex.Message, "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnBuilderImportJson()
+        {
+            try
+            {
+                using (var ofd = new System.Windows.Forms.OpenFileDialog())
+                {
+                    ofd.Title = "Import Custom or Affiliate Catalog JSON";
+                    ofd.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
+                    if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string content = File.ReadAllText(ofd.FileName, Encoding.UTF8);
+                        var ser = new JavaScriptSerializer();
+                        ser.MaxJsonLength = int.MaxValue;
+
+                        List<AppModel> importedApps = new List<AppModel>();
+                        try
+                        {
+                            CustomCatalogModel ccm = ser.Deserialize<CustomCatalogModel>(content);
+                            if (ccm != null && ccm.apps != null && ccm.apps.Count > 0)
+                            {
+                                importedApps = ccm.apps;
+                            }
+                        }
+                        catch { }
+
+                        if (importedApps.Count == 0)
+                        {
+                            try
+                            {
+                                ConfigModel cfg = ser.Deserialize<ConfigModel>(content);
+                                if (cfg != null && cfg.apps != null && cfg.apps.Count > 0)
+                                {
+                                    importedApps = cfg.apps;
+                                }
+                            }
+                            catch { }
+                        }
+
+                        if (importedApps.Count == 0)
+                        {
+                            try
+                            {
+                                List<AppModel> list = ser.Deserialize<List<AppModel>>(content);
+                                if (list != null && list.Count > 0) importedApps = list;
+                            }
+                            catch { }
+                        }
+
+                        if (importedApps.Count > 0)
+                        {
+                            foreach (AppModel a in importedApps)
+                            {
+                                if (a == null || string.IsNullOrEmpty(a.id)) continue;
+                                AppModel existing = builderCustomApps.Find(x => string.Equals(x.id, a.id, StringComparison.OrdinalIgnoreCase));
+                                if (existing != null)
+                                {
+                                    if (!string.IsNullOrEmpty(a.name)) existing.name = a.name;
+                                    if (!string.IsNullOrEmpty(a.downloadUrl)) existing.downloadUrl = a.downloadUrl;
+                                    if (!string.IsNullOrEmpty(a.silentArgs)) existing.silentArgs = a.silentArgs;
+                                    if (!string.IsNullOrEmpty(a.category)) existing.category = a.category;
+                                    if (!string.IsNullOrEmpty(a.description)) existing.description = a.description;
+                                }
+                                else
+                                {
+                                    builderCustomApps.Add(a);
+                                }
+                            }
+                            RenderBuilderCustomAppsList();
+                            if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = string.Format("✓ Imported {0} apps from JSON", importedApps.Count);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No valid applications found in selected JSON file.", "Import Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error importing JSON: " + ex.Message, "Import Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnBuilderExportJson()
+        {
+            try
+            {
+                using (var sfd = new System.Windows.Forms.SaveFileDialog())
+                {
+                    sfd.Title = "Export Custom & Affiliate Catalog JSON";
+                    sfd.Filter = "JSON Files (*.json)|*.json";
+                    sfd.FileName = "custom_apps.json";
+                    if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        CustomCatalogModel ccm = new CustomCatalogModel();
+                        ccm.apps = builderCustomApps != null ? builderCustomApps : new List<AppModel>();
+                        string json = jsonSerializer.Serialize(ccm);
+                        File.WriteAllText(sfd.FileName, json, Encoding.UTF8);
+                        if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "✓ Exported to " + Path.GetFileName(sfd.FileName);
+                        MessageBox.Show("Custom catalog exported successfully to:\n" + sfd.FileName, "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error exporting JSON: " + ex.Message, "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private string NormalizeCategoryId(string cat)
@@ -7268,7 +8278,7 @@ namespace FleetForge
 
                             Dispatcher.Invoke(new Action(delegate
                             {
-                                ApplyRecommendedDataModel(remoteModel);
+                                EnsureCatalogHierarchy();
                                 BuildRoleCards();
                                 if (currentView == "catalog")
                                 {
@@ -9565,6 +10575,27 @@ namespace FleetForge
                 recBadge.Child = txtRec;
                 titleStack.Children.Add(recBadge);
             }
+            else if (IsCustomApp(curApp))
+            {
+                Border custBadge = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(5),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(7, 2, 7, 2)
+                };
+                TextBlock txtCust = new TextBlock()
+                {
+                    Text = !string.IsNullOrEmpty(curApp.downloadUrl) ? "⚡ AFFILIATE / DIRECT" : "💎 CUSTOM",
+                    FontSize = 9.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
+                };
+                custBadge.Child = txtCust;
+                titleStack.Children.Add(custBadge);
+            }
 
             infoStack.Children.Add(titleStack);
 
@@ -10072,6 +11103,27 @@ namespace FleetForge
                 recBadge.Child = txtRec;
                 titleStack.Children.Add(recBadge);
             }
+            else if (IsCustomApp(curApp))
+            {
+                Border custBadge = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(5),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(7, 2, 7, 2)
+                };
+                TextBlock txtCust = new TextBlock()
+                {
+                    Text = !string.IsNullOrEmpty(curApp.downloadUrl) ? "⚡ AFFILIATE / DIRECT" : "💎 CUSTOM",
+                    FontSize = 9.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
+                };
+                custBadge.Child = txtCust;
+                titleStack.Children.Add(custBadge);
+            }
 
             infoStack.Children.Add(titleStack);
 
@@ -10299,25 +11351,31 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
+                        bool custA = IsCustomApp(a);
+                        bool custB = IsCustomApp(b);
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        // Priority:
-                        // 0: Selected + Recommended
-                        // 1: Selected + Standard
-                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
-                        // 3: Unselected + Standard
-                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
-                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        int rankA = (selA && recA) ? 0 : (selA && custA ? 1 : (selA ? 2 : (recA ? 3 : (custA ? 4 : 5))));
+                        int rankB = (selB && recB) ? 0 : (selB && custB ? 1 : (selB ? 2 : (recB ? 3 : (custB ? 4 : 5))));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
                         {
-                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
-                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
                             if (recIdxA < 0) recIdxA = int.MaxValue;
                             if (recIdxB < 0) recIdxB = int.MaxValue;
                             if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        if (custA && custB)
+                        {
+                            int custIdxA = (a.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int custIdxB = (b.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (custIdxA < 0) custIdxA = int.MaxValue;
+                            if (custIdxB < 0) custIdxB = int.MaxValue;
+                            if (custIdxA != custIdxB) return custIdxA.CompareTo(custIdxB);
                         }
 
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
@@ -10329,20 +11387,31 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
+                        bool custA = IsCustomApp(a);
+                        bool custB = IsCustomApp(b);
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
-                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        int rankA = (selA && recA) ? 0 : (selA && custA ? 1 : (selA ? 2 : (recA ? 3 : (custA ? 4 : 5))));
+                        int rankB = (selB && recB) ? 0 : (selB && custB ? 1 : (selB ? 2 : (recB ? 3 : (custB ? 4 : 5))));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
                         {
-                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
-                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
                             if (recIdxA < 0) recIdxA = int.MaxValue;
                             if (recIdxB < 0) recIdxB = int.MaxValue;
                             if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        if (custA && custB)
+                        {
+                            int custIdxA = (a.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int custIdxB = (b.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (custIdxA < 0) custIdxA = int.MaxValue;
+                            if (custIdxB < 0) custIdxB = int.MaxValue;
+                            if (custIdxA != custIdxB) return custIdxA.CompareTo(custIdxB);
                         }
 
                         return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
@@ -10354,12 +11423,32 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
+                        bool custA = IsCustomApp(a);
+                        bool custB = IsCustomApp(b);
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
-                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        int rankA = (selA && recA) ? 0 : (selA && custA ? 1 : (selA ? 2 : (recA ? 3 : (custA ? 4 : 5))));
+                        int rankB = (selB && recB) ? 0 : (selB && custB ? 1 : (selB ? 2 : (recB ? 3 : (custB ? 4 : 5))));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        if (custA && custB)
+                        {
+                            int custIdxA = (a.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int custIdxB = (b.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (custIdxA < 0) custIdxA = int.MaxValue;
+                            if (custIdxB < 0) custIdxB = int.MaxValue;
+                            if (custIdxA != custIdxB) return custIdxA.CompareTo(custIdxB);
+                        }
 
                         return string.Compare(b.name ?? "", a.name ?? "", StringComparison.OrdinalIgnoreCase);
                     });
@@ -10370,12 +11459,32 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
+                        bool custA = IsCustomApp(a);
+                        bool custB = IsCustomApp(b);
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
-                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        int rankA = (selA && recA) ? 0 : (selA && custA ? 1 : (selA ? 2 : (recA ? 3 : (custA ? 4 : 5))));
+                        int rankB = (selB && recB) ? 0 : (selB && custB ? 1 : (selB ? 2 : (recB ? 3 : (custB ? 4 : 5))));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        if (custA && custB)
+                        {
+                            int custIdxA = (a.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int custIdxB = (b.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (custIdxA < 0) custIdxA = int.MaxValue;
+                            if (custIdxB < 0) custIdxB = int.MaxValue;
+                            if (custIdxA != custIdxB) return custIdxA.CompareTo(custIdxB);
+                        }
 
                         int catComp = string.Compare(a.category ?? "", b.category ?? "", StringComparison.OrdinalIgnoreCase);
                         if (catComp != 0) return catComp;
@@ -10390,25 +11499,31 @@ namespace FleetForge
                     {
                         bool recA = IsRecommendedApp(a);
                         bool recB = IsRecommendedApp(b);
+                        bool custA = IsCustomApp(a);
+                        bool custB = IsCustomApp(b);
                         bool selA = a.id != null && selectedAppIds.Contains(a.id);
                         bool selB = b.id != null && selectedAppIds.Contains(b.id);
 
-                        // Priority:
-                        // 0: Selected + Recommended
-                        // 1: Selected + Standard
-                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
-                        // 3: Unselected + Standard
-                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
-                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        int rankA = (selA && recA) ? 0 : (selA && custA ? 1 : (selA ? 2 : (recA ? 3 : (custA ? 4 : 5))));
+                        int rankB = (selB && recB) ? 0 : (selB && custB ? 1 : (selB ? 2 : (recB ? 3 : (custB ? 4 : 5))));
                         if (rankA != rankB) return rankA.CompareTo(rankB);
 
                         if (recA && recB)
                         {
-                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
-                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
                             if (recIdxA < 0) recIdxA = int.MaxValue;
                             if (recIdxB < 0) recIdxB = int.MaxValue;
                             if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        if (custA && custB)
+                        {
+                            int custIdxA = (a.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, a.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            int custIdxB = (b.id != null && customMasterAppIds != null) ? customMasterAppIds.FindIndex(delegate(string x) { return string.Equals(x, b.id, StringComparison.OrdinalIgnoreCase); }) : int.MaxValue;
+                            if (custIdxA < 0) custIdxA = int.MaxValue;
+                            if (custIdxB < 0) custIdxB = int.MaxValue;
+                            if (custIdxA != custIdxB) return custIdxA.CompareTo(custIdxB);
                         }
 
                         int idxA = (a.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(a.id)) ? appDefaultIndices[a.id] : int.MaxValue;
@@ -10449,6 +11564,7 @@ namespace FleetForge
             {
                 if (a == null) return false;
                 bool isRec = IsRecommendedApp(a);
+                bool isCust = IsCustomApp(a);
                 bool matchCat = MatchesCategory(a, activeCategory);
 
                 if (!string.IsNullOrEmpty(lowerQuery))
@@ -10467,7 +11583,7 @@ namespace FleetForge
                     if (!matchQuery) return false;
 
                     // If it is a custom database / recommended app that matches search, ALWAYS show it regardless of category!
-                    if (isRec) return true;
+                    if (isRec || isCust) return true;
 
                     return matchCat;
                 }

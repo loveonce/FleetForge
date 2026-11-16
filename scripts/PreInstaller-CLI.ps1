@@ -118,6 +118,52 @@ if (-not (Test-Path $ConfigPath)) {
 
 $ConfigJson = Get-Content -Path $ConfigPath -Raw -Encoding UTF8 | ConvertFrom-Json
 
+# 3-Tier Catalog Merge with Strict Deduplication (Recommended -> Custom -> Base)
+$seenIds = @{}
+$mergedApps = New-Object System.Collections.Generic.List[PSObject]
+
+$RecommendedPath = Join-Path $BaseDir "data\recommended_apps.json"
+if (-not (Test-Path $RecommendedPath)) { $RecommendedPath = Join-Path $BaseDir "recommended_apps.json" }
+if (Test-Path $RecommendedPath) {
+    try {
+        $recData = Get-Content -Path $RecommendedPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($recData.apps) {
+            foreach ($ra in $recData.apps) {
+                if ($ra.id -and -not $seenIds.ContainsKey($ra.id.ToLower())) {
+                    $seenIds[$ra.id.ToLower()] = $true
+                    $mergedApps.Add($ra)
+                }
+            }
+        }
+    } catch {}
+}
+
+$CustomAppsPath = Join-Path $BaseDir "data\custom_apps.json"
+if (-not (Test-Path $CustomAppsPath)) { $CustomAppsPath = Join-Path $BaseDir "custom_apps.json" }
+if (Test-Path $CustomAppsPath) {
+    try {
+        $custData = Get-Content -Path $CustomAppsPath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($custData.apps) {
+            foreach ($ca in $custData.apps) {
+                if ($ca.id -and -not $seenIds.ContainsKey($ca.id.ToLower())) {
+                    $seenIds[$ca.id.ToLower()] = $true
+                    $mergedApps.Add($ca)
+                }
+            }
+        }
+    } catch {}
+}
+
+if ($ConfigJson.apps) {
+    foreach ($ba in $ConfigJson.apps) {
+        if ($ba.id -and -not $seenIds.ContainsKey($ba.id.ToLower())) {
+            $seenIds[$ba.id.ToLower()] = $true
+            $mergedApps.Add($ba)
+        }
+    }
+}
+$ConfigJson.apps = $mergedApps
+
 # Handle -List parameter
 if ($List) {
     Write-Host "`n========================================================" -ForegroundColor Cyan

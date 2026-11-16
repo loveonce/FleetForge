@@ -1,0 +1,24 @@
+{
+  "_comment": "FleetForge Custom & Affiliate Software Catalog. Apps configured here take priority over data/apps.json with zero duplicates. You can customize downloadUrl to point to affiliate links or direct installers.",
+  "version": "1.0",
+  "name": "Custom & Affiliate Apps Catalog",
+  "description": "User-defined software packages and customized direct download affiliate URLs.",
+  "apps": [
+    {
+      "id": "Google.Chrome",
+      "name": "Google Chrome",
+      "category": "browsers",
+      "description": "Fast, secure web browser built by Google (Custom Affiliate / Direct Cloud Package).",
+      "downloadUrl": "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
+      "silentArgs": "/silent /install"
+    },
+    {
+      "id": "Brave.Brave",
+      "name": "Brave Browser",
+      "category": "browsers",
+      "description": "Privacy-focused high performance browser (Affiliate Partner Build).",
+      "downloadUrl": "https://laptop-updates.brave.com/latest/winx64",
+      "silentArgs": "/silent /install"
+    }
+  ]
+}

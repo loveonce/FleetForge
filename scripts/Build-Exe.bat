@@ -23,12 +23,16 @@ if not exist "%APP_URLS_JSON%" set APP_URLS_JSON=config\app_urls.json
 set RECOMMENDED_JSON=data\recommended_apps.json
 if not exist "%RECOMMENDED_JSON%" set RECOMMENDED_JSON=recommended_apps.json
 
+set CUSTOM_APPS_JSON=data\custom_apps.json
+if not exist "%CUSTOM_APPS_JSON%" set CUSTOM_APPS_JSON=custom_apps.json
+
 echo ==========================================================
 echo        Building FleetForge Desktop Executable (.EXE)
 echo ==========================================================
 echo [Active Icon]: %ICON_FILE%
 echo [URLs Source]: %APP_URLS_JSON%
 echo [Recommended]: %RECOMMENDED_JSON%
+echo [Custom Apps]: %CUSTOM_APPS_JSON%
 echo [1/2] Compiling C# WPF Application...
 taskkill /F /IM FleetForge.exe >nul 2>&1
 ping -n 2 127.0.0.1 >nul 2>&1
@@ -43,6 +47,7 @@ if exist FleetForge.exe (
     /resource:%ICON_FILE%,appicon.ico ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
     /resource:%RECOMMENDED_JSON%,recommended_apps.json ^
+    /resource:%CUSTOM_APPS_JSON%,custom_apps.json ^
     /resource:%MASCOT_FILE%,hero_mascot.png ^
     /resource:%PACK_DEV_FILE%,pack_dev.png ^
     /resource:%PACK_OFFICE_FILE%,pack_office.png ^
