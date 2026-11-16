@@ -50,6 +50,7 @@ FleetForge/
 ├── 📂 reports/                         # Machine Compliance Audit Reports (HTML & JSON)
 │
 ├── 📂 docs/                            # Enterprise Architectural Documentation
+│   ├── FleetForge_Investor_Deck.pptx   # 16:9 Widescreen Investor Presentation & Pitch Deck (12 Slides)
 │   ├── FLOW_DIAGRAMS.md                # Complete System Flowcharts & Mermaid Architectural Diagrams
 │   ├── PRESENTATION_DOC.md             # Executive Product Pitch Deck, Business Model & Unit Economics
 │   ├── SYSTEM_DESIGN.md                # System Architecture & WPF Component Hierarchy
