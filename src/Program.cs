@@ -3864,33 +3864,20 @@ namespace FleetForge
                     </Grid>
                 </StackPanel>
 
-                <!-- 3. App Search & Quick Controls -->
+                <!-- 3. App Search Input Row -->
                 <Grid Grid.Row=""3"" Margin=""0,0,0,8"">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""280""/>
-                        <ColumnDefinition Width=""*""/>
-                    </Grid.ColumnDefinitions>
-
                     <!-- Search Box -->
-                    <Border x:Name=""BorderModalSearchBox"" Grid.Column=""0"" Height=""38"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1"" Padding=""10,0"">
+                    <Border x:Name=""BorderModalSearchBox"" Height=""38"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1"" Padding=""12,0"">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width=""Auto""/>
                                 <ColumnDefinition Width=""*""/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text=""&#xE721;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""12"" Foreground=""#64748B"" VerticalAlignment=""Center"" Margin=""0,0,8,0""/>
+                            <TextBlock Text=""&#xE721;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""12"" Foreground=""#64748B"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
                             <TextBox x:Name=""TxtModalAppSearch"" Grid.Column=""1"" BorderThickness=""0"" Background=""Transparent"" Foreground=""#0F172A"" FontSize=""12.5"" VerticalContentAlignment=""Center"" Text=""Filter software...""/>
                         </Grid>
                     </Border>
-
-                    <!-- Right Tabs -->
-                    <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                        <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0066FF"" Foreground=""#FFFFFF""
-                                Padding=""16,8"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
-                                Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <TextBlock x:Name=""TxtModalSelectedCount"" Visibility=""Collapsed""/>
-                    </StackPanel>
+                    <TextBlock x:Name=""TxtModalSelectedCount"" Visibility=""Collapsed""/>
                 </Grid>
 
                 <!-- 4. App Checklist Table with Pinned Header (Like All Apps) -->
