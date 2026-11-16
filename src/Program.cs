@@ -2907,8 +2907,6 @@ namespace FleetForge
         private Button btnBuilderCancel;
         private Button btnBuilderSaveAndApply;
         private Button btnCloseAppBuilder;
-        private Button btnBottomAppBuilder;
-        private Button btnOpenAppBuilder;
 
         public MainWindow(ConfigModel preloadedConfig = null, UpdateInfo preloadedUpdate = null)
         {
@@ -3675,11 +3673,6 @@ namespace FleetForge
                             Background=""#FFFFFF"" Foreground=""#0066FF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" FontSize=""12""
                             Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnBottomAppBuilder"" Content=""🛠️  App Builder""
-                            Background=""#FFFFFF"" Foreground=""#7C3AED"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
-                            FontWeight=""SemiBold"" Padding=""16,8"" Margin=""10,0,0,0"" Cursor=""Hand"" FontSize=""12""
-                            ToolTip=""Open Affiliate &amp; Custom App Builder to customize software URLs""
-                            Visibility=""Collapsed""/>
                 </StackPanel>
 
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
@@ -3953,8 +3946,6 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSettingCatalogSource"" Text=""Source: Official Microsoft Windows App Store"" FontSize=""11"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
-                            <Button x:Name=""BtnOpenAppBuilder"" Content=""🛠️ App Builder"" Background=""#FFFFFF"" Foreground=""#7C3AED"" BorderBrush=""#CBD5E1""
-                                    FontWeight=""SemiBold"" Padding=""14,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
                             <Button x:Name=""BtnExportCatalog"" Content=""Export App List"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
                                     FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
                         </StackPanel>
@@ -4671,19 +4662,16 @@ namespace FleetForge
                     menu.FontSize = 12.5;
 
                     MenuItem itmTutorial = new MenuItem() { Header = "How to Use (Interactive Guide)...", FontWeight = FontWeights.SemiBold };
-                    MenuItem itmBuilder = new MenuItem() { Header = "🛠️ Custom App Builder (Affiliate Links)...", FontWeight = FontWeights.SemiBold };
                     MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? "Check for Updates (New Version Available!)..." : "Check for Updates..." };
                     MenuItem itmSettings = new MenuItem() { Header = "Settings..." };
                     MenuItem itmAbout = new MenuItem() { Header = "About FleetForge..." };
 
                     itmTutorial.Click += (ms, me) => ShowTutorialModal();
-                    itmBuilder.Click += (ms, me) => ShowCustomAppBuilderModal();
                     itmUpdates.Click += (ms, me) => ShowUpdatesModal();
                     itmSettings.Click += (ms, me) => ShowSettingsModal();
                     itmAbout.Click += (ms, me) => ShowAboutModal();
 
                     menu.Items.Add(itmTutorial);
-                    menu.Items.Add(itmBuilder);
                     menu.Items.Add(new Separator());
                     menu.Items.Add(itmUpdates);
                     menu.Items.Add(itmSettings);
@@ -4767,15 +4755,6 @@ namespace FleetForge
             txtSettingCatalogInfo = (TextBlock)root.FindName("TxtSettingCatalogInfo");
             txtSettingCatalogSource = (TextBlock)root.FindName("TxtSettingCatalogSource");
             btnExportCatalog = (Button)root.FindName("BtnExportCatalog");
-            btnOpenAppBuilder = (Button)root.FindName("BtnOpenAppBuilder");
-            if (btnOpenAppBuilder != null)
-            {
-                btnOpenAppBuilder.Click += (s, e) =>
-                {
-                    if (modalSettingsOverlay != null) modalSettingsOverlay.Visibility = Visibility.Collapsed;
-                    ShowCustomAppBuilderModal();
-                };
-            }
 
             btnCancelSettings = (Button)root.FindName("BtnCancelSettings");
             btnSaveSettings = (Button)root.FindName("BtnSaveSettings");
@@ -5083,7 +5062,6 @@ namespace FleetForge
             btnBuilderCancel = (Button)root.FindName("BtnBuilderCancel");
             btnBuilderSaveAndApply = (Button)root.FindName("BtnBuilderSaveAndApply");
             btnCloseAppBuilder = (Button)root.FindName("BtnCloseAppBuilder");
-            btnBottomAppBuilder = (Button)root.FindName("BtnBottomAppBuilder");
 
             if (btnCloseAppBuilder != null) btnCloseAppBuilder.Click += (s, e) => CloseCustomAppBuilderModal();
             if (btnBuilderCancel != null) btnBuilderCancel.Click += (s, e) => CloseCustomAppBuilderModal();
@@ -5111,7 +5089,49 @@ namespace FleetForge
             if (btnBuilderSaveAndApply != null) btnBuilderSaveAndApply.Click += (s, e) => OnBuilderSaveAndApply();
             if (btnBuilderImportJson != null) btnBuilderImportJson.Click += (s, e) => OnBuilderImportJson();
             if (btnBuilderExportJson != null) btnBuilderExportJson.Click += (s, e) => OnBuilderExportJson();
-            if (btnBottomAppBuilder != null) btnBottomAppBuilder.Click += (s, e) => ShowCustomAppBuilderModal();
+
+            // =========================================================================
+            // SECRET COMPANY & DEVELOPER ACCESS (HIDDEN FROM REGULAR USERS)
+            // =========================================================================
+            // 1. Keyboard Shortcut: Press Ctrl + Shift + B anywhere in FleetForge
+            this.KeyDown += (s, e) =>
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Control) != 0 && (Keyboard.Modifiers & ModifierKeys.Shift) != 0 && e.Key == Key.B)
+                {
+                    ShowCustomAppBuilderModal();
+                    e.Handled = true;
+                }
+            };
+
+            // 2. Secret Click on Developer Signature: "Design and Develop by LOVE MALHOTRA"
+            if (stackSidebarFooter != null)
+            {
+                stackSidebarFooter.Cursor = Cursors.Hand;
+                stackSidebarFooter.MouseDown += (s, e) =>
+                {
+                    ShowCustomAppBuilderModal();
+                };
+            }
+
+            // 3. Command Line Argument: FleetForge.exe --builder (or -builder, /builder)
+            try
+            {
+                string[] cmdArgs = Environment.GetCommandLineArgs();
+                if (cmdArgs != null)
+                {
+                    for (int i = 0; i < cmdArgs.Length; i++)
+                    {
+                        if (string.Equals(cmdArgs[i], "--builder", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(cmdArgs[i], "-builder", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(cmdArgs[i], "/builder", StringComparison.OrdinalIgnoreCase))
+                        {
+                            this.Loaded += (ls, le) => ShowCustomAppBuilderModal();
+                            break;
+                        }
+                    }
+                }
+            }
+            catch { }
 
             // Sidebar Toggle Event
             if (btnToggleSidebar != null)
@@ -6777,18 +6797,6 @@ namespace FleetForge
                 btnExportCatalog.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 btnExportCatalog.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
-            if (btnOpenAppBuilder != null)
-            {
-                btnOpenAppBuilder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnOpenAppBuilder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnOpenAppBuilder.Foreground = HexBrush("#7C3AED");
-            }
-            if (btnBottomAppBuilder != null)
-            {
-                btnBottomAppBuilder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnBottomAppBuilder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnBottomAppBuilder.Foreground = HexBrush("#7C3AED");
-            }
             if (borderCustomAppBuilderCard != null)
             {
                 borderCustomAppBuilderCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#181B22");
@@ -7195,10 +7203,6 @@ namespace FleetForge
             if (btnSearchWingetOnlineBottom != null)
             {
                 btnSearchWingetOnlineBottom.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
-            }
-            if (btnBottomAppBuilder != null)
-            {
-                btnBottomAppBuilder.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
             }
 
             if (stackBottomSelectedPackInfo != null)
