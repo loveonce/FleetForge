@@ -1,0 +1,38 @@
+﻿[
+    {
+        "id":  "CRASH-001",
+        "name":  "Process Force-Kill Recovery State",
+        "error":  "",
+        "durationMs":  1531,
+        "evidence":  "Relaunched healthy after sudden SIGKILL",
+        "phase":  "PHASE-14",
+        "status":  "PASS"
+    },
+    {
+        "id":  "CRASH-002",
+        "name":  "Sudden Power-Loss / Interrupted Download Recovery",
+        "error":  "",
+        "durationMs":  4,
+        "evidence":  "Interrupted download directory isolated in TEMP",
+        "phase":  "PHASE-14",
+        "status":  "PASS"
+    },
+    {
+        "id":  "CRASH-003",
+        "name":  "Simulated Out-Of-Disk-Space during Extraction",
+        "error":  "",
+        "durationMs":  0,
+        "evidence":  "Disk space check and IOException trap verified",
+        "phase":  "PHASE-14",
+        "status":  "PASS"
+    },
+    {
+        "id":  "CRASH-004",
+        "name":  "Multi-Instance Mutex \u0026 Concurrency Lock",
+        "error":  "",
+        "durationMs":  1533,
+        "evidence":  "Concurrent instance execution verified without file contention",
+        "phase":  "PHASE-14",
+        "status":  "PASS"
+    }
+]

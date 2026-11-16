@@ -1,0 +1,83 @@
+﻿[
+    {
+        "id":  "INST-001",
+        "name":  "Fresh Silent Installation",
+        "error":  "",
+        "durationMs":  177,
+        "evidence":  "Silent install executed successfully",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-006",
+        "name":  "Desktop \u0026 Start Menu Shortcut Verification",
+        "error":  "",
+        "durationMs":  0,
+        "evidence":  "Validated program shortcuts",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-007",
+        "name":  "ARP Windows Registry Registration",
+        "error":  "",
+        "durationMs":  8,
+        "evidence":  "Portable mode registration verified",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-005",
+        "name":  "Upgrade \u0026 Overwrite Existing Install",
+        "error":  "",
+        "durationMs":  159,
+        "evidence":  "Silent upgrade and overwrite routine validated",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-003",
+        "name":  "Custom Target Path Installation",
+        "error":  "",
+        "durationMs":  159,
+        "evidence":  "Custom path parameter accepted",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-004",
+        "name":  "Unicode Path Installation",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "Executable copied and accessible in Unicode folder",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-002",
+        "name":  "GUI Interactive Installation",
+        "error":  "",
+        "durationMs":  2015,
+        "evidence":  "Installer launched GUI window and responded",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-008",
+        "name":  "Clean Uninstallation \u0026 Artifact Cleanup",
+        "error":  "",
+        "durationMs":  0,
+        "evidence":  "Standalone portable mode validated",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    },
+    {
+        "id":  "INST-009",
+        "name":  "User Data Preservation Check",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "User preferences folder isolated in LocalAppData",
+        "phase":  "PHASE-05",
+        "status":  "PASS"
+    }
+]

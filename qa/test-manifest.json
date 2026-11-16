@@ -1,0 +1,144 @@
+{
+  "testSuite": "FleetForge Enterprise QA Automation Suite",
+  "version": "2.6.5",
+  "targetOS": "Windows 10 / Windows 11 (x64)",
+  "executionMode": "Windows Sandbox Isolated Client VM",
+  "author": "Love Malhotra (QA Engineering)",
+  "date": "2026-11-16",
+  "phases": [
+    {
+      "id": "PHASE-05",
+      "name": "Installation & Uninstallation Matrix",
+      "script": "runners/test_install.ps1",
+      "tests": [
+        { "id": "INST-001", "name": "Fresh Silent Installation", "priority": "P0", "type": "Automated" },
+        { "id": "INST-002", "name": "GUI Interactive Installation", "priority": "P0", "type": "Automated" },
+        { "id": "INST-003", "name": "Custom Target Path Installation", "priority": "P1", "type": "Automated" },
+        { "id": "INST-004", "name": "Unicode Path Installation", "priority": "P1", "type": "Automated" },
+        { "id": "INST-005", "name": "Upgrade & Overwrite Existing Install", "priority": "P0", "type": "Automated" },
+        { "id": "INST-006", "name": "Desktop & Start Menu Shortcut Verification", "priority": "P1", "type": "Automated" },
+        { "id": "INST-007", "name": "ARP Windows Registry Registration", "priority": "P1", "type": "Automated" },
+        { "id": "INST-008", "name": "Clean Uninstallation & Artifact Cleanup", "priority": "P0", "type": "Automated" },
+        { "id": "INST-009", "name": "User Data Preservation Check", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-06",
+      "name": "Functional & Feature Matrix",
+      "script": "runners/test_functional.ps1",
+      "tests": [
+        { "id": "FUNC-001", "name": "Application Cold Launch & SplashScreen", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-002", "name": "Catalog Database (16,349 Apps) Integrity & Loading", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-003", "name": "Role Presets Selection & App Count Synchronization", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-004", "name": "Catalog Search & Real-time Filter Debounce", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-005", "name": "Category Pill Filtering & Master Checkbox", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-006", "name": "Catalog Sorting (Name A-Z, Z-A, Category)", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-007", "name": "Online Search Modal Query & Winget Parsing", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-008", "name": "Pack Editor Modal (Add/Remove Software & Icon Cycle)", "priority": "P0", "type": "Automated" },
+        { "id": "FUNC-009", "name": "Custom App Builder Form Validation & Override Priority", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-010", "name": "Export & Import Custom Pack JSON Workflow", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-011", "name": "Settings Persistence (Theme, Silent, Display Scaling)", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-012", "name": "Update Center Manifest Detection & Parsing", "priority": "P1", "type": "Automated" },
+        { "id": "FUNC-013", "name": "Install Session Resume Detection Logic", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-07",
+      "name": "UI Automation & Accessibility",
+      "script": "runners/test_ui_automation.ps1",
+      "tests": [
+        { "id": "UI-001", "name": "DWM Window Chrome & Titlebar Attribute Binding", "priority": "P1", "type": "Automated" },
+        { "id": "UI-002", "name": "Responsive Resolution Scaling (1080p, 768p, 720p)", "priority": "P0", "type": "Automated" },
+        { "id": "UI-003", "name": "Display Zoom Modes (Auto, 100%, 90%, 80%)", "priority": "P1", "type": "Automated" },
+        { "id": "UI-004", "name": "Windows Light & Dark Theme Real-time Sync", "priority": "P0", "type": "Automated" },
+        { "id": "UI-005", "name": "Modal Overlay Viewport Constraint & No-Clip Check", "priority": "P0", "type": "Automated" },
+        { "id": "UI-006", "name": "Keyboard Tab Order & Focus Traversal", "priority": "P2", "type": "Automated" },
+        { "id": "UI-007", "name": "Text Truncation & High DPI Text Rendering", "priority": "P1", "type": "Automated" },
+        { "id": "UI-008", "name": "Toast Notification Slide-in Animation & Placement", "priority": "P2", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-08",
+      "name": "C# / .NET Deep Engine Diagnostics",
+      "script": "runners/test_dotnet_deep.ps1",
+      "tests": [
+        { "id": "DOTNET-001", "name": "Type Safety & Assembly Resolution Verification", "priority": "P0", "type": "Automated" },
+        { "id": "DOTNET-002", "name": "Zero-Leak Threading & Background Worker Safety", "priority": "P0", "type": "Automated" },
+        { "id": "DOTNET-003", "name": "JSON Serialization Edge Cases & Extreme Payloads", "priority": "P1", "type": "Automated" },
+        { "id": "DOTNET-004", "name": "Resource Stream Extraction & Icon Decoding", "priority": "P1", "type": "Automated" },
+        { "id": "DOTNET-005", "name": "Exception Handling & Unobserved Task Trapping", "priority": "P0", "type": "Automated" },
+        { "id": "DOTNET-006", "name": "Memory Disposal & Large Object Heap Allocations", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-09",
+      "name": "JavaScript & Web Tools Verification",
+      "script": "runners/test_js_bridge.ps1",
+      "tests": [
+        { "id": "JS-001", "name": "AffiliateAppsBuilder HTML Syntax & ES6 Validation", "priority": "P1", "type": "Automated" },
+        { "id": "JS-002", "name": "RecommendedAppsBuilder HTML Syntax & DOM Events", "priority": "P1", "type": "Automated" },
+        { "id": "JS-003", "name": "apps_data.js Global Catalog Array Integrity", "priority": "P1", "type": "Automated" },
+        { "id": "JS-004", "name": "JSON Export Blob Generation & Browser Download", "priority": "P2", "type": "Automated" },
+        { "id": "JS-005", "name": "XSS Sanitization in Web Builder Form Inputs", "priority": "P0", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-10",
+      "name": "Filesystem & Data Integrity",
+      "script": "runners/test_filesystem.ps1",
+      "tests": [
+        { "id": "FS-001", "name": "Zero-Byte & Corrupt JSON File Recovery", "priority": "P0", "type": "Automated" },
+        { "id": "FS-002", "name": "Atomic Config File Writes & Concurrency Lock", "priority": "P1", "type": "Automated" },
+        { "id": "FS-003", "name": "ReadOnly & Restricted Directory Graceful Handling", "priority": "P1", "type": "Automated" },
+        { "id": "FS-004", "name": "Special Character & Unicode Path File Access", "priority": "P1", "type": "Automated" },
+        { "id": "FS-005", "name": "Eliminated Subfolder Audit (No reports/ or logs/)", "priority": "P0", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-11",
+      "name": "Network & Offline Robustness",
+      "script": "runners/test_network.ps1",
+      "tests": [
+        { "id": "NET-001", "name": "Total Offline Air-Gapped Operation", "priority": "P0", "type": "Automated" },
+        { "id": "NET-002", "name": "DNS Failure & Connection Timeout Trapping", "priority": "P1", "type": "Automated" },
+        { "id": "NET-003", "name": "Multi-Source CDN / GitHub Failover Logic", "priority": "P1", "type": "Automated" },
+        { "id": "NET-004", "name": "Corrupt Server Response (HTTP 500/HTML Error)", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-12",
+      "name": "Security & Vulnerability Assessment",
+      "script": "runners/test_security.ps1",
+      "tests": [
+        { "id": "SEC-001", "name": "Process Injection & Argument Sanitization", "priority": "P0", "type": "Automated" },
+        { "id": "SEC-002", "name": "Path Traversal in Import/Export Routines", "priority": "P0", "type": "Automated" },
+        { "id": "SEC-003", "name": "DLL Preloading & Hijacking Analysis", "priority": "P0", "type": "Automated" },
+        { "id": "SEC-004", "name": "Hardcoded Secrets & Credential Leak Audit", "priority": "P0", "type": "Automated" },
+        { "id": "SEC-005", "name": "Least-Privilege Standard User Compatibility", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-13",
+      "name": "Performance, Memory & Stress",
+      "script": "runners/test_performance.ps1",
+      "tests": [
+        { "id": "PERF-001", "name": "Cold Start & Warm Start Launch Latency", "priority": "P1", "type": "Automated" },
+        { "id": "PERF-002", "name": "Idle & Peak Working Set Memory Footprint", "priority": "P1", "type": "Automated" },
+        { "id": "PERF-003", "name": "16,349 Packages Search Query Benchmark (<50ms)", "priority": "P1", "type": "Automated" },
+        { "id": "PERF-004", "name": "Repeated Rapid Launch/Exit Stress (20 iterations)", "priority": "P1", "type": "Automated" },
+        { "id": "PERF-005", "name": "Handle Count & GDI Resource Stability", "priority": "P1", "type": "Automated" }
+      ]
+    },
+    {
+      "id": "PHASE-14",
+      "name": "Crash & Failure Injection",
+      "script": "runners/test_crash_recovery.ps1",
+      "tests": [
+        { "id": "CRASH-001", "name": "Process Force-Kill Recovery State", "priority": "P1", "type": "Automated" },
+        { "id": "CRASH-002", "name": "Sudden Power-Loss / Interrupted Download Recovery", "priority": "P1", "type": "Automated" },
+        { "id": "CRASH-003", "name": "Simulated Out-Of-Disk-Space during Extraction", "priority": "P1", "type": "Automated" },
+        { "id": "CRASH-004", "name": "Multi-Instance Mutex & Concurrency Lock", "priority": "P1", "type": "Automated" }
+      ]
+    }
+  ]
+}

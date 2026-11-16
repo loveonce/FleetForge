@@ -1,0 +1,303 @@
+﻿[2026-11-16 19.29.13.435] Starting FleetForge Automated Sandbox QA Execution...
+[2026-11-16 19.29.13.477] Loaded Test Manifest: FleetForge Enterprise QA Automation Suite v2.6.5 (10 Phases)
+[2026-11-16 19.29.13.483] ------------------------------------------------------------
+[2026-11-16 19.29.13.485] Executing Phase: PHASE-05 - Installation & Uninstallation Matrix
+[2026-11-16 19.29.13.487] Invoking runner: runners/test_install.ps1
+[2026-11-16 19.29.14.135]   [FAIL] INST-001: Fresh Silent Installation (127ms)
+[2026-11-16 19.29.14.143]   [FAIL] INST-006: Desktop & Start Menu Shortcut Verification (1ms)
+[2026-11-16 19.29.14.144]   [FAIL] INST-007: ARP Windows Registry Registration (8ms)
+[2026-11-16 19.29.14.145]   [FAIL] INST-005: Upgrade & Overwrite Existing Install (89ms)
+[2026-11-16 19.29.14.146]   [FAIL] INST-003: Custom Target Path Installation (91ms)
+[2026-11-16 19.29.14.147]   [PASS] INST-004: Unicode Path Installation (5ms)
+[2026-11-16 19.29.14.148]   [FAIL] INST-002: GUI Interactive Installation (96ms)
+[2026-11-16 19.29.14.149]   [PASS] INST-008: Clean Uninstallation & Artifact Cleanup (0ms)
+[2026-11-16 19.29.14.149]   [PASS] INST-009: User Data Preservation Check (5ms)
+[2026-11-16 19.29.14.150] ------------------------------------------------------------
+[2026-11-16 19.29.14.151] Executing Phase: PHASE-06 - Functional & Feature Matrix
+[2026-11-16 19.29.14.152] Invoking runner: runners/test_functional.ps1
+[2026-11-16 19.29.14.932]   [FAIL] FUNC-001: Application Cold Launch & SplashScreen (87ms)
+[2026-11-16 19.29.14.939]   [PASS] FUNC-002: Catalog Database (16,349 Apps) Integrity & Loading (259ms)
+[2026-11-16 19.29.14.940]   [FAIL] FUNC-003: Role Presets Selection & App Count Synchronization (2ms)
+[2026-11-16 19.29.14.941]   [PASS] FUNC-004: Catalog Search & Real-time Filter Debounce (145ms)
+[2026-11-16 19.29.14.942]   [PASS] FUNC-005: Category Pill Filtering & Master Checkbox (33ms)
+[2026-11-16 19.29.14.942]   [PASS] FUNC-006: Catalog Sorting (Name A-Z, Z-A, Category) (2ms)
+[2026-11-16 19.29.14.943]   [PASS] FUNC-007: Online Search Modal Query & Winget Parsing (1ms)
+[2026-11-16 19.29.14.944]   [PASS] FUNC-008: Pack Editor Modal (Add/Remove Software & Icon Cycle) (7ms)
+[2026-11-16 19.29.14.945]   [PASS] FUNC-009: Custom App Builder Form Validation & Override Priority (0ms)
+[2026-11-16 19.29.14.946]   [PASS] FUNC-010: Export & Import Custom Pack JSON Workflow (17ms)
+[2026-11-16 19.29.14.947]   [PASS] FUNC-011: Settings Persistence (Theme, Silent, Display Scaling) (2ms)
+[2026-11-16 19.29.14.948]   [PASS] FUNC-012: Update Center Manifest Detection & Parsing (0ms)
+[2026-11-16 19.29.14.949]   [PASS] FUNC-013: Install Session Resume Detection Logic (5ms)
+[2026-11-16 19.29.14.950] ------------------------------------------------------------
+[2026-11-16 19.29.14.951] Executing Phase: PHASE-07 - UI Automation & Accessibility
+[2026-11-16 19.29.14.952] Invoking runner: runners/test_ui_automation.ps1
+[2026-11-16 19.29.15.210]   [PASS] UI-001: DWM Window Chrome & Titlebar Attribute Binding (10ms)
+[2026-11-16 19.29.15.213]   [PASS] UI-002: Responsive Resolution Scaling (1080p, 768p, 720p) (20ms)
+[2026-11-16 19.29.15.213]   [PASS] UI-003: Display Zoom Modes (Auto, 100%, 90%, 80%) (5ms)
+[2026-11-16 19.29.15.214]   [PASS] UI-004: Windows Light & Dark Theme Real-time Sync (4ms)
+[2026-11-16 19.29.15.215]   [PASS] UI-005: Modal Overlay Viewport Constraint & No-Clip Check (5ms)
+[2026-11-16 19.29.15.216]   [PASS] UI-006: Keyboard Tab Order & Focus Traversal (5ms)
+[2026-11-16 19.29.15.217]   [PASS] UI-007: Text Truncation & High DPI Text Rendering (5ms)
+[2026-11-16 19.29.15.218]   [PASS] UI-008: Toast Notification Slide-in Animation & Placement (0ms)
+[2026-11-16 19.29.15.218] ------------------------------------------------------------
+[2026-11-16 19.29.15.220] Executing Phase: PHASE-08 - C# / .NET Deep Engine Diagnostics
+[2026-11-16 19.29.15.221] Invoking runner: runners/test_dotnet_deep.ps1
+[2026-11-16 19.29.15.558]   [PASS] DOTNET-001: Type Safety & Assembly Resolution Verification (6ms)
+[2026-11-16 19.29.15.561]   [FAIL] DOTNET-002: Zero-Leak Threading & Background Worker Safety (9ms)
+[2026-11-16 19.29.15.562]   [FAIL] DOTNET-003: JSON Serialization Edge Cases & Extreme Payloads (4ms)
+[2026-11-16 19.29.15.563]   [PASS] DOTNET-004: Resource Stream Extraction & Icon Decoding (0ms)
+[2026-11-16 19.29.15.564]   [PASS] DOTNET-005: Exception Handling & Unobserved Task Trapping (9ms)
+[2026-11-16 19.29.15.565]   [PASS] DOTNET-006: Memory Disposal & Large Object Heap Allocations (71ms)
+[2026-11-16 19.29.15.565] ------------------------------------------------------------
+[2026-11-16 19.29.15.566] Executing Phase: PHASE-09 - JavaScript & Web Tools Verification
+[2026-11-16 19.29.15.567] Invoking runner: runners/test_js_bridge.ps1
+[2026-11-16 19.29.15.877]   [PASS] JS-001: AffiliateAppsBuilder HTML Syntax & ES6 Validation (18ms)
+[2026-11-16 19.29.15.880]   [FAIL] JS-002: RecommendedAppsBuilder HTML Syntax & DOM Events (1ms)
+[2026-11-16 19.29.15.881]   [PASS] JS-003: apps_data.js Global Catalog Array Integrity (10ms)
+[2026-11-16 19.29.15.882]   [PASS] JS-004: JSON Export Blob Generation & Browser Download (1ms)
+[2026-11-16 19.29.15.883]   [PASS] JS-005: XSS Sanitization in Web Builder Form Inputs (0ms)
+[2026-11-16 19.29.15.883] ------------------------------------------------------------
+[2026-11-16 19.29.15.884] Executing Phase: PHASE-10 - Filesystem & Data Integrity
+[2026-11-16 19.29.15.886] Invoking runner: runners/test_filesystem.ps1
+[2026-11-16 19.29.16.162]   [PASS] FS-001: Zero-Byte & Corrupt JSON File Recovery (36ms)
+[2026-11-16 19.29.16.164]   [PASS] FS-002: Atomic Config File Writes & Concurrency Lock (59ms)
+[2026-11-16 19.29.16.165]   [PASS] FS-003: ReadOnly & Restricted Directory Graceful Handling (1ms)
+[2026-11-16 19.29.16.166]   [PASS] FS-004: Special Character & Unicode Path File Access (2ms)
+[2026-11-16 19.29.16.167]   [PASS] FS-005: Eliminated Subfolder Audit (No reports/ or logs/) (2ms)
+[2026-11-16 19.29.16.167] ------------------------------------------------------------
+[2026-11-16 19.29.16.168] Executing Phase: PHASE-11 - Network & Offline Robustness
+[2026-11-16 19.29.16.169] Invoking runner: runners/test_network.ps1
+[2026-11-16 19.29.16.408]   [PASS] NET-001: Total Offline Air-Gapped Operation (15ms)
+[2026-11-16 19.29.16.414]   [PASS] NET-002: DNS Failure & Connection Timeout Trapping (21ms)
+[2026-11-16 19.29.16.415]   [PASS] NET-003: Multi-Source CDN / GitHub Failover Logic (25ms)
+[2026-11-16 19.29.16.416]   [PASS] NET-004: Corrupt Server Response (HTTP 500/HTML Error) (3ms)
+[2026-11-16 19.29.16.416] ------------------------------------------------------------
+[2026-11-16 19.29.16.417] Executing Phase: PHASE-12 - Security & Vulnerability Assessment
+[2026-11-16 19.29.16.419] Invoking runner: runners/test_security.ps1
+[2026-11-16 19.29.16.680]   [PASS] SEC-001: Process Injection & Argument Sanitization (1ms)
+[2026-11-16 19.29.16.690]   [PASS] SEC-002: Path Traversal in Import/Export Routines (2ms)
+[2026-11-16 19.29.16.690]   [PASS] SEC-003: DLL Preloading & Hijacking Analysis (31ms)
+[2026-11-16 19.29.16.691]   [PASS] SEC-004: Hardcoded Secrets & Credential Leak Audit (25ms)
+[2026-11-16 19.29.16.692]   [FAIL] SEC-005: Least-Privilege Standard User Compatibility (0ms)
+[2026-11-16 19.29.16.693] ------------------------------------------------------------
+[2026-11-16 19.29.16.693] Executing Phase: PHASE-13 - Performance, Memory & Stress
+[2026-11-16 19.29.16.694] Invoking runner: runners/test_performance.ps1
+[2026-11-16 19.29.17.560]   [PASS] PERF-001: Cold Start & Warm Start Launch Latency (85ms)
+[2026-11-16 19.29.17.564]   [FAIL] PERF-002: Idle & Peak Working Set Memory Footprint (61ms)
+[2026-11-16 19.29.17.565]   [PASS] PERF-003: 16,349 Packages Search Query Benchmark (<50ms) (129ms)
+[2026-11-16 19.29.17.566]   [FAIL] PERF-004: Repeated Rapid Launch/Exit Stress (20 iterations) (60ms)
+[2026-11-16 19.29.17.567]   [FAIL] PERF-005: Handle Count & GDI Resource Stability (55ms)
+[2026-11-16 19.29.17.567] ------------------------------------------------------------
+[2026-11-16 19.29.17.568] Executing Phase: PHASE-14 - Crash & Failure Injection
+[2026-11-16 19.29.17.569] Invoking runner: runners/test_crash_recovery.ps1
+[2026-11-16 19.29.17.932]   [FAIL] CRASH-001: Process Force-Kill Recovery State (86ms)
+[2026-11-16 19.29.17.936]   [PASS] CRASH-002: Sudden Power-Loss / Interrupted Download Recovery (4ms)
+[2026-11-16 19.29.17.937]   [PASS] CRASH-003: Simulated Out-Of-Disk-Space during Extraction (0ms)
+[2026-11-16 19.29.17.937]   [FAIL] CRASH-004: Multi-Instance Mutex & Concurrency Lock (56ms)
+[2026-11-16 19.29.17.958] Saved raw test results to E:\AI_Technology\My Tools\FleetForge\qa\results\test_results_raw.json
+[2026-11-16 19.29.17.962] Generating comprehensive QA reports...
+[2026-11-16 19.29.18.220] ============================================================
+[2026-11-16 19.29.18.221] All Sandbox Tests Finished Successfully at 2026-11-16 19.29.18
+[2026-11-16 19.29.18.222] ============================================================
+[2026-11-16 19.35.31.135] Starting FleetForge Automated Sandbox QA Execution...
+[2026-11-16 19.35.31.180] Loaded Test Manifest: FleetForge Enterprise QA Automation Suite v2.6.5 (10 Phases)
+[2026-11-16 19.35.31.182] ------------------------------------------------------------
+[2026-11-16 19.35.31.184] Executing Phase: PHASE-05 - Installation & Uninstallation Matrix
+[2026-11-16 19.35.31.187] Invoking runner: runners/test_install.ps1
+[2026-11-16 19.35.31.484]   [FAIL] INST-001: Fresh Silent Installation (30ms)
+[2026-11-16 19.35.31.488]   [PASS] INST-006: Desktop & Start Menu Shortcut Verification (1ms)
+[2026-11-16 19.35.31.489]   [PASS] INST-007: ARP Windows Registry Registration (8ms)
+[2026-11-16 19.35.31.490]   [FAIL] INST-005: Upgrade & Overwrite Existing Install (2ms)
+[2026-11-16 19.35.31.491]   [FAIL] INST-003: Custom Target Path Installation (2ms)
+[2026-11-16 19.35.31.492]   [PASS] INST-004: Unicode Path Installation (5ms)
+[2026-11-16 19.35.31.492]   [FAIL] INST-002: GUI Interactive Installation (5ms)
+[2026-11-16 19.35.31.493]   [PASS] INST-008: Clean Uninstallation & Artifact Cleanup (0ms)
+[2026-11-16 19.35.31.494]   [PASS] INST-009: User Data Preservation Check (5ms)
+[2026-11-16 19.35.31.495] ------------------------------------------------------------
+[2026-11-16 19.35.31.495] Executing Phase: PHASE-06 - Functional & Feature Matrix
+[2026-11-16 19.35.31.496] Invoking runner: runners/test_functional.ps1
+[2026-11-16 19.35.32.518]   [FAIL] FUNC-001: Application Cold Launch & SplashScreen (16ms)
+[2026-11-16 19.35.32.525]   [PASS] FUNC-002: Catalog Database (16,349 Apps) Integrity & Loading (267ms)
+[2026-11-16 19.35.32.525]   [PASS] FUNC-003: Role Presets Selection & App Count Synchronization (347ms)
+[2026-11-16 19.35.32.526]   [PASS] FUNC-004: Catalog Search & Real-time Filter Debounce (107ms)
+[2026-11-16 19.35.32.528]   [PASS] FUNC-005: Category Pill Filtering & Master Checkbox (31ms)
+[2026-11-16 19.35.32.528]   [PASS] FUNC-006: Catalog Sorting (Name A-Z, Z-A, Category) (1ms)
+[2026-11-16 19.35.32.529]   [PASS] FUNC-007: Online Search Modal Query & Winget Parsing (1ms)
+[2026-11-16 19.35.32.530]   [PASS] FUNC-008: Pack Editor Modal (Add/Remove Software & Icon Cycle) (7ms)
+[2026-11-16 19.35.32.531]   [PASS] FUNC-009: Custom App Builder Form Validation & Override Priority (0ms)
+[2026-11-16 19.35.32.532]   [PASS] FUNC-010: Export & Import Custom Pack JSON Workflow (4ms)
+[2026-11-16 19.35.32.533]   [PASS] FUNC-011: Settings Persistence (Theme, Silent, Display Scaling) (2ms)
+[2026-11-16 19.35.32.533]   [PASS] FUNC-012: Update Center Manifest Detection & Parsing (0ms)
+[2026-11-16 19.35.32.534]   [PASS] FUNC-013: Install Session Resume Detection Logic (5ms)
+[2026-11-16 19.35.32.535] ------------------------------------------------------------
+[2026-11-16 19.35.32.536] Executing Phase: PHASE-07 - UI Automation & Accessibility
+[2026-11-16 19.35.32.537] Invoking runner: runners/test_ui_automation.ps1
+[2026-11-16 19.35.32.777]   [PASS] UI-001: DWM Window Chrome & Titlebar Attribute Binding (10ms)
+[2026-11-16 19.35.32.788]   [PASS] UI-002: Responsive Resolution Scaling (1080p, 768p, 720p) (25ms)
+[2026-11-16 19.35.32.788]   [PASS] UI-003: Display Zoom Modes (Auto, 100%, 90%, 80%) (5ms)
+[2026-11-16 19.35.32.789]   [PASS] UI-004: Windows Light & Dark Theme Real-time Sync (4ms)
+[2026-11-16 19.35.32.791]   [PASS] UI-005: Modal Overlay Viewport Constraint & No-Clip Check (5ms)
+[2026-11-16 19.35.32.791]   [PASS] UI-006: Keyboard Tab Order & Focus Traversal (5ms)
+[2026-11-16 19.35.32.792]   [PASS] UI-007: Text Truncation & High DPI Text Rendering (5ms)
+[2026-11-16 19.35.32.793]   [PASS] UI-008: Toast Notification Slide-in Animation & Placement (0ms)
+[2026-11-16 19.35.32.793] ------------------------------------------------------------
+[2026-11-16 19.35.32.794] Executing Phase: PHASE-08 - C# / .NET Deep Engine Diagnostics
+[2026-11-16 19.35.32.795] Invoking runner: runners/test_dotnet_deep.ps1
+[2026-11-16 19.35.33.218]   [PASS] DOTNET-001: Type Safety & Assembly Resolution Verification (5ms)
+[2026-11-16 19.35.33.224]   [FAIL] DOTNET-002: Zero-Leak Threading & Background Worker Safety (20ms)
+[2026-11-16 19.35.33.225]   [PASS] DOTNET-003: JSON Serialization Edge Cases & Extreme Payloads (71ms)
+[2026-11-16 19.35.33.226]   [PASS] DOTNET-004: Resource Stream Extraction & Icon Decoding (0ms)
+[2026-11-16 19.35.33.226]   [PASS] DOTNET-005: Exception Handling & Unobserved Task Trapping (9ms)
+[2026-11-16 19.35.33.227]   [PASS] DOTNET-006: Memory Disposal & Large Object Heap Allocations (79ms)
+[2026-11-16 19.35.33.228] ------------------------------------------------------------
+[2026-11-16 19.35.33.229] Executing Phase: PHASE-09 - JavaScript & Web Tools Verification
+[2026-11-16 19.35.33.230] Invoking runner: runners/test_js_bridge.ps1
+[2026-11-16 19.35.33.552]   [PASS] JS-001: AffiliateAppsBuilder HTML Syntax & ES6 Validation (17ms)
+[2026-11-16 19.35.33.563]   [PASS] JS-002: RecommendedAppsBuilder HTML Syntax & DOM Events (1ms)
+[2026-11-16 19.35.33.563]   [PASS] JS-003: apps_data.js Global Catalog Array Integrity (9ms)
+[2026-11-16 19.35.33.564]   [PASS] JS-004: JSON Export Blob Generation & Browser Download (1ms)
+[2026-11-16 19.35.33.565]   [PASS] JS-005: XSS Sanitization in Web Builder Form Inputs (0ms)
+[2026-11-16 19.35.33.566] ------------------------------------------------------------
+[2026-11-16 19.35.33.566] Executing Phase: PHASE-10 - Filesystem & Data Integrity
+[2026-11-16 19.35.33.569] Invoking runner: runners/test_filesystem.ps1
+[2026-11-16 19.35.33.793]   [PASS] FS-001: Zero-Byte & Corrupt JSON File Recovery (32ms)
+[2026-11-16 19.35.33.804]   [PASS] FS-002: Atomic Config File Writes & Concurrency Lock (24ms)
+[2026-11-16 19.35.33.805]   [PASS] FS-003: ReadOnly & Restricted Directory Graceful Handling (1ms)
+[2026-11-16 19.35.33.806]   [PASS] FS-004: Special Character & Unicode Path File Access (2ms)
+[2026-11-16 19.35.33.807]   [PASS] FS-005: Eliminated Subfolder Audit (No reports/ or logs/) (1ms)
+[2026-11-16 19.35.33.808] ------------------------------------------------------------
+[2026-11-16 19.35.33.809] Executing Phase: PHASE-11 - Network & Offline Robustness
+[2026-11-16 19.35.33.810] Invoking runner: runners/test_network.ps1
+[2026-11-16 19.35.34.061]   [PASS] NET-001: Total Offline Air-Gapped Operation (22ms)
+[2026-11-16 19.35.34.063]   [PASS] NET-002: DNS Failure & Connection Timeout Trapping (14ms)
+[2026-11-16 19.35.34.064]   [PASS] NET-003: Multi-Source CDN / GitHub Failover Logic (25ms)
+[2026-11-16 19.35.34.065]   [PASS] NET-004: Corrupt Server Response (HTTP 500/HTML Error) (3ms)
+[2026-11-16 19.35.34.066] ------------------------------------------------------------
+[2026-11-16 19.35.34.066] Executing Phase: PHASE-12 - Security & Vulnerability Assessment
+[2026-11-16 19.35.34.067] Invoking runner: runners/test_security.ps1
+[2026-11-16 19.35.34.332]   [PASS] SEC-001: Process Injection & Argument Sanitization (0ms)
+[2026-11-16 19.35.34.337]   [PASS] SEC-002: Path Traversal in Import/Export Routines (2ms)
+[2026-11-16 19.35.34.337]   [PASS] SEC-003: DLL Preloading & Hijacking Analysis (30ms)
+[2026-11-16 19.35.34.338]   [PASS] SEC-004: Hardcoded Secrets & Credential Leak Audit (24ms)
+[2026-11-16 19.35.34.339]   [PASS] SEC-005: Least-Privilege Standard User Compatibility (0ms)
+[2026-11-16 19.35.34.340] ------------------------------------------------------------
+[2026-11-16 19.35.34.341] Executing Phase: PHASE-13 - Performance, Memory & Stress
+[2026-11-16 19.35.34.342] Invoking runner: runners/test_performance.ps1
+[2026-11-16 19.35.34.954]   [PASS] PERF-001: Cold Start & Warm Start Launch Latency (25ms)
+[2026-11-16 19.35.34.967]   [FAIL] PERF-002: Idle & Peak Working Set Memory Footprint (1ms)
+[2026-11-16 19.35.34.968]   [PASS] PERF-003: 16,349 Packages Search Query Benchmark (<50ms) (117ms)
+[2026-11-16 19.35.34.969]   [FAIL] PERF-004: Repeated Rapid Launch/Exit Stress (20 iterations) (3ms)
+[2026-11-16 19.35.34.970]   [FAIL] PERF-005: Handle Count & GDI Resource Stability (1ms)
+[2026-11-16 19.35.34.971] ------------------------------------------------------------
+[2026-11-16 19.35.34.971] Executing Phase: PHASE-14 - Crash & Failure Injection
+[2026-11-16 19.35.34.972] Invoking runner: runners/test_crash_recovery.ps1
+[2026-11-16 19.35.35.224]   [FAIL] CRASH-001: Process Force-Kill Recovery State (26ms)
+[2026-11-16 19.35.35.229]   [PASS] CRASH-002: Sudden Power-Loss / Interrupted Download Recovery (4ms)
+[2026-11-16 19.35.35.229]   [PASS] CRASH-003: Simulated Out-Of-Disk-Space during Extraction (0ms)
+[2026-11-16 19.35.35.230]   [FAIL] CRASH-004: Multi-Instance Mutex & Concurrency Lock (1ms)
+[2026-11-16 19.35.35.242] Saved raw test results to E:\AI_Technology\My Tools\FleetForge\qa\results\test_results_raw.json
+[2026-11-16 19.35.35.243] Generating comprehensive QA reports...
+[2026-11-16 19.35.35.473] ============================================================
+[2026-11-16 19.35.35.474] All Sandbox Tests Finished Successfully at 2026-11-16 19.35.35
+[2026-11-16 19.35.35.475] ============================================================
+[2026-11-16 19.38.59.029] Starting FleetForge Automated Sandbox QA Execution...
+[2026-11-16 19.38.59.068] Loaded Test Manifest: FleetForge Enterprise QA Automation Suite v2.6.5 (10 Phases)
+[2026-11-16 19.38.59.069] ------------------------------------------------------------
+[2026-11-16 19.38.59.071] Executing Phase: PHASE-05 - Installation & Uninstallation Matrix
+[2026-11-16 19.38.59.073] Invoking runner: runners/test_install.ps1
+[2026-11-16 19.39.01.844]   [PASS] INST-001: Fresh Silent Installation (177ms)
+[2026-11-16 19.39.01.846]   [PASS] INST-006: Desktop & Start Menu Shortcut Verification (0ms)
+[2026-11-16 19.39.01.847]   [PASS] INST-007: ARP Windows Registry Registration (8ms)
+[2026-11-16 19.39.01.847]   [PASS] INST-005: Upgrade & Overwrite Existing Install (159ms)
+[2026-11-16 19.39.01.848]   [PASS] INST-003: Custom Target Path Installation (159ms)
+[2026-11-16 19.39.01.849]   [PASS] INST-004: Unicode Path Installation (5ms)
+[2026-11-16 19.39.01.850]   [PASS] INST-002: GUI Interactive Installation (2015ms)
+[2026-11-16 19.39.01.851]   [PASS] INST-008: Clean Uninstallation & Artifact Cleanup (0ms)
+[2026-11-16 19.39.01.851]   [PASS] INST-009: User Data Preservation Check (5ms)
+[2026-11-16 19.39.01.853] ------------------------------------------------------------
+[2026-11-16 19.39.01.853] Executing Phase: PHASE-06 - Functional & Feature Matrix
+[2026-11-16 19.39.01.854] Invoking runner: runners/test_functional.ps1
+[2026-11-16 19.39.04.879]   [PASS] FUNC-001: Application Cold Launch & SplashScreen (2030ms)
+[2026-11-16 19.39.04.883]   [PASS] FUNC-002: Catalog Database (16,349 Apps) Integrity & Loading (268ms)
+[2026-11-16 19.39.04.884]   [PASS] FUNC-003: Role Presets Selection & App Count Synchronization (332ms)
+[2026-11-16 19.39.04.884]   [PASS] FUNC-004: Catalog Search & Real-time Filter Debounce (103ms)
+[2026-11-16 19.39.04.885]   [PASS] FUNC-005: Category Pill Filtering & Master Checkbox (30ms)
+[2026-11-16 19.39.04.886]   [PASS] FUNC-006: Catalog Sorting (Name A-Z, Z-A, Category) (2ms)
+[2026-11-16 19.39.04.887]   [PASS] FUNC-007: Online Search Modal Query & Winget Parsing (1ms)
+[2026-11-16 19.39.04.888]   [PASS] FUNC-008: Pack Editor Modal (Add/Remove Software & Icon Cycle) (7ms)
+[2026-11-16 19.39.04.889]   [PASS] FUNC-009: Custom App Builder Form Validation & Override Priority (0ms)
+[2026-11-16 19.39.04.890]   [PASS] FUNC-010: Export & Import Custom Pack JSON Workflow (5ms)
+[2026-11-16 19.39.04.891]   [PASS] FUNC-011: Settings Persistence (Theme, Silent, Display Scaling) (1ms)
+[2026-11-16 19.39.04.892]   [PASS] FUNC-012: Update Center Manifest Detection & Parsing (0ms)
+[2026-11-16 19.39.04.892]   [PASS] FUNC-013: Install Session Resume Detection Logic (5ms)
+[2026-11-16 19.39.04.893] ------------------------------------------------------------
+[2026-11-16 19.39.04.894] Executing Phase: PHASE-07 - UI Automation & Accessibility
+[2026-11-16 19.39.04.895] Invoking runner: runners/test_ui_automation.ps1
+[2026-11-16 19.39.05.140]   [PASS] UI-001: DWM Window Chrome & Titlebar Attribute Binding (10ms)
+[2026-11-16 19.39.05.142]   [PASS] UI-002: Responsive Resolution Scaling (1080p, 768p, 720p) (22ms)
+[2026-11-16 19.39.05.143]   [PASS] UI-003: Display Zoom Modes (Auto, 100%, 90%, 80%) (5ms)
+[2026-11-16 19.39.05.144]   [PASS] UI-004: Windows Light & Dark Theme Real-time Sync (4ms)
+[2026-11-16 19.39.05.144]   [PASS] UI-005: Modal Overlay Viewport Constraint & No-Clip Check (5ms)
+[2026-11-16 19.39.05.145]   [PASS] UI-006: Keyboard Tab Order & Focus Traversal (5ms)
+[2026-11-16 19.39.05.146]   [PASS] UI-007: Text Truncation & High DPI Text Rendering (5ms)
+[2026-11-16 19.39.05.147]   [PASS] UI-008: Toast Notification Slide-in Animation & Placement (0ms)
+[2026-11-16 19.39.05.147] ------------------------------------------------------------
+[2026-11-16 19.39.05.148] Executing Phase: PHASE-08 - C# / .NET Deep Engine Diagnostics
+[2026-11-16 19.39.05.149] Invoking runner: runners/test_dotnet_deep.ps1
+[2026-11-16 19.39.05.566]   [PASS] DOTNET-001: Type Safety & Assembly Resolution Verification (5ms)
+[2026-11-16 19.39.05.583]   [PASS] DOTNET-002: Zero-Leak Threading & Background Worker Safety (25ms)
+[2026-11-16 19.39.05.584]   [PASS] DOTNET-003: JSON Serialization Edge Cases & Extreme Payloads (64ms)
+[2026-11-16 19.39.05.584]   [PASS] DOTNET-004: Resource Stream Extraction & Icon Decoding (0ms)
+[2026-11-16 19.39.05.585]   [PASS] DOTNET-005: Exception Handling & Unobserved Task Trapping (9ms)
+[2026-11-16 19.39.05.586]   [PASS] DOTNET-006: Memory Disposal & Large Object Heap Allocations (85ms)
+[2026-11-16 19.39.05.587] ------------------------------------------------------------
+[2026-11-16 19.39.05.587] Executing Phase: PHASE-09 - JavaScript & Web Tools Verification
+[2026-11-16 19.39.05.588] Invoking runner: runners/test_js_bridge.ps1
+[2026-11-16 19.39.05.892]   [PASS] JS-001: AffiliateAppsBuilder HTML Syntax & ES6 Validation (18ms)
+[2026-11-16 19.39.05.893]   [PASS] JS-002: RecommendedAppsBuilder HTML Syntax & DOM Events (1ms)
+[2026-11-16 19.39.05.894]   [PASS] JS-003: apps_data.js Global Catalog Array Integrity (10ms)
+[2026-11-16 19.39.05.894]   [PASS] JS-004: JSON Export Blob Generation & Browser Download (1ms)
+[2026-11-16 19.39.05.896]   [PASS] JS-005: XSS Sanitization in Web Builder Form Inputs (0ms)
+[2026-11-16 19.39.05.897] ------------------------------------------------------------
+[2026-11-16 19.39.05.897] Executing Phase: PHASE-10 - Filesystem & Data Integrity
+[2026-11-16 19.39.05.898] Invoking runner: runners/test_filesystem.ps1
+[2026-11-16 19.39.06.123]   [PASS] FS-001: Zero-Byte & Corrupt JSON File Recovery (31ms)
+[2026-11-16 19.39.06.140]   [PASS] FS-002: Atomic Config File Writes & Concurrency Lock (26ms)
+[2026-11-16 19.39.06.140]   [PASS] FS-003: ReadOnly & Restricted Directory Graceful Handling (1ms)
+[2026-11-16 19.39.06.141]   [PASS] FS-004: Special Character & Unicode Path File Access (2ms)
+[2026-11-16 19.39.06.142]   [PASS] FS-005: Eliminated Subfolder Audit (No reports/ or logs/) (1ms)
+[2026-11-16 19.39.06.143] ------------------------------------------------------------
+[2026-11-16 19.39.06.143] Executing Phase: PHASE-11 - Network & Offline Robustness
+[2026-11-16 19.39.06.144] Invoking runner: runners/test_network.ps1
+[2026-11-16 19.39.06.375]   [PASS] NET-001: Total Offline Air-Gapped Operation (22ms)
+[2026-11-16 19.39.06.389]   [PASS] NET-002: DNS Failure & Connection Timeout Trapping (16ms)
+[2026-11-16 19.39.06.390]   [PASS] NET-003: Multi-Source CDN / GitHub Failover Logic (26ms)
+[2026-11-16 19.39.06.391]   [PASS] NET-004: Corrupt Server Response (HTTP 500/HTML Error) (3ms)
+[2026-11-16 19.39.06.392] ------------------------------------------------------------
+[2026-11-16 19.39.06.393] Executing Phase: PHASE-12 - Security & Vulnerability Assessment
+[2026-11-16 19.39.06.394] Invoking runner: runners/test_security.ps1
+[2026-11-16 19.39.06.679]   [PASS] SEC-001: Process Injection & Argument Sanitization (0ms)
+[2026-11-16 19.39.06.681]   [PASS] SEC-002: Path Traversal in Import/Export Routines (2ms)
+[2026-11-16 19.39.06.682]   [PASS] SEC-003: DLL Preloading & Hijacking Analysis (30ms)
+[2026-11-16 19.39.06.683]   [PASS] SEC-004: Hardcoded Secrets & Credential Leak Audit (25ms)
+[2026-11-16 19.39.06.683]   [PASS] SEC-005: Least-Privilege Standard User Compatibility (0ms)
+[2026-11-16 19.39.06.684] ------------------------------------------------------------
+[2026-11-16 19.39.06.685] Executing Phase: PHASE-13 - Performance, Memory & Stress
+[2026-11-16 19.39.06.686] Invoking runner: runners/test_performance.ps1
+[2026-11-16 19.39.12.583]   [PASS] PERF-001: Cold Start & Warm Start Launch Latency (635ms)
+[2026-11-16 19.39.12.584]   [PASS] PERF-002: Idle & Peak Working Set Memory Footprint (2025ms)
+[2026-11-16 19.39.12.585]   [PASS] PERF-003: 16,349 Packages Search Query Benchmark (<50ms) (152ms)
+[2026-11-16 19.39.12.587]   [PASS] PERF-004: Repeated Rapid Launch/Exit Stress (20 iterations) (1576ms)
+[2026-11-16 19.39.12.588]   [PASS] PERF-005: Handle Count & GDI Resource Stability (1016ms)
+[2026-11-16 19.39.12.588] ------------------------------------------------------------
+[2026-11-16 19.39.12.589] Executing Phase: PHASE-14 - Crash & Failure Injection
+[2026-11-16 19.39.12.590] Invoking runner: runners/test_crash_recovery.ps1
+[2026-11-16 19.39.15.897]   [PASS] CRASH-001: Process Force-Kill Recovery State (1531ms)
+[2026-11-16 19.39.15.899]   [PASS] CRASH-002: Sudden Power-Loss / Interrupted Download Recovery (4ms)
+[2026-11-16 19.39.15.900]   [PASS] CRASH-003: Simulated Out-Of-Disk-Space during Extraction (0ms)
+[2026-11-16 19.39.15.902]   [PASS] CRASH-004: Multi-Instance Mutex & Concurrency Lock (1533ms)
+[2026-11-16 19.39.15.914] Saved raw test results to E:\AI_Technology\My Tools\FleetForge\qa\results\test_results_raw.json
+[2026-11-16 19.39.15.916] Generating comprehensive QA reports...
+[2026-11-16 19.39.16.159] ============================================================
+[2026-11-16 19.39.16.160] All Sandbox Tests Finished Successfully at 2026-11-16 19.39.16
+[2026-11-16 19.39.16.161] ============================================================

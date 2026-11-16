@@ -1,0 +1,47 @@
+﻿[
+    {
+        "id":  "JS-001",
+        "name":  "AffiliateAppsBuilder HTML Syntax \u0026 ES6 Validation",
+        "error":  "",
+        "durationMs":  18,
+        "evidence":  "Validated HTML5 structure and inline JS engine",
+        "phase":  "PHASE-09",
+        "status":  "PASS"
+    },
+    {
+        "id":  "JS-002",
+        "name":  "RecommendedAppsBuilder HTML Syntax \u0026 DOM Events",
+        "error":  "",
+        "durationMs":  1,
+        "evidence":  "Render routines and event bindings verified",
+        "phase":  "PHASE-09",
+        "status":  "PASS"
+    },
+    {
+        "id":  "JS-003",
+        "name":  "apps_data.js Global Catalog Array Integrity",
+        "error":  "",
+        "durationMs":  10,
+        "evidence":  "Standalone tools catalog data verified",
+        "phase":  "PHASE-09",
+        "status":  "PASS"
+    },
+    {
+        "id":  "JS-004",
+        "name":  "JSON Export Blob Generation \u0026 Browser Download",
+        "error":  "",
+        "durationMs":  1,
+        "evidence":  "Client-side Blob URL generator verified",
+        "phase":  "PHASE-09",
+        "status":  "PASS"
+    },
+    {
+        "id":  "JS-005",
+        "name":  "XSS Sanitization in Web Builder Form Inputs",
+        "error":  "",
+        "durationMs":  0,
+        "evidence":  "Input sanitization and safe DOM insertion verified",
+        "phase":  "PHASE-09",
+        "status":  "PASS"
+    }
+]

@@ -1,0 +1,74 @@
+﻿[
+    {
+        "id":  "UI-001",
+        "name":  "DWM Window Chrome \u0026 Titlebar Attribute Binding",
+        "error":  "",
+        "durationMs":  10,
+        "evidence":  "DwmSetWindowAttribute P/Invoke hooks verified",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-002",
+        "name":  "Responsive Resolution Scaling (1080p, 768p, 720p)",
+        "error":  "",
+        "durationMs":  22,
+        "evidence":  "UpdateAutoResolutionScale engine found and verified",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-003",
+        "name":  "Display Zoom Modes (Auto, 100%, 90%, 80%)",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "Display scale modes verified in SettingsModel",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-004",
+        "name":  "Windows Light \u0026 Dark Theme Real-time Sync",
+        "error":  "",
+        "durationMs":  4,
+        "evidence":  "Theme detection returned: isLight = True",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-005",
+        "name":  "Modal Overlay Viewport Constraint \u0026 No-Clip Check",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "Modal cards constrained with MaxWidth/MaxHeight and safe margins",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-006",
+        "name":  "Keyboard Tab Order \u0026 Focus Traversal",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "Standard WPF keyboard focus navigation enabled",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-007",
+        "name":  "Text Truncation \u0026 High DPI Text Rendering",
+        "error":  "",
+        "durationMs":  5,
+        "evidence":  "Segoe UI Variable Text with TextTrimming verified",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    },
+    {
+        "id":  "UI-008",
+        "name":  "Toast Notification Slide-in Animation \u0026 Placement",
+        "error":  "",
+        "durationMs":  0,
+        "evidence":  "Windows11ToastWindow type validated",
+        "phase":  "PHASE-07",
+        "status":  "PASS"
+    }
+]
