@@ -19,6 +19,13 @@
       "description": "Privacy-focused high performance browser (Affiliate Partner Build).",
       "downloadUrl": "https://laptop-updates.brave.com/latest/winx64",
       "silentArgs": "/silent /install"
+    },
+    {
+      "id": "NordVPN.NordVPN",
+      "name": "NordVPN",
+      "category": "security",
+      "description": "High-speed secure VPN with threat protection (Partner Discount & Activation).",
+      "affiliateWebUrl": "https://nordvpn.com/special-deal/?coupon=fleetforge"
     }
   ]
 }

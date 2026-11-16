@@ -72,6 +72,7 @@ namespace FleetForge
         public string offlineInstaller { get; set; }
         public string silentArgs { get; set; }
         public string downloadUrl { get; set; }
+        public string affiliateWebUrl { get; set; }
     }
 
     public class PresetProfileItem
@@ -1457,6 +1458,16 @@ namespace FleetForge
                     File.WriteAllText(sessionPath, ser.Serialize(session), Encoding.UTF8);
                 }
                 catch { }
+
+                if (!string.IsNullOrEmpty(app.affiliateWebUrl))
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo(app.affiliateWebUrl) { UseShellExecute = true });
+                        Console.WriteLine("    [PARTNER] Opened partner discount/signup page in default browser: {0}", app.affiliateWebUrl);
+                    }
+                    catch { }
+                }
 
                 bool installed = false;
 
@@ -2883,6 +2894,7 @@ namespace FleetForge
         private TextBox txtBuilderAppName;
         private ComboBox cmbBuilderCategory;
         private TextBox txtBuilderDownloadUrl;
+        private TextBox txtBuilderAffiliateWebUrl;
         private TextBox txtBuilderSilentArgs;
         private TextBox txtBuilderDesc;
         private Button btnBuilderAddUpdate;
@@ -4305,7 +4317,11 @@ namespace FleetForge
                                          BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
 
                                 <TextBlock Text=""Category:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
-                                <ComboBox x:Name=""CmbBuilderCategory"" Height=""28"" Background=""#0B0D11"" Foreground=""#11141A"" FontSize=""11""/>
+                                <ComboBox x:Name=""CmbBuilderCategory"" Height=""28"" Background=""#0B0D11"" Foreground=""#11141A"" FontSize=""11"" Margin=""0,0,0,6""/>
+
+                                <TextBlock Text=""Short Description:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderDesc"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                         BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center""/>
                             </StackPanel>
 
                             <!-- Column 1 -->
@@ -4314,12 +4330,12 @@ namespace FleetForge
                                 <TextBox x:Name=""TxtBuilderDownloadUrl"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
                                          BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
 
-                                <TextBlock Text=""Silent Install Flags (e.g. /VERYSILENT /NORESTART or /S):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
-                                <TextBox x:Name=""TxtBuilderSilentArgs"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                <TextBlock Text=""Affiliate Web Redirect URL (Browser Signup / Discount):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderAffiliateWebUrl"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
                                          BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center"" Margin=""0,0,0,6""/>
 
-                                <TextBlock Text=""Short Description:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
-                                <TextBox x:Name=""TxtBuilderDesc"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
+                                <TextBlock Text=""Silent Install Flags (e.g. /VERYSILENT /NORESTART or /S):"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,3""/>
+                                <TextBox x:Name=""TxtBuilderSilentArgs"" Height=""28"" Background=""#0B0D11"" Foreground=""#FFFFFF""
                                          BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""6,3"" FontSize=""11"" VerticalContentAlignment=""Center""/>
                             </StackPanel>
                         </Grid>
@@ -5054,6 +5070,7 @@ namespace FleetForge
             txtBuilderAppName = (TextBox)root.FindName("TxtBuilderAppName");
             cmbBuilderCategory = (ComboBox)root.FindName("CmbBuilderCategory");
             txtBuilderDownloadUrl = (TextBox)root.FindName("TxtBuilderDownloadUrl");
+            txtBuilderAffiliateWebUrl = (TextBox)root.FindName("TxtBuilderAffiliateWebUrl");
             txtBuilderSilentArgs = (TextBox)root.FindName("TxtBuilderSilentArgs");
             txtBuilderDesc = (TextBox)root.FindName("TxtBuilderDesc");
             btnBuilderAddUpdate = (Button)root.FindName("BtnBuilderAddUpdate");
@@ -6798,6 +6815,7 @@ namespace FleetForge
             if (txtBuilderAppId != null) { txtBuilderAppId.Background = inputBg; txtBuilderAppId.BorderBrush = inputBorder; txtBuilderAppId.Foreground = inputFg; }
             if (txtBuilderAppName != null) { txtBuilderAppName.Background = inputBg; txtBuilderAppName.BorderBrush = inputBorder; txtBuilderAppName.Foreground = inputFg; }
             if (txtBuilderDownloadUrl != null) { txtBuilderDownloadUrl.Background = inputBg; txtBuilderDownloadUrl.BorderBrush = inputBorder; txtBuilderDownloadUrl.Foreground = inputFg; }
+            if (txtBuilderAffiliateWebUrl != null) { txtBuilderAffiliateWebUrl.Background = inputBg; txtBuilderAffiliateWebUrl.BorderBrush = inputBorder; txtBuilderAffiliateWebUrl.Foreground = inputFg; }
             if (txtBuilderSilentArgs != null) { txtBuilderSilentArgs.Background = inputBg; txtBuilderSilentArgs.BorderBrush = inputBorder; txtBuilderSilentArgs.Foreground = inputFg; }
             if (txtBuilderDesc != null) { txtBuilderDesc.Background = inputBg; txtBuilderDesc.BorderBrush = inputBorder; txtBuilderDesc.Foreground = inputFg; }
             if (cmbBuilderCategory != null) { cmbBuilderCategory.Background = inputBg; cmbBuilderCategory.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF"); }
@@ -7622,6 +7640,7 @@ namespace FleetForge
                         {
                             if (!string.IsNullOrEmpty(ca.downloadUrl)) existing.downloadUrl = ca.downloadUrl;
                             if (!string.IsNullOrEmpty(ca.silentArgs)) existing.silentArgs = ca.silentArgs;
+                            if (!string.IsNullOrEmpty(ca.affiliateWebUrl)) existing.affiliateWebUrl = ca.affiliateWebUrl;
                         }
                     }
                 }
@@ -7713,6 +7732,7 @@ namespace FleetForge
             if (txtBuilderAppId != null) txtBuilderAppId.Text = "";
             if (txtBuilderAppName != null) txtBuilderAppName.Text = "";
             if (txtBuilderDownloadUrl != null) txtBuilderDownloadUrl.Text = "";
+            if (txtBuilderAffiliateWebUrl != null) txtBuilderAffiliateWebUrl.Text = "";
             if (txtBuilderSilentArgs != null) txtBuilderSilentArgs.Text = "";
             if (txtBuilderDesc != null) txtBuilderDesc.Text = "";
             if (cmbBuilderCategory != null && cmbBuilderCategory.Items.Count > 0) cmbBuilderCategory.SelectedIndex = 2;
@@ -7793,11 +7813,16 @@ namespace FleetForge
             }
 
             AppModel existingCust = builderCustomApps.Find(x => string.Equals(x.id, selected.id, StringComparison.OrdinalIgnoreCase));
-            if (existingCust != null && txtBuilderDownloadUrl != null)
+            if (existingCust != null)
             {
-                txtBuilderDownloadUrl.Text = existingCust.downloadUrl ?? "";
+                if (txtBuilderDownloadUrl != null) txtBuilderDownloadUrl.Text = existingCust.downloadUrl ?? "";
+                if (txtBuilderAffiliateWebUrl != null) txtBuilderAffiliateWebUrl.Text = existingCust.affiliateWebUrl ?? "";
                 if (!string.IsNullOrEmpty(existingCust.silentArgs) && txtBuilderSilentArgs != null)
                     txtBuilderSilentArgs.Text = existingCust.silentArgs;
+            }
+            else
+            {
+                if (txtBuilderAffiliateWebUrl != null) txtBuilderAffiliateWebUrl.Text = selected.affiliateWebUrl ?? "";
             }
 
             lstBuilderSearchResults.Visibility = Visibility.Collapsed;
@@ -7818,6 +7843,7 @@ namespace FleetForge
 
             string cat = cmbBuilderCategory != null && cmbBuilderCategory.SelectedItem != null ? cmbBuilderCategory.SelectedItem.ToString() : "utilities";
             string downloadUrl = txtBuilderDownloadUrl != null ? txtBuilderDownloadUrl.Text.Trim() : "";
+            string affiliateWebUrl = txtBuilderAffiliateWebUrl != null ? txtBuilderAffiliateWebUrl.Text.Trim() : "";
             string silentArgs = txtBuilderSilentArgs != null ? txtBuilderSilentArgs.Text.Trim() : "";
             string desc = txtBuilderDesc != null ? txtBuilderDesc.Text.Trim() : "";
 
@@ -7833,6 +7859,7 @@ namespace FleetForge
                 target.name = name;
                 target.category = cat;
                 target.downloadUrl = downloadUrl;
+                target.affiliateWebUrl = !string.IsNullOrEmpty(affiliateWebUrl) ? affiliateWebUrl : null;
                 target.silentArgs = silentArgs;
                 target.description = desc;
                 if (txtBuilderFormStatus != null) txtBuilderFormStatus.Text = "✓ Updated: " + name;
@@ -7845,6 +7872,7 @@ namespace FleetForge
                     name = name,
                     category = cat,
                     downloadUrl = downloadUrl,
+                    affiliateWebUrl = !string.IsNullOrEmpty(affiliateWebUrl) ? affiliateWebUrl : null,
                     silentArgs = silentArgs,
                     description = desc
                 };
@@ -7972,7 +8000,34 @@ namespace FleetForge
                     urlStack.Children.Add(txtUrl);
                     col1.Children.Add(urlStack);
                 }
-                else
+
+                if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                {
+                    StackPanel webStack = new StackPanel() { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 0) };
+                    Border webBadge = new Border()
+                    {
+                        Background = isLight ? HexBrush("#ECFDF5") : HexBrush("#064E3B"),
+                        CornerRadius = new CornerRadius(4),
+                        Padding = new Thickness(5, 1, 5, 1),
+                        Margin = new Thickness(0, 0, 6, 0)
+                    };
+                    TextBlock txtWebBadge = new TextBlock() { Text = "🌐 Web Redirect", FontSize = 9, FontWeight = FontWeights.Bold, Foreground = HexBrush("#059669") };
+                    webBadge.Child = txtWebBadge;
+                    TextBlock txtWebUrl = new TextBlock()
+                    {
+                        Text = curApp.affiliateWebUrl,
+                        FontSize = 10,
+                        Foreground = isLight ? HexBrush("#047857") : HexBrush("#34D399"),
+                        TextTrimming = TextTrimming.CharacterEllipsis,
+                        MaxWidth = 320,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    webStack.Children.Add(webBadge);
+                    webStack.Children.Add(txtWebUrl);
+                    col1.Children.Add(webStack);
+                }
+
+                if (string.IsNullOrEmpty(curApp.downloadUrl) && string.IsNullOrEmpty(curApp.affiliateWebUrl))
                 {
                     TextBlock txtWinget = new TextBlock()
                     {
@@ -8018,6 +8073,7 @@ namespace FleetForge
                     if (txtBuilderAppId != null) txtBuilderAppId.Text = curApp.id ?? "";
                     if (txtBuilderAppName != null) txtBuilderAppName.Text = curApp.name ?? "";
                     if (txtBuilderDownloadUrl != null) txtBuilderDownloadUrl.Text = curApp.downloadUrl ?? "";
+                    if (txtBuilderAffiliateWebUrl != null) txtBuilderAffiliateWebUrl.Text = curApp.affiliateWebUrl ?? "";
                     if (txtBuilderSilentArgs != null) txtBuilderSilentArgs.Text = curApp.silentArgs ?? "";
                     if (txtBuilderDesc != null) txtBuilderDesc.Text = curApp.description ?? "";
                     if (cmbBuilderCategory != null && !string.IsNullOrEmpty(curApp.category))
@@ -8155,6 +8211,7 @@ namespace FleetForge
                                     if (!string.IsNullOrEmpty(a.name)) existing.name = a.name;
                                     if (!string.IsNullOrEmpty(a.downloadUrl)) existing.downloadUrl = a.downloadUrl;
                                     if (!string.IsNullOrEmpty(a.silentArgs)) existing.silentArgs = a.silentArgs;
+                                    if (!string.IsNullOrEmpty(a.affiliateWebUrl)) existing.affiliateWebUrl = a.affiliateWebUrl;
                                     if (!string.IsNullOrEmpty(a.category)) existing.category = a.category;
                                     if (!string.IsNullOrEmpty(a.description)) existing.description = a.description;
                                 }
@@ -10586,9 +10643,17 @@ namespace FleetForge
                     Margin = new Thickness(6, 0, 0, 0),
                     Padding = new Thickness(7, 2, 7, 2)
                 };
+                string custBadgeLabel = "💎 CUSTOM";
+                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "⚡ DIRECT & WEB";
+                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
+                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
+                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
+
                 TextBlock txtCust = new TextBlock()
                 {
-                    Text = !string.IsNullOrEmpty(curApp.downloadUrl) ? "⚡ AFFILIATE / DIRECT" : "💎 CUSTOM",
+                    Text = custBadgeLabel,
                     FontSize = 9.5,
                     FontWeight = FontWeights.Bold,
                     Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
@@ -11114,9 +11179,17 @@ namespace FleetForge
                     Margin = new Thickness(6, 0, 0, 0),
                     Padding = new Thickness(7, 2, 7, 2)
                 };
+                string custBadgeLabel = "💎 CUSTOM";
+                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "⚡ DIRECT & WEB";
+                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
+                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
+                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
+
                 TextBlock txtCust = new TextBlock()
                 {
-                    Text = !string.IsNullOrEmpty(curApp.downloadUrl) ? "⚡ AFFILIATE / DIRECT" : "💎 CUSTOM",
+                    Text = custBadgeLabel,
                     FontSize = 9.5,
                     FontWeight = FontWeights.Bold,
                     Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
@@ -12092,6 +12165,16 @@ namespace FleetForge
                     }));
 
                     AppendLog(string.Format("[{0}/{1}] Processing: {2} ({3})", i + 1, selectedApps.Count, app.name, app.id));
+
+                    if (!string.IsNullOrEmpty(app.affiliateWebUrl))
+                    {
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo(app.affiliateWebUrl) { UseShellExecute = true });
+                            AppendLog(string.Format("🌐 Partner discount/activation page opened in browser: {0}", app.affiliateWebUrl));
+                        }
+                        catch { }
+                    }
 
                     AppDeploymentRecord rec = currentSession.records.Find(delegate(AppDeploymentRecord r) { return r != null && r.appId == app.id; });
                     if (rec == null)

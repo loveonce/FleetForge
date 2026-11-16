@@ -245,6 +245,13 @@ for ($i = 0; $i -lt $selectedApps.Count; $i++) {
     $idx = $i + 1
     Write-Host "`n[$idx/$($selectedApps.Count)] Processing $($app.name)..." -ForegroundColor Yellow
 
+    if ($app.affiliateWebUrl) {
+        try {
+            Start-Process $app.affiliateWebUrl
+            Log "Opening partner discount/signup page in default browser: $($app.affiliateWebUrl)"
+        } catch {}
+    }
+
     $appInstalled = $false
 
     if ($WingetCmd) {
