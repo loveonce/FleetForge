@@ -1,17 +1,16 @@
 {
-  "version": "2.6.3",
-  "versionCode": 263,
-  "buildDate": "2026-11-13",
-  "title": "FleetForge v2.6.3 Enterprise IT Edition",
+  "version": "2.6.4",
+  "versionCode": 264,
+  "buildDate": "2026-11-16",
+  "title": "FleetForge v2.6.4 Enterprise IT Edition",
   "company": "Love Malhotra",
   "website": "https://www.google.com",
   "changelog": [
-    "Minimize to Windows System Tray (NotifyIcon) with interactive controls and background task awareness",
-    "Windows 11 Fluent Toaster Notification popup showing live progress and completion summary (Selected, Installed, Downloaded, Status)",
-    "Windows 11 colorful Fluent icon badges across navigation rail and pack cards",
-    "Bottom bar Stop button during setup and smart Finish button returning to originating screen",
-    "Relocated install-log.txt, error-log.txt, and session data to AppData\\Local\\FleetForge with complete purge on uninstall",
-    "Removed HTML report generation and blocking modal dialogs for a seamless deployment experience"
+    "Permanent fix for update detection: direct GitHub origin priority, query cache-busting, and multi-endpoint fallback",
+    "Completely eliminated reports folder creation across the application, setup installer, and AppData",
+    "Any required deployment reports and audit logs are saved directly in AppData\\Local\\FleetForge without subfolders",
+    "Automated CDN edge invalidation pipeline (Purge-Cdn.bat & Release-Update.bat)",
+    "Directory optimization: cleaned legacy leftover report files, empty folders, and locked version to 2.6.4"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }

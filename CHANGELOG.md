@@ -4,6 +4,17 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.4] — 2026-11-16
+
+### Added & Improved
+- **Permanent Multi-Source Update Detection:** Redesigned update checking engine with direct GitHub Raw origin priority (`raw.githubusercontent.com`), nonced timestamp query parameters (`?_cb=ticks`), and HTTP no-cache headers. Evaluates all reachable endpoints for the highest release version to eliminate false "No Update Found" notices caused by CDN caching delays.
+- **GitHub REST API Fallback:** Added native parsing support for `api.github.com/repos/loveonce/FleetForge/releases/latest` to cross-reference release tags directly against GitHub Releases.
+- **Reports Folder Elimination:** Removed creation of `reports/` and `logs/` folders across the desktop app, setup installer, and AppData directory.
+- **Rooted AppData Logging:** All runtime deployment output (`install-log.txt`) and error logs (`error-log.txt`) reside directly in `%LOCALAPPDATA%\FleetForge\`. If required, compliance reports save directly into the root AppData directory without creating subfolders.
+- **Self-Cleaning Legacy Purge:** Application startup and setup wizard automatically detect and remove legacy `reports/` directories left from earlier versions.
+- **Automated CDN Invalidation Tooling:** Introduced `scripts/Purge-Cdn.bat` and `scripts/Release-Update.bat` to invalidate jsDelivr edge caches globally across all endpoints during release.
+- **Version Lock:** Official release locked to **v2.6.4** across all binaries, manifests, setup wizard, uninstaller, and documentation.
+
 ## [2.6.3] — 2026-11-13
 
 ### Added
