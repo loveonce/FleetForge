@@ -529,7 +529,7 @@
         🟣 Custom &amp; Affiliate Catalog (custom_apps.json)
       </button>
       <button id="tabRecommended" class="mode-tab tab-recommended" onclick="switchCatalogMode('recommended')">
-        ⭐ Top Choice • Recommended (recommended_apps.json)
+        ⭐ Top Choice • Non-Winget Software (recommended_apps.json)
       </button>
     </div>
 
@@ -619,7 +619,7 @@
           <span id="listTitle">📦 Configured Custom &amp; Affiliate Packages</span> (<span id="appCount">0</span>)
         </h2>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-primary btn-sm" onclick="openOverrideModal()" title="Search all 16,350 apps from apps.json to auto-fill Name, ID and Category">
+          <button class="btn btn-primary btn-sm" id="btnOverrideWinget" onclick="openOverrideModal()" title="Search all 16,350 apps from apps.json to auto-fill Name, ID and Category">
             🔍 Search &amp; Override from apps.json (16,350 Apps)
           </button>
           <button class="btn btn-secondary btn-sm" id="btnCleanDuplicates" onclick="cleanDuplicates()" title="Automatically remove duplicate entries">
@@ -636,13 +636,19 @@
         <!-- Rendered dynamically by JavaScript -->
       </div>
 
-      <!-- Add Buttons at the Bottom -->
-      <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <!-- Add Buttons at the Bottom (Custom vs Recommended) -->
+      <div id="bottomButtonsCustom" style="display: flex; gap: 8px; margin-top: 8px;">
         <button class="btn btn-primary" style="flex: 2; padding: 10px; font-size: 13px;" onclick="addNewApp()">
           🔍 Search &amp; Add Software from apps.json (16,350 Packages)
         </button>
         <button class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 13px; border-style: dashed;" onclick="addManualEmptyApp()">
-          ➕ Add Blank Card
+          ➕ Add Blank Override Card
+        </button>
+      </div>
+
+      <div id="bottomButtonsRecommended" style="display: none; margin-top: 8px;">
+        <button class="btn btn-primary" style="width: 100%; padding: 11px; font-size: 13.5px; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border:none;" onclick="addNonWingetApp()">
+          ➕ Add Non-Winget Software Package (Direct Cloud Delivery)
         </button>
       </div>
     </section>
@@ -839,28 +845,48 @@
       const bannerTarget = document.getElementById("bannerTargetFile");
       const bannerTarget2 = document.getElementById("bannerTargetFile2");
 
+      const btnOv = document.getElementById("btnOverrideWinget");
+      const bottomCust = document.getElementById("bottomButtonsCustom");
+      const bottomRec = document.getElementById("bottomButtonsRecommended");
+      const bannerTitle = document.getElementById("bannerTitle");
+      const bannerDesc = document.getElementById("bannerDesc");
+
       if (mode === "custom") {
         tabAff.classList.add("active");
         tabRec.classList.remove("active");
         cardGroup.style.display = "none";
+        if (btnOv) btnOv.style.display = "inline-flex";
+        if (bottomCust) bottomCust.style.display = "flex";
+        if (bottomRec) bottomRec.style.display = "none";
+
         btnDownload.textContent = "📥 Download custom_apps.json";
         btnDownload.className = "btn btn-purple";
         btnSideDownload.className = "btn btn-purple btn-sm";
         previewFileName.textContent = "custom_apps.json";
-        listTitle.textContent = "📦 Configured Custom & Affiliate Packages";
+        listTitle.textContent = "📦 Custom & Affiliate Packages (Winget Overrides)";
         bannerTarget.textContent = "custom_apps.json";
         bannerTarget2.textContent = "custom_apps.json";
+
+        if (bannerTitle) bannerTitle.textContent = "How Cloud Deployment Works: Override Winget Apps with Affiliate Links";
+        if (bannerDesc) bannerDesc.innerHTML = "Configure affiliate URLs for existing Winget packages. FleetForge will automatically prioritize your affiliate links over the base catalog.";
       } else {
         tabRec.classList.add("active");
         tabAff.classList.remove("active");
         cardGroup.style.display = "block";
+        if (btnOv) btnOv.style.display = "none";
+        if (bottomCust) bottomCust.style.display = "none";
+        if (bottomRec) bottomRec.style.display = "block";
+
         btnDownload.textContent = "📥 Download recommended_apps.json";
         btnDownload.className = "btn btn-primary";
         btnSideDownload.className = "btn btn-primary btn-sm";
         previewFileName.textContent = "recommended_apps.json";
-        listTitle.textContent = "⭐ Recommended Tier 1 Software";
+        listTitle.textContent = "⭐ Curated Non-Winget Software (Pinned Tier 1)";
         bannerTarget.textContent = "recommended_apps.json";
         bannerTarget2.textContent = "recommended_apps.json";
+
+        if (bannerTitle) bannerTitle.textContent = "⭐ Top Choice: Non-Winget Software Catalog (Direct Delivery)";
+        if (bannerDesc) bannerDesc.innerHTML = "This pack is strictly for software that are <strong>NOT available on Winget</strong> (e.g. iSecure VPN, Win Riser, Bit Driver Updater, internal company tools). <strong>Direct Download URL is required</strong> so FleetForge can download and install them silently.";
       }
 
       renderApps();
@@ -909,7 +935,113 @@
         if (app.affiliateWebUrl) badgesHtml += `<span class="badge badge-web">🌐 Web Redirect</span> `;
         if (!app.downloadUrl && !app.affiliateWebUrl) badgesHtml += `<span class="badge badge-winget">📦 Winget Engine</span>`;
 
-        card.innerHTML = `
+        if (currentMode === "recommended") {
+          // =========================================================================
+          // RECOMMENDED MODE: STRICTLY NON-WINGET SOFTWARE CARD
+          // =========================================================================
+          card.innerHTML = `
+            <div class="app-header" style="border-left: 4px solid #F59E0B; padding-left: 8px;">
+              <div class="app-num" style="background:#FEF3C7; color:#B45309;">${index + 1}</div>
+              <div class="app-title-preview" id="title-preview-${index}">
+                <span style="font-weight:700; color:#0F172A;">${escapeHtml(app.name || "Untitled Non-Winget Tool")}</span>
+                <span style="font-weight: normal; font-size: 11px; color: var(--text-muted); font-family:monospace;">[${escapeHtml(app.id || "No ID")}]</span>
+                <span class="badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D; font-weight:700;">⭐ NON-WINGET APP</span>
+                ${app.downloadUrl ? '<span class="badge badge-direct">⚡ Direct Cloud Download</span>' : '<span class="badge" style="background:#FEE2E2; color:#DC2626; border:1px solid #F87171;">⚠️ Missing Download URL</span>'}
+              </div>
+              <div class="app-controls">
+                <button class="btn btn-secondary btn-sm" title="Move Up" onclick="moveApp(${index}, -1)" ${index === 0 ? "disabled" : ""}>⬆️</button>
+                <button class="btn btn-secondary btn-sm" title="Move Down" onclick="moveApp(${index}, 1)" ${index === list.length - 1 ? "disabled" : ""}>⬇️</button>
+                <button class="btn btn-danger btn-sm" title="Delete" onclick="removeApp(${index})">🗑️ Delete</button>
+              </div>
+            </div>
+
+            <div style="background:#FFFBEB; border:1px solid #FCD34D; border-radius:8px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+              <div>
+                <div style="font-weight:700; color:#92400E; font-size:12.5px;">⭐ Curated Non-Winget Software (Direct Cloud Delivery)</div>
+                <div style="font-size:11.5px; color:#B45309; margin-top:2px;">This tool is not available on Winget. Direct Download URL is required so FleetForge can download and install it silently.</div>
+              </div>
+              <span class="badge" style="background:#F59E0B; color:#FFFFFF; font-weight:700; font-size:10px;">TIER 1 PINNED</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field-group">
+                <label class="field-label">Software Name <span class="req">*</span></label>
+                <input type="text" class="input" id="input-nonwinget-name-${index}" value="${escapeHtml(app.name || "")}" 
+                  placeholder="e.g. iSecure VPN, Win Riser, Bit Driver Updater" 
+                  oninput="updateAppField(${index}, 'name', this.value)">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">
+                  <span>Unique Package ID <span class="req">*</span></span>
+                  <span class="field-hint">e.g. isolve.iSecureVPN</span>
+                </label>
+                <input type="text" class="input" value="${escapeHtml(app.id || "")}" 
+                  placeholder="vendor.appname" 
+                  oninput="updateAppField(${index}, 'id', this.value)">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Category (FleetForge Group) <span class="req">*</span></label>
+                <select onchange="updateAppField(${index}, 'category', this.value)">
+                  ${categoryOptions}
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" style="color:#B45309; font-weight:700;">
+                  <span>Direct Download URL (EXE/MSI) <span class="req">* Mandatory</span></span>
+                  <span class="field-hint">Direct link to setup installer</span>
+                </label>
+                <input type="text" class="input" value="${escapeHtml(app.downloadUrl || "")}" 
+                  placeholder="https://cdn.vendor.com/app/v1005/setup.exe" 
+                  style="border-color:#F59E0B; font-weight:600; background:#FFFDF7;"
+                  oninput="updateAppField(${index}, 'downloadUrl', this.value)">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Installer EXE File Name</label>
+                <input type="text" class="input" value="${escapeHtml(app.offlineInstaller || "")}" 
+                  placeholder="e.g. isecurevpnsetup.exe or wrsetup.exe" 
+                  oninput="updateAppField(${index}, 'offlineInstaller', this.value)">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Silent Install Arguments</label>
+                <input type="text" class="input" value="${escapeHtml(app.silentArgs || "")}" 
+                  placeholder="e.g. /S or /VERYSILENT /NORESTART" 
+                  oninput="updateAppField(${index}, 'silentArgs', this.value)">
+                <div class="preset-pills">
+                  <span class="pill" onclick="setPresetArgs(${index}, '/S')">/S (NSIS)</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/SILENT')">/SILENT</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/VERYSILENT /NORESTART')">/VERYSILENT</span>
+                  <span class="pill" onclick="setPresetArgs(${index}, '/qn')">/qn (MSI)</span>
+                </div>
+              </div>
+
+              <div class="field-group col-span-2">
+                <label class="field-label">
+                  <span>Affiliate Web Redirect URL (Browser Discount / Referral)</span>
+                  <span class="field-hint">Optional: Opens partner page in browser on install</span>
+                </label>
+                <input type="text" class="input" value="${escapeHtml(app.affiliateWebUrl || "")}" 
+                  placeholder="https://vendor.com/partner-page/?ref=..." 
+                  oninput="updateAppField(${index}, 'affiliateWebUrl', this.value)">
+              </div>
+
+              <div class="field-group col-span-2">
+                <label class="field-label">Short Description</label>
+                <input type="text" class="input" value="${escapeHtml(app.description || "")}" 
+                  placeholder="One line summary for users displayed in FleetForge" 
+                  oninput="updateAppField(${index}, 'description', this.value)">
+              </div>
+            </div>
+          `;
+        } else {
+          // =========================================================================
+          // CUSTOM MODE: WINGET AFFILIATE OVERRIDE CARD
+          // =========================================================================
+          card.innerHTML = `
           <div class="app-header">
             <div class="app-num">${index + 1}</div>
             <div class="app-title-preview" id="title-preview-${index}">
@@ -1042,7 +1174,8 @@
               </div>
             </div>
           </details>
-        `;
+          `;
+        }
         container.appendChild(card);
       });
     }
@@ -1068,6 +1201,27 @@
       renderApps();
       updateLiveJson();
       initBaseAppsCatalog();
+    }
+
+        function addNonWingetApp() {
+      const list = getCurrentAppsList();
+      list.push({
+        id: "",
+        name: "",
+        category: "utilities",
+        description: "",
+        downloadUrl: "",
+        affiliateWebUrl: "",
+        silentArgs: "/S",
+        offlineInstaller: "setup.exe"
+      });
+      renderApps();
+      updateLiveJson();
+      const newCard = document.getElementById(`app-card-${list.length - 1}`);
+      if (newCard) newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      const nameInp = document.getElementById(`input-nonwinget-name-${list.length - 1}`);
+      if (nameInp) nameInp.focus();
+      showToast("Added new Non-Winget software card. Enter Direct Download URL!");
     }
 
     function addNewApp() {
