@@ -8,7 +8,7 @@
       "id": "Google.Chrome",
       "name": "Google Chrome",
       "category": "browsers",
-      "description": "Fast, secure web browser built by Google (Custom Affiliate / Direct Cloud Package).",
+      "description": "Fast, secure web browser built by Google.",
       "downloadUrl": "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
       "silentArgs": "/silent /install"
     },
@@ -16,7 +16,7 @@
       "id": "Brave.Brave",
       "name": "Brave Browser",
       "category": "browsers",
-      "description": "Privacy-focused high performance browser (Affiliate Partner Build).",
+      "description": "Privacy-focused high performance browser with built-in ad blocking.",
       "downloadUrl": "https://laptop-updates.brave.com/latest/winx64",
       "silentArgs": "/silent /install"
     },
@@ -24,7 +24,7 @@
       "id": "NordVPN.NordVPN",
       "name": "NordVPN",
       "category": "security",
-      "description": "High-speed secure VPN with threat protection (Partner Discount & Activation).",
+      "description": "High-speed secure VPN with threat protection.",
       "affiliateWebUrl": "https://nordvpn.com/special-deal/?coupon=fleetforge"
     }
   ]

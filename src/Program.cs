@@ -10426,35 +10426,7 @@ namespace FleetForge
                 recBadge.Child = txtRec;
                 titleStack.Children.Add(recBadge);
             }
-            else if (IsCustomApp(curApp))
-            {
-                Border custBadge = new Border()
-                {
-                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
-                    BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(7, 2, 7, 2)
-                };
-                string custBadgeLabel = "💎 CUSTOM";
-                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "⚡ DIRECT & WEB";
-                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
-                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
-                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
 
-                TextBlock txtCust = new TextBlock()
-                {
-                    Text = custBadgeLabel,
-                    FontSize = 9.5,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
-                };
-                custBadge.Child = txtCust;
-                titleStack.Children.Add(custBadge);
-            }
 
             infoStack.Children.Add(titleStack);
 
@@ -11504,35 +11476,7 @@ namespace FleetForge
                 recBadge.Child = txtRec;
                 titleStack.Children.Add(recBadge);
             }
-            else if (IsCustomApp(curApp))
-            {
-                Border custBadge = new Border()
-                {
-                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
-                    BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(7, 2, 7, 2)
-                };
-                string custBadgeLabel = "💎 CUSTOM";
-                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "⚡ DIRECT & WEB";
-                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
-                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
-                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
 
-                TextBlock txtCust = new TextBlock()
-                {
-                    Text = custBadgeLabel,
-                    FontSize = 9.5,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
-                };
-                custBadge.Child = txtCust;
-                titleStack.Children.Add(custBadge);
-            }
 
             infoStack.Children.Add(titleStack);
 
@@ -12731,35 +12675,7 @@ namespace FleetForge
                 recBadge.Child = txtRec;
                 titleStack.Children.Add(recBadge);
             }
-            else if (IsCustomApp(curApp))
-            {
-                Border custBadge = new Border()
-                {
-                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
-                    BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(5),
-                    Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(7, 2, 7, 2)
-                };
-                string custBadgeLabel = "💎 CUSTOM";
-                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "⚡ DIRECT & WEB";
-                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
-                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
-                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
-                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
 
-                TextBlock txtCust = new TextBlock()
-                {
-                    Text = custBadgeLabel,
-                    FontSize = 9.5,
-                    FontWeight = FontWeights.Bold,
-                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
-                };
-                custBadge.Child = txtCust;
-                titleStack.Children.Add(custBadge);
-            }
 
             infoStack.Children.Add(titleStack);
 
