@@ -2695,15 +2695,26 @@ namespace FleetForge
         // Group Editor Modal References
         private Grid groupModalOverlay;
         private TextBlock txtModalTitle;
+        private TextBlock txtModalSubtitle;
+        private Border borderModalHeaderBadge;
         private Button btnCloseModal;
+        private Border borderPackIconCard;
+        private TextBlock txtPackIconPreview;
         private TextBox txtGroupNameInput;
+        private Border borderGroupName;
         private TextBox txtGroupIconInput;
         private WrapPanel emojiChipsPanel;
         private StackPanel panelEmojiChips;
+        private Button btnIconPrev;
+        private Button btnIconNext;
         private TextBox txtGroupDescInput;
+        private TextBlock txtGroupDescCharCount;
+        private Border borderGroupDesc;
+        private Border borderModalSearchBox;
         private TextBox txtModalAppSearch;
         private Button btnModalFilterTabAll;
         private Button btnModalFilterTabSelected;
+        private CheckBox chkModalSelectAll;
         private Button btnModalSelectAll;
         private Button btnModalClearAll;
         private TextBlock txtModalSelectedCount;
@@ -2714,6 +2725,7 @@ namespace FleetForge
         private Button btnModalExportGroup;
         private Button btnCancelModal;
         private Button btnSaveGroup;
+        private string[] quickIcons = new string[] { "🎨", "💻", "</>", "✏️", "📄", "🚀", "📊", "🛠️", "🎬", "📷", "🧮", "🔒", "⚡", "🌐", "🎮", "💼" };
 
         // Help Menu, Theme Toggle & Brand Icon
         private Grid rootGrid;
@@ -3723,113 +3735,169 @@ namespace FleetForge
     <!-- ========================================================================= -->
     <!-- GROUP EDITOR MODAL OVERLAY (CREATE / UPDATE GROUP)                        -->
     <!-- ========================================================================= -->
-    <Grid x:Name=""GroupModalOverlay"" Grid.ColumnSpan=""2"" Background=""#B0000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderModalCard"" Width=""960"" MaxHeight=""780"" Background=""#1F1F1F"" CornerRadius=""12"" BorderBrush=""#3A3A3A"" BorderThickness=""1""
-                HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28,22,28,22"">
+    <Grid x:Name=""GroupModalOverlay"" Grid.ColumnSpan=""2"" Background=""#90000000"" Visibility=""Collapsed"">
+        <Border x:Name=""BorderModalCard"" Width=""980"" MaxHeight=""820"" Background=""#FFFFFF"" CornerRadius=""16""
+                BorderBrush=""#E2E8F0"" BorderThickness=""1"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""
+                Padding=""26,20,26,20"">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius=""32"" ShadowDepth=""6"" Direction=""270"" Color=""#000000"" Opacity=""0.25""/>
+            </Border.Effect>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height=""Auto""/> <!-- Title & Close -->
-                    <RowDefinition Height=""Auto""/> <!-- Name & Icon -->
-                    <RowDefinition Height=""Auto""/> <!-- Emoji Quick Select Chips -->
-                    <RowDefinition Height=""Auto""/> <!-- Description -->
-                    <RowDefinition Height=""Auto""/> <!-- App Search & Quick Controls -->
-                    <RowDefinition Height=""*"" MinHeight=""360"" MaxHeight=""440""/> <!-- App Checklist -->
-                    <RowDefinition Height=""Auto""/> <!-- Bottom Actions -->
+                    <RowDefinition Height=""Auto""/> <!-- 0. Header (Title, Subtitle & Close) -->
+                    <RowDefinition Height=""Auto""/> <!-- 1. Pack Identity (Icon Preview, Name & Description) -->
+                    <RowDefinition Height=""Auto""/> <!-- 2. Quick Icon Select Carousel -->
+                    <RowDefinition Height=""Auto""/> <!-- 3. App Search & Quick Controls -->
+                    <RowDefinition Height=""*"" MinHeight=""360"" MaxHeight=""440""/> <!-- 4. App Checklist -->
+                    <RowDefinition Height=""Auto""/> <!-- 5. Bottom Actions Footer -->
                 </Grid.RowDefinitions>
 
-                <!-- 0. Header -->
+                <!-- 0. Header Area -->
                 <Grid Grid.Row=""0"" Margin=""0,0,0,16"">
-                    <TextBlock x:Name=""TxtModalTitle"" Text=""Create New App Pack"" FontSize=""19"" FontWeight=""Bold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
-                    <Button x:Name=""BtnCloseModal"" Content=""✕"" Background=""Transparent"" Foreground=""#8A8A8A"" FontSize=""14"" FontWeight=""Bold""
-                            Width=""30"" Height=""30"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition Width=""Auto""/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                        <Border x:Name=""BorderModalHeaderBadge"" Width=""42"" Height=""42"" CornerRadius=""10"" Background=""#0066FF"" Margin=""0,0,14,0"" VerticalAlignment=""Center"">
+                            <TextBlock Text=""&#xE74C;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""20"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                        </Border>
+                        <StackPanel VerticalAlignment=""Center"">
+                            <TextBlock x:Name=""TxtModalTitle"" Text=""Edit App Pack"" FontSize=""20"" FontWeight=""Bold"" Foreground=""#0F172A""/>
+                            <TextBlock x:Name=""TxtModalSubtitle"" Text=""Customize pack details, icon, and included software."" FontSize=""12.5"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button x:Name=""BtnCloseModal"" Grid.Column=""1"" Content=""✕"" Background=""#F1F5F9"" Foreground=""#64748B"" FontSize=""12"" FontWeight=""Bold""
+                            Width=""32"" Height=""32"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
                 </Grid>
 
-                <!-- 1. Name & Icon -->
-                <Grid Grid.Row=""1"" Margin=""0,0,0,10"">
+                <!-- 1. Pack Identity (Icon Preview Card + Pack Name & Description) -->
+                <Grid Grid.Row=""1"" Margin=""0,0,0,12"">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""70""/>
+                        <ColumnDefinition Width=""84""/>
                         <ColumnDefinition Width=""*""/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column=""0"" Margin=""0,0,10,0"">
-                        <TextBlock Text=""Icon"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
-                        <TextBox x:Name=""TxtGroupIconInput"" Text=""🚀"" Height=""34"" Background=""#141414"" Foreground=""#FFFFFF""
-                                 FontFamily=""Segoe UI Emoji, Segoe UI Symbol, Segoe UI""
-                                 FontSize=""16"" TextAlignment=""Center"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""/>
+                    <!-- Pack Icon Preview Box -->
+                    <StackPanel Grid.Column=""0"">
+                        <TextBlock Text=""Pack Icon"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#475569"" Margin=""0,0,0,5""/>
+                        <Border x:Name=""BorderPackIconCard"" Width=""74"" Height=""74"" CornerRadius=""12"" Background=""#F8FAFC"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Cursor=""Hand"" ToolTip=""Click to cycle icon"">
+                            <Grid>
+                                <TextBlock x:Name=""TxtPackIconPreview"" Text=""🎨"" FontSize=""34"" FontFamily=""Segoe UI Emoji, Segoe UI Symbol, Segoe UI"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                                <Border Width=""20"" Height=""20"" CornerRadius=""10"" Background=""#0066FF"" HorizontalAlignment=""Right"" VerticalAlignment=""Bottom"" Margin=""0,0,4,4"">
+                                    <TextBlock Text=""&#xE70F;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""9.5"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <!-- Synced Input (Kept for compatibility) -->
+                        <TextBox x:Name=""TxtGroupIconInput"" Text=""🎨"" Visibility=""Collapsed""/>
                     </StackPanel>
 
-                    <StackPanel Grid.Column=""1"">
-                        <TextBlock Text=""Pack Name"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
-                        <TextBox x:Name=""TxtGroupNameInput"" Height=""34"" Background=""#141414"" Foreground=""#FFFFFF""
-                                 FontSize=""13"" Padding=""8,6"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""/>
+                    <!-- Name & Description Fields -->
+                    <StackPanel Grid.Column=""1"" Margin=""14,0,0,0"">
+                        <!-- Pack Name Row -->
+                        <StackPanel Orientation=""Horizontal"" Margin=""0,0,0,4"">
+                            <TextBlock Text=""Pack Name"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#475569""/>
+                            <TextBlock Text="" *"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#EF4444""/>
+                        </StackPanel>
+                        <Border x:Name=""BorderGroupName"" Height=""38"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Margin=""0,0,0,8"">
+                            <TextBox x:Name=""TxtGroupNameInput"" BorderThickness=""0"" Background=""Transparent"" Foreground=""#0F172A""
+                                     FontSize=""13"" Padding=""12,7"" VerticalContentAlignment=""Center""/>
+                        </Border>
+
+                        <!-- Description Row -->
+                        <Grid Margin=""0,0,0,4"">
+                            <TextBlock Text=""Description"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#475569"" HorizontalAlignment=""Left""/>
+                            <TextBlock x:Name=""TxtGroupDescCharCount"" Text=""0 / 200"" FontSize=""11"" Foreground=""#94A3B8"" HorizontalAlignment=""Right""/>
+                        </Grid>
+                        <Border x:Name=""BorderGroupDesc"" Height=""38"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#E2E8F0"" BorderThickness=""1"">
+                            <TextBox x:Name=""TxtGroupDescInput"" MaxLength=""200"" BorderThickness=""0"" Background=""Transparent"" Foreground=""#0F172A""
+                                     FontSize=""12.5"" Padding=""12,7"" VerticalContentAlignment=""Center""/>
+                        </Border>
                     </StackPanel>
                 </Grid>
 
-                <!-- 2. Emoji Chips -->
+                <!-- 2. Quick Icon Select Carousel -->
                 <StackPanel x:Name=""PanelEmojiChips"" Grid.Row=""2"" Margin=""0,0,0,12"">
-                    <TextBlock Text=""Quick Icon Select:"" FontSize=""10"" Foreground=""#707070"" Margin=""0,0,0,4""/>
-                    <WrapPanel x:Name=""EmojiChipsPanel""/>
+                    <TextBlock Text=""Quick Icon Select"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#475569"" Margin=""0,0,0,6""/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""Auto""/>
+                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition Width=""Auto""/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name=""BtnIconPrev"" Grid.Column=""0"" Content=""&#x2039;"" FontSize=""16"" FontWeight=""Bold"" Width=""28"" Height=""38""
+                                Background=""Transparent"" Foreground=""#64748B"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Cursor=""Hand"" Margin=""0,0,6,0""/>
+                        <WrapPanel x:Name=""EmojiChipsPanel"" Grid.Column=""1"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                        <Button x:Name=""BtnIconNext"" Grid.Column=""2"" Content=""&#x203A;"" FontSize=""16"" FontWeight=""Bold"" Width=""28"" Height=""38""
+                                Background=""Transparent"" Foreground=""#64748B"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Cursor=""Hand"" Margin=""6,0,0,0""/>
+                    </Grid>
                 </StackPanel>
 
-                <!-- 3. Description -->
-                <StackPanel Grid.Row=""3"" Margin=""0,0,0,14"">
-                    <TextBlock Text=""Description"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#8A8A8A"" Margin=""0,0,0,4""/>
-                    <TextBox x:Name=""TxtGroupDescInput"" Height=""34"" Background=""#141414"" Foreground=""#FFFFFF""
-                             FontSize=""12"" Padding=""8,6"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""/>
-                </StackPanel>
-
-                <!-- 4. App Checklist Header & Search -->
-                <Grid Grid.Row=""4"" Margin=""0,0,0,8"">
+                <!-- 3. App Search & Quick Controls -->
+                <Grid Grid.Row=""3"" Margin=""0,0,0,8"">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width=""280""/>
                         <ColumnDefinition Width=""*""/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name=""TxtModalAppSearch"" Grid.Column=""0"" Height=""32"" Background=""#141414"" Foreground=""#FFFFFF""
-                             FontSize=""12"" Padding=""10,6"" VerticalContentAlignment=""Center"" BorderBrush=""#333333"" BorderThickness=""1""
-                             Text=""Filter software...""/>
+                    <!-- Search Box -->
+                    <Border x:Name=""BorderModalSearchBox"" Grid.Column=""0"" Height=""38"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1"" Padding=""10,0"">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=""Auto""/>
+                                <ColumnDefinition Width=""*""/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text=""&#xE721;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""12"" Foreground=""#64748B"" VerticalAlignment=""Center"" Margin=""0,0,8,0""/>
+                            <TextBox x:Name=""TxtModalAppSearch"" Grid.Column=""1"" BorderThickness=""0"" Background=""Transparent"" Foreground=""#0F172A"" FontSize=""12.5"" VerticalContentAlignment=""Center"" Text=""Filter software...""/>
+                        </Grid>
+                    </Border>
 
+                    <!-- Right Tabs & Action Buttons -->
                     <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                         <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0066FF"" Foreground=""#FFFFFF""
-                                Padding=""12,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                Padding=""12,6"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <TextBlock x:Name=""TxtModalSelectedCount"" Text=""0 selected"" FontSize=""11.5"" Foreground=""#0066FF"" FontWeight=""SemiBold"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
-                        <Button x:Name=""BtnModalSelectAll"" Content=""Select All"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                Padding=""10,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                Padding=""10,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                                Padding=""16,8"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                        <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
+                                Padding=""14,8"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                        <CheckBox x:Name=""ChkModalSelectAll"" Content=""Select All"" Margin=""0,0,10,0"" VerticalAlignment=""Center"" Cursor=""Hand"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#334155""/>
+                        <Button x:Name=""BtnModalSelectAll"" Visibility=""Collapsed""/>
+                        <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
+                                Padding=""14,7"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12"" FontWeight=""SemiBold""/>
+                        <TextBlock x:Name=""TxtModalSelectedCount"" Visibility=""Collapsed""/>
                     </StackPanel>
                 </Grid>
 
-                <!-- 5. App Checklist -->
-                <Border x:Name=""BorderModalAppsContainer"" Grid.Row=""5"" Background=""#141414"" CornerRadius=""8"" Padding=""10"" BorderBrush=""#2D2D2D"" BorderThickness=""1"" Margin=""0,0,0,16"">
+                <!-- 4. App Checklist -->
+                <Border x:Name=""BorderModalAppsContainer"" Grid.Row=""4"" Background=""#FFFFFF"" CornerRadius=""10"" Padding=""8"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Margin=""0,0,0,14"">
                     <ScrollViewer x:Name=""ModalAppsScrollViewer"" VerticalScrollBarVisibility=""Auto"" HorizontalScrollBarVisibility=""Disabled"">
                         <StackPanel x:Name=""ModalAppsContainer""/>
                     </ScrollViewer>
                 </Border>
 
-                <!-- 6. Footer Actions -->
-                <Grid Grid.Row=""6"">
+                <!-- 5. Footer Actions -->
+                <Grid Grid.Row=""5"">
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"">
-                        <Button x:Name=""BtnDeleteGroup"" Content=""Delete Pack"" Background=""#DC2626"" Foreground=""#FFFFFF""
-                                FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0""
+                        <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Pack"" Background=""#FEF2F2"" BorderBrush=""#FCA5A5"" BorderThickness=""1""
+                                Foreground=""#DC2626"" FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand""
                                 FontSize=""12"" Visibility=""Collapsed""/>
-                        <Button x:Name=""BtnModalExportGroup"" Content=""Export Pack"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                FontWeight=""SemiBold"" Padding=""16,8"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1""
+                        <Button x:Name=""BtnModalExportGroup"" Content=""📤 Export Pack"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
+                                Foreground=""#334155"" FontWeight=""SemiBold"" Padding=""14,8"" Margin=""8,0,0,0"" Cursor=""Hand""
                                 FontSize=""12"" Visibility=""Collapsed"" ToolTip=""Export this pack to a .json file""/>
                     </StackPanel>
 
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
-                        <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                FontWeight=""SemiBold"" Padding=""18,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
-                        <Button x:Name=""BtnSaveGroup"" Content=""Save Pack"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                        <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""20,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
+                        <Button x:Name=""BtnSaveGroup"" Content=""💾 Save Pack"" Background=""#0066FF"" Foreground=""#FFFFFF""
                                 FontWeight=""Bold"" Padding=""22,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
                     </StackPanel>
                 </Grid>
             </Grid>
         </Border>
     </Grid>
+
 
     <!-- ========================================================================= -->
     <!-- MODAL 1: CHECK FOR UPDATES                                                -->
@@ -4619,19 +4687,32 @@ namespace FleetForge
 
             // Modal Elements
             groupModalOverlay = (Grid)root.FindName("GroupModalOverlay");
+            borderModalCard = (Border)root.FindName("BorderModalCard");
+            borderModalHeaderBadge = (Border)root.FindName("BorderModalHeaderBadge");
             txtModalTitle = (TextBlock)root.FindName("TxtModalTitle");
+            txtModalSubtitle = (TextBlock)root.FindName("TxtModalSubtitle");
             btnCloseModal = (Button)root.FindName("BtnCloseModal");
+            borderPackIconCard = (Border)root.FindName("BorderPackIconCard");
+            txtPackIconPreview = (TextBlock)root.FindName("TxtPackIconPreview");
+            borderGroupName = (Border)root.FindName("BorderGroupName");
             txtGroupNameInput = (TextBox)root.FindName("TxtGroupNameInput");
             txtGroupIconInput = (TextBox)root.FindName("TxtGroupIconInput");
             emojiChipsPanel = (WrapPanel)root.FindName("EmojiChipsPanel");
             panelEmojiChips = (StackPanel)root.FindName("PanelEmojiChips");
+            btnIconPrev = (Button)root.FindName("BtnIconPrev");
+            btnIconNext = (Button)root.FindName("BtnIconNext");
+            borderGroupDesc = (Border)root.FindName("BorderGroupDesc");
             txtGroupDescInput = (TextBox)root.FindName("TxtGroupDescInput");
+            txtGroupDescCharCount = (TextBlock)root.FindName("TxtGroupDescCharCount");
+            borderModalSearchBox = (Border)root.FindName("BorderModalSearchBox");
             txtModalAppSearch = (TextBox)root.FindName("TxtModalAppSearch");
             btnModalFilterTabAll = (Button)root.FindName("BtnModalFilterTabAll");
             btnModalFilterTabSelected = (Button)root.FindName("BtnModalFilterTabSelected");
+            chkModalSelectAll = (CheckBox)root.FindName("ChkModalSelectAll");
             btnModalSelectAll = (Button)root.FindName("BtnModalSelectAll");
             btnModalClearAll = (Button)root.FindName("BtnModalClearAll");
             txtModalSelectedCount = (TextBlock)root.FindName("TxtModalSelectedCount");
+            borderModalAppsContainer = (Border)root.FindName("BorderModalAppsContainer");
             modalAppsScrollViewer = (ScrollViewer)root.FindName("ModalAppsScrollViewer");
             modalAppsContainer = (StackPanel)root.FindName("ModalAppsContainer");
             btnDeleteGroup = (Button)root.FindName("BtnDeleteGroup");
@@ -5417,6 +5498,27 @@ namespace FleetForge
                 };
             }
 
+            if (borderPackIconCard != null)
+            {
+                borderPackIconCard.MouseLeftButtonUp += delegate(object s, MouseButtonEventArgs e)
+                {
+                    CycleQuickIcon(1);
+                };
+            }
+            if (btnIconPrev != null)
+            {
+                btnIconPrev.Click += delegate { CycleQuickIcon(-1); };
+            }
+            if (btnIconNext != null)
+            {
+                btnIconNext.Click += delegate { CycleQuickIcon(1); };
+            }
+
+            if (txtGroupDescInput != null)
+            {
+                txtGroupDescInput.TextChanged += delegate { UpdateDescCharCount(); };
+            }
+
             groupModalOverlay.MouseDown += delegate(object s, MouseButtonEventArgs e)
             {
                 if (e.OriginalSource == groupModalOverlay)
@@ -5459,8 +5561,33 @@ namespace FleetForge
                 };
             }
 
+            if (chkModalSelectAll != null)
+            {
+                chkModalSelectAll.Click += delegate
+                {
+                    bool shouldSelectAll = chkModalSelectAll.IsChecked == true;
+                    if (modalFilteredApps != null)
+                    {
+                        foreach (AppModel a in modalFilteredApps)
+                        {
+                            if (a != null && a.id != null)
+                            {
+                                if (shouldSelectAll) modalSelectedAppIds.Add(a.id);
+                                else modalSelectedAppIds.Remove(a.id);
+                            }
+                        }
+                    }
+                    foreach (ModalAppItemView m in modalAppRows)
+                    {
+                        m.CheckBox.IsChecked = shouldSelectAll;
+                    }
+                    UpdateModalCount();
+                };
+            }
+
             btnModalSelectAll.Click += delegate
             {
+                if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = true;
                 if (modalFilteredApps != null)
                 {
                     foreach (AppModel a in modalFilteredApps)
@@ -5471,14 +5598,6 @@ namespace FleetForge
                 foreach (ModalAppItemView m in modalAppRows)
                 {
                     m.CheckBox.IsChecked = true;
-                    m.Container.Background = currentThemeIsLight ? HexBrush("#F0F9FF") : HexBrush("#132537");
-                    m.Container.BorderBrush = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
-                    if (m.StatusBadge != null) m.StatusBadge.Background = currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C4A6E");
-                    if (m.StatusBadgeText != null)
-                    {
-                        m.StatusBadgeText.Text = "✓ SELECTED";
-                        m.StatusBadgeText.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
-                    }
                 }
                 UpdateModalCount();
             };
@@ -5486,17 +5605,10 @@ namespace FleetForge
             btnModalClearAll.Click += delegate
             {
                 modalSelectedAppIds.Clear();
+                if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = false;
                 foreach (ModalAppItemView m in modalAppRows)
                 {
                     m.CheckBox.IsChecked = false;
-                    m.Container.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#181818");
-                    m.Container.BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#2B2B2B");
-                    if (m.StatusBadge != null) m.StatusBadge.Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#222222");
-                    if (m.StatusBadgeText != null)
-                    {
-                        m.StatusBadgeText.Text = "+ ADD";
-                        m.StatusBadgeText.Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#777777");
-                    }
                 }
                 UpdateModalCount();
             };
@@ -6620,54 +6732,60 @@ namespace FleetForge
                 btnImportPack.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
 
-            // Modal Card
+            // Modal Card & Controls
             if (borderModalCard != null)
             {
-                borderModalCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                borderModalCard.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                borderModalCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                borderModalCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
-            if (txtModalTitle != null) txtModalTitle.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+            if (txtModalTitle != null) txtModalTitle.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            if (txtModalSubtitle != null) txtModalSubtitle.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
             if (borderModalAppsContainer != null)
             {
-                borderModalAppsContainer.Background = isLight ? HexBrush("#F9F9F9") : HexBrush("#1E1E1E");
-                borderModalAppsContainer.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                borderModalAppsContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A");
+                borderModalAppsContainer.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
-            if (txtGroupIconInput != null)
+            if (borderPackIconCard != null)
             {
-                txtGroupIconInput.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E1E1E");
-                txtGroupIconInput.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#383838");
-                txtGroupIconInput.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                borderPackIconCard.Background = isLight ? HexBrush("#F8FAFC") : HexBrush("#243144");
+                borderPackIconCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
+            }
+            if (borderGroupName != null)
+            {
+                borderGroupName.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
+                borderGroupName.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
             if (txtGroupNameInput != null)
             {
-                txtGroupNameInput.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E1E1E");
-                txtGroupNameInput.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#383838");
-                txtGroupNameInput.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                txtGroupNameInput.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (borderGroupDesc != null)
+            {
+                borderGroupDesc.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
+                borderGroupDesc.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
             if (txtGroupDescInput != null)
             {
-                txtGroupDescInput.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E1E1E");
-                txtGroupDescInput.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#383838");
-                txtGroupDescInput.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                txtGroupDescInput.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (borderModalSearchBox != null)
+            {
+                borderModalSearchBox.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
+                borderModalSearchBox.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#334155");
             }
             if (txtModalAppSearch != null)
             {
-                txtModalAppSearch.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E1E1E");
-                txtModalAppSearch.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#383838");
-                txtModalAppSearch.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                txtModalAppSearch.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
-            UpdateModalTabStyles();
-            if (btnModalSelectAll != null)
+            if (chkModalSelectAll != null)
             {
-                btnModalSelectAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnModalSelectAll.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnModalSelectAll.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                chkModalSelectAll.Foreground = isLight ? HexBrush("#334155") : HexBrush("#F8FAFC");
             }
             if (btnModalClearAll != null)
             {
-                btnModalClearAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalClearAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
                 btnModalClearAll.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnModalClearAll.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                btnModalClearAll.Foreground = isLight ? HexBrush("#334155") : HexBrush("#F8FAFC");
             }
             if (btnModalLoadMore != null)
             {
@@ -6677,15 +6795,15 @@ namespace FleetForge
             }
             if (btnCancelModal != null)
             {
-                btnCancelModal.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnCancelModal.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
                 btnCancelModal.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnCancelModal.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                btnCancelModal.Foreground = isLight ? HexBrush("#334155") : HexBrush("#F8FAFC");
             }
             if (btnModalExportGroup != null)
             {
-                btnModalExportGroup.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalExportGroup.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#243144");
                 btnModalExportGroup.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnModalExportGroup.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                btnModalExportGroup.Foreground = isLight ? HexBrush("#334155") : HexBrush("#F8FAFC");
             }
             if (btnSaveGroup != null)
             {
@@ -6694,9 +6812,11 @@ namespace FleetForge
             }
             if (btnDeleteGroup != null)
             {
-                btnDeleteGroup.Background = HexBrush("#DC2626");
-                btnDeleteGroup.Foreground = HexBrush("#FFFFFF");
+                btnDeleteGroup.Background = isLight ? HexBrush("#FEF2F2") : HexBrush("#450A0A");
+                btnDeleteGroup.BorderBrush = isLight ? HexBrush("#FCA5A5") : HexBrush("#991B1B");
+                btnDeleteGroup.Foreground = isLight ? HexBrush("#DC2626") : HexBrush("#F87171");
             }
+            UpdateModalTabStyles();
 
             // Help Button
             if (btnHelpMenu != null)
@@ -7054,29 +7174,80 @@ namespace FleetForge
         {
             if (emojiChipsPanel == null) return;
             emojiChipsPanel.Children.Clear();
-            string[] emojis = new string[] { "💻", "🎨", "🧪", "📄", "🚀", "📊", "🛠️", "🎬", "🤖", "📱", "🔒", "⚡", "🌐", "🎮", "💼" };
-            foreach (string emoji in emojis)
+            string curSelected = (txtGroupIconInput != null && !string.IsNullOrEmpty(txtGroupIconInput.Text))
+                ? txtGroupIconInput.Text.Trim()
+                : "🎨";
+
+            foreach (string emoji in quickIcons)
             {
                 string curEmoji = emoji;
+                bool isCur = string.Equals(curEmoji, curSelected, StringComparison.OrdinalIgnoreCase);
+
                 Button b = new Button()
                 {
                     Content = curEmoji,
-                    FontFamily = new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
-                    FontSize = 14,
-                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
-                    Width = 32,
-                    Height = 28,
-                    Margin = new Thickness(0, 0, 4, 4),
-                    Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#2B2B2B"),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#3D3D3D"),
-                    BorderThickness = new Thickness(1),
-                    Cursor = Cursors.Hand
+                    FontFamily = (curEmoji == "</>") ? new FontFamily("Consolas, Segoe UI Semibold, Segoe UI") : new FontFamily("Segoe UI Emoji, Segoe UI Symbol, Segoe UI"),
+                    FontSize = (curEmoji == "</>") ? 12 : 14,
+                    FontWeight = (curEmoji == "</>") ? FontWeights.Bold : FontWeights.Normal,
+                    Foreground = isCur ? HexBrush("#0066FF") : (currentThemeIsLight ? HexBrush("#334155") : HexBrush("#F8FAFC")),
+                    Width = 44,
+                    Height = 38,
+                    Margin = new Thickness(2, 0, 2, 0),
+                    Background = isCur ? (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E3A8A")) : (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#243144")),
+                    BorderBrush = isCur ? HexBrush("#0066FF") : (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155")),
+                    BorderThickness = new Thickness(isCur ? 2 : 1),
+                    Cursor = Cursors.Hand,
+                    Tag = curEmoji
                 };
                 b.Click += delegate
                 {
-                    txtGroupIconInput.Text = curEmoji;
+                    SelectQuickIcon(curEmoji);
                 };
                 emojiChipsPanel.Children.Add(b);
+            }
+        }
+
+        private void SelectQuickIcon(string icon)
+        {
+            if (txtGroupIconInput != null) txtGroupIconInput.Text = icon;
+            if (txtPackIconPreview != null) txtPackIconPreview.Text = icon;
+            if (emojiChipsPanel != null)
+            {
+                foreach (UIElement child in emojiChipsPanel.Children)
+                {
+                    Button b = child as Button;
+                    if (b != null && b.Tag is string)
+                    {
+                        bool isCur = string.Equals((string)b.Tag, icon, StringComparison.OrdinalIgnoreCase);
+                        b.BorderThickness = new Thickness(isCur ? 2 : 1);
+                        b.BorderBrush = isCur ? HexBrush("#0066FF") : (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"));
+                        b.Background = isCur ? (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E3A8A")) : (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#243144"));
+                        b.Foreground = isCur ? HexBrush("#0066FF") : (currentThemeIsLight ? HexBrush("#334155") : HexBrush("#F8FAFC"));
+                    }
+                }
+            }
+        }
+
+        private void CycleQuickIcon(int delta)
+        {
+            if (quickIcons == null || quickIcons.Length == 0) return;
+            string cur = (txtGroupIconInput != null && !string.IsNullOrEmpty(txtGroupIconInput.Text))
+                ? txtGroupIconInput.Text.Trim()
+                : quickIcons[0];
+
+            int idx = Array.IndexOf(quickIcons, cur);
+            if (idx < 0) idx = 0;
+            int newIdx = (idx + delta) % quickIcons.Length;
+            if (newIdx < 0) newIdx += quickIcons.Length;
+            SelectQuickIcon(quickIcons[newIdx]);
+        }
+
+        private void UpdateDescCharCount()
+        {
+            if (txtGroupDescCharCount != null && txtGroupDescInput != null)
+            {
+                int len = (txtGroupDescInput.Text ?? "").Length;
+                txtGroupDescCharCount.Text = len + " / 200";
             }
         }
 
@@ -9181,14 +9352,26 @@ namespace FleetForge
         private void OpenCreateGroupModal()
         {
             currentEditingGroupId = null;
-            txtModalTitle.Text = "Create New App Pack";
+            txtModalTitle.Text = "Create App Pack";
+            if (txtModalSubtitle != null)
+            {
+                txtModalSubtitle.Text = "Create custom role profile, icon, and default software package suite.";
+            }
             txtGroupNameInput.Text = "";
-            txtGroupIconInput.Text = "🚀";
+            txtGroupNameInput.IsReadOnly = false;
+            txtGroupIconInput.Text = "🎨";
+            txtGroupIconInput.IsReadOnly = false;
+            if (txtPackIconPreview != null) txtPackIconPreview.Text = "🎨";
             txtGroupDescInput.Text = "";
+            txtGroupDescInput.IsReadOnly = false;
+            UpdateDescCharCount();
+
             btnDeleteGroup.Visibility = Visibility.Collapsed;
             if (btnModalExportGroup != null) btnModalExportGroup.Visibility = Visibility.Collapsed;
-            if (txtModalAppSearch != null) txtModalAppSearch.Visibility = Visibility.Visible;
+            if (borderModalSearchBox != null) borderModalSearchBox.Visibility = Visibility.Visible;
+            if (panelEmojiChips != null) panelEmojiChips.Visibility = Visibility.Visible;
 
+            BuildEmojiChips();
             PopulateModalAppChecklist(new List<string>());
             groupModalOverlay.Visibility = Visibility.Visible;
             txtGroupNameInput.Focus();
@@ -9199,13 +9382,24 @@ namespace FleetForge
             currentEditingGroupId = grp.id;
             bool isRecommended = string.Equals(grp.id, "recommended", StringComparison.OrdinalIgnoreCase);
 
-            txtModalTitle.Text = isRecommended ? "Customize Top Choice • Recommended Software" : ("Edit App Pack: " + grp.name);
+            txtModalTitle.Text = isRecommended ? "Top Choice • Recommended Software" : "Edit App Pack";
+            if (txtModalSubtitle != null)
+            {
+                txtModalSubtitle.Text = isRecommended
+                    ? "Customize curated partner packages and top-rated software recommendations."
+                    : "Customize pack details, icon, and included software.";
+            }
+
             txtGroupNameInput.Text = grp.name;
             txtGroupNameInput.IsReadOnly = isRecommended;
-            txtGroupIconInput.Text = GetSafeGroupIcon(grp);
+            string icon = GetSafeGroupIcon(grp);
+            txtGroupIconInput.Text = icon;
             txtGroupIconInput.IsReadOnly = isRecommended;
+            if (txtPackIconPreview != null) txtPackIconPreview.Text = icon;
+
             txtGroupDescInput.Text = grp.description;
             txtGroupDescInput.IsReadOnly = isRecommended;
+            UpdateDescCharCount();
 
             btnDeleteGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             if (btnModalExportGroup != null) btnModalExportGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
@@ -9216,13 +9410,14 @@ namespace FleetForge
                 btnModalFilterTabSelected.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             }
 
-            if (txtModalAppSearch != null)
+            if (borderModalSearchBox != null)
             {
-                txtModalAppSearch.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
+                borderModalSearchBox.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             }
 
             if (panelEmojiChips != null) panelEmojiChips.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
 
+            BuildEmojiChips();
             PopulateModalAppChecklist(grp.apps);
             groupModalOverlay.Visibility = Visibility.Visible;
             if (!isRecommended) txtGroupNameInput.Focus();
@@ -9452,8 +9647,8 @@ namespace FleetForge
             if (selectedApps.Count > 0)
             {
                 Border selHeader = CreateModalSectionHeader(
-                    string.Format("⭐ SELECTED SOFTWARE IN THIS ROLE ({0})", selectedApps.Count),
-                    "These packages are currently assigned and will be installed for this role",
+                    string.Format("Selected Software in this Role ({0})", selectedApps.Count),
+                    "These packages are currently assigned and will be installed for this role.",
                     true);
                 modalAppsContainer.Children.Add(selHeader);
 
@@ -9499,35 +9694,148 @@ namespace FleetForge
             }
         }
 
+        private void SetupModalAppIcon(AppModel curApp, Border iconBadge, TextBlock txtGlyph)
+        {
+            if (curApp == null) return;
+            string id = (curApp.id ?? "").ToLowerInvariant();
+            string name = (curApp.name ?? "").ToLowerInvariant();
+            string cat = (curApp.category ?? "").ToLowerInvariant();
+
+            string glyph = "\uE74C";
+            string font = "Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol";
+            string bg = currentThemeIsLight ? "#EFF6FF" : "#1E293B";
+            string fg = "#0066FF";
+
+            if (name.Contains("blender") || id.Contains("blender"))
+            {
+                glyph = "\uE790";
+                bg = currentThemeIsLight ? "#FFF7ED" : "#431407";
+                fg = currentThemeIsLight ? "#EA580C" : "#FB923C";
+            }
+            else if (name.Contains("davinci") || id.Contains("davinci"))
+            {
+                glyph = "\uE714";
+                bg = currentThemeIsLight ? "#F5F3FF" : "#2E1065";
+                fg = currentThemeIsLight ? "#7C3AED" : "#A78BFA";
+            }
+            else if (name.Contains("figma") || id.Contains("figma"))
+            {
+                glyph = "\uE790";
+                bg = currentThemeIsLight ? "#FDF2F8" : "#500724";
+                fg = currentThemeIsLight ? "#DB2777" : "#F472B6";
+            }
+            else if (name.Contains("gimp") || id.Contains("gimp"))
+            {
+                glyph = "\uE790";
+                bg = currentThemeIsLight ? "#FEF3C7" : "#451A03";
+                fg = currentThemeIsLight ? "#D97706" : "#FBBF24";
+            }
+            else if (name.Contains("handbrake") || id.Contains("handbrake"))
+            {
+                glyph = "\uE714";
+                bg = currentThemeIsLight ? "#FFF1F2" : "#4C0519";
+                fg = currentThemeIsLight ? "#E11D48" : "#FB7185";
+            }
+            else if (name.Contains("obs") || id.Contains("obs"))
+            {
+                glyph = "\uE714";
+                bg = currentThemeIsLight ? "#F1F5F9" : "#0F172A";
+                fg = currentThemeIsLight ? "#0F172A" : "#F8FAFC";
+            }
+            else if (name.Contains("vlc") || id.Contains("vlc"))
+            {
+                glyph = "\uE714";
+                bg = currentThemeIsLight ? "#FFF7ED" : "#431407";
+                fg = currentThemeIsLight ? "#F97316" : "#FB923C";
+            }
+            else if (cat.Contains("browser") || id.Contains("chrome") || id.Contains("firefox") || id.Contains("edge") || id.Contains("brave"))
+            {
+                glyph = "\uE774";
+                bg = currentThemeIsLight ? "#EFF6FF" : "#172554";
+                fg = currentThemeIsLight ? "#2563EB" : "#60A5FA";
+            }
+            else if (cat.Contains("dev") || id.Contains("vscode") || id.Contains("git") || id.Contains("node") || id.Contains("python"))
+            {
+                glyph = "</>";
+                font = "Consolas, Segoe UI Semibold, Segoe UI";
+                bg = currentThemeIsLight ? "#EEF2FF" : "#1E1B4B";
+                fg = currentThemeIsLight ? "#4F46E5" : "#818CF8";
+            }
+            else if (cat.Contains("sec") || id.Contains("vpn") || id.Contains("isecure"))
+            {
+                glyph = "\uEA18";
+                bg = currentThemeIsLight ? "#F0F9FF" : "#082F49";
+                fg = currentThemeIsLight ? "#0284C7" : "#38BDF8";
+            }
+            else if (cat.Contains("util") || id.Contains("clean") || id.Contains("driver") || id.Contains("riser"))
+            {
+                glyph = "\uE713";
+                bg = currentThemeIsLight ? "#ECFDF5" : "#022C22";
+                fg = currentThemeIsLight ? "#059669" : "#34D399";
+            }
+            else if (cat.Contains("game") || id.Contains("steam"))
+            {
+                glyph = "\uE7FC";
+                bg = currentThemeIsLight ? "#FAF5FF" : "#3B0764";
+                fg = currentThemeIsLight ? "#9333EA" : "#C084FC";
+            }
+            else if (cat.Contains("media") || cat.Contains("creat"))
+            {
+                glyph = "\uE714";
+                bg = currentThemeIsLight ? "#F5F3FF" : "#2E1065";
+                fg = currentThemeIsLight ? "#7C3AED" : "#A78BFA";
+            }
+
+            iconBadge.Background = HexBrush(bg);
+            txtGlyph.Text = glyph;
+            txtGlyph.FontFamily = new FontFamily(font);
+            txtGlyph.Foreground = HexBrush(fg);
+            txtGlyph.FontSize = (glyph == "</>") ? 12 : 16;
+        }
+
         private Border CreateModalSectionHeader(string title, string subtitle, bool isSelectedSection)
         {
             Border b = new Border()
             {
                 Background = isSelectedSection ?
-                    (currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C2A40")) :
-                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#202020")),
-                CornerRadius = new CornerRadius(6),
-                Padding = new Thickness(10, 6, 10, 6),
+                    (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#172554")) :
+                    (currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B")),
+                CornerRadius = new CornerRadius(8),
+                Padding = new Thickness(14, 10, 14, 10),
                 Margin = new Thickness(0, isSelectedSection ? 0 : 10, 0, 6),
                 BorderThickness = new Thickness(1),
                 BorderBrush = isSelectedSection ?
-                    (currentThemeIsLight ? HexBrush("#BAE6FD") : HexBrush("#1E4976")) :
-                    (currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#333333"))
+                    (currentThemeIsLight ? HexBrush("#BFDBFE") : HexBrush("#1E40AF")) :
+                    (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"))
             };
 
             Grid g = new Grid();
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
 
-            StackPanel sp = new StackPanel();
+            if (isSelectedSection)
+            {
+                CheckBox cb = new CheckBox()
+                {
+                    IsChecked = true,
+                    IsEnabled = false,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 0, 12, 0)
+                };
+                Grid.SetColumn(cb, 0);
+                g.Children.Add(cb);
+            }
+
+            StackPanel sp = new StackPanel() { VerticalAlignment = VerticalAlignment.Center };
             TextBlock txtTitle = new TextBlock()
             {
                 Text = title,
-                FontSize = 11,
+                FontSize = 13,
                 FontWeight = FontWeights.Bold,
                 Foreground = isSelectedSection ?
-                    (currentThemeIsLight ? HexBrush("#0369A1") : HexBrush("#38BDF8")) :
-                    (currentThemeIsLight ? HexBrush("#334155") : HexBrush("#D1D5DB"))
+                    (currentThemeIsLight ? HexBrush("#1E3A8A") : HexBrush("#93C5FD")) :
+                    (currentThemeIsLight ? HexBrush("#1E293B") : HexBrush("#F1F5F9"))
             };
             sp.Children.Add(txtTitle);
 
@@ -9536,35 +9844,35 @@ namespace FleetForge
                 TextBlock txtSub = new TextBlock()
                 {
                     Text = subtitle,
-                    FontSize = 10,
+                    FontSize = 11,
                     Foreground = isSelectedSection ?
-                        (currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#7DD3FC")) :
-                        (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#8A8A8A")),
-                    Margin = new Thickness(0, 1, 0, 0)
+                        (currentThemeIsLight ? HexBrush("#3B82F6") : HexBrush("#60A5FA")) :
+                        (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8")),
+                    Margin = new Thickness(0, 2, 0, 0)
                 };
                 sp.Children.Add(txtSub);
             }
-            Grid.SetColumn(sp, 0);
+            Grid.SetColumn(sp, 1);
             g.Children.Add(sp);
 
             Border pill = new Border()
             {
-                Background = isSelectedSection ? HexBrush("#0078D4") :
-                    (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#2B2B2B")),
-                CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(7, 2, 7, 2),
+                Background = isSelectedSection ? HexBrush("#0066FF") :
+                    (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155")),
+                CornerRadius = new CornerRadius(12),
+                Padding = new Thickness(12, 3, 12, 3),
                 VerticalAlignment = VerticalAlignment.Center
             };
             TextBlock pillText = new TextBlock()
             {
-                Text = isSelectedSection ? "ACTIVE IN ROLE" : "CATALOG",
-                FontSize = 9,
+                Text = isSelectedSection ? "Active in Role" : "CATALOG",
+                FontSize = 10,
                 FontWeight = FontWeights.Bold,
                 Foreground = isSelectedSection ? HexBrush("#FFFFFF") :
-                    (currentThemeIsLight ? HexBrush("#475569") : HexBrush("#A0A0A0"))
+                    (currentThemeIsLight ? HexBrush("#475569") : HexBrush("#E2E8F0"))
             };
             pill.Child = pillText;
-            Grid.SetColumn(pill, 1);
+            Grid.SetColumn(pill, 2);
             g.Children.Add(pill);
 
             b.Child = g;
@@ -9638,61 +9946,83 @@ namespace FleetForge
             bool isChecked = modalSelectedAppIds.Contains(curApp.id);
             Border b = new Border()
             {
-                Background = isChecked ?
-                    (currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42")) :
-                    (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727")),
-                CornerRadius = new CornerRadius(6),
-                Margin = new Thickness(0, 0, 0, 4),
-                Padding = new Thickness(10, 7, 10, 7),
-                BorderThickness = new Thickness(1),
-                BorderBrush = isChecked ?
-                    (currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF")) :
-                    (currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838")),
+                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B"),
+                CornerRadius = new CornerRadius(0),
+                Margin = new Thickness(0),
+                Padding = new Thickness(12, 10, 12, 10),
+                BorderThickness = new Thickness(0, 0, 0, 1),
+                BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155"),
                 Cursor = Cursors.Hand
             };
 
             Grid g = new Grid();
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 0: CheckBox
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 1: App Icon
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 2: Name
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 3: Category Pill
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) }); // 4: Description
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 5: Status Badge
 
             CheckBox cb = new CheckBox()
             {
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 10, 0),
+                Margin = new Thickness(0, 0, 12, 0),
                 Cursor = Cursors.Hand,
                 IsChecked = isChecked
             };
             Grid.SetColumn(cb, 0);
             g.Children.Add(cb);
 
-            StackPanel sp = new StackPanel();
-            StackPanel titleRow = new StackPanel() { Orientation = Orientation.Horizontal };
+            // 1. App Icon Badge (Colorful rounded badge)
+            Border iconBadge = new Border()
+            {
+                Width = 32,
+                Height = 32,
+                CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(0, 0, 12, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            TextBlock txtGlyph = new TextBlock()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            SetupModalAppIcon(curApp, iconBadge, txtGlyph);
+            iconBadge.Child = txtGlyph;
+            Grid.SetColumn(iconBadge, 1);
+            g.Children.Add(iconBadge);
+
+            // 2. App Name
             TextBlock nameText = new TextBlock()
             {
                 Text = curApp.name,
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF")
+                FontSize = 13,
+                FontWeight = FontWeights.Bold,
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                VerticalAlignment = VerticalAlignment.Center
             };
-            titleRow.Children.Add(nameText);
+            Grid.SetColumn(nameText, 2);
+            g.Children.Add(nameText);
 
+            // 3. Category Pill
             Border catPill = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#EBF3FB") : HexBrush("#1E293B"),
+                Background = currentThemeIsLight ? HexBrush("#DBEAFE") : HexBrush("#1E3A8A"),
                 CornerRadius = new CornerRadius(4),
-                Margin = new Thickness(8, 0, 0, 0),
-                Padding = new Thickness(5, 1, 5, 1)
+                Margin = new Thickness(10, 0, 0, 0),
+                Padding = new Thickness(6, 2, 6, 2),
+                VerticalAlignment = VerticalAlignment.Center
             };
             TextBlock catText = new TextBlock()
             {
                 Text = (curApp.category ?? "TOOLS").ToUpper(),
-                FontSize = 9,
+                FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8")
+                Foreground = currentThemeIsLight ? HexBrush("#1D4ED8") : HexBrush("#93C5FD")
             };
             catPill.Child = catText;
-            titleRow.Children.Add(catPill);
+            Grid.SetColumn(catPill, 3);
+            g.Children.Add(catPill);
 
             if (IsRecommendedApp(curApp))
             {
@@ -9703,7 +10033,8 @@ namespace FleetForge
                     BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(4),
                     Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(6, 1, 6, 1)
+                    Padding = new Thickness(6, 1, 6, 1),
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 TextBlock recText = new TextBlock()
                 {
@@ -9713,46 +10044,44 @@ namespace FleetForge
                     Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
                 };
                 recPill.Child = recText;
-                titleRow.Children.Add(recPill);
+                Grid.SetColumn(recPill, 3);
             }
 
-            sp.Children.Add(titleRow);
-
+            // 4. Description
             TextBlock descText = new TextBlock()
             {
                 Text = curApp.description,
-                FontSize = 10,
-                Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0"),
-                Margin = new Thickness(0, 2, 0, 0),
+                FontSize = 12,
+                Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(24, 0, 16, 0),
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
-            sp.Children.Add(descText);
+            Grid.SetColumn(descText, 4);
+            g.Children.Add(descText);
 
-            Grid.SetColumn(sp, 1);
-            g.Children.Add(sp);
-
+            // 5. Status Badge
             bool isRec = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
             Border statusBadge = new Border()
             {
                 Background = isChecked ?
-                    (currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C4A6E")) :
-                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#222222")),
-                CornerRadius = new CornerRadius(4),
-                Padding = new Thickness(8, 3, 8, 3),
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(8, 0, 0, 0)
+                    (currentThemeIsLight ? HexBrush("#DCFCE7") : HexBrush("#064E3B")) :
+                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#243144")),
+                CornerRadius = new CornerRadius(6),
+                Padding = new Thickness(10, 4, 10, 4),
+                VerticalAlignment = VerticalAlignment.Center
             };
             TextBlock statusBadgeText = new TextBlock()
             {
-                Text = isChecked ? "✓ SELECTED" : (isRec ? "○ UNCHECKED" : "+ ADD"),
-                FontSize = 10,
-                FontWeight = FontWeights.Bold,
+                Text = isChecked ? "✓ Selected" : (isRec ? "○ Unchecked" : "+ Add"),
+                FontSize = 11,
+                FontWeight = FontWeights.SemiBold,
                 Foreground = isChecked ?
-                    (currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8")) :
-                    (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#777777"))
+                    (currentThemeIsLight ? HexBrush("#15803D") : HexBrush("#34D399")) :
+                    (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"))
             };
             statusBadge.Child = statusBadgeText;
-            Grid.SetColumn(statusBadge, 2);
+            Grid.SetColumn(statusBadge, 5);
             g.Children.Add(statusBadge);
 
             b.Child = g;
@@ -9766,19 +10095,15 @@ namespace FleetForge
             {
                 bool active = cb.IsChecked == true;
                 bool isRecMode = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
-                curBorder.Background = active ?
-                    (currentThemeIsLight ? HexBrush("#F0F9FF") : HexBrush("#132537")) :
-                    (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#181818"));
-                curBorder.BorderBrush = active ?
-                    (currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8")) :
-                    (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#2B2B2B"));
+                curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                curBorder.BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
                 curBadge.Background = active ?
-                    (currentThemeIsLight ? HexBrush("#E0F2FE") : HexBrush("#0C4A6E")) :
-                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#222222"));
-                curBadgeText.Text = active ? "✓ SELECTED" : (isRecMode ? "○ UNCHECKED" : "+ ADD");
+                    (currentThemeIsLight ? HexBrush("#DCFCE7") : HexBrush("#064E3B")) :
+                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#243144"));
+                curBadgeText.Text = active ? "✓ Selected" : (isRecMode ? "○ Unchecked" : "+ Add");
                 curBadgeText.Foreground = active ?
-                    (currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8")) :
-                    (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#777777"));
+                    (currentThemeIsLight ? HexBrush("#15803D") : HexBrush("#34D399")) :
+                    (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"));
             });
 
             cb.Checked += delegate
@@ -9794,9 +10119,18 @@ namespace FleetForge
                 UpdateModalCount();
             };
 
-            b.MouseDown += delegate (object sender, MouseButtonEventArgs e)
+            b.MouseEnter += delegate
             {
-                if (e.OriginalSource != cb && !(e.OriginalSource is System.Windows.Shapes.Path))
+                curBorder.Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#243144");
+            };
+            b.MouseLeave += delegate
+            {
+                curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+            };
+
+            b.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
+            {
+                if (!e.Handled && !(e.OriginalSource is CheckBox))
                 {
                     cb.IsChecked = !cb.IsChecked;
                 }
@@ -9805,10 +10139,10 @@ namespace FleetForge
             modalAppRows.Add(new ModalAppItemView()
             {
                 App = curApp,
-                Container = b,
+                Container = curBorder,
                 CheckBox = cb,
-                StatusBadge = statusBadge,
-                StatusBadgeText = statusBadgeText
+                StatusBadge = curBadge,
+                StatusBadgeText = curBadgeText
             });
 
             return b;
@@ -9816,13 +10150,33 @@ namespace FleetForge
 
         private void UpdateModalCount()
         {
+            int selCount = modalSelectedAppIds.Count;
+            int totalCount = modalFilteredApps != null ? modalFilteredApps.Count : selCount;
+
             if (txtModalSelectedCount != null)
             {
-                txtModalSelectedCount.Text = modalSelectedAppIds.Count + " selected";
+                txtModalSelectedCount.Text = selCount + " selected";
+            }
+            if (btnModalFilterTabAll != null)
+            {
+                btnModalFilterTabAll.Content = string.Format("All Software ({0})", totalCount);
             }
             if (btnModalFilterTabSelected != null)
             {
-                btnModalFilterTabSelected.Content = string.Format("Selected ({0})", modalSelectedAppIds.Count);
+                btnModalFilterTabSelected.Content = string.Format("Selected ({0})", selCount);
+            }
+            if (chkModalSelectAll != null && modalFilteredApps != null && modalFilteredApps.Count > 0)
+            {
+                bool allSel = true;
+                foreach (AppModel a in modalFilteredApps)
+                {
+                    if (a != null && a.id != null && !modalSelectedAppIds.Contains(a.id))
+                    {
+                        allSel = false;
+                        break;
+                    }
+                }
+                chkModalSelectAll.IsChecked = allSel;
             }
         }
 
