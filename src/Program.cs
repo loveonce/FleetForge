@@ -2714,7 +2714,11 @@ namespace FleetForge
         private TextBox txtModalAppSearch;
         private Button btnModalFilterTabAll;
         private Button btnModalFilterTabSelected;
+        private Border borderModalTableHeader;
         private CheckBox chkModalSelectAll;
+        private TextBlock txtModalTableHeaderCount;
+        private Border badgeModalHeaderRole;
+        private TextBlock txtModalHeaderBadgeRole;
         private Button btnModalSelectAll;
         private Button btnModalClearAll;
         private TextBlock txtModalSelectedCount;
@@ -3855,36 +3859,52 @@ namespace FleetForge
                         </Grid>
                     </Border>
 
-                    <!-- Right Tabs & Action Buttons -->
+                    <!-- Right Tabs -->
                     <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
                         <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0066FF"" Foreground=""#FFFFFF""
                                 Padding=""16,8"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" FontWeight=""SemiBold""/>
                         <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
-                                Padding=""14,8"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
-                        <CheckBox x:Name=""ChkModalSelectAll"" Content=""Select All"" Margin=""0,0,10,0"" VerticalAlignment=""Center"" Cursor=""Hand"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#334155""/>
-                        <Button x:Name=""BtnModalSelectAll"" Visibility=""Collapsed""/>
-                        <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
-                                Padding=""14,7"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12"" FontWeight=""SemiBold""/>
+                                Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
                         <TextBlock x:Name=""TxtModalSelectedCount"" Visibility=""Collapsed""/>
                     </StackPanel>
                 </Grid>
 
-                <!-- 4. App Checklist -->
-                <Border x:Name=""BorderModalAppsContainer"" Grid.Row=""4"" Background=""#FFFFFF"" CornerRadius=""10"" Padding=""8"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Margin=""0,0,0,14"">
-                    <ScrollViewer x:Name=""ModalAppsScrollViewer"" VerticalScrollBarVisibility=""Auto"" HorizontalScrollBarVisibility=""Disabled"">
-                        <StackPanel x:Name=""ModalAppsContainer""/>
-                    </ScrollViewer>
+                <!-- 4. App Checklist Table with Pinned Header (Like All Apps) -->
+                <Border x:Name=""BorderModalAppsContainer"" Grid.Row=""4"" Background=""#FFFFFF"" CornerRadius=""10"" Padding=""12,10,12,10"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Margin=""0,0,0,14"">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height=""Auto""/> <!-- Top Table Header Bar (like All Apps) -->
+                            <RowDefinition Height=""*""/>    <!-- Scrollable Apps List -->
+                        </Grid.RowDefinitions>
+
+                        <!-- Pinned Table Header Bar with Master CheckBox and Role Badge (like All Apps) -->
+                        <Border x:Name=""BorderModalTableHeader"" Grid.Row=""0"" Margin=""0,0,0,6"" Padding=""4,2,4,10"" BorderThickness=""0,0,0,1"" BorderBrush=""#F1F5F9"">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=""Auto""/>
+                                    <ColumnDefinition Width=""*""/>
+                                    <ColumnDefinition Width=""Auto""/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox x:Name=""ChkModalSelectAll"" Grid.Column=""0"" Content=""Select All Software"" IsThreeState=""True"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#0F172A"" VerticalAlignment=""Center"" Cursor=""Hand""/>
+                                <TextBlock x:Name=""TxtModalTableHeaderCount"" Grid.Column=""1"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" FontSize=""11.5"" Foreground=""#64748B"" Margin=""0,0,12,0"" Text=""7 of 27 software selected""/>
+                                <Border x:Name=""BadgeModalHeaderRole"" Grid.Column=""2"" Background=""#0066FF"" CornerRadius=""12"" Padding=""12,3"" VerticalAlignment=""Center"">
+                                    <TextBlock x:Name=""TxtModalHeaderBadgeRole"" Text=""Active in Role"" FontSize=""10"" FontWeight=""Bold"" Foreground=""#FFFFFF""/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <ScrollViewer x:Name=""ModalAppsScrollViewer"" Grid.Row=""1"" VerticalScrollBarVisibility=""Auto"" HorizontalScrollBarVisibility=""Disabled"">
+                            <StackPanel x:Name=""ModalAppsContainer""/>
+                        </ScrollViewer>
+                    </Grid>
                 </Border>
 
-                <!-- 5. Footer Actions -->
+                <!-- 5. Footer Actions (Export Removed) -->
                 <Grid Grid.Row=""5"">
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"">
                         <Button x:Name=""BtnDeleteGroup"" Content=""🗑️ Delete Pack"" Background=""#FEF2F2"" BorderBrush=""#FCA5A5"" BorderThickness=""1""
                                 Foreground=""#DC2626"" FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand""
                                 FontSize=""12"" Visibility=""Collapsed""/>
-                        <Button x:Name=""BtnModalExportGroup"" Content=""📤 Export Pack"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
-                                Foreground=""#334155"" FontWeight=""SemiBold"" Padding=""14,8"" Margin=""8,0,0,0"" Cursor=""Hand""
-                                FontSize=""12"" Visibility=""Collapsed"" ToolTip=""Export this pack to a .json file""/>
                     </StackPanel>
 
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
@@ -4708,7 +4728,11 @@ namespace FleetForge
             txtModalAppSearch = (TextBox)root.FindName("TxtModalAppSearch");
             btnModalFilterTabAll = (Button)root.FindName("BtnModalFilterTabAll");
             btnModalFilterTabSelected = (Button)root.FindName("BtnModalFilterTabSelected");
+            borderModalTableHeader = (Border)root.FindName("BorderModalTableHeader");
             chkModalSelectAll = (CheckBox)root.FindName("ChkModalSelectAll");
+            txtModalTableHeaderCount = (TextBlock)root.FindName("TxtModalTableHeaderCount");
+            badgeModalHeaderRole = (Border)root.FindName("BadgeModalHeaderRole");
+            txtModalHeaderBadgeRole = (TextBlock)root.FindName("TxtModalHeaderBadgeRole");
             btnModalSelectAll = (Button)root.FindName("BtnModalSelectAll");
             btnModalClearAll = (Button)root.FindName("BtnModalClearAll");
             txtModalSelectedCount = (TextBlock)root.FindName("TxtModalSelectedCount");
@@ -5585,33 +5609,39 @@ namespace FleetForge
                 };
             }
 
-            btnModalSelectAll.Click += delegate
+            if (btnModalSelectAll != null)
             {
-                if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = true;
-                if (modalFilteredApps != null)
+                btnModalSelectAll.Click += delegate
                 {
-                    foreach (AppModel a in modalFilteredApps)
+                    if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = true;
+                    if (modalFilteredApps != null)
                     {
-                        if (a != null && a.id != null) modalSelectedAppIds.Add(a.id);
+                        foreach (AppModel a in modalFilteredApps)
+                        {
+                            if (a != null && a.id != null) modalSelectedAppIds.Add(a.id);
+                        }
                     }
-                }
-                foreach (ModalAppItemView m in modalAppRows)
-                {
-                    m.CheckBox.IsChecked = true;
-                }
-                UpdateModalCount();
-            };
+                    foreach (ModalAppItemView m in modalAppRows)
+                    {
+                        m.CheckBox.IsChecked = true;
+                    }
+                    UpdateModalCount();
+                };
+            }
 
-            btnModalClearAll.Click += delegate
+            if (btnModalClearAll != null)
             {
-                modalSelectedAppIds.Clear();
-                if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = false;
-                foreach (ModalAppItemView m in modalAppRows)
+                btnModalClearAll.Click += delegate
                 {
-                    m.CheckBox.IsChecked = false;
-                }
-                UpdateModalCount();
-            };
+                    modalSelectedAppIds.Clear();
+                    if (chkModalSelectAll != null) chkModalSelectAll.IsChecked = false;
+                    foreach (ModalAppItemView m in modalAppRows)
+                    {
+                        m.CheckBox.IsChecked = false;
+                    }
+                    UpdateModalCount();
+                };
+            }
 
             txtModalAppSearch.GotFocus += delegate
             {
@@ -6744,6 +6774,18 @@ namespace FleetForge
             {
                 borderModalAppsContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A");
                 borderModalAppsContainer.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
+            }
+            if (borderModalTableHeader != null)
+            {
+                borderModalTableHeader.BorderBrush = isLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
+            }
+            if (chkModalSelectAll != null)
+            {
+                chkModalSelectAll.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (txtModalTableHeaderCount != null)
+            {
+                txtModalTableHeaderCount.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
             }
             if (borderPackIconCard != null)
             {
@@ -9401,6 +9443,15 @@ namespace FleetForge
             txtGroupDescInput.IsReadOnly = isRecommended;
             UpdateDescCharCount();
 
+            if (txtModalHeaderBadgeRole != null)
+            {
+                txtModalHeaderBadgeRole.Text = isRecommended ? "Top Choice" : "Active in Role";
+            }
+            if (badgeModalHeaderRole != null)
+            {
+                badgeModalHeaderRole.Background = isRecommended ? HexBrush("#F59E0B") : HexBrush("#0066FF");
+            }
+
             btnDeleteGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
             if (btnModalExportGroup != null) btnModalExportGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
 
@@ -9643,15 +9694,9 @@ namespace FleetForge
                 return;
             }
 
-            // Section 1: Selected Software (Always placed on top!)
+            // Section 1: Selected Software (Header is pinned at the top of the table!)
             if (selectedApps.Count > 0)
             {
-                Border selHeader = CreateModalSectionHeader(
-                    string.Format("Selected Software in this Role ({0})", selectedApps.Count),
-                    "These packages are currently assigned and will be installed for this role.",
-                    true);
-                modalAppsContainer.Children.Add(selHeader);
-
                 foreach (AppModel a in selectedApps)
                 {
                     Border card = CreateModalAppCard(a);
@@ -10165,18 +10210,40 @@ namespace FleetForge
             {
                 btnModalFilterTabSelected.Content = string.Format("Selected ({0})", selCount);
             }
+            if (txtModalTableHeaderCount != null)
+            {
+                if (modalShowSelectedOnly)
+                {
+                    txtModalTableHeaderCount.Text = string.Format("{0} software selected in role", selCount);
+                }
+                else
+                {
+                    txtModalTableHeaderCount.Text = string.Format("{0} of {1} software selected", selCount, totalCount);
+                }
+            }
+
             if (chkModalSelectAll != null && modalFilteredApps != null && modalFilteredApps.Count > 0)
             {
-                bool allSel = true;
+                int matchedSel = 0;
                 foreach (AppModel a in modalFilteredApps)
                 {
-                    if (a != null && a.id != null && !modalSelectedAppIds.Contains(a.id))
+                    if (a != null && a.id != null && modalSelectedAppIds.Contains(a.id))
                     {
-                        allSel = false;
-                        break;
+                        matchedSel++;
                     }
                 }
-                chkModalSelectAll.IsChecked = allSel;
+                if (matchedSel == modalFilteredApps.Count)
+                {
+                    chkModalSelectAll.IsChecked = true;
+                }
+                else if (matchedSel == 0)
+                {
+                    chkModalSelectAll.IsChecked = false;
+                }
+                else
+                {
+                    chkModalSelectAll.IsChecked = null; // Indeterminate
+                }
             }
         }
 
