@@ -14,6 +14,8 @@ set PACK_DEV_FILE=src\assets\pack_dev.png
 set PACK_OFFICE_FILE=src\assets\pack_office.png
 set PACK_DESIGN_FILE=src\assets\pack_design.png
 set PACK_MINIMAL_FILE=src\assets\pack_minimal.png
+set HERO_CATALOG_FILE=src\assets\hero_catalog.png
+set BRAND_CUBE_FILE=src\assets\brand_cube.png
 
 set APP_URLS_JSON=app_urls.json
 if not exist "%APP_URLS_JSON%" set APP_URLS_JSON=config\app_urls.json
@@ -46,6 +48,8 @@ if exist FleetForge.exe (
     /resource:%PACK_OFFICE_FILE%,pack_office.png ^
     /resource:%PACK_DESIGN_FILE%,pack_design.png ^
     /resource:%PACK_MINIMAL_FILE%,pack_minimal.png ^
+    /resource:%HERO_CATALOG_FILE%,hero_catalog.png ^
+    /resource:%BRAND_CUBE_FILE%,brand_cube.png ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationCore.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^

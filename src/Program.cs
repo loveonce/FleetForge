@@ -152,6 +152,7 @@ namespace FleetForge
         public AppModel App { get; set; }
         public Border Card { get; set; }
         public CheckBox CheckBox { get; set; }
+        public Border StatusBadge { get; set; }
         public TextBlock StatusIcon { get; set; }
         public TextBlock StatusText { get; set; }
     }
@@ -2485,6 +2486,9 @@ namespace FleetForge
         private System.Windows.Shapes.Rectangle rectWizardLine2;
         private Border borderSetupTip;
         private TextBlock txtSetupTip;
+        private Image imgCatalogHero;
+        private StackPanel stackBottomSelectedPackInfo;
+        private TextBlock txtBottomSelectedPackInfo;
 
         private TextBlock txtCatalogBigHeading;
         private TextBlock txtCatalogBigSubtitle;
@@ -3062,6 +3066,20 @@ namespace FleetForge
                         }
                     }
                 }
+
+                string localPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "src", "assets", resourceName);
+                if (!File.Exists(localPath)) localPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, resourceName);
+                if (File.Exists(localPath))
+                {
+                    BitmapImage bi = new BitmapImage();
+                    bi.BeginInit();
+                    bi.UriSource = new Uri(localPath, UriKind.Absolute);
+                    bi.CacheOption = BitmapCacheOption.OnLoad;
+                    bi.EndInit();
+                    bi.Freeze();
+                    embeddedImageCache[resourceName] = bi;
+                    return bi;
+                }
             }
             catch { }
             return null;
@@ -3121,6 +3139,32 @@ namespace FleetForge
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key=""CategoryPillStyle"" TargetType=""Button"">
+            <Setter Property=""FocusVisualStyle"" Value=""{x:Null}""/>
+            <Setter Property=""Template"">
+                <Setter.Value>
+                    <ControlTemplate TargetType=""Button"">
+                        <Border x:Name=""border"" Background=""{TemplateBinding Background}""
+                                BorderBrush=""{TemplateBinding BorderBrush}""
+                                BorderThickness=""{TemplateBinding BorderThickness}""
+                                CornerRadius=""18"" Padding=""{TemplateBinding Padding}"" SnapsToDevicePixels=""True"">
+                            <ContentPresenter HorizontalAlignment=""Center"" VerticalAlignment=""Center"" RecognizesAccessKey=""True""/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property=""IsMouseOver"" Value=""True"">
+                                <Setter Property=""Opacity"" Value=""0.90""/>
+                            </Trigger>
+                            <Trigger Property=""IsPressed"" Value=""True"">
+                                <Setter Property=""Opacity"" Value=""0.75""/>
+                            </Trigger>
+                            <Trigger Property=""IsEnabled"" Value=""False"">
+                                <Setter Property=""Opacity"" Value=""0.45""/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Grid.Resources>
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width=""Auto""/>
@@ -3158,7 +3202,7 @@ namespace FleetForge
                     </StackPanel>
 
                     <Button x:Name=""BtnToggleSidebar"" Grid.Column=""2"" Width=""28"" Height=""28"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand""
-                            ToolTip=""Collapse / Expand Menu"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
+                            ToolTip=""Collapse / Expand Menu"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" Visibility=""Collapsed"">
                         <TextBlock x:Name=""TxtToggleSidebarIcon"" Text=""&#xE700;"" FontFamily=""Segoe Fluent Icons, Segoe MDL2 Assets, Segoe UI Symbol""
                                    FontSize=""13"" Foreground=""#8E95A5"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                     </Button>
@@ -3230,7 +3274,7 @@ namespace FleetForge
                            FontSize=""10.5"" Foreground=""#94A3B8""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" Margin=""0,0,0,3""/>
                 <TextBlock x:Name=""TxtSidebarFooterCompany"" Text=""LOVE MALHOTRA""
-                           FontSize=""11"" FontWeight=""Bold"" Foreground=""#0066FF""
+                           FontSize=""11"" FontWeight=""Bold"" Foreground=""#DC2626""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" TextWrapping=""Wrap""/>
             </StackPanel>
         </Grid>
@@ -3274,7 +3318,7 @@ namespace FleetForge
 
                 <!-- Actions on Right (Clean Windows 11 Help Menu button) -->
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnHelpMenu"" Content=""Help ▾"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
+                    <Button x:Name=""BtnHelpMenu"" Content=""Help ?"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""16,6"" Cursor=""Hand"" ToolTip=""How to Use, Settings, Updates &amp; About"" VerticalAlignment=""Center""/>
                 </StackPanel>
             </Grid>
@@ -3399,27 +3443,33 @@ namespace FleetForge
         </ScrollViewer>
 
         <!-- PAGE 2: CATALOG -->
-        <Grid x:Name=""ViewCatalog"" Grid.Row=""1"" Visibility=""Collapsed"" Margin=""28,18,28,18"">
+        <Grid x:Name=""ViewCatalog"" Grid.Row=""1"" Visibility=""Collapsed"" Margin=""28,14,28,14"">
             <Grid.RowDefinitions>
                 <RowDefinition Height=""Auto""/>
                 <RowDefinition Height=""Auto""/>
                 <RowDefinition Height=""*""/>
             </Grid.RowDefinitions>
 
-            <!-- BIG HEADING -->
-            <StackPanel Grid.Row=""0"" Margin=""0,0,0,14"">
-                <TextBlock x:Name=""TxtCatalogBigHeading"" Text=""All Applications"" FontSize=""28"" FontWeight=""Bold"" Foreground=""#FFFFFF"" Margin=""0,0,0,4""/>
-                <TextBlock x:Name=""TxtCatalogBigSubtitle"" Text=""Browse 16,349 software packages with instant search and one-click selection.""
-                           FontSize=""12.5"" Foreground=""#A0A0A0""/>
-            </StackPanel>
+            <!-- HERO HEADER with 3D Folder Illustration -->
+            <Grid Grid.Row=""0"" Margin=""0,0,0,16"">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=""Auto""/>
+                    <ColumnDefinition Width=""*""/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column=""0"" Width=""122"" Height=""80"" Margin=""0,0,16,0"" VerticalAlignment=""Center"">
+                    <Image x:Name=""ImgCatalogHero"" Width=""118"" Height=""76"" RenderOptions.BitmapScalingMode=""HighQuality"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                </Border>
+                <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
+                    <TextBlock x:Name=""TxtCatalogBigHeading"" Text=""All Applications"" FontSize=""28"" FontWeight=""Bold"" Foreground=""#0F172A"" Margin=""0,0,0,4""/>
+                    <TextBlock x:Name=""TxtCatalogBigSubtitle"" Text=""Browse 16,349 software packages with instant search and one-click selection.""
+                               FontSize=""13"" Foreground=""#475569""/>
+                </StackPanel>
+            </Grid>
 
             <!-- Expanded Modern Category Tabs Deck -->
-            <Border x:Name=""BorderCategoryBar"" Grid.Row=""1"" Background=""#1E222A"" CornerRadius=""8""
-                    Padding=""8,8,2,2"" BorderBrush=""#2D3342"" BorderThickness=""1"" Margin=""0,0,0,14"">
-                <WrapPanel x:Name=""CategoryChipsPanel"" Orientation=""Horizontal""/>
-            </Border>
+            <WrapPanel x:Name=""CategoryChipsPanel"" Grid.Row=""1"" Orientation=""Horizontal"" Margin=""0,0,0,14""/>
 
-            <Border x:Name=""BorderCatalogContainer"" Grid.Row=""2"" Background=""#272727"" CornerRadius=""8"" Padding=""14,10"" BorderBrush=""#383838"" BorderThickness=""1"">
+            <Border x:Name=""BorderCatalogContainer"" Grid.Row=""2"" Background=""#FFFFFF"" CornerRadius=""16"" Padding=""16,12"" BorderBrush=""#E2E8F0"" BorderThickness=""1"">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height=""Auto""/>
@@ -3427,15 +3477,15 @@ namespace FleetForge
                     </Grid.RowDefinitions>
 
                     <!-- Top Software List Header Bar with Single Master CheckBox and Sort Dropdown -->
-                    <Border x:Name=""BorderCatalogHeaderBar"" Grid.Row=""0"" Margin=""0,0,0,8"" Padding=""4,4,4,8"" BorderThickness=""0,0,0,1"" BorderBrush=""#383838"">
+                    <Border x:Name=""BorderCatalogHeaderBar"" Grid.Row=""0"" Margin=""0,0,0,8"" Padding=""4,4,4,12"" BorderThickness=""0,0,0,1"" BorderBrush=""#F1F5F9"">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width=""Auto""/>
                                 <ColumnDefinition Width=""*""/>
                                 <ColumnDefinition Width=""Auto""/>
                             </Grid.ColumnDefinitions>
-                            <CheckBox x:Name=""ChkSelectAllCatalog"" Grid.Column=""0"" Content=""Select All Apps"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Cursor=""Hand""/>
-                            <TextBlock x:Name=""TxtCatalogListHeaderCount"" Grid.Column=""1"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,0,14,0"" Text=""""/>
+                            <CheckBox x:Name=""ChkSelectAllCatalog"" Grid.Column=""0"" Content=""Select All Apps"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#0F172A"" VerticalAlignment=""Center"" Cursor=""Hand""/>
+                            <TextBlock x:Name=""TxtCatalogListHeaderCount"" Grid.Column=""1"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" FontSize=""11.5"" Foreground=""#64748B"" Margin=""0,0,14,0"" Text=""Showing 250 of 16,351 apps""/>
                             <Button x:Name=""BtnCatalogSort"" Grid.Column=""2"" Content=""Sort Apps ▾""
                                     Background=""#FFFFFF"" Foreground=""#0F172A"" FontWeight=""SemiBold"" FontSize=""11.5""
                                     Padding=""12,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#CBD5E1"" VerticalAlignment=""Center""/>
@@ -3546,14 +3596,19 @@ namespace FleetForge
                                        FontSize=""11.5"" Foreground=""#1D4ED8"" VerticalAlignment=""Center""/>
                         </StackPanel>
                     </Border>
-                    <Button x:Name=""BtnSearchWingetOnlineBottom"" Content=""Search Online Apps""
-                            Background=""#0066FF"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
-                            Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
+                    <Button x:Name=""BtnSearchWingetOnlineBottom"" Content=""🔍  Search Online Apps""
+                            Background=""#FFFFFF"" Foreground=""#0066FF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
+                            FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" FontSize=""12""
                             Visibility=""Collapsed""/>
                 </StackPanel>
 
-                <StackPanel Grid.Column=""1"" Orientation=""Vertical"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
-                    <TextBlock x:Name=""TxtStatus"" Text="""" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#A0A0A0"" VerticalAlignment=""Center"" TextTrimming=""CharacterEllipsis""/>
+                <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
+                    <TextBlock x:Name=""TxtStatus"" Text="""" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#64748B"" VerticalAlignment=""Center"" TextTrimming=""CharacterEllipsis""/>
+                    <StackPanel x:Name=""StackBottomSelectedPackInfo"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Visibility=""Collapsed"">
+                        <TextBlock Text=""|"" FontSize=""12"" Foreground=""#CBD5E1"" VerticalAlignment=""Center"" Margin=""0,0,14,0""/>
+                        <TextBlock x:Name=""TxtBottomSelectedPackInfo"" Text=""App pack selected: Top Choice • Recommended""
+                                   FontSize=""12"" Foreground=""#475569"" VerticalAlignment=""Center""/>
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
@@ -3570,7 +3625,7 @@ namespace FleetForge
                     <Button x:Name=""BtnStop"" Content=""Stop Install""
                             Background=""#DC2626"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""20,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnInstall"" Content=""Install Selected Apps""
+                    <Button x:Name=""BtnInstall"" Content=""📥  Install Selected Apps""
                             Background=""#0066FF"" Foreground=""#FFFFFF"" FontWeight=""Bold"" FontSize=""13""
                             Padding=""24,8"" Cursor=""Hand"" BorderThickness=""0"" Visibility=""Collapsed""/>
                 </StackPanel>
@@ -4252,6 +4307,15 @@ namespace FleetForge
                 imgHeroMascot.Source = LoadEmbeddedImage("hero_mascot.png");
             }
 
+            imgCatalogHero = (Image)root.FindName("ImgCatalogHero");
+            if (imgCatalogHero != null)
+            {
+                imgCatalogHero.Source = LoadEmbeddedImage("hero_catalog.png");
+            }
+
+            stackBottomSelectedPackInfo = (StackPanel)root.FindName("StackBottomSelectedPackInfo");
+            txtBottomSelectedPackInfo = (TextBlock)root.FindName("TxtBottomSelectedPackInfo");
+
             txtTargetRoleTitle = (TextBlock)root.FindName("TxtTargetRoleTitle");
             txtTargetRoleSubtitle = (TextBlock)root.FindName("TxtTargetRoleSubtitle");
             borderCatalogContainer = (Border)root.FindName("BorderCatalogContainer");
@@ -4360,7 +4424,12 @@ namespace FleetForge
             // Brand Logo & Help Menu
             imgBrandLogo = (Image)root.FindName("ImgBrandLogo");
             TextBlock txtFallbackBrand = (TextBlock)root.FindName("TxtFallbackBrand");
-            if (this.Icon != null && imgBrandLogo != null)
+            ImageSource brandCube = LoadEmbeddedImage("brand_cube.png");
+            if (brandCube != null && imgBrandLogo != null)
+            {
+                imgBrandLogo.Source = brandCube;
+            }
+            else if (this.Icon != null && imgBrandLogo != null)
             {
                 imgBrandLogo.Source = this.Icon;
             }
@@ -5937,7 +6006,7 @@ namespace FleetForge
             }
             if (txtSidebarFooterCompany != null)
             {
-                txtSidebarFooterCompany.Foreground = HexBrush("#0066FF");
+                txtSidebarFooterCompany.Foreground = HexBrush("#DC2626");
             }
 
             // Top Bar
@@ -6111,26 +6180,30 @@ namespace FleetForge
             }
             if (borderCatalogContainer != null)
             {
-                borderCatalogContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                borderCatalogContainer.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                borderCatalogContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                borderCatalogContainer.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
             if (borderCatalogHeaderBar != null)
             {
-                borderCatalogHeaderBar.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                borderCatalogHeaderBar.BorderBrush = isLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
             }
             if (chkSelectAllCatalog != null)
             {
-                chkSelectAllCatalog.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                chkSelectAllCatalog.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (txtCatalogListHeaderCount != null)
             {
-                txtCatalogListHeaderCount.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0");
+                txtCatalogListHeaderCount.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
             }
             if (btnCatalogSort != null)
             {
                 btnCatalogSort.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
                 btnCatalogSort.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 btnCatalogSort.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (txtBottomSelectedPackInfo != null)
+            {
+                txtBottomSelectedPackInfo.Foreground = isLight ? HexBrush("#475569") : HexBrush("#94A3B8");
             }
 
             // Cloud Sync Page
@@ -6244,8 +6317,10 @@ namespace FleetForge
             if (progressBar != null) progressBar.Background = isLight ? HexBrush("#E5E5E5") : HexBrush("#262626");
             if (btnSearchWingetOnlineBottom != null)
             {
-                btnSearchWingetOnlineBottom.Background = HexBrush("#0066FF");
-                btnSearchWingetOnlineBottom.Foreground = HexBrush("#FFFFFF");
+                btnSearchWingetOnlineBottom.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
+                btnSearchWingetOnlineBottom.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
             }
             if (btnOpenOfflineFolder != null)
             {
@@ -6742,8 +6817,7 @@ namespace FleetForge
                 btn.BorderThickness = new Thickness(0);
                 if (ind != null)
                 {
-                    ind.Visibility = Visibility.Visible;
-                    ind.Background = HexBrush("#0066FF");
+                    ind.Visibility = Visibility.Collapsed;
                 }
                 if (icon != null)
                 {
@@ -6858,6 +6932,21 @@ namespace FleetForge
             if (btnSearchWingetOnlineBottom != null)
             {
                 btnSearchWingetOnlineBottom.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (stackBottomSelectedPackInfo != null)
+            {
+                stackBottomSelectedPackInfo.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
+                if (isCatalogView && txtBottomSelectedPackInfo != null)
+                {
+                    GroupModel activeGroup = null;
+                    if (config != null && config.groups != null && !string.IsNullOrEmpty(activeRoleId))
+                    {
+                        activeGroup = config.groups.Find(delegate(GroupModel g) { return g != null && g.id == activeRoleId; });
+                    }
+                    string rawName = (activeGroup != null && !string.IsNullOrWhiteSpace(activeGroup.name)) ? activeGroup.name : "Top Choice • Recommended";
+                    txtBottomSelectedPackInfo.Text = "App pack selected: " + FixMojibake(rawName);
+                }
             }
 
             if (btnInstall != null)
@@ -8072,6 +8161,11 @@ namespace FleetForge
                     txtStatus.Text = "";
                 }
             }
+
+            if (txtBottomSelectedPackInfo != null && targetGrp != null)
+            {
+                txtBottomSelectedPackInfo.Text = "App pack selected: " + FixMojibake(targetGrp.name);
+            }
         }
 
         // =========================================================================
@@ -9072,12 +9166,17 @@ namespace FleetForge
             Button btn = new Button()
             {
                 Height = 36,
-                Padding = new Thickness(12, 0, 12, 0),
-                Margin = new Thickness(0, 0, 6, 6),
+                Padding = new Thickness(14, 0, 14, 0),
+                Margin = new Thickness(0, 0, 8, 8),
                 Cursor = Cursors.Hand,
                 BorderThickness = new Thickness(1),
                 Tag = id
             };
+
+            if (this.Resources.Contains("CategoryPillStyle"))
+            {
+                btn.Style = (Style)this.Resources["CategoryPillStyle"];
+            }
 
             StackPanel sp = new StackPanel()
             {
@@ -9109,8 +9208,8 @@ namespace FleetForge
 
             Border badge = new Border()
             {
-                CornerRadius = new CornerRadius(9),
-                Padding = new Thickness(7, 1.5, 7, 1.5),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(8, 2, 8, 2),
                 Margin = new Thickness(8, 0, 0, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -9161,11 +9260,10 @@ namespace FleetForge
             if (isActive)
             {
                 btn.Background = isOnline ? HexBrush("#7C3AED") : HexBrush("#0066FF");
-                btn.BorderBrush = isOnline ? HexBrush("#A855F7") : HexBrush("#0052CC");
-                btn.BorderThickness = new Thickness(1);
+                btn.BorderThickness = new Thickness(0);
                 if (txtIcon != null) txtIcon.Foreground = HexBrush("#FFFFFF");
                 if (txtTitle != null) txtTitle.Foreground = HexBrush("#FFFFFF");
-                if (badge != null) badge.Background = HexBrush("#35FFFFFF");
+                if (badge != null) badge.Background = HexBrush("#2552C8");
                 if (txtBadge != null) txtBadge.Foreground = HexBrush("#FFFFFF");
             }
             else
@@ -9187,8 +9285,8 @@ namespace FleetForge
                     btn.BorderThickness = new Thickness(1);
                     if (txtIcon != null) txtIcon.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                     if (txtTitle != null) txtTitle.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
-                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#1E293B");
-                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
+                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B");
+                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#2563EB") : HexBrush("#60A5FA");
                 }
             }
         }
@@ -9396,21 +9494,66 @@ namespace FleetForge
             }
         }
 
+        private static string GetAppGlyphIcon(AppModel app)
+        {
+            if (app == null) return "\uE74C";
+            string id = (app.id ?? "").ToLowerInvariant();
+            string name = (app.name ?? "").ToLowerInvariant();
+            string cat = (app.category ?? "").ToLowerInvariant();
+
+            // Precedence 1: Exact matches for showcase apps from Fluent mockup
+            if (name.Contains("isecure") || id.Contains("isecure") || id.Contains("vpn") || name.Contains("vpn"))
+                return "\uEA18"; // Shield (0xEA18)
+            if (name.Contains("win riser") || name.Contains("riser") || id.Contains("winriser") || id.Contains("riser"))
+                return "\uE916"; // Stopwatch / Speed Optimizer (0xE916)
+            if (name.Contains("driver updater") || name.Contains("driver") || id.Contains("driver"))
+                return "\uE713"; // Settings Gear (0xE713)
+            if (name.Contains("codecontract") || id.Contains("codecontract") || id.Contains("contract"))
+                return "</>"; // Code Brackets
+            if (name.Contains("framework") || id.Contains("framework") || id.Contains(".net.desktop"))
+                return "\uE8A9"; // Windows 4-Square Tile (0xE8A9)
+            if (name.Contains("reactor") || id.Contains("reactor"))
+                return "\uE81E"; // 3 Stacked Layers (0xE81E)
+
+            // Precedence 2: Category and keyword rules
+            if (cat.Contains("sec") || id.Contains("antivirus") || name.Contains("defender") || id.Contains("firewall"))
+                return "\uEA18"; // Shield
+            if (cat.Contains("browser") || id.Contains("chrome") || id.Contains("firefox") || id.Contains("edge") || id.Contains("brave") || id.Contains("opera") || id.Contains("vivaldi"))
+                return "\uE774"; // Globe
+            if (cat.Contains("dev") || id.Contains("git") || id.Contains("vscode") || id.Contains("visualstudio") || id.Contains("python") || id.Contains("node") || id.Contains("rust") || id.Contains("go"))
+                return "</>"; // Code Brackets
+            if (cat.Contains("util") || id.Contains("clean") || id.Contains("optim") || id.Contains("speed") || id.Contains("perf") || id.Contains("tweak"))
+                return "\uE916"; // Speedometer / Stopwatch
+            if (cat.Contains("game") || id.Contains("steam") || id.Contains("epic") || id.Contains("play"))
+                return "\uE7FC"; // Game Controller
+            if (cat.Contains("media") || cat.Contains("creat") || id.Contains("vlc") || id.Contains("player") || id.Contains("video") || id.Contains("music") || id.Contains("spotify") || id.Contains("obs"))
+                return "\uE714"; // Media Film
+            if (cat.Contains("commun") || cat.Contains("collab") || cat.Contains("chat") || id.Contains("discord") || id.Contains("zoom") || id.Contains("slack") || id.Contains("teams") || id.Contains("telegram"))
+                return "\uE8BD"; // Chat Bubble
+            if (cat.Contains("cloud") || cat.Contains("stor") || id.Contains("drive") || id.Contains("dropbox") || id.Contains("onedrive") || id.Contains("sync"))
+                return "\uE753"; // Cloud
+            if (cat.Contains("product") || cat.Contains("off") || id.Contains("office") || id.Contains("word") || id.Contains("excel") || id.Contains("pdf"))
+                return "\uE7C3"; // Document
+
+            return "\uE74C"; // Package Box
+        }
+
         private Border CreateAppCard(AppModel curApp)
         {
             Border card = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727"),
-                CornerRadius = new CornerRadius(8),
+                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B"),
+                CornerRadius = new CornerRadius(10),
                 Margin = new Thickness(0, 0, 0, 6),
                 Padding = new Thickness(14, 10, 14, 10),
                 BorderThickness = new Thickness(1),
-                BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838"),
+                BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155"),
                 Cursor = Cursors.Hand,
                 Tag = curApp
             };
 
             Grid g = new Grid();
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
             g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
@@ -9429,12 +9572,12 @@ namespace FleetForge
                 if (isSel)
                 {
                     card.Background = currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42");
-                    card.BorderBrush = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF");
+                    card.BorderBrush = currentThemeIsLight ? HexBrush("#0066FF") : HexBrush("#38BDF8");
                 }
                 else
                 {
-                    card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#272727");
-                    card.BorderBrush = currentThemeIsLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
+                    card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                    card.BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
                 }
             };
 
@@ -9458,6 +9601,21 @@ namespace FleetForge
             };
             updateCardVisual();
 
+            card.MouseEnter += delegate
+            {
+                if (cb.IsChecked != true)
+                {
+                    card.Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#243144");
+                }
+            };
+            card.MouseLeave += delegate
+            {
+                if (cb.IsChecked != true)
+                {
+                    card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                }
+            };
+
             card.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
             {
                 if (!e.Handled && !(e.OriginalSource is CheckBox))
@@ -9469,30 +9627,55 @@ namespace FleetForge
             Grid.SetColumn(cb, 0);
             g.Children.Add(cb);
 
-            StackPanel infoStack = new StackPanel();
-            StackPanel titleStack = new StackPanel() { Orientation = Orientation.Horizontal };
+            // Icon Badge
+            string glyph = GetAppGlyphIcon(curApp);
+            Border iconBadge = new Border()
+            {
+                Width = 40,
+                Height = 40,
+                CornerRadius = new CornerRadius(10),
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#243144"),
+                Margin = new Thickness(0, 0, 14, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            TextBlock txtGlyph = new TextBlock()
+            {
+                Text = glyph,
+                FontFamily = (glyph == "</>") ? new FontFamily("Consolas, Segoe UI Semibold, Segoe UI") : new FontFamily("Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"),
+                FontSize = (glyph == "</>") ? 14 : 20,
+                FontWeight = (glyph == "</>") ? FontWeights.Bold : FontWeights.Normal,
+                Foreground = HexBrush("#0066FF"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            iconBadge.Child = txtGlyph;
+            Grid.SetColumn(iconBadge, 1);
+            g.Children.Add(iconBadge);
+
+            StackPanel infoStack = new StackPanel() { VerticalAlignment = VerticalAlignment.Center };
+            StackPanel titleStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
             TextBlock txtName = new TextBlock()
             {
                 Text = curApp.name,
-                FontSize = 13,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF")
+                FontSize = 13.5,
+                FontWeight = FontWeights.Bold,
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC")
             };
             titleStack.Children.Add(txtName);
 
             Border badge = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#EBF3FB") : HexBrush("#1E293B"),
-                CornerRadius = new CornerRadius(4),
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
+                CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(8, 0, 0, 0),
-                Padding = new Thickness(6, 1, 6, 1)
+                Padding = new Thickness(7, 2, 7, 2)
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = (curApp.category ?? "UTILITIES").ToUpper(),
-                FontSize = 9,
+                Text = (curApp.category ?? "UTILITIES").ToUpperInvariant(),
+                FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = currentThemeIsLight ? HexBrush("#005FB8") : HexBrush("#38BDF8")
+                Foreground = HexBrush("#0066FF")
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
@@ -9504,14 +9687,14 @@ namespace FleetForge
                     Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03"),
                     BorderBrush = currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F"),
                     BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(4),
+                    CornerRadius = new CornerRadius(5),
                     Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(6, 1, 6, 1)
+                    Padding = new Thickness(7, 2, 7, 2)
                 };
                 TextBlock txtRec = new TextBlock()
                 {
-                    Text = "⭐ RECOMMENDED",
-                    FontSize = 9,
+                    Text = "★ RECOMMENDED",
+                    FontSize = 9.5,
                     FontWeight = FontWeights.Bold,
                     Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
                 };
@@ -9523,27 +9706,53 @@ namespace FleetForge
 
             TextBlock txtDesc = new TextBlock()
             {
-                Text = curApp.description ?? ("Cloud package (" + curApp.id + ")"),
-                FontSize = 11,
-                Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0"),
-                Margin = new Thickness(0, 3, 0, 0)
+                Text = curApp.description ?? ("Winget package (" + curApp.id + ")"),
+                FontSize = 11.5,
+                Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
+                Margin = new Thickness(0, 3, 0, 0),
+                TextTrimming = TextTrimming.CharacterEllipsis
             };
             infoStack.Children.Add(txtDesc);
-            Grid.SetColumn(infoStack, 1);
+            Grid.SetColumn(infoStack, 2);
             g.Children.Add(infoStack);
 
-            StackPanel statusStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-            TextBlock statusIcon = new TextBlock() { Text = "⚪", FontSize = 11, Margin = new Thickness(0, 0, 6, 0) };
+            StackPanel statusStack = new StackPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(14, 0, 4, 0)
+            };
+            Border statusBadge = new Border()
+            {
+                Width = 18,
+                Height = 18,
+                CornerRadius = new CornerRadius(9),
+                Background = HexBrush("#16A34A"),
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 6, 0)
+            };
+            TextBlock statusIcon = new TextBlock()
+            {
+                Text = "✔",
+                FontSize = 10,
+                FontWeight = FontWeights.Bold,
+                Foreground = HexBrush("#FFFFFF"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            statusBadge.Child = statusIcon;
+
             TextBlock statusText = new TextBlock()
             {
                 Text = "Ready",
-                FontSize = 11,
+                FontSize = 11.5,
                 FontWeight = FontWeights.SemiBold,
-                Foreground = currentThemeIsLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0")
+                Foreground = HexBrush("#16A34A"),
+                VerticalAlignment = VerticalAlignment.Center
             };
-            statusStack.Children.Add(statusIcon);
+            statusStack.Children.Add(statusBadge);
             statusStack.Children.Add(statusText);
-            Grid.SetColumn(statusStack, 2);
+            Grid.SetColumn(statusStack, 3);
             g.Children.Add(statusStack);
 
             card.Child = g;
@@ -9553,6 +9762,7 @@ namespace FleetForge
                 App = curApp,
                 Card = card,
                 CheckBox = cb,
+                StatusBadge = statusBadge,
                 StatusIcon = statusIcon,
                 StatusText = statusText
             });
@@ -9921,7 +10131,8 @@ namespace FleetForge
                         App = curApp,
                         Card = card,
                         CheckBox = cb,
-                        StatusIcon = new TextBlock() { Text = "⚪" },
+                        StatusBadge = new Border(),
+                        StatusIcon = new TextBlock() { Text = "✔" },
                         StatusText = new TextBlock() { Text = "Ready" }
                     };
                     appRows.Add(row);
@@ -10170,13 +10381,18 @@ namespace FleetForge
             {
                 if (cat == "winget_online")
                 {
-                    btnSearchWingetOnlineBottom.Content = "Back to App Catalog";
+                    btnSearchWingetOnlineBottom.Content = "↩ Back to App Catalog";
                     btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#0369A1");
+                    btnSearchWingetOnlineBottom.Foreground = HexBrush("#FFFFFF");
+                    btnSearchWingetOnlineBottom.BorderThickness = new Thickness(0);
                 }
                 else
                 {
-                    btnSearchWingetOnlineBottom.Content = "Search Online Apps";
-                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#6D28D9");
+                    btnSearchWingetOnlineBottom.Content = "🔍  Search Online Apps";
+                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                    btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
+                    btnSearchWingetOnlineBottom.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                    btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
                 }
             }
         }
@@ -10557,11 +10773,11 @@ namespace FleetForge
                 {
                     if (selectedAppIds.Count > 0)
                     {
-                        btnInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                        btnInstall.Content = string.Format("\uD83D\uDCE5  Install Selected Apps ({0})", selectedAppIds.Count);
                     }
                     else
                     {
-                        btnInstall.Content = "Install Selected Apps";
+                        btnInstall.Content = "\uD83D\uDCE5  Install Selected Apps";
                     }
                     btnInstall.Background = HexBrush("#0066FF");
                     btnInstall.Foreground = HexBrush("#FFFFFF");
@@ -10891,6 +11107,7 @@ namespace FleetForge
                     {
                         if (item != null)
                         {
+                            if (item.StatusBadge != null) item.StatusBadge.Background = HexBrush("#0078D4");
                             item.StatusIcon.Text = "⏳";
                             item.StatusText.Text = "Installing...";
                             item.StatusText.Foreground = HexBrush("#0078D4");
@@ -11222,9 +11439,10 @@ namespace FleetForge
                         {
                             if (item != null)
                             {
-                                item.StatusIcon.Text = "✅";
+                                if (item.StatusBadge != null) item.StatusBadge.Background = HexBrush("#16A34A");
+                                item.StatusIcon.Text = "✔";
                                 item.StatusText.Text = "Installed";
-                                item.StatusText.Foreground = HexBrush("#10B981");
+                                item.StatusText.Foreground = HexBrush("#16A34A");
                             }
                         }));
                     }
@@ -11235,9 +11453,10 @@ namespace FleetForge
                         {
                             if (item != null)
                             {
-                                item.StatusIcon.Text = isCancelled ? "⏹️" : (rec.status == "Timeout" ? "⏱️" : "❌");
+                                if (item.StatusBadge != null) item.StatusBadge.Background = HexBrush(isCancelled ? "#F59E0B" : (rec.status == "Timeout" ? "#F59E0B" : "#DC2626"));
+                                item.StatusIcon.Text = isCancelled ? "■" : (rec.status == "Timeout" ? "⏱" : "✕");
                                 item.StatusText.Text = isCancelled ? "Cancelled" : (rec.status == "Timeout" ? "Timeout" : "Failed");
-                                item.StatusText.Foreground = HexBrush(isCancelled ? "#F59E0B" : (rec.status == "Timeout" ? "#F59E0B" : "#F87171"));
+                                item.StatusText.Foreground = HexBrush(isCancelled ? "#F59E0B" : (rec.status == "Timeout" ? "#F59E0B" : "#DC2626"));
                             }
                         }));
                     }
