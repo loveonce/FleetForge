@@ -12,6 +12,7 @@ namespace FleetForge
         public string updateCheckUrl { get; set; }
         public string updateDownloadUrl { get; set; }
         public string recommendedAppsUrl { get; set; }
+        public string customAppsUrl { get; set; }
         public string companyWebsiteUrl { get; set; }
     }
 
@@ -34,6 +35,9 @@ namespace FleetForge
 
         // 4. Recommended & Affiliate Partner Software Database URL (Live Governed)
         public static string RecommendedAppsUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/recommended_apps.json";
+
+        // 4b. Custom & Affiliate Apps Database URL (Dynamic Remote Override)
+        public static string CustomAppsUrl = "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/custom_apps.json";
 
         // 5. Company Official Website
         public static string CompanyWebsiteUrl = "https://www.google.com";
@@ -111,6 +115,7 @@ namespace FleetForge
                         if (!string.IsNullOrEmpty(model.updateCheckUrl)) UpdateCheckUrl = model.updateCheckUrl.Trim();
                         if (!string.IsNullOrEmpty(model.updateDownloadUrl)) UpdateDownloadUrl = model.updateDownloadUrl.Trim();
                         if (!string.IsNullOrEmpty(model.recommendedAppsUrl)) RecommendedAppsUrl = model.recommendedAppsUrl.Trim();
+                        if (!string.IsNullOrEmpty(model.customAppsUrl)) CustomAppsUrl = model.customAppsUrl.Trim();
                         if (!string.IsNullOrEmpty(model.companyWebsiteUrl)) CompanyWebsiteUrl = model.companyWebsiteUrl.Trim();
                     }
                 }

@@ -8304,52 +8304,98 @@ namespace FleetForge
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
+                bool catalogChanged = false;
+
+                // 1. Live Sync Tier 1: Recommended & OEM Partner Software
                 try
                 {
                     string url = AppUrls.RecommendedAppsUrl;
-                    if (string.IsNullOrEmpty(url)) return;
-
-                    string directUrl = ConvertDirectUrl(url);
-                    using (WebClient wc = new WebClient())
+                    if (!string.IsNullOrEmpty(url))
                     {
-                        wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
-                        string json = wc.DownloadString(directUrl);
-                        if (string.IsNullOrEmpty(json)) return;
-
-                        var ser = new JavaScriptSerializer();
-                        ser.MaxJsonLength = int.MaxValue;
-                        RecommendedDataModel remoteModel = ser.Deserialize<RecommendedDataModel>(json);
-                        if (remoteModel != null && remoteModel.group != null && remoteModel.group.apps != null && remoteModel.group.apps.Count > 0)
+                        string directUrl = ConvertDirectUrl(url);
+                        using (WebClient wc = new WebClient())
                         {
-                            try
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                            string json = wc.DownloadString(directUrl);
+                            if (!string.IsNullOrEmpty(json))
                             {
-                                if (!string.IsNullOrEmpty(recommendedAppsPath))
+                                var ser = new JavaScriptSerializer();
+                                ser.MaxJsonLength = int.MaxValue;
+                                RecommendedDataModel remoteModel = ser.Deserialize<RecommendedDataModel>(json);
+                                if (remoteModel != null && remoteModel.group != null && remoteModel.group.apps != null && remoteModel.group.apps.Count > 0)
                                 {
-                                    string dir = Path.GetDirectoryName(recommendedAppsPath);
-                                    if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-                                    File.WriteAllText(recommendedAppsPath, json, Encoding.UTF8);
+                                    try
+                                    {
+                                        if (!string.IsNullOrEmpty(recommendedAppsPath))
+                                        {
+                                            string dir = Path.GetDirectoryName(recommendedAppsPath);
+                                            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                                            File.WriteAllText(recommendedAppsPath, json, Encoding.UTF8);
+                                        }
+                                    }
+                                    catch { }
+                                    catalogChanged = true;
                                 }
                             }
-                            catch { }
-
-                            Dispatcher.Invoke(new Action(delegate
-                            {
-                                EnsureCatalogHierarchy();
-                                BuildRoleCards();
-                                if (currentView == "catalog")
-                                {
-                                    BuildCatalog();
-                                }
-                                if (activeRoleId == "recommended")
-                                {
-                                    SelectRole("recommended");
-                                }
-                            }));
                         }
                     }
                 }
                 catch { }
+
+                // 2. Live Sync Tier 2: Dynamic Custom & Affiliate Overrides
+                try
+                {
+                    string custUrl = AppUrls.CustomAppsUrl;
+                    if (!string.IsNullOrEmpty(custUrl))
+                    {
+                        string directCustUrl = ConvertDirectUrl(custUrl);
+                        using (WebClient wc = new WebClient())
+                        {
+                            wc.Encoding = Encoding.UTF8;
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                            string json = wc.DownloadString(directCustUrl);
+                            if (!string.IsNullOrEmpty(json))
+                            {
+                                var ser = new JavaScriptSerializer();
+                                ser.MaxJsonLength = int.MaxValue;
+                                CustomCatalogModel remoteCustModel = ser.Deserialize<CustomCatalogModel>(json);
+                                if (remoteCustModel != null && remoteCustModel.apps != null && remoteCustModel.apps.Count > 0)
+                                {
+                                    try
+                                    {
+                                        if (!string.IsNullOrEmpty(customAppsPath))
+                                        {
+                                            string dir = Path.GetDirectoryName(customAppsPath);
+                                            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                                            File.WriteAllText(customAppsPath, json, Encoding.UTF8);
+                                        }
+                                    }
+                                    catch { }
+                                    catalogChanged = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+
+                if (catalogChanged)
+                {
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        EnsureCatalogHierarchy();
+                        BuildRoleCards();
+                        if (currentView == "catalog")
+                        {
+                            BuildCatalog();
+                        }
+                        if (activeRoleId == "recommended")
+                        {
+                            SelectRole("recommended");
+                        }
+                    }));
+                }
             });
         }
 

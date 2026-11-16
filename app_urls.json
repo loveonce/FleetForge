@@ -4,5 +4,6 @@
   "updateCheckUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/data/version.json",
   "updateDownloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe",
   "recommendedAppsUrl": "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/recommended_apps.json",
+  "customAppsUrl": "https://cdn.jsdelivr.net/gh/loveonce/FleetForge@main/data/custom_apps.json",
   "companyWebsiteUrl": "https://github.com/loveonce/FleetForge"
 }
