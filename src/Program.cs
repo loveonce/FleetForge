@@ -1207,6 +1207,7 @@ namespace FleetForge
 
                 // 3-Tier Merge with Deduplication for CLI mode (Recommended -> Custom -> Base)
                 HashSet<string> cliSeenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                HashSet<string> cliSeenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 List<AppModel> cliMergedApps = new List<AppModel>();
 
                 string recPath = Path.Combine(baseDir, "data", "recommended_apps.json");
@@ -1221,10 +1222,15 @@ namespace FleetForge
                         {
                             foreach (AppModel ra in rdm.apps)
                             {
-                                if (ra != null && !string.IsNullOrEmpty(ra.id) && !cliSeenIds.Contains(ra.id))
+                                if (ra != null && !string.IsNullOrEmpty(ra.id))
                                 {
-                                    cliSeenIds.Add(ra.id);
-                                    cliMergedApps.Add(ra);
+                                    string nKey = !string.IsNullOrEmpty(ra.name) ? ra.name.Trim().ToLowerInvariant() : null;
+                                    if (!cliSeenIds.Contains(ra.id) && (nKey == null || !cliSeenNames.Contains(nKey)))
+                                    {
+                                        cliSeenIds.Add(ra.id);
+                                        if (nKey != null) cliSeenNames.Add(nKey);
+                                        cliMergedApps.Add(ra);
+                                    }
                                 }
                             }
                         }
@@ -1244,10 +1250,15 @@ namespace FleetForge
                         {
                             foreach (AppModel ca in ccm.apps)
                             {
-                                if (ca != null && !string.IsNullOrEmpty(ca.id) && !cliSeenIds.Contains(ca.id))
+                                if (ca != null && !string.IsNullOrEmpty(ca.id))
                                 {
-                                    cliSeenIds.Add(ca.id);
-                                    cliMergedApps.Add(ca);
+                                    string nKey = !string.IsNullOrEmpty(ca.name) ? ca.name.Trim().ToLowerInvariant() : null;
+                                    if (!cliSeenIds.Contains(ca.id) && (nKey == null || !cliSeenNames.Contains(nKey)))
+                                    {
+                                        cliSeenIds.Add(ca.id);
+                                        if (nKey != null) cliSeenNames.Add(nKey);
+                                        cliMergedApps.Add(ca);
+                                    }
                                 }
                             }
                         }
@@ -1259,10 +1270,15 @@ namespace FleetForge
                 {
                     foreach (AppModel ba in config.apps)
                     {
-                        if (ba != null && !string.IsNullOrEmpty(ba.id) && !cliSeenIds.Contains(ba.id))
+                        if (ba != null && !string.IsNullOrEmpty(ba.id))
                         {
-                            cliSeenIds.Add(ba.id);
-                            cliMergedApps.Add(ba);
+                            string nKey = !string.IsNullOrEmpty(ba.name) ? ba.name.Trim().ToLowerInvariant() : null;
+                            if (!cliSeenIds.Contains(ba.id) && (nKey == null || !cliSeenNames.Contains(nKey)))
+                            {
+                                cliSeenIds.Add(ba.id);
+                                if (nKey != null) cliSeenNames.Add(nKey);
+                                cliMergedApps.Add(ba);
+                            }
                         }
                     }
                     config.apps = cliMergedApps;
@@ -7608,8 +7624,9 @@ namespace FleetForge
                 }
             }
 
-            // 3. Strict 3-Tier Merge with Deduplication (Priority: Recommended -> Custom -> Base apps.json)
+            // 3. Strict 3-Tier Merge with Dual-Key Deduplication (Priority: Recommended -> Custom -> Base apps.json)
             HashSet<string> seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             List<AppModel> mergedApps = new List<AppModel>();
 
             if (recModel != null && recModel.apps != null)
@@ -7618,9 +7635,11 @@ namespace FleetForge
                 {
                     if (ra == null || string.IsNullOrEmpty(ra.id)) continue;
                     if (!string.IsNullOrEmpty(ra.category)) ra.category = NormalizeCategoryId(ra.category);
-                    if (!seenIds.Contains(ra.id))
+                    string nameKey = !string.IsNullOrEmpty(ra.name) ? ra.name.Trim().ToLowerInvariant() : null;
+                    if (!seenIds.Contains(ra.id) && (nameKey == null || !seenNames.Contains(nameKey)))
                     {
                         seenIds.Add(ra.id);
+                        if (nameKey != null) seenNames.Add(nameKey);
                         mergedApps.Add(ra);
                     }
                 }
@@ -7632,14 +7651,19 @@ namespace FleetForge
                 {
                     if (ca == null || string.IsNullOrEmpty(ca.id)) continue;
                     if (!string.IsNullOrEmpty(ca.category)) ca.category = NormalizeCategoryId(ca.category);
-                    if (!seenIds.Contains(ca.id))
+                    string nameKey = !string.IsNullOrEmpty(ca.name) ? ca.name.Trim().ToLowerInvariant() : null;
+                    if (!seenIds.Contains(ca.id) && (nameKey == null || !seenNames.Contains(nameKey)))
                     {
                         seenIds.Add(ca.id);
+                        if (nameKey != null) seenNames.Add(nameKey);
                         mergedApps.Add(ca);
                     }
                     else
                     {
-                        AppModel existing = mergedApps.Find(delegate(AppModel x) { return string.Equals(x.id, ca.id, StringComparison.OrdinalIgnoreCase); });
+                        AppModel existing = mergedApps.Find(delegate(AppModel x) { 
+                            return string.Equals(x.id, ca.id, StringComparison.OrdinalIgnoreCase) ||
+                                   (nameKey != null && x.name != null && string.Equals(x.name.Trim(), ca.name.Trim(), StringComparison.OrdinalIgnoreCase)); 
+                        });
                         if (existing != null)
                         {
                             if (!string.IsNullOrEmpty(ca.downloadUrl)) existing.downloadUrl = ca.downloadUrl;
@@ -7655,9 +7679,11 @@ namespace FleetForge
                 foreach (AppModel ba in baseCatalogApps)
                 {
                     if (ba == null || string.IsNullOrEmpty(ba.id)) continue;
-                    if (!seenIds.Contains(ba.id))
+                    string nameKey = !string.IsNullOrEmpty(ba.name) ? ba.name.Trim().ToLowerInvariant() : null;
+                    if (!seenIds.Contains(ba.id) && (nameKey == null || !seenNames.Contains(nameKey)))
                     {
                         seenIds.Add(ba.id);
+                        if (nameKey != null) seenNames.Add(nameKey);
                         mergedApps.Add(ba);
                     }
                 }

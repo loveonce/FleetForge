@@ -583,13 +583,21 @@
       </div>
 
       <!-- Software Items Header -->
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
         <h2 style="font-size: 15px; font-weight: 700; color: #1E293B;">
           <span id="listTitle">📦 Configured Custom &amp; Affiliate Packages</span> (<span id="appCount">0</span>)
         </h2>
-        <button class="btn btn-primary btn-sm" onclick="addNewApp()">
-          ➕ Add Software Package
-        </button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="openOverrideModal()" title="Select a popular Winget software to override with your affiliate link without duplicate">
+            🔍 Override Winget App (50+ Popular)
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btnCleanDuplicates" onclick="cleanDuplicates()" title="Automatically remove duplicate entries">
+            🧹 Clean Duplicates
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="addNewApp()">
+            ➕ Add Software Package
+          </button>
+        </div>
       </div>
 
       <!-- Container for Dynamic Application Cards -->
@@ -644,6 +652,23 @@
       <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
         <button class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
         <button class="btn btn-purple" onclick="applyPastedJson()">Apply &amp; Load Catalog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winget Override / Preset Modal -->
+  <div id="overrideModal" class="modal-overlay">
+    <div class="modal" style="max-width: 680px; width: 95%;">
+      <div class="modal-title">🔍 Pick an Existing Winget App to Override (Zero Duplicates)</div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
+        Select any popular software from the list below. The exact Winget Package ID, Name, and Category will be auto-filled, guaranteeing that FleetForge replaces the base software without any duplicate entries!
+      </p>
+      <input type="text" id="overrideSearchInput" class="input" placeholder="Search popular apps (e.g. Chrome, VLC, AnyDesk, NordVPN, Discord, VS Code...)" oninput="filterOverrideList()" style="margin-bottom: 12px; font-size: 13px;">
+      <div id="overrideListContainer" style="max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--border); border-radius: 8px; padding: 8px; background: #FAFBFD;">
+        <!-- Filled by JavaScript -->
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+        <button class="btn btn-secondary" onclick="closeOverrideModal()">Close</button>
       </div>
     </div>
   </div>
@@ -810,6 +835,11 @@
         card.className = "app-card";
         card.id = `app-card-${index}`;
 
+        const idKey = (app.id || "").toLowerCase().trim();
+        const nameKey = (app.name || "").toLowerCase().trim();
+        const isDupe = (idKey && list.filter(x => (x.id || "").toLowerCase().trim() === idKey).length > 1) ||
+                       (nameKey && list.filter(x => (x.name || "").toLowerCase().trim() === nameKey).length > 1);
+
         const categoryOptions = CATEGORIES.map(cat => {
           const selected = cat.id === (app.category || "utilities") ? "selected" : "";
           return `<option value="${cat.id}" ${selected}>${cat.icon} ${cat.label} (${cat.id})</option>`;
@@ -817,6 +847,10 @@
 
         // Badges
         let badgesHtml = "";
+        if (isDupe) {
+          badgesHtml += `<span class="badge" style="background:#FEE2E2; color:#DC2626; border:1px solid #F87171; font-weight:700;">⚠️ DUPLICATE ENTRY</span> `;
+          card.style.borderColor = "#EF4444";
+        }
         if (app.downloadUrl) badgesHtml += `<span class="badge badge-direct">⚡ Direct Download</span> `;
         if (app.affiliateWebUrl) badgesHtml += `<span class="badge badge-web">🌐 Web Redirect</span> `;
         if (!app.downloadUrl && !app.affiliateWebUrl) badgesHtml += `<span class="badge badge-winget">📦 Winget Engine</span>`;
@@ -1012,6 +1046,26 @@
     }
 
     function downloadCurrentCatalog() {
+      const list = getCurrentAppsList();
+      const seen = new Set();
+      let hasDuplicates = false;
+      for (const app of list) {
+        const idKey = (app.id || "").toLowerCase().trim();
+        const nameKey = (app.name || "").toLowerCase().trim();
+        if ((idKey && seen.has(idKey)) || (nameKey && seen.has(nameKey))) {
+          hasDuplicates = true;
+          break;
+        }
+        if (idKey) seen.add(idKey);
+        if (nameKey) seen.add(nameKey);
+      }
+
+      if (hasDuplicates) {
+        if (confirm("⚠️ Duplicate entries detected in your catalog! Would you like to automatically clean duplicates before downloading?")) {
+          cleanDuplicates();
+        }
+      }
+
       const data = generateJsonOutput();
       const jsonStr = JSON.stringify(data, null, 2);
       const filename = currentMode === "custom" ? "custom_apps.json" : "recommended_apps.json";
@@ -1093,6 +1147,165 @@
       } catch (err) {
         alert("Invalid JSON: " + err.message);
       }
+    }
+
+    function cleanDuplicates() {
+      const list = getCurrentAppsList();
+      const seenIds = new Set();
+      const seenNames = new Set();
+      const cleaned = [];
+      let removedCount = 0;
+
+      for (const app of list) {
+        const idKey = (app.id || "").toLowerCase().trim();
+        const nameKey = (app.name || "").toLowerCase().trim();
+        if ((idKey && seenIds.has(idKey)) || (nameKey && seenNames.has(nameKey))) {
+          removedCount++;
+          continue;
+        }
+        if (idKey) seenIds.add(idKey);
+        if (nameKey) seenNames.add(nameKey);
+        cleaned.push(app);
+      }
+
+      if (currentMode === "custom") {
+        customAppsData = cleaned;
+      } else {
+        recommendedAppsData = cleaned;
+      }
+
+      renderApps();
+      updateLiveJson();
+      if (removedCount > 0) {
+        showToast(`🧹 Cleaned ${removedCount} duplicate entry(ies)!`);
+      } else {
+        showToast("✅ All entries are already unique!");
+      }
+    }
+
+    // Popular Winget Presets for 1-Click Zero-Duplicate Affiliate Overrides
+    const POPULAR_APPS_PRESETS = [
+      { id: "Google.Chrome", name: "Google Chrome", category: "browsers", icon: "🌐", desc: "Fast, secure web browser built by Google." },
+      { id: "Brave.Brave", name: "Brave Browser", category: "browsers", icon: "🦁", desc: "Privacy-focused high performance browser." },
+      { id: "Mozilla.Firefox", name: "Mozilla Firefox", category: "browsers", icon: "🦊", desc: "Open-source, highly customizable web browser." },
+      { id: "Opera.Opera", name: "Opera One", category: "browsers", icon: "⭕", desc: "Fast browser with built-in AI and ad blocker." },
+      { id: "Opera.OperaGX", name: "Opera GX", category: "browsers", icon: "🎮", desc: "Gaming browser with CPU, RAM and network limiters." },
+      { id: "Microsoft.Edge", name: "Microsoft Edge", category: "browsers", icon: "🌊", desc: "Fast and secure browser designed for Windows." },
+      { id: "TorProject.TorBrowser", name: "Tor Browser", category: "browsers", icon: "🧅", desc: "Anonymity online with onion routing." },
+      { id: "VivaldiTechnologies.Vivaldi", name: "Vivaldi", category: "browsers", icon: "🧭", desc: "Feature-packed browser with deep customization." },
+
+      { id: "NordVPN.NordVPN", name: "NordVPN", category: "security", icon: "🛡️", desc: "Fast, secure VPN with threat protection." },
+      { id: "Surfshark.Surfshark", name: "Surfshark", category: "security", icon: "🦈", desc: "Unlimited devices VPN with ad blocker." },
+      { id: "ExpressVPN.ExpressVPN", name: "ExpressVPN", category: "security", icon: "🔒", desc: "High-speed and ultra-secure VPN." },
+      { id: "Malwarebytes.Malwarebytes", name: "Malwarebytes", category: "security", icon: "🦠", desc: "Anti-malware, ransomware and scam protection." },
+      { id: "Bitwarden.Bitwarden", name: "Bitwarden", category: "security", icon: "🔑", desc: "Open-source end-to-end encrypted password manager." },
+      { id: "1Password.1Password", name: "1Password", category: "security", icon: "🔐", desc: "Password manager and digital vault." },
+
+      { id: "VideoLAN.VLC", name: "VLC media player", category: "media", icon: "🎬", desc: "Free, portable open-source media player." },
+      { id: "Spotify.Spotify", name: "Spotify", category: "media", icon: "🎧", desc: "Music and podcast streaming service." },
+      { id: "OBSProject.OBSStudio", name: "OBS Studio", category: "media", icon: "📹", desc: "Live streaming and video recording software." },
+      { id: "Audacity.Audacity", name: "Audacity", category: "media", icon: "🎙️", desc: "Open-source audio recording and editing software." },
+      { id: "HandBrake.HandBrake", name: "HandBrake", category: "media", icon: "🎞️", desc: "Open-source video transcoder." },
+      { id: "GIMP.GIMP", name: "GIMP", category: "media", icon: "🎨", desc: "GNU Image Manipulation Program." },
+
+      { id: "7zip.7zip", name: "7-Zip", category: "utilities", icon: "📦", desc: "High compression ratio file archiver." },
+      { id: "RARLab.WinRAR", name: "WinRAR", category: "utilities", icon: "📚", desc: "Powerful archive manager for RAR and ZIP files." },
+      { id: "AnyDeskSoftwareGmbH.AnyDesk", name: "AnyDesk", category: "utilities", icon: "🖥️", desc: "Fast remote desktop software." },
+      { id: "TeamViewer.TeamViewer", name: "TeamViewer", category: "utilities", icon: "🤝", desc: "Remote support and online meetings." },
+      { id: "RustDesk.RustDesk", name: "RustDesk", category: "utilities", icon: "🦀", desc: "Open source remote desktop alternative." },
+      { id: "Piriform.CCleaner", name: "CCleaner", category: "utilities", icon: "🧹", desc: "System clean-up and PC optimization utility." },
+      { id: "voidtools.Everything", name: "Everything Search", category: "utilities", icon: "🔍", desc: "Locate files and folders by name instantly." },
+      { id: "Microsoft.PowerToys", name: "Microsoft PowerToys", category: "utilities", icon: "⚡", desc: "Windows system utilities for power users." },
+
+      { id: "Discord.Discord", name: "Discord", category: "communication", icon: "💬", desc: "Voice, video and text chat platform." },
+      { id: "Telegram.TelegramDesktop", name: "Telegram Desktop", category: "communication", icon: "✈️", desc: "Fast and secure desktop messaging app." },
+      { id: "WhatsApp.WhatsApp", name: "WhatsApp", category: "communication", icon: "📱", desc: "End-to-end encrypted messaging and calls." },
+      { id: "Zoom.Zoom", name: "Zoom", category: "communication", icon: "📹", desc: "Cloud platform for video and audio conferencing." },
+      { id: "SlackTechnologies.Slack", name: "Slack", category: "communication", icon: "👥", desc: "Productivity and team messaging platform." },
+
+      { id: "Notion.Notion", name: "Notion", category: "productivity", icon: "📝", desc: "All-in-one workspace for notes and projects." },
+      { id: "Obsidian.Obsidian", name: "Obsidian", category: "productivity", icon: "💎", desc: "Private and flexible markdown knowledge base." },
+      { id: "Adobe.Acrobat.Reader.64-bit", name: "Adobe Acrobat Reader", category: "productivity", icon: "📕", desc: "View, print, sign, and annotate PDF documents." },
+      { id: "Foxit.FoxitReader", name: "Foxit PDF Reader", category: "productivity", icon: "📄", desc: "Lightweight and feature-rich PDF viewer." },
+
+      { id: "Microsoft.VisualStudioCode", name: "Visual Studio Code", category: "development", icon: "💻", desc: "Lightweight and powerful source code editor." },
+      { id: "Git.Git", name: "Git", category: "development", icon: "🐙", desc: "Fast, scalable, distributed revision control system." },
+      { id: "OpenJS.NodeJS", name: "Node.js", category: "development", icon: "🟢", desc: "JavaScript runtime built on Chrome V8 engine." },
+      { id: "Python.Python.3.12", name: "Python 3.12", category: "development", icon: "🐍", desc: "Modern programming language." },
+      { id: "Docker.DockerDesktop", name: "Docker Desktop", category: "development", icon: "🐳", desc: "Container application platform." },
+      { id: "Postman.Postman", name: "Postman", category: "development", icon: "🚀", desc: "API development and testing platform." },
+      { id: "Notepad++.Notepad++", name: "Notepad++", category: "development", icon: "📝", desc: "Source code editor and Notepad replacement." },
+
+      { id: "Valve.Steam", name: "Steam", category: "gaming", icon: "🎮", desc: "Digital storefront and community for PC games." },
+      { id: "EpicGames.EpicGamesLauncher", name: "Epic Games Launcher", category: "gaming", icon: "⚡", desc: "Play, create and discover PC games." },
+      { id: "BlenderFoundation.Blender", name: "Blender", category: "gaming", icon: "🎨", desc: "Free and open 3D creation suite." }
+    ];
+
+    function openOverrideModal() {
+      document.getElementById("overrideModal").classList.add("open");
+      document.getElementById("overrideSearchInput").value = "";
+      filterOverrideList();
+    }
+    function closeOverrideModal() {
+      document.getElementById("overrideModal").classList.remove("open");
+    }
+    function filterOverrideList() {
+      const q = (document.getElementById("overrideSearchInput").value || "").toLowerCase().trim();
+      const container = document.getElementById("overrideListContainer");
+      const filtered = POPULAR_APPS_PRESETS.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        p.id.toLowerCase().includes(q) || 
+        p.category.toLowerCase().includes(q)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px;">No matching software found. You can add any custom app with "Add Software Package".</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#FFFFFF; border:1px solid var(--border); border-radius:6px; transition:all 0.15s ease;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:20px;">${item.icon}</span>
+            <div>
+              <div style="font-weight:700; font-size:13px; color:#0F172A;">${escapeHtml(item.name)} <span style="font-size:11px; color:#64748B; font-weight:normal;">(${escapeHtml(item.id)})</span></div>
+              <div style="font-size:11.5px; color:#64748B;">${escapeHtml(item.desc)}</div>
+            </div>
+          </div>
+          <button class="btn btn-purple btn-sm" onclick="selectPresetApp('${item.id}')">
+            + Override URL
+          </button>
+        </div>
+      `).join("");
+    }
+
+    function selectPresetApp(presetId) {
+      const preset = POPULAR_APPS_PRESETS.find(p => p.id === presetId);
+      if (!preset) return;
+
+      const list = getCurrentAppsList();
+      const existing = list.find(x => (x.id || "").toLowerCase() === preset.id.toLowerCase());
+      if (existing) {
+        alert('"' + preset.name + '" (' + preset.id + ') is already in your list! You can edit its download/affiliate URL directly.');
+        closeOverrideModal();
+        return;
+      }
+
+      list.push({
+        id: preset.id,
+        name: preset.name,
+        category: preset.category,
+        description: preset.desc + " (Affiliate / Custom Override)",
+        downloadUrl: "",
+        affiliateWebUrl: ""
+      });
+
+      renderApps();
+      updateLiveJson();
+      closeOverrideModal();
+      showToast('Added ' + preset.name + '! Now add your affiliate URL.');
+      const newCard = document.getElementById('app-card-' + (list.length - 1));
+      if (newCard) newCard.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function escapeHtml(str) {
