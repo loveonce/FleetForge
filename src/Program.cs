@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -130,7 +130,6 @@ namespace FleetForge
         public string theme { get; set; }
         public bool silent { get; set; }
         public bool accept_agreements { get; set; }
-        public string offline_dir { get; set; }
         public bool tutorialCompleted { get; set; }
 
         public SettingsModel()
@@ -142,7 +141,6 @@ namespace FleetForge
             theme = "system";
             silent = true;
             accept_agreements = true;
-            offline_dir = "offline_installers";
             tutorialCompleted = false;
         }
     }
@@ -204,7 +202,7 @@ namespace FleetForge
         public string appName { get; set; }
         public string category { get; set; }
         public string status { get; set; } // "Installed", "Failed", "Timeout", "Cancelled", "Pending"
-        public string installMethod { get; set; } // "Offline Installer", "FleetForge Engine"
+        public string installMethod { get; set; } // "Direct Cloud Delivery", "FleetForge Engine"
         public int exitCode { get; set; }
         public double durationSeconds { get; set; }
         public string timestamp { get; set; }
@@ -1382,71 +1380,12 @@ namespace FleetForge
                 catch { }
 
                 bool installed = false;
-                string offlineDir = Path.Combine(baseDir, "offline_installers");
 
-                if (!string.IsNullOrEmpty(app.offlineInstaller) && Directory.Exists(offlineDir))
-                {
-                    string offlineFile = Path.Combine(offlineDir, app.offlineInstaller);
-                    if (File.Exists(offlineFile))
-                    {
-                        try
-                        {
-                            ProcessStartInfo psi = new ProcessStartInfo(offlineFile, app.silentArgs ?? "");
-                            psi.CreateNoWindow = true;
-                            psi.UseShellExecute = false;
-                            using (Process p = Process.Start(psi))
-                            {
-                                int timeoutMs = timeoutMins * 60 * 1000;
-                                DateTime startProc = DateTime.Now;
-                                bool timedOut = false;
-                                while (!p.HasExited)
-                                {
-                                    if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
-                                    {
-                                        timedOut = true;
-                                        try { p.Kill(); } catch { }
-                                        break;
-                                    }
-                                    Thread.Sleep(500);
-                                }
-
-                                rec.durationSeconds = (DateTime.Now - startPkg).TotalSeconds;
-                                rec.installMethod = "Offline Installer";
-
-                                if (timedOut)
-                                {
-                                    rec.status = "Timeout";
-                                    rec.exitCode = -1;
-                                    rec.errorDetails = "Exceeded watchdog timeout limit";
-                                }
-                                else if (p.ExitCode == 0 || p.ExitCode == 3010)
-                                {
-                                    rec.status = "Installed";
-                                    rec.exitCode = p.ExitCode;
-                                    installed = true;
-                                }
-                                else
-                                {
-                                    rec.status = "Failed";
-                                    rec.exitCode = p.ExitCode;
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            rec.status = "Failed";
-                            rec.errorDetails = ex.Message;
-                        }
-                    }
-                }
-
-                if (!installed && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
+                if (!string.IsNullOrEmpty(app.downloadUrl))
                 {
                     Console.WriteLine("    [DOWNLOAD] Downloading {0} setup package from direct URL...", app.name);
                     rec.installMethod = "Direct Cloud Delivery";
-                    string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
-                        app.offlineInstaller :
-                        (Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe"));
+                    string targetExeName = Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe");
 
                     string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
                     try { if (!Directory.Exists(downloadDir)) Directory.CreateDirectory(downloadDir); } catch { }
@@ -2642,7 +2581,6 @@ namespace FleetForge
         private TextBlock txtCount;
         private ProgressBar progressBar;
         private Button btnSearchWingetOnlineBottom;
-        private Button btnOpenOfflineFolder;
         private Button btnInstall;
         private Button btnStop;
         private Process currentProc;
@@ -2715,9 +2653,6 @@ namespace FleetForge
         private CheckBox chkSettingAutoTheme;
         private Border borderSettingsSec2;
         private TextBlock txtSettingsSec2Title;
-        private TextBlock txtSettingOfflineDirLbl;
-        private TextBox txtSettingOfflineDir;
-        private Button btnBrowseOfflineDir;
         private Button btnClearCache;
         private TextBlock txtCacheStatus;
         private Border borderSettingsSec3;
@@ -3612,8 +3547,6 @@ namespace FleetForge
                 </StackPanel>
 
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                            Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12"" FontWeight=""SemiBold"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnImportPack"" Content=""📥 Import Pack""
                             Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,8"" Margin=""0,0,8,0""
@@ -3790,7 +3723,7 @@ namespace FleetForge
                             <TextBlock Text=""• Zero-touch silent enterprise software deployment engine"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Pre-cached enterprise catalog with 16,349 software packages"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Real-time synchronization with Windows Light / Dark themes"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
-                            <TextBlock Text=""• Offline deployment packaging &amp; local caching"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
+                            <TextBlock Text=""• High-speed direct cloud package delivery &amp; affiliate distribution"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                             <TextBlock Text=""• Automatic background update checks &amp; one-click auto-updater"" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,2.5,0,2.5""/>
                         </StackPanel>
                     </StackPanel>
@@ -3850,22 +3783,12 @@ namespace FleetForge
                 </Border>
 
                 <!-- Section 2: Storage -->
-                <TextBlock x:Name=""TxtSettingsSec2Title"" Text=""📦 DOWNLOADED FILES &amp; STORAGE"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
+                <TextBlock x:Name=""TxtSettingsSec2Title"" Text=""📦 DOWNLOAD CACHE &amp; CLEANUP"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
                 <Border x:Name=""BorderSettingsSec2"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
                     <StackPanel>
-                        <TextBlock x:Name=""TxtSettingOfflineDirLbl"" Text=""Downloaded Installers Folder:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,6""/>
-                        <Grid Margin=""0,0,0,10"">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width=""*""/>
-                                <ColumnDefinition Width=""Auto""/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name=""TxtSettingOfflineDir"" Grid.Column=""0"" Height=""34"" Background=""#0B0D11"" Foreground=""#FFFFFF""
-                                     BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""10,6"" FontSize=""11.5"" VerticalContentAlignment=""Center""/>
-                            <Button x:Name=""BtnBrowseOfflineDir"" Grid.Column=""1"" Content=""Browse..."" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
-                                    FontWeight=""SemiBold"" Padding=""14,6"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
-                        </Grid>
+                        <TextBlock Text=""Temporary downloaded setup files and cache stored in %TEMP%\FleetForgeDownloads:"" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,10""/>
                         <StackPanel Orientation=""Horizontal"">
-                            <Button x:Name=""BtnClearCache"" Content=""Clear Downloaded Files &amp; Logs"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                            <Button x:Name=""BtnClearCache"" Content=""Clear Download Cache &amp; Temp Files"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
                                     FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11"" Margin=""0,0,10,0""/>
                             <TextBlock x:Name=""TxtCacheStatus"" Text=""Cache: Ready"" FontSize=""11"" Foreground=""#64748B"" VerticalAlignment=""Center""/>
                         </StackPanel>
@@ -4395,7 +4318,6 @@ namespace FleetForge
             txtCount = (TextBlock)root.FindName("TxtCount");
             progressBar = (ProgressBar)root.FindName("ProgressBar");
             btnSearchWingetOnlineBottom = (Button)root.FindName("BtnSearchWingetOnlineBottom");
-            btnOpenOfflineFolder = (Button)root.FindName("BtnOpenOfflineFolder");
             btnInstall = (Button)root.FindName("BtnInstall");
             btnStop = (Button)root.FindName("BtnStop");
 
@@ -4545,9 +4467,6 @@ namespace FleetForge
 
             borderSettingsSec2 = (Border)root.FindName("BorderSettingsSec2");
             txtSettingsSec2Title = (TextBlock)root.FindName("TxtSettingsSec2Title");
-            txtSettingOfflineDirLbl = (TextBlock)root.FindName("TxtSettingOfflineDirLbl");
-            txtSettingOfflineDir = (TextBox)root.FindName("TxtSettingOfflineDir");
-            btnBrowseOfflineDir = (Button)root.FindName("BtnBrowseOfflineDir");
             btnClearCache = (Button)root.FindName("BtnClearCache");
             txtCacheStatus = (TextBlock)root.FindName("TxtCacheStatus");
 
@@ -4570,38 +4489,15 @@ namespace FleetForge
                         modalSettingsOverlay.Visibility = Visibility.Collapsed;
                 };
             }
-            if (btnBrowseOfflineDir != null)
-            {
-                btnBrowseOfflineDir.Click += (s, e) =>
-                {
-                    using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
-                    {
-                        fbd.Description = "Select FleetForge Offline Installers Folder";
-                        fbd.SelectedPath = txtSettingOfflineDir.Text;
-                        fbd.ShowNewFolderButton = true;
-                        if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                        {
-                            txtSettingOfflineDir.Text = fbd.SelectedPath;
-                        }
-                    }
-                };
-            }
             if (btnClearCache != null)
             {
                 btnClearCache.Click += (s, e) =>
                 {
                     try
                     {
-                        string offlineDir = txtSettingOfflineDir != null ? txtSettingOfflineDir.Text.Trim() : "";
-                        if (!string.IsNullOrEmpty(offlineDir) && Directory.Exists(offlineDir))
-                        {
-                            string[] files = Directory.GetFiles(offlineDir);
-                            if (txtCacheStatus != null) txtCacheStatus.Text = string.Format("Cache: {0} files found", files.Length);
-                        }
-                        else
-                        {
-                            if (txtCacheStatus != null) txtCacheStatus.Text = "Cache: Folder is clean";
-                        }
+                        string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
+                        if (Directory.Exists(downloadDir)) Directory.Delete(downloadDir, true);
+                        if (txtCacheStatus != null) txtCacheStatus.Text = "Cache: Cleaned successfully";
                     }
                     catch { if (txtCacheStatus != null) txtCacheStatus.Text = "Cache: Ready"; }
                 };
@@ -4634,7 +4530,6 @@ namespace FleetForge
                         if (settings == null) settings = new SettingsModel();
                         if (chkSettingSilent != null) settings.silent = chkSettingSilent.IsChecked == true;
                         if (chkSettingAgreements != null) settings.accept_agreements = chkSettingAgreements.IsChecked == true;
-                        if (txtSettingOfflineDir != null) settings.offline_dir = txtSettingOfflineDir.Text.Trim();
                         if (chkSettingAutoTheme != null && chkSettingAutoTheme.IsChecked == true)
                         {
                             settings.theme = "system";
@@ -4725,7 +4620,7 @@ namespace FleetForge
 
             if (wingetCmd == null && txtWingetVersion != null)
             {
-                txtWingetVersion.Text = "Engine: Offline";
+                txtWingetVersion.Text = "Engine: Standalone Cloud";
                 txtWingetVersion.Foreground = System.Windows.Media.Brushes.Orange;
             }
 
@@ -5063,13 +4958,7 @@ namespace FleetForge
                 };
             }
 
-            // Offline Folder & Log events
-            btnOpenOfflineFolder.Click += delegate
-            {
-                string offlinePath = Path.Combine(appDir, "offline_installers");
-                if (!Directory.Exists(offlinePath)) Directory.CreateDirectory(offlinePath);
-                Process.Start("explorer.exe", offlinePath);
-            };
+            // Log events
 
             btnOpenLogFile.Click += delegate
             {
@@ -5775,7 +5664,6 @@ namespace FleetForge
                     if (chkSettingAutoTheme != null) chkSettingAutoTheme.IsChecked = (settings.theme == "system" || string.IsNullOrEmpty(settings.theme));
                     if (chkSettingSilent != null) chkSettingSilent.IsChecked = settings.silent;
                     if (chkSettingAgreements != null) chkSettingAgreements.IsChecked = settings.accept_agreements;
-                    if (txtSettingOfflineDir != null) txtSettingOfflineDir.Text = settings.offline_dir ?? "";
                 }
                 modalSettingsOverlay.Visibility = Visibility.Visible;
             }
@@ -6322,12 +6210,6 @@ namespace FleetForge
                 btnSearchWingetOnlineBottom.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
             }
-            if (btnOpenOfflineFolder != null)
-            {
-                btnOpenOfflineFolder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnOpenOfflineFolder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnOpenOfflineFolder.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
-            }
             if (btnInstall != null)
             {
                 btnInstall.Background = HexBrush("#0066FF");
@@ -6516,19 +6398,6 @@ namespace FleetForge
             {
                 borderSettingsSec2.Background = isLight ? HexBrush("#F9F9F9") : HexBrush("#1E1E1E");
                 borderSettingsSec2.BorderBrush = isLight ? HexBrush("#E5E5E5") : HexBrush("#383838");
-            }
-            if (txtSettingOfflineDirLbl != null) txtSettingOfflineDirLbl.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#94A3B8");
-            if (txtSettingOfflineDir != null)
-            {
-                txtSettingOfflineDir.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0B0D11");
-                txtSettingOfflineDir.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#252B38");
-                txtSettingOfflineDir.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-            }
-            if (btnBrowseOfflineDir != null)
-            {
-                btnBrowseOfflineDir.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnBrowseOfflineDir.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnBrowseOfflineDir.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnClearCache != null)
             {
@@ -6915,11 +6784,6 @@ namespace FleetForge
             bool isLogsView = (currentView == "logs");
             bool isCloudView = (currentView == "cloud");
             bool isInstalling = (btnStop != null && btnStop.Visibility == Visibility.Visible);
-
-            if (btnOpenOfflineFolder != null)
-            {
-                btnOpenOfflineFolder.Visibility = Visibility.Collapsed;
-            }
 
             if (btnImportPack != null)
             {
@@ -10038,11 +9902,9 @@ namespace FleetForge
                             string name = a.name ?? "";
                             string id = a.id ?? "";
                             string desc = a.description ?? "";
-                            string off = a.offlineInstaller ?? "";
-                            return name.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                        return name.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
                                    id.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
                                    desc.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                   off.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
                                    name.Replace(" ", "").IndexOf(qClean, StringComparison.OrdinalIgnoreCase) >= 0;
                         });
                     }
@@ -10594,13 +10456,11 @@ namespace FleetForge
                     string aName = a.name ?? "";
                     string aId = a.id ?? "";
                     string aDesc = a.description ?? "";
-                    string aOff = a.offlineInstaller ?? "";
-
+                    
                     bool matchQuery =
                         aName.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         aId.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         aDesc.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        aOff.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         aName.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
                         aId.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0;
 
@@ -11061,7 +10921,7 @@ namespace FleetForge
                     rec.appId = a.id;
                     rec.appName = a.name;
                     rec.category = a.category;
-                    rec.installMethod = !string.IsNullOrEmpty(a.offlineInstaller) ? "Offline Installer" : "FleetForge Engine";
+                    rec.installMethod = !string.IsNullOrEmpty(a.downloadUrl) ? "Direct Cloud Delivery" : "FleetForge Engine";
                     rec.status = "Pending";
                     currentSession.records.Add(rec);
                 }
@@ -11132,84 +10992,7 @@ namespace FleetForge
                     SaveSessionState();
 
                     bool installed = false;
-                    string offlineDir = Path.Combine(appDir, "offline_installers");
-
-                    if (!string.IsNullOrEmpty(app.offlineInstaller) && Directory.Exists(offlineDir))
-                    {
-                        string offlineFile = Path.Combine(offlineDir, app.offlineInstaller);
-                        if (File.Exists(offlineFile))
-                        {
-                            AppendLog("Found offline setup: " + offlineFile);
-                            UpdateToastProgress(
-                                string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
-                                "Installing offline package...",
-                                appStartPercent);
-                            try
-                            {
-                                ProcessStartInfo psi = new ProcessStartInfo(offlineFile, app.silentArgs ?? "");
-                                psi.CreateNoWindow = true;
-                                psi.UseShellExecute = false;
-                                using (Process p = Process.Start(psi))
-                                {
-                                    currentProc = p;
-                                    int timeoutMs = watchdogTimeoutMinutes * 60 * 1000;
-                                    DateTime startProc = DateTime.Now;
-                                    bool timedOut = false;
-                                    while (!p.HasExited)
-                                    {
-                                        if (isCancelled) { try { p.Kill(); } catch { } break; }
-                                        if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
-                                        {
-                                            timedOut = true;
-                                            try { p.Kill(); } catch { }
-                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Offline setup for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
-                                            break;
-                                        }
-                                        Thread.Sleep(500);
-                                    }
-
-                                    rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
-                                    rec.installMethod = "Offline Installer";
-
-                                    if (timedOut)
-                                    {
-                                        rec.status = "Timeout";
-                                        rec.exitCode = -1;
-                                        rec.errorDetails = "Installer exceeded watchdog timeout limit";
-                                        installed = false;
-                                    }
-                                    else if (!isCancelled && p.HasExited)
-                                    {
-                                        rec.exitCode = p.ExitCode;
-                                        if (p.ExitCode == 0 || p.ExitCode == 3010)
-                                        {
-                                            rec.status = "Installed";
-                                            installed = true;
-                                            AppendLog("Offline setup completed successfully.");
-                                        }
-                                        else
-                                        {
-                                            rec.status = "Failed";
-                                            rec.errorDetails = "Exit code: " + p.ExitCode;
-                                            installed = false;
-                                        }
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                rec.status = "Failed";
-                                rec.errorDetails = ex.Message;
-                                AppendLog("Offline setup error: " + ex.Message);
-                            }
-                            finally
-                            {
-                                currentProc = null;
-                            }
-                        }
-                    }
-
-                    if (!installed && !isCancelled && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
+                    if (!isCancelled && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
                     {
                         AppendLog("Downloading setup package for: " + app.name + "...");
                         UpdateToastProgress(
@@ -11217,9 +11000,7 @@ namespace FleetForge
                             "Downloading setup package from Cloud Delivery...",
                             appStartPercent);
                         rec.installMethod = "Direct Cloud Delivery";
-                        string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
-                            app.offlineInstaller :
-                            (Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe"));
+                        string targetExeName = Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe");
 
                         string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
                         try { if (!Directory.Exists(downloadDir)) Directory.CreateDirectory(downloadDir); } catch { }

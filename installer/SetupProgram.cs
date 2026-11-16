@@ -1042,10 +1042,10 @@ namespace FleetForge
                     if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
                     string configDir = Path.Combine(targetDir, "config");
                     if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
-                    string offlineDir = Path.Combine(targetDir, "offline_installers");
-                    if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
                     try
                     {
+                        string legacyOffline = Path.Combine(targetDir, "offline_installers");
+                        if (Directory.Exists(legacyOffline)) Directory.Delete(legacyOffline, true);
                         string legacyReports = Path.Combine(targetDir, "reports");
                         if (Directory.Exists(legacyReports)) Directory.Delete(legacyReports, true);
                     }
@@ -1253,10 +1253,10 @@ namespace FleetForge
             if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
             string configDir = Path.Combine(targetDir, "config");
             if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
-            string offlineDir = Path.Combine(targetDir, "offline_installers");
-            if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
             try
             {
+                string legacyOffline = Path.Combine(targetDir, "offline_installers");
+                if (Directory.Exists(legacyOffline)) Directory.Delete(legacyOffline, true);
                 string legacyReports = Path.Combine(targetDir, "reports");
                 if (Directory.Exists(legacyReports)) Directory.Delete(legacyReports, true);
             }

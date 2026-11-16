@@ -199,35 +199,9 @@ for ($i = 0; $i -lt $selectedApps.Count; $i++) {
     $idx = $i + 1
     Write-Host "`n[$idx/$($selectedApps.Count)] Processing $($app.name)..." -ForegroundColor Yellow
 
-    # Offline installer check
-    $offlineInstalled = $false
-    $offlineDir = Join-Path $ScriptDir "offline_installers"
-    if ($app.offlineInstaller -and (Test-Path $offlineDir)) {
-        $offlineFile = Join-Path $offlineDir $app.offlineInstaller
-        if (Test-Path $offlineFile) {
-            Log "Found offline installer: $offlineFile"
-            Log "Executing with args: $($app.silentArgs)"
-            try {
-                $p = Start-Process -FilePath $offlineFile -ArgumentList $app.silentArgs -Wait -PassThru -NoNewWindow
-                if ($p.ExitCode -eq 0 -or $p.ExitCode -eq 3010) {
-                    Log "Offline installer completed successfully."
-                    $offlineInstalled = $true
-                } else {
-                    Log "Offline installer returned ExitCode $($p.ExitCode). Falling back to Cloud Package Engine..."
-                }
-            } catch {
-                Log "Offline installer failed: $_"
-            }
-        }
-    }
+    $appInstalled = $false
 
-    if (-not $offlineInstalled) {
-        if (-not $WingetCmd) {
-            Log "ERROR: Package Delivery Engine not available."
-            $failCount++
-            continue
-        }
-
+    if ($WingetCmd) {
         Log "Deploying package $($app.id)..."
         $wingetArgs = "install --id `"$($app.id)`" -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity"
 
