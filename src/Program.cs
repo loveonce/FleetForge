@@ -10259,123 +10259,158 @@ namespace FleetForge
         private Border CreateModalAppCard(AppModel curApp)
         {
             bool isChecked = modalSelectedAppIds.Contains(curApp.id);
-            Border b = new Border()
+            Border card = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B"),
-                CornerRadius = new CornerRadius(0),
-                Margin = new Thickness(0),
-                Padding = new Thickness(12, 10, 12, 10),
-                BorderThickness = new Thickness(0, 0, 0, 1),
-                BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155"),
-                Cursor = Cursors.Hand
+                Background = isChecked ?
+                    (currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42")) :
+                    (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B")),
+                CornerRadius = new CornerRadius(10),
+                Margin = new Thickness(0, 0, 0, 6),
+                Padding = new Thickness(14, 10, 14, 10),
+                BorderThickness = new Thickness(1),
+                BorderBrush = isChecked ?
+                    (currentThemeIsLight ? HexBrush("#0066FF") : HexBrush("#38BDF8")) :
+                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155")),
+                Cursor = Cursors.Hand,
+                Tag = curApp
             };
 
             Grid g = new Grid();
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 0: CheckBox
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 1: App Icon
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 2: Name
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 3: Category Pill
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) }); // 4: Description
-            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // 5: Status Badge
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // Col 0: CheckBox
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // Col 1: Icon Badge
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) }); // Col 2: Info Stack
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto }); // Col 3: Status Badge
 
             CheckBox cb = new CheckBox()
             {
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 12, 0),
+                Margin = new Thickness(0, 0, 14, 0),
                 Cursor = Cursors.Hand,
                 IsChecked = isChecked
             };
             Grid.SetColumn(cb, 0);
             g.Children.Add(cb);
 
-            // 1. App Icon Badge (Colorful rounded badge)
+            // Icon Badge (40x40 matching All Apps card)
+            string glyph = GetAppGlyphIcon(curApp);
             Border iconBadge = new Border()
             {
-                Width = 32,
-                Height = 32,
-                CornerRadius = new CornerRadius(8),
-                Margin = new Thickness(0, 0, 12, 0),
+                Width = 40,
+                Height = 40,
+                CornerRadius = new CornerRadius(10),
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#243144"),
+                Margin = new Thickness(0, 0, 14, 0),
                 VerticalAlignment = VerticalAlignment.Center
             };
             TextBlock txtGlyph = new TextBlock()
             {
+                Text = glyph,
+                FontFamily = (glyph == "</>") ? new FontFamily("Consolas, Segoe UI Semibold, Segoe UI") : new FontFamily("Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"),
+                FontSize = (glyph == "</>") ? 14 : 20,
+                FontWeight = (glyph == "</>") ? FontWeights.Bold : FontWeights.Normal,
+                Foreground = HexBrush("#0066FF"),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            SetupModalAppIcon(curApp, iconBadge, txtGlyph);
             iconBadge.Child = txtGlyph;
             Grid.SetColumn(iconBadge, 1);
             g.Children.Add(iconBadge);
 
-            // 2. App Name
-            TextBlock nameText = new TextBlock()
+            // Info Stack (Two-line title + description matching All Apps)
+            StackPanel infoStack = new StackPanel() { VerticalAlignment = VerticalAlignment.Center };
+            StackPanel titleStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            TextBlock txtName = new TextBlock()
             {
                 Text = curApp.name,
-                FontSize = 13,
+                FontSize = 13.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
-                VerticalAlignment = VerticalAlignment.Center
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC")
             };
-            Grid.SetColumn(nameText, 2);
-            g.Children.Add(nameText);
+            titleStack.Children.Add(txtName);
 
-            // 3. Category Pill
-            Border catPill = new Border()
+            Border badge = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#DBEAFE") : HexBrush("#1E3A8A"),
-                CornerRadius = new CornerRadius(4),
-                Margin = new Thickness(10, 0, 0, 0),
-                Padding = new Thickness(6, 2, 6, 2),
-                VerticalAlignment = VerticalAlignment.Center
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
+                CornerRadius = new CornerRadius(5),
+                Margin = new Thickness(8, 0, 0, 0),
+                Padding = new Thickness(7, 2, 7, 2)
             };
-            TextBlock catText = new TextBlock()
+            TextBlock txtBadge = new TextBlock()
             {
-                Text = (curApp.category ?? "TOOLS").ToUpper(),
+                Text = (curApp.category ?? "UTILITIES").ToUpperInvariant(),
                 FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = currentThemeIsLight ? HexBrush("#1D4ED8") : HexBrush("#93C5FD")
+                Foreground = HexBrush("#0066FF")
             };
-            catPill.Child = catText;
-            Grid.SetColumn(catPill, 3);
-            g.Children.Add(catPill);
+            badge.Child = txtBadge;
+            titleStack.Children.Add(badge);
 
             if (IsRecommendedApp(curApp))
             {
-                Border recPill = new Border()
+                Border recBadge = new Border()
                 {
                     Background = currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#451A03"),
                     BorderBrush = currentThemeIsLight ? HexBrush("#FDE68A") : HexBrush("#78350F"),
                     BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(4),
+                    CornerRadius = new CornerRadius(5),
                     Margin = new Thickness(6, 0, 0, 0),
-                    Padding = new Thickness(6, 1, 6, 1),
-                    VerticalAlignment = VerticalAlignment.Center
+                    Padding = new Thickness(7, 2, 7, 2)
                 };
-                TextBlock recText = new TextBlock()
+                TextBlock txtRec = new TextBlock()
                 {
-                    Text = "⭐ RECOMMENDED",
-                    FontSize = 9,
+                    Text = "★ RECOMMENDED",
+                    FontSize = 9.5,
                     FontWeight = FontWeights.Bold,
                     Foreground = currentThemeIsLight ? HexBrush("#B45309") : HexBrush("#FBBF24")
                 };
-                recPill.Child = recText;
-                Grid.SetColumn(recPill, 3);
+                recBadge.Child = txtRec;
+                titleStack.Children.Add(recBadge);
+            }
+            else if (IsCustomApp(curApp))
+            {
+                Border custBadge = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#2E1065"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#D8B4FE") : HexBrush("#581C87"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(5),
+                    Margin = new Thickness(6, 0, 0, 0),
+                    Padding = new Thickness(7, 2, 7, 2)
+                };
+                string custBadgeLabel = "💎 CUSTOM";
+                if (!string.IsNullOrEmpty(curApp.downloadUrl) && !string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "⚡ DIRECT & WEB";
+                else if (!string.IsNullOrEmpty(curApp.downloadUrl))
+                    custBadgeLabel = "⚡ AFFILIATE / DIRECT";
+                else if (!string.IsNullOrEmpty(curApp.affiliateWebUrl))
+                    custBadgeLabel = "🌐 AFFILIATE / REDIRECT";
+
+                TextBlock txtCust = new TextBlock()
+                {
+                    Text = custBadgeLabel,
+                    FontSize = 9.5,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#D8B4FE")
+                };
+                custBadge.Child = txtCust;
+                titleStack.Children.Add(custBadge);
             }
 
-            // 4. Description
-            TextBlock descText = new TextBlock()
+            infoStack.Children.Add(titleStack);
+
+            TextBlock txtDesc = new TextBlock()
             {
-                Text = curApp.description,
-                FontSize = 12,
-                Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8"),
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(24, 0, 16, 0),
+                Text = curApp.description ?? ("Winget package (" + curApp.id + ")"),
+                FontSize = 11.5,
+                Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
+                Margin = new Thickness(0, 3, 0, 0),
                 TextTrimming = TextTrimming.CharacterEllipsis
             };
-            Grid.SetColumn(descText, 4);
-            g.Children.Add(descText);
+            infoStack.Children.Add(txtDesc);
+            Grid.SetColumn(infoStack, 2);
+            g.Children.Add(infoStack);
 
-            // 5. Status Badge
+            // Status Badge (Column 3)
             bool isRec = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
             Border statusBadge = new Border()
             {
@@ -10396,30 +10431,39 @@ namespace FleetForge
                     (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"))
             };
             statusBadge.Child = statusBadgeText;
-            Grid.SetColumn(statusBadge, 5);
+            Grid.SetColumn(statusBadge, 3);
             g.Children.Add(statusBadge);
 
-            b.Child = g;
+            card.Child = g;
 
             string appId = curApp.id;
-            Border curBorder = b;
+            Border curBorder = card;
             Border curBadge = statusBadge;
             TextBlock curBadgeText = statusBadgeText;
 
-            Action updateVisualState = new Action(delegate
+            Action updateVisualState = delegate
             {
                 bool active = cb.IsChecked == true;
                 bool isRecMode = string.Equals(currentEditingGroupId, "recommended", StringComparison.OrdinalIgnoreCase);
-                curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
-                curBorder.BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
-                curBadge.Background = active ?
-                    (currentThemeIsLight ? HexBrush("#DCFCE7") : HexBrush("#064E3B")) :
-                    (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#243144"));
-                curBadgeText.Text = active ? "✓ Selected" : (isRecMode ? "○ Unchecked" : "+ Add");
-                curBadgeText.Foreground = active ?
-                    (currentThemeIsLight ? HexBrush("#15803D") : HexBrush("#34D399")) :
-                    (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"));
-            });
+                if (active)
+                {
+                    curBorder.Background = currentThemeIsLight ? HexBrush("#F0F7FF") : HexBrush("#1C2E42");
+                    curBorder.BorderBrush = currentThemeIsLight ? HexBrush("#0066FF") : HexBrush("#38BDF8");
+
+                    curBadge.Background = currentThemeIsLight ? HexBrush("#DCFCE7") : HexBrush("#064E3B");
+                    curBadgeText.Text = "✓ Selected";
+                    curBadgeText.Foreground = currentThemeIsLight ? HexBrush("#15803D") : HexBrush("#34D399");
+                }
+                else
+                {
+                    curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                    curBorder.BorderBrush = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
+
+                    curBadge.Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#243144");
+                    curBadgeText.Text = isRecMode ? "○ Unchecked" : "+ Add";
+                    curBadgeText.Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
+                }
+            };
 
             cb.Checked += delegate
             {
@@ -10434,16 +10478,22 @@ namespace FleetForge
                 UpdateModalCount();
             };
 
-            b.MouseEnter += delegate
+            card.MouseEnter += delegate
             {
-                curBorder.Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#243144");
+                if (cb.IsChecked != true)
+                {
+                    curBorder.Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#243144");
+                }
             };
-            b.MouseLeave += delegate
+            card.MouseLeave += delegate
             {
-                curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                if (cb.IsChecked != true)
+                {
+                    curBorder.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                }
             };
 
-            b.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
+            card.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
             {
                 if (!e.Handled && !(e.OriginalSource is CheckBox))
                 {
@@ -10460,7 +10510,7 @@ namespace FleetForge
                 StatusBadgeText = curBadgeText
             });
 
-            return b;
+            return card;
         }
 
         private void UpdateModalCount()
