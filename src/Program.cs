@@ -9976,4 +9976,1230 @@ namespace FleetForge
                             AppendLog("SUCCESS: " + curApp.name + " installed successfully!");
                             Dispatcher.Invoke(new Action(delegate
                             {
-... [truncated for diff preview]
+                                MessageBox.Show(curApp.name + " installed successfully!", "Installation Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }));
+                        }
+                        else
+                        {
+                            AppendLog("ERROR: Installation exited with code: " + code);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AppendLog("Install Exception: " + ex.Message);
+                }
+            });
+        }
+
+        private void SetCategoryFilter(string cat)
+        {
+            activeCategory = cat;
+            foreach (UIElement elem in categoryChipsPanel.Children)
+            {
+                Button btn = elem as Button;
+                if (btn != null)
+                {
+                    string tag = (string)btn.Tag;
+                    UpdateCategoryTabVisual(btn, tag == cat);
+                }
+            }
+
+            if (cat == "winget_online")
+            {
+                localAppsPanel.Visibility = Visibility.Collapsed;
+                wingetOnlinePanel.Visibility = Visibility.Visible;
+                if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                localAppsPanel.Visibility = Visibility.Visible;
+                wingetOnlinePanel.Visibility = Visibility.Collapsed;
+                if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Visible;
+                ApplyFilters();
+            }
+
+            if (btnSearchWingetOnlineBottom != null)
+            {
+                if (cat == "winget_online")
+                {
+                    btnSearchWingetOnlineBottom.Content = "Back to App Catalog";
+                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#0369A1");
+                }
+                else
+                {
+                    btnSearchWingetOnlineBottom.Content = "Search Online Apps";
+                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#6D28D9");
+                }
+            }
+        }
+
+        private void SetCatalogSort(string mode, string label)
+        {
+            catalogSortMode = mode;
+            if (btnCatalogSort != null)
+            {
+                btnCatalogSort.Content = "↕ Sort: " + label + " ▾";
+            }
+            ApplyFilters();
+        }
+
+        private void EnsureAppDefaultIndices(bool forceRefresh = false)
+        {
+            if (forceRefresh || appDefaultIndices == null)
+            {
+                appDefaultIndices = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                if (config != null && config.apps != null)
+                {
+                    for (int i = 0; i < config.apps.Count; i++)
+                    {
+                        if (config.apps[i] != null && !string.IsNullOrEmpty(config.apps[i].id))
+                        {
+                            if (!appDefaultIndices.ContainsKey(config.apps[i].id))
+                                appDefaultIndices[config.apps[i].id] = i;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SortFilteredApps()
+        {
+            if (activeFilteredApps == null || activeFilteredApps.Count <= 1) return;
+
+            switch (catalogSortMode)
+            {
+                case "selected_top":
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
+                    {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        // Priority:
+                        // 0: Selected + Recommended
+                        // 1: Selected + Standard
+                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
+                        // 3: Unselected + Standard
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
+                    });
+                    break;
+
+                case "alpha_asc":
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
+                    {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
+                    });
+                    break;
+
+                case "alpha_desc":
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
+                    {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        return string.Compare(b.name ?? "", a.name ?? "", StringComparison.OrdinalIgnoreCase);
+                    });
+                    break;
+
+                case "category":
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
+                    {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        int catComp = string.Compare(a.category ?? "", b.category ?? "", StringComparison.OrdinalIgnoreCase);
+                        if (catComp != 0) return catComp;
+                        return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
+                    });
+                    break;
+
+                case "popular":
+                default:
+                    EnsureAppDefaultIndices();
+                    activeFilteredApps.Sort(delegate (AppModel a, AppModel b)
+                    {
+                        bool recA = IsRecommendedApp(a);
+                        bool recB = IsRecommendedApp(b);
+                        bool selA = a.id != null && selectedAppIds.Contains(a.id);
+                        bool selB = b.id != null && selectedAppIds.Contains(b.id);
+
+                        // Priority:
+                        // 0: Selected + Recommended
+                        // 1: Selected + Standard
+                        // 2: Unselected + Recommended (jo select hai uske baad recommended wala dikhe)
+                        // 3: Unselected + Standard
+                        int rankA = (selA && recA) ? 0 : (selA ? 1 : (recA ? 2 : 3));
+                        int rankB = (selB && recB) ? 0 : (selB ? 1 : (recB ? 2 : 3));
+                        if (rankA != rankB) return rankA.CompareTo(rankB);
+
+                        if (recA && recB)
+                        {
+                            int recIdxA = (a.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(a.id) : int.MaxValue;
+                            int recIdxB = (b.id != null && recommendedMasterAppIds != null) ? recommendedMasterAppIds.IndexOf(b.id) : int.MaxValue;
+                            if (recIdxA < 0) recIdxA = int.MaxValue;
+                            if (recIdxB < 0) recIdxB = int.MaxValue;
+                            if (recIdxA != recIdxB) return recIdxA.CompareTo(recIdxB);
+                        }
+
+                        int idxA = (a.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(a.id)) ? appDefaultIndices[a.id] : int.MaxValue;
+                        int idxB = (b.id != null && appDefaultIndices != null && appDefaultIndices.ContainsKey(b.id)) ? appDefaultIndices[b.id] : int.MaxValue;
+                        if (idxA != idxB) return idxA.CompareTo(idxB);
+
+                        return string.Compare(a.name ?? "", b.name ?? "", StringComparison.OrdinalIgnoreCase);
+                    });
+                    break;
+            }
+        }
+
+        private void ApplyFilters()
+        {
+            if (activeCategory == "winget_online") return;
+
+            string rawQuery = txtSearch != null ? txtSearch.Text.Trim() : "";
+            if (rawQuery.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
+                rawQuery.Equals("search applications...", StringComparison.OrdinalIgnoreCase))
+            {
+                rawQuery = "";
+            }
+
+            if (!string.IsNullOrEmpty(rawQuery))
+            {
+                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Visible;
+                if (txtSearchWingetPromptText != null) txtSearchWingetPromptText.Text = string.Format("🔍 Can't find '{0}'? Search millions of apps online →", rawQuery);
+            }
+            else
+            {
+                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Collapsed;
+            }
+
+            string cleanQuery = rawQuery.Replace(" ", "").ToLowerInvariant();
+            string lowerQuery = rawQuery.ToLowerInvariant();
+
+            activeFilteredApps = config.apps.FindAll(delegate (AppModel a)
+            {
+                if (a == null) return false;
+                bool isRec = IsRecommendedApp(a);
+                bool matchCat = MatchesCategory(a, activeCategory);
+
+                if (!string.IsNullOrEmpty(lowerQuery))
+                {
+                    string aName = a.name ?? "";
+                    string aId = a.id ?? "";
+                    string aDesc = a.description ?? "";
+                    string aOff = a.offlineInstaller ?? "";
+
+                    bool matchQuery =
+                        aName.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aId.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aDesc.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aOff.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aName.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        aId.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+
+                    if (!matchQuery) return false;
+
+                    // If it is a custom database / recommended app that matches search, ALWAYS show it regardless of category!
+                    if (isRec) return true;
+
+                    return matchCat;
+                }
+                else
+                {
+                    return matchCat;
+                }
+            });
+
+            SortFilteredApps();
+
+            isStreamingAllApps = false;
+            currentRenderedCount = 0;
+            appRows.Clear();
+            if (localCardsContainer != null) localCardsContainer.Children.Clear();
+
+            UpdateMasterCheckboxState();
+            UpdateHeaderCount();
+
+            RenderNextBatch(250);
+        }
+
+        private void OnMasterCheckboxClicked()
+        {
+            if (isUpdatingSelection || isUpdatingMasterCheckbox || chkSelectAllCatalog == null) return;
+            isUpdatingSelection = true;
+            isUpdatingMasterCheckbox = true;
+
+            try
+            {
+                bool targetState = (chkSelectAllCatalog.IsChecked == true);
+
+                if (targetState)
+                {
+                    foreach (AppModel a in activeFilteredApps) selectedAppIds.Add(a.id);
+                }
+                else
+                {
+                    foreach (AppModel a in activeFilteredApps) selectedAppIds.Remove(a.id);
+                }
+
+                if (localCardsContainer != null)
+                {
+                    foreach (UIElement child in localCardsContainer.Children)
+                    {
+                        Border card = child as Border;
+                        if (card != null)
+                        {
+                            Grid g = card.Child as Grid;
+                            if (g != null && g.Children.Count > 0)
+                            {
+                                CheckBox cb = g.Children[0] as CheckBox;
+                                if (cb != null) cb.IsChecked = targetState;
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                isUpdatingSelection = false;
+                isUpdatingMasterCheckbox = false;
+            }
+
+            UpdateCount();
+            UpdateHeaderCount();
+        }
+
+        private int GetSelectedInFilterCount()
+        {
+            if (activeFilteredApps == null || activeFilteredApps.Count == 0 || selectedAppIds == null || selectedAppIds.Count == 0)
+                return 0;
+
+            // Instant O(1) path: When showing full catalog (no search or category filter active), count is simply selectedAppIds.Count
+            if (config != null && config.apps != null && activeFilteredApps.Count == config.apps.Count)
+                return selectedAppIds.Count;
+
+            int count = 0;
+            if (selectedAppIds.Count <= 100)
+            {
+                // Fast path for role groups (typically 10-20 apps): check small selected set against active filter
+                HashSet<string> filteredSet = new HashSet<string>();
+                foreach (AppModel a in activeFilteredApps) filteredSet.Add(a.id);
+                foreach (string id in selectedAppIds)
+                {
+                    if (filteredSet.Contains(id)) count++;
+                }
+            }
+            else
+            {
+                foreach (AppModel a in activeFilteredApps)
+                {
+                    if (selectedAppIds.Contains(a.id)) count++;
+                }
+            }
+            return count;
+        }
+
+        private void UpdateMasterCheckboxState()
+        {
+            if (chkSelectAllCatalog == null || isUpdatingMasterCheckbox) return;
+            isUpdatingMasterCheckbox = true;
+
+            try
+            {
+                if (activeFilteredApps == null || activeFilteredApps.Count == 0)
+                {
+                    chkSelectAllCatalog.IsChecked = false;
+                    chkSelectAllCatalog.IsEnabled = false;
+                    return;
+                }
+
+                chkSelectAllCatalog.IsEnabled = true;
+                int selectedInFilter = GetSelectedInFilterCount();
+
+                if (selectedInFilter == activeFilteredApps.Count)
+                {
+                    chkSelectAllCatalog.IsChecked = true;
+                }
+                else if (selectedInFilter == 0)
+                {
+                    chkSelectAllCatalog.IsChecked = false;
+                }
+                else
+                {
+                    chkSelectAllCatalog.IsChecked = null; // Indeterminate
+                }
+            }
+            finally
+            {
+                isUpdatingMasterCheckbox = false;
+            }
+        }
+
+        private void UpdateHeaderCount()
+        {
+            if (txtCatalogListHeaderCount != null && activeFilteredApps != null)
+            {
+                int selectedInFilter = GetSelectedInFilterCount();
+
+                if (selectedInFilter > 0)
+                {
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps ({2:N0} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
+                }
+                else
+                {
+                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps", currentRenderedCount, activeFilteredApps.Count);
+                }
+            }
+        }
+
+        private void UpdateCount()
+        {
+            if (txtCount != null) txtCount.Text = string.Format("Selected: {0:N0} of {1:N0} apps", selectedAppIds.Count, config.apps.Count);
+            if (btnInstall != null)
+            {
+                bool isSetupView = (currentView == "setup" || currentView == "roles");
+                if (isSetupView)
+                {
+                    btnInstall.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    if (selectedAppIds.Count > 0)
+                    {
+                        btnInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                    }
+                    else
+                    {
+                        btnInstall.Content = "Install Selected Apps";
+                    }
+                    btnInstall.Background = windowsAccentBrush;
+                }
+            }
+            if (btnHeroInstall != null)
+            {
+                if (selectedAppIds.Count > 0)
+                {
+                    btnHeroInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                }
+                else
+                {
+                    btnHeroInstall.Content = "Install Selected Apps";
+                }
+                btnHeroInstall.Background = windowsAccentBrush;
+            }
+            if (txtHeroStatusSubtitle != null)
+            {
+                GroupModel act = config != null && config.groups != null ? config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }) : null;
+                string packName = act != null ? act.name : "Custom Selection";
+                int packAppCount = (act != null && act.apps != null) ? act.apps.Count : 0;
+                txtHeroStatusSubtitle.Text = string.Format("{0} apps selected from \"{1}\". Click Install to proceed.", packAppCount, packName);
+            }
+        }
+
+        private void AppendLog(string message)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            string line = string.Format("[{0}] {1}\r\n", timestamp, message);
+
+            Dispatcher.Invoke(new Action(delegate
+            {
+                txtLog.AppendText(line);
+                logScrollViewer.ScrollToEnd();
+            }));
+
+            try
+            {
+                File.AppendAllText(logFilePath, string.Format("[{0}] {1}\r\n", timestamp, message));
+            }
+            catch { }
+
+            // If message represents an error, failure, exception, or stderr, also record into error-log.txt
+            if (!string.IsNullOrEmpty(message) &&
+                (message.IndexOf("ERROR", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("[STDERR]", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Failed", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Timeout", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 message.IndexOf("Exception", StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(errorLogPath))
+                    {
+                        File.AppendAllText(errorLogPath, string.Format("[{0}] {1}\r\n", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), message));
+                    }
+                }
+                catch { }
+            }
+        }
+
+        // =========================================================================
+        // INSTALLATION ENGINE & PROCESS MANAGEMENT
+        // =========================================================================
+        private void KillProcessTree(Process p)
+        {
+            if (p == null) return;
+            try
+            {
+                int pid = p.Id;
+                ProcessStartInfo killPsi = new ProcessStartInfo("taskkill", string.Format("/PID {0} /T /F", pid));
+                killPsi.CreateNoWindow = true;
+                killPsi.UseShellExecute = false;
+                using (Process kp = Process.Start(killPsi))
+                {
+                    kp.WaitForExit(3000);
+                }
+            }
+            catch { }
+            try
+            {
+                if (!p.HasExited) p.Kill();
+            }
+            catch { }
+        }
+
+        private void RequestStopInstallation()
+        {
+            isCancelled = true;
+            btnStop.IsEnabled = false;
+            btnStop.Content = "Stopping...";
+            AppendLog("[CANCEL] Stop requested by user. Terminating active setup process...");
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                KillProcessTree(currentProc);
+            });
+        }
+
+        private void SaveSessionState()
+        {
+            try
+            {
+                if (currentSession != null && !string.IsNullOrEmpty(sessionStatePath))
+                {
+                    JavaScriptSerializer ser = new JavaScriptSerializer();
+                    string json = ser.Serialize(currentSession);
+                    File.WriteAllText(sessionStatePath, json, Encoding.UTF8);
+                }
+            }
+            catch { }
+        }
+
+        private void CheckResumeSession()
+        {
+            try
+            {
+                if (File.Exists(sessionStatePath))
+                {
+                    string json = File.ReadAllText(sessionStatePath, Encoding.UTF8);
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        JavaScriptSerializer ser = new JavaScriptSerializer();
+                        ser.MaxJsonLength = int.MaxValue;
+                        DeploymentSessionState savedSession = ser.Deserialize<DeploymentSessionState>(json);
+                        if (savedSession != null && !savedSession.isCompleted && savedSession.records != null && savedSession.records.Count > 0)
+                        {
+                            int pending = 0;
+                            foreach (AppDeploymentRecord r in savedSession.records)
+                            {
+                                if (r.status == "Pending" || r.status == "Running" || r.status == "Failed" || r.status == "Timeout")
+                                {
+                                    pending++;
+                                }
+                            }
+                            if (pending > 0 && bannerResumeSetup != null)
+                            {
+                                currentSession = savedSession;
+                                if (txtResumeBannerTitle != null)
+                                {
+                                    txtResumeBannerTitle.Text = string.Format("Interrupted Deployment Session Detected ({0} Pending)", pending);
+                                }
+                                if (txtResumeBannerDesc != null)
+                                {
+                                    txtResumeBannerDesc.Text = string.Format("Previous session for '{0}' has {1} installed and {2} pending software package(s). Resume where you left off?",
+                                        string.IsNullOrEmpty(savedSession.roleName) ? (savedSession.roleId ?? "Workstation") : savedSession.roleName,
+                                        savedSession.successCount,
+                                        pending);
+                                }
+                                bannerResumeSetup.Visibility = Visibility.Visible;
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void DismissResumeSession()
+        {
+            if (bannerResumeSetup != null) bannerResumeSetup.Visibility = Visibility.Collapsed;
+            try
+            {
+                if (File.Exists(sessionStatePath))
+                {
+                    File.Delete(sessionStatePath);
+                }
+            }
+            catch { }
+        }
+
+        private void ResumeInterruptedSession()
+        {
+            if (currentSession == null || currentSession.records == null) return;
+            if (bannerResumeSetup != null) bannerResumeSetup.Visibility = Visibility.Collapsed;
+
+            selectedAppIds.Clear();
+            foreach (AppDeploymentRecord rec in currentSession.records)
+            {
+                if (rec.status == "Pending" || rec.status == "Running" || rec.status == "Failed" || rec.status == "Timeout")
+                {
+                    selectedAppIds.Add(rec.appId);
+                }
+            }
+            UpdateCount();
+            StartInstallation(true);
+        }
+
+        private void StartInstallation()
+        {
+            StartInstallation(false, null, null, null);
+        }
+
+        private void StartInstallation(bool isResume)
+        {
+            StartInstallation(isResume, null, null, null);
+        }
+
+        private void StartInstallation(bool isResume, List<string> packAppIds, string overrideRoleId = null, string overrideRoleName = null)
+        {
+            List<AppModel> selectedApps = new List<AppModel>();
+            HashSet<string> targetIdSet = (packAppIds != null) ? new HashSet<string>(packAppIds) : selectedAppIds;
+            if (config != null && config.apps != null)
+            {
+                foreach (AppModel a in config.apps)
+                {
+                    if (targetIdSet.Contains(a.id)) selectedApps.Add(a);
+                }
+            }
+
+            if (selectedApps.Count == 0)
+            {
+                MessageBox.Show("Please select an app pack or check at least one app to install.", "No Apps Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            if (!isResume)
+            {
+                string confirmMsg = !string.IsNullOrEmpty(overrideRoleName)
+                    ? string.Format("Ready to install {0} app(s) from \"{1}\" on your computer.\n\nDo you want to start now?", selectedApps.Count, overrideRoleName)
+                    : string.Format("Ready to install {0} selected app(s) on your computer.\n\nDo you want to start now?", selectedApps.Count);
+
+                MessageBoxResult res = MessageBox.Show(
+                    confirmMsg,
+                    "Install Apps",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (res != MessageBoxResult.Yes) return;
+            }
+
+            previousViewBeforeInstall = currentView;
+            SwitchView("logs");
+
+            isCancelled = false;
+            currentProc = null;
+            isInstallRunning = true;
+            currentProcessingAppTotal = selectedApps.Count;
+            currentProcessingAppIndex = 0;
+            currentProcessingPercent = 0;
+            UpdateToastProgress("Starting Installation", string.Format("0 of {0} apps completed", selectedApps.Count), 0);
+
+            btnInstall.Visibility = Visibility.Collapsed;
+            btnStop.Visibility = Visibility.Visible;
+            btnStop.IsEnabled = true;
+            btnStop.Content = "⏹️ Stop Install";
+            btnStop.Background = HexBrush("#DC2626");
+            btnStop.Foreground = HexBrush("#FFFFFF");
+            UpdateBottomBarVisibility();
+            if (btnViewReport != null) btnViewReport.Visibility = Visibility.Collapsed;
+
+            btnCreateNewGroup.IsEnabled = false;
+            if (btnImportPack != null) btnImportPack.IsEnabled = false;
+            foreach (RoleCardView rc in roleCards)
+            {
+                rc.SelectButton.IsEnabled = false;
+                rc.EditButton.IsEnabled = false;
+                if (rc.ExportButton != null) rc.ExportButton.IsEnabled = false;
+            }
+
+            if (progressBar != null)
+            {
+                progressBar.Value = 0;
+                progressBar.Maximum = selectedApps.Count;
+            }
+
+            // Initialize or resume session state
+            if (!isResume || currentSession == null)
+            {
+                currentSession = new DeploymentSessionState();
+                currentSession.roleId = overrideRoleId ?? (activeRoleId ?? "custom");
+                currentSession.roleName = overrideRoleName ?? ((activeRoleId != null && config != null && config.groups != null) ?
+                    (config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }) != null ?
+                     config.groups.Find(delegate(GroupModel g) { return g.id == activeRoleId; }).name : activeRoleId) : "Custom Workstation");
+                currentSession.totalCount = selectedApps.Count;
+                foreach (AppModel a in selectedApps)
+                {
+                    AppDeploymentRecord rec = new AppDeploymentRecord();
+                    rec.appId = a.id;
+                    rec.appName = a.name;
+                    rec.category = a.category;
+                    rec.installMethod = !string.IsNullOrEmpty(a.offlineInstaller) ? "Offline Installer" : "FleetForge Engine";
+                    rec.status = "Pending";
+                    currentSession.records.Add(rec);
+                }
+            }
+            else
+            {
+                currentSession.isCompleted = false;
+            }
+            SaveSessionState();
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                AppendLog("==========================================================");
+                AppendLog(string.Format("FleetForge Setup Started: {0} packages (Watchdog Timeout: {1}m)", selectedApps.Count, watchdogTimeoutMinutes));
+                AppendLog("Timestamp: " + DateTime.Now.ToString());
+                AppendLog("==========================================================");
+
+                int success = 0;
+                int failed = 0;
+                int downloadCount = 0;
+
+                for (int i = 0; i < selectedApps.Count; i++)
+                {
+                    if (isCancelled)
+                    {
+                        AppendLog("[STOPPED] Installation queue stopped by user.");
+                        break;
+                    }
+
+                    AppModel app = selectedApps[i];
+                    currentProcessingAppIndex = i + 1;
+                    currentProcessingAppName = app.name;
+                    int appStartPercent = (int)(((double)i / selectedApps.Count) * 100);
+                    currentProcessingPercent = appStartPercent;
+                    currentProcessingAppStatus = "Preparing installer...";
+                    UpdateToastProgress(
+                        string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                        "Preparing installer...",
+                        appStartPercent);
+                    AppRowView item = appRows.Find(delegate(AppRowView r) { return r != null && r.App != null && r.App.id == app.id; });
+
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        if (item != null)
+                        {
+                            item.StatusIcon.Text = "⏳";
+                            item.StatusText.Text = "Installing...";
+                            item.StatusText.Foreground = HexBrush("#0078D4");
+                        }
+                        if (txtStatus != null) txtStatus.Text = string.Format("[{0}/{1}] Installing {2}...", i + 1, selectedApps.Count, app.name);
+                    }));
+
+                    AppendLog(string.Format("[{0}/{1}] Processing: {2} ({3})", i + 1, selectedApps.Count, app.name, app.id));
+
+                    AppDeploymentRecord rec = currentSession.records.Find(delegate(AppDeploymentRecord r) { return r != null && r.appId == app.id; });
+                    if (rec == null)
+                    {
+                        rec = new AppDeploymentRecord();
+                        rec.appId = app.id;
+                        rec.appName = app.name;
+                        rec.category = app.category;
+                        currentSession.records.Add(rec);
+                    }
+                    rec.status = "Installing";
+                    rec.timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    DateTime startTime = DateTime.Now;
+                    SaveSessionState();
+
+                    bool installed = false;
+                    string offlineDir = Path.Combine(appDir, "offline_installers");
+
+                    if (!string.IsNullOrEmpty(app.offlineInstaller) && Directory.Exists(offlineDir))
+                    {
+                        string offlineFile = Path.Combine(offlineDir, app.offlineInstaller);
+                        if (File.Exists(offlineFile))
+                        {
+                            AppendLog("Found offline setup: " + offlineFile);
+                            UpdateToastProgress(
+                                string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                "Installing offline package...",
+                                appStartPercent);
+                            try
+                            {
+                                ProcessStartInfo psi = new ProcessStartInfo(offlineFile, app.silentArgs ?? "");
+                                psi.CreateNoWindow = true;
+                                psi.UseShellExecute = false;
+                                using (Process p = Process.Start(psi))
+                                {
+                                    currentProc = p;
+                                    int timeoutMs = watchdogTimeoutMinutes * 60 * 1000;
+                                    DateTime startProc = DateTime.Now;
+                                    bool timedOut = false;
+                                    while (!p.HasExited)
+                                    {
+                                        if (isCancelled) { try { p.Kill(); } catch { } break; }
+                                        if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
+                                        {
+                                            timedOut = true;
+                                            try { p.Kill(); } catch { }
+                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Offline setup for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
+                                            break;
+                                        }
+                                        Thread.Sleep(500);
+                                    }
+
+                                    rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
+                                    rec.installMethod = "Offline Installer";
+
+                                    if (timedOut)
+                                    {
+                                        rec.status = "Timeout";
+                                        rec.exitCode = -1;
+                                        rec.errorDetails = "Installer exceeded watchdog timeout limit";
+                                        installed = false;
+                                    }
+                                    else if (!isCancelled && p.HasExited)
+                                    {
+                                        rec.exitCode = p.ExitCode;
+                                        if (p.ExitCode == 0 || p.ExitCode == 3010)
+                                        {
+                                            rec.status = "Installed";
+                                            installed = true;
+                                            AppendLog("Offline setup completed successfully.");
+                                        }
+                                        else
+                                        {
+                                            rec.status = "Failed";
+                                            rec.errorDetails = "Exit code: " + p.ExitCode;
+                                            installed = false;
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                rec.status = "Failed";
+                                rec.errorDetails = ex.Message;
+                                AppendLog("Offline setup error: " + ex.Message);
+                            }
+                            finally
+                            {
+                                currentProc = null;
+                            }
+                        }
+                    }
+
+                    if (!installed && !isCancelled && rec.status != "Timeout" && !string.IsNullOrEmpty(app.downloadUrl))
+                    {
+                        AppendLog("Downloading setup package for: " + app.name + "...");
+                        UpdateToastProgress(
+                            string.Format("[{0}/{1}] Downloading {2}", i + 1, selectedApps.Count, app.name),
+                            "Downloading setup package from Cloud Delivery...",
+                            appStartPercent);
+                        rec.installMethod = "Direct Cloud Delivery";
+                        string targetExeName = !string.IsNullOrEmpty(app.offlineInstaller) ?
+                            app.offlineInstaller :
+                            (Regex.Replace(app.name, @"[^\w]", "_") + (app.downloadUrl.EndsWith(".msi", StringComparison.OrdinalIgnoreCase) ? ".msi" : ".exe"));
+
+                        string downloadDir = Path.Combine(Path.GetTempPath(), "FleetForgeDownloads");
+                        try { if (!Directory.Exists(downloadDir)) Directory.CreateDirectory(downloadDir); } catch { }
+                        string downloadTarget = Path.Combine(downloadDir, targetExeName);
+
+                        try
+                        {
+                            string directUrl = MainWindow.ConvertDirectUrl(app.downloadUrl);
+                            using (WebClient wc = new WebClient())
+                            {
+                                wc.Encoding = Encoding.UTF8;
+                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.4");
+                                wc.DownloadFile(directUrl, downloadTarget);
+                            }
+
+                            if (File.Exists(downloadTarget) && new FileInfo(downloadTarget).Length > 0)
+                            {
+                                downloadCount++;
+                                long kb = new FileInfo(downloadTarget).Length / 1024;
+                                AppendLog(string.Format("Downloaded {0} ({1:N0} KB). Starting silent background installation...", app.name, kb));
+                                UpdateToastProgress(
+                                    string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                    "Running silent background installer...",
+                                    appStartPercent);
+
+                                ProcessStartInfo psi;
+                                bool isMsi = downloadTarget.EndsWith(".msi", StringComparison.OrdinalIgnoreCase);
+                                if (isMsi)
+                                {
+                                    string msiArgs = string.Format("/i \"{0}\" /qn /norestart {1}", downloadTarget, app.silentArgs ?? "").Trim();
+                                    psi = new ProcessStartInfo("msiexec.exe", msiArgs);
+                                }
+                                else
+                                {
+                                    string exeArgs = !string.IsNullOrEmpty(app.silentArgs) ? app.silentArgs : "/S /silent /quiet /VERYSILENT /NORESTART";
+                                    psi = new ProcessStartInfo(downloadTarget, exeArgs);
+                                }
+
+                                psi.CreateNoWindow = true;
+                                psi.UseShellExecute = false;
+
+                                using (Process p = Process.Start(psi))
+                                {
+                                    currentProc = p;
+                                    int timeoutMs = watchdogTimeoutMinutes * 60 * 1000;
+                                    DateTime startProc = DateTime.Now;
+                                    bool timedOut = false;
+                                    while (!p.HasExited)
+                                    {
+                                        if (isCancelled) { try { p.Kill(); } catch { } break; }
+                                        if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
+                                        {
+                                            timedOut = true;
+                                            try { p.Kill(); } catch { }
+                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Setup for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
+                                            break;
+                                        }
+                                        Thread.Sleep(500);
+                                    }
+
+                                    rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
+
+                                    if (timedOut)
+                                    {
+                                        rec.status = "Timeout";
+                                        rec.exitCode = -1;
+                                        rec.errorDetails = "Installer exceeded watchdog timeout limit";
+                                        installed = false;
+                                    }
+                                    else if (!isCancelled && p.HasExited)
+                                    {
+                                        rec.exitCode = p.ExitCode;
+                                        if (p.ExitCode == 0 || p.ExitCode == 3010)
+                                        {
+                                            rec.status = "Installed";
+                                            installed = true;
+                                            AppendLog(app.name + " installed successfully via Direct Cloud Delivery.");
+                                        }
+                                        else
+                                        {
+                                            rec.status = "Failed";
+                                            rec.errorDetails = "Exit code: " + p.ExitCode;
+                                            installed = false;
+                                            AppendLog(string.Format("Setup for {0} exited with code {1}.", app.name, p.ExitCode));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                rec.status = "Failed";
+                                rec.errorDetails = "Downloaded installer file is empty or missing";
+                                AppendLog("ERROR: Downloaded setup file for " + app.name + " is invalid.");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            rec.status = "Failed";
+                            rec.errorDetails = "Direct download/install error: " + ex.Message;
+                            AppendLog("ERROR: Direct download failed for " + app.name + ": " + ex.Message);
+                        }
+                        finally
+                        {
+                            currentProc = null;
+                            try { if (File.Exists(downloadTarget)) File.Delete(downloadTarget); } catch { }
+                        }
+                    }
+
+                    if (!installed && !isCancelled && rec.status != "Timeout")
+                    {
+                        if (string.IsNullOrEmpty(wingetCmd))
+                        {
+                            rec.status = "Failed";
+                            rec.errorDetails = "Package engine not available";
+                            AppendLog("ERROR: Package Delivery Engine not available.");
+                            installed = false;
+                        }
+                        else
+                        {
+                            AppendLog("Deploying package: " + app.name + " (" + app.id + ")...");
+                            UpdateToastProgress(
+                                string.Format("[{0}/{1}] Installing {2}", i + 1, selectedApps.Count, app.name),
+                                "Deploying via Package Delivery Engine...",
+                                appStartPercent);
+                            string args = string.Format("install --id \"{0}\" -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity", app.id);
+                            try
+                            {
+                                ProcessStartInfo psi = new ProcessStartInfo(wingetCmd, args);
+                                psi.CreateNoWindow = true;
+                                psi.UseShellExecute = false;
+                                psi.RedirectStandardOutput = true;
+                                psi.RedirectStandardError = true;
+
+                                using (Process proc = Process.Start(psi))
+                                {
+                                    currentProc = proc;
+                                    int timeoutMs = watchdogTimeoutMinutes * 60 * 1000;
+                                    DateTime startProc = DateTime.Now;
+                                    bool timedOut = false;
+                                    while (!proc.HasExited && !isCancelled)
+                                    {
+                                        if ((DateTime.Now - startProc).TotalMilliseconds > timeoutMs)
+                                        {
+                                            timedOut = true;
+                                            try { proc.Kill(); } catch { }
+                                            AppendLog(string.Format("[WATCHDOG TIMEOUT] Installation for {0} exceeded {1} minute limit. Terminated.", app.name, watchdogTimeoutMinutes));
+                                            break;
+                                        }
+
+                                        string line = proc.StandardOutput.ReadLine();
+                                        if (!string.IsNullOrEmpty(line)) AppendLog("  > " + line);
+                                    }
+
+                                    rec.durationSeconds = (DateTime.Now - startTime).TotalSeconds;
+                                    rec.installMethod = "FleetForge Engine";
+
+                                    if (timedOut)
+                                    {
+                                        rec.status = "Timeout";
+                                        rec.exitCode = -1;
+                                        rec.errorDetails = "Installation exceeded watchdog timeout";
+                                        installed = false;
+                                    }
+                                    else if (!isCancelled && proc.HasExited)
+                                    {
+                                        string rest = proc.StandardOutput.ReadToEnd();
+                                        if (!string.IsNullOrEmpty(rest))
+                                        {
+                                            foreach (string l in rest.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+                                            {
+                                                AppendLog("  > " + l);
+                                            }
+                                        }
+                                        int code = proc.ExitCode;
+                                        rec.exitCode = code;
+                                        AppendLog("Deployment finished with ExitCode: " + code);
+
+                                        uint uCode = unchecked((uint)code);
+                                        if (code == 0 || code == 3010 || code == -1978335189 || uCode == 2316632107U)
+                                        {
+                                            rec.status = "Installed";
+                                            installed = true;
+                                            downloadCount++;
+                                        }
+                                        else
+                                        {
+                                            rec.status = "Failed";
+                                            string err = proc.StandardError.ReadToEnd();
+                                            if (!string.IsNullOrEmpty(err))
+                                            {
+                                                AppendLog("  [STDERR] " + err);
+                                                rec.errorDetails = err.Trim();
+                                            }
+                                            installed = false;
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                rec.status = "Failed";
+                                rec.errorDetails = ex.Message;
+                                AppendLog("Deployment exception: " + ex.Message);
+                                installed = false;
+                            }
+                            finally
+                            {
+                                currentProc = null;
+                            }
+                        }
+                    }
+
+                    if (installed)
+                    {
+                        success++;
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            if (item != null)
+                            {
+                                item.StatusIcon.Text = "✅";
+                                item.StatusText.Text = "Installed";
+                                item.StatusText.Foreground = HexBrush("#10B981");
+                            }
+                        }));
+                    }
+                    else
+                    {
+                        failed++;
+                        Dispatcher.Invoke(new Action(delegate
+                        {
+                            if (item != null)
+                            {
+                                item.StatusIcon.Text = isCancelled ? "⏹️" : (rec.status == "Timeout" ? "⏱️" : "❌");
+                                item.StatusText.Text = isCancelled ? "Cancelled" : (rec.status == "Timeout" ? "Timeout" : "Failed");
+                                item.StatusText.Foreground = HexBrush(isCancelled ? "#F59E0B" : (rec.status == "Timeout" ? "#F59E0B" : "#F87171"));
+                            }
+                        }));
+                    }
+
+                    currentSession.successCount = success;
+                    currentSession.failedCount = failed;
+                    SaveSessionState();
+
+                    Dispatcher.Invoke(new Action(delegate
+                    {
+                        if (progressBar != null) progressBar.Value = i + 1;
+                    }));
+
+                    int appDonePercent = (int)(((double)(i + 1) / selectedApps.Count) * 100);
+                    currentProcessingPercent = appDonePercent;
+                    UpdateToastProgress(
+                        string.Format("[{0}/{1}] {2}", i + 1, selectedApps.Count, app.name),
+                        installed ? "Successfully installed." : "Setup finished.",
+                        appDonePercent);
+
+                    if (isCancelled)
+                    {
+                        AppendLog("[STOPPED] Machine setup cancelled by user.");
+                        break;
+                    }
+                }
+
+                currentSession.endTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                currentSession.isCompleted = !isCancelled;
+                if (!isCancelled)
+                {
+                    try { if (File.Exists(sessionStatePath)) File.Delete(sessionStatePath); } catch { }
+                }
+                else
+                {
+                    SaveSessionState();
+                }
+
+                isInstallRunning = false;
+
+                string completionStatus = "Complete";
+                if (isCancelled)
+                {
+                    completionStatus = "Interrupted";
+                }
+                else if (failed > 0 && success > 0)
+                {
+                    completionStatus = "Partial Failure";
+                }
+                else if (failed > 0 && success == 0)
+                {
+                    completionStatus = "Failed";
+                }
+
+                string toastTitle = isCancelled ? "⏹️ Setup Interrupted" :
+                    (failed == 0 ? "✅ Setup Complete" : "⚠️ Setup Finished with Issues");
+
+                string toastDetails = string.Format(
+                    "Selected: {0}  |  Installed: {1}  |  Downloaded: {2}  |  Status: {3}",
+                    selectedApps.Count,
+                    success,
+                    downloadCount,
+                    completionStatus);
+
+                AppendLog("==========================================================");
+                AppendLog(string.Format("Setup Ended! Status: {0} (Selected: {1}, Installed: {2}, Downloaded: {3}, Failed: {4})",
+                    completionStatus, selectedApps.Count, success, downloadCount, failed));
+                AppendLog("Log file saved to: " + logFilePath);
+                AppendLog("==========================================================");
+
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    btnStop.Visibility = Visibility.Visible;
+                    btnStop.IsEnabled = true;
+                    btnStop.Content = "✓ Finish";
+                    btnStop.Background = windowsAccentBrush;
+                    btnStop.Foreground = HexBrush("#FFFFFF");
+                    btnInstall.Visibility = Visibility.Collapsed;
+                    btnInstall.IsEnabled = true;
+                    UpdateBottomBarVisibility();
+
+                    if (btnViewReport != null)
+                    {
+                        btnViewReport.Visibility = Visibility.Collapsed;
+                    }
+
+                    btnCreateNewGroup.IsEnabled = true;
+                    if (btnImportPack != null) btnImportPack.IsEnabled = true;
+                    foreach (RoleCardView rc in roleCards)
+                    {
+                        rc.SelectButton.IsEnabled = true;
+                        rc.EditButton.IsEnabled = true;
+                        if (rc.ExportButton != null) rc.ExportButton.IsEnabled = true;
+                    }
+
+                    // Update bottom bar status
+                    if (txtStatus != null)
+                    {
+                        txtStatus.Text = string.Format("Setup {0} — Selected: {1}, Installed: {2}, Downloaded: {3}, Status: {4}",
+                            completionStatus, selectedApps.Count, success, downloadCount, completionStatus);
+                    }
+
+                    // Surface the Windows 11 Toaster Notification Popup with complete summary
+                    ShowWindows11Toast(
+                        toastTitle,
+                        toastDetails,
+                        isCancelled ? currentProcessingPercent : 100,
+                        isFinal: true,
+                        statusTag: completionStatus);
+                }));
+            });
+        }
+    }
+}
