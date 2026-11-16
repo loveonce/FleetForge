@@ -320,7 +320,7 @@ namespace FleetForge
   .header {{ display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #232938; padding-bottom: 20px; margin-bottom: 24px; }}
   .brand-title {{ font-size: 22px; font-weight: 800; color: #FFFFFF; letter-spacing: -0.5px; }}
   .brand-sub {{ font-size: 12px; color: #94A3B8; margin-top: 2px; }}
-  .badge-org {{ background: #1E293B; border: 1px solid #334155; color: #38BDF8; font-weight: 600; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: right; }}
+  .badge-org {{ background: #1E293B; border: 1px solid #334155; color: #5f6d84; font-weight: 600; font-size: 11px; padding: 6px 12px; border-radius: 6px; text-align: right; }}
   .stats-grid {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }}
   .stat-card {{ background: #181D26; border: 1px solid #283142; border-radius: 8px; padding: 16px; text-align: center; }}
   .stat-val {{ font-size: 26px; font-weight: bold; margin-bottom: 4px; }}
@@ -346,7 +346,7 @@ namespace FleetForge
       <div class=""brand-sub"">Enterprise Workstation Zero-Touch Provisioning Audit Trail</div>
     </div>
     <div class=""badge-org"">
-      <div>LOVE MALHOTRA</div>
+      <div style=""color:#5f6d84;font-weight:bold;"">LOVE MALHOTRA</div>
       <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.4 Engine</div>
     </div>
   </div>
@@ -3406,7 +3406,7 @@ namespace FleetForge
                            FontSize=""10.5"" Foreground=""#94A3B8""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" Margin=""0,0,0,3""/>
                 <TextBlock x:Name=""TxtSidebarFooterCompany"" Text=""LOVE MALHOTRA""
-                           FontSize=""11"" FontWeight=""Bold"" Foreground=""#DC2626""
+                           FontSize=""11"" FontWeight=""Bold"" Foreground=""#5f6d84""
                            HorizontalAlignment=""Center"" TextAlignment=""Center"" TextWrapping=""Wrap""/>
             </StackPanel>
         </Grid>
@@ -4233,7 +4233,7 @@ namespace FleetForge
                     <TextBlock x:Name=""TxtAboutTagline"" Text=""One-Click Software Installer for Windows"" FontSize=""11.5"" Foreground=""#94A3B8"" HorizontalAlignment=""Center"" Margin=""0,4,0,0""/>
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Center"" Margin=""0,8,0,0"">
                         <Border x:Name=""BadgeAboutCompany"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" Margin=""0,0,8,0"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#38BDF8""/>
+                            <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#5f6d84""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
                             <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.4 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
@@ -4256,7 +4256,7 @@ namespace FleetForge
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column=""0"" Margin=""0,0,10,0"">
                             <TextBlock x:Name=""TxtSpecOrgLbl"" Text=""Created by:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#5f6d84"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.4"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
@@ -6676,7 +6676,7 @@ namespace FleetForge
             }
             if (txtSidebarFooterCompany != null)
             {
-                txtSidebarFooterCompany.Foreground = HexBrush("#DC2626");
+                txtSidebarFooterCompany.Foreground = HexBrush("#5f6d84");
             }
 
             // Top Bar
