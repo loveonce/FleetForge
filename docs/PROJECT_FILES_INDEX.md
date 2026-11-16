@@ -50,6 +50,8 @@ FleetForge/
 ├── 📂 reports/                         # Machine Compliance Audit Reports (HTML & JSON)
 │
 ├── 📂 docs/                            # Enterprise Architectural Documentation
+│   ├── FLOW_DIAGRAMS.md                # Complete System Flowcharts & Mermaid Architectural Diagrams
+│   ├── PRESENTATION_DOC.md             # Executive Product Pitch Deck, Business Model & Unit Economics
 │   ├── SYSTEM_DESIGN.md                # System Architecture & WPF Component Hierarchy
 │   ├── PROJECT_PROJECTION.md           # Product Roadmap & Strategic Milestones
 │   ├── THINKING_AND_LOGIC.md           # Engineering Principles & Rationale
@@ -57,7 +59,15 @@ FleetForge/
 │   ├── AUTO_UPDATE_SYSTEM.md           # Auto-Update Mechanism & GitHub Release Flow
 │   └── PROJECT_FILES_INDEX.md          # Complete Project File Index & Responsibilities
 │
-└── 📂 offline_installers/              # Offline Local Installer Binaries Cache
-    └── README.md                       # Offline Caching Guidelines & Documentation
+├── 📂 tools/                           # Standalone Admin Tools & Web Panels
+│   ├── RecommendedAppsBuilder.html     # Modern HTML5 Cloud Catalog & Affiliate Builder Portal
+│   ├── AffiliateAppsBuilder.html       # Dual Alias for Standalone Web Admin Portal
+│   ├── Open-Builder.bat                # 1-Click Browser Launcher for Admin Builder
+│   └── apps_data.js                    # Pre-indexed offline database of 16,350 Winget software packages
+│
+└── 📂 data/                            # Core Database & Cloud Catalogs
+    ├── apps.json                       # 16,349 Winget Software Database (Tier 3 Base)
+    ├── custom_apps.json                # Custom & Affiliate Winget Overrides (Tier 2)
+    └── recommended_apps.json           # Top Choice Non-Winget Curated Partner Apps (Tier 1 Pinned)
 ```
 
