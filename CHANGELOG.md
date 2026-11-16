@@ -4,6 +4,17 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.6.5] — 2026-11-16
+
+### Added & Improved
+- **Dedicated Online Search Modal Popup:** Introduced an instant modal popup for live Winget online search directly from the All Applications catalog, featuring live status indicators, package metadata inspection, and one-click cloud additions.
+- **Unified Modern Item Card Design:** Completely standardized the table row cards in the Edit App Pack modal to match the All Applications catalog (10px rounded borders, active light-blue selection glow, 40x40 Fluent glyph badges, 2-line title/description hierarchy, and green status pill badges).
+- **Dedicated Top Choice 3D Icon:** Assigned a dedicated golden rosette award ribbon icon (`recommended.png`) to the Top Choice • Recommended pack, eliminating icon sharing with Minimal Essentials.
+- **Clean White-Label Monetization:** Removed revealing `⚡ AFFILIATE / DIRECT` and `🌐 AFFILIATE / REDIRECT` badges from all software cards across the catalog, search modal, and pack editor. Cleaned custom package descriptions.
+- **Refined Branding Typography:** Updated the "Love Malhotra" creator attribution signature to an elegant muted slate blue-gray (`#5f6d84`), blending with modern enterprise UI themes.
+- **Streamlined Pack Editor UX:** Removed redundant segmented buttons and export action from the modal, added a pinned master checkbox header bar with live selection counter.
+- **Version Lock:** Official release locked to **v2.6.5** across all binaries, manifests, setup wizard, uninstaller, and metadata.
+
 ## [2.6.4] — 2026-11-16
 
 ### Added & Improved

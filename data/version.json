@@ -1,16 +1,17 @@
 {
-  "version": "2.6.4",
-  "versionCode": 264,
+  "version": "2.6.5",
+  "versionCode": 265,
   "buildDate": "2026-11-16",
-  "title": "FleetForge v2.6.4 Enterprise IT Edition",
+  "title": "FleetForge v2.6.5 Enterprise IT Edition",
   "company": "Love Malhotra",
   "website": "https://www.google.com",
   "changelog": [
-    "Permanent fix for update detection: direct GitHub origin priority, query cache-busting, and multi-endpoint fallback",
-    "Completely eliminated reports folder creation across the application, setup installer, and AppData",
-    "Any required deployment reports and audit logs are saved directly in AppData\\Local\\FleetForge without subfolders",
-    "Automated CDN edge invalidation pipeline (Purge-Cdn.bat & Release-Update.bat)",
-    "Directory optimization: cleaned legacy leftover report files, empty folders, and locked version to 2.6.4"
+    "Dedicated Online Search Modal Popup with live status and instant cloud installs",
+    "Unified Edit App Pack table row cards with 10px rounded cards and All Apps styling",
+    "Distinct golden rosette award icon (recommended.png) for Top Choice \u2022 Recommended pack",
+    "Clean white-label monetization: removed affiliate/direct tags from all catalog cards",
+    "Refined creator attribution signature (Love Malhotra) to elegant slate color #5f6d84",
+    "Streamlined Pack Editor UX: pinned master checkbox header bar and live selection counter"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
 }

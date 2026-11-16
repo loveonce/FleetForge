@@ -32,9 +32,9 @@ using WinDrawing = System.Drawing;
 [assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.6.4.0")]
-[assembly: AssemblyFileVersion("2.6.4.0")]
-[assembly: AssemblyInformationalVersion("2.6.4")]
+[assembly: AssemblyVersion("2.6.5.0")]
+[assembly: AssemblyFileVersion("2.6.5.0")]
+[assembly: AssemblyInformationalVersion("2.6.5")]
 
 namespace FleetForge
 {
@@ -203,10 +203,10 @@ namespace FleetForge
 
         public UpdateInfo()
         {
-            version = "2.6.4";
-            versionCode = 264;
+            version = "2.6.5";
+            versionCode = 265;
             buildDate = "2026-11-16";
-            title = "FleetForge v2.6.4 Enterprise IT Edition";
+            title = "FleetForge v2.6.5 Enterprise IT Edition";
             company = "Love Malhotra";
             downloadUrl = AppUrls.UpdateDownloadUrl;
             changelog = new List<string>();
@@ -347,7 +347,7 @@ namespace FleetForge
     </div>
     <div class=""badge-org"">
       <div style=""color:#5f6d84;font-weight:bold;"">LOVE MALHOTRA</div>
-      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.4 Engine</div>
+      <div style=""color:#94A3B8;font-weight:normal;font-size:10px;"">FleetForge v2.6.5 Engine</div>
     </div>
   </div>
 
@@ -674,7 +674,7 @@ namespace FleetForge
             logoBorder.Child = logoGrid;
             brandStack.Children.Add(logoBorder);
 
-            // Title Line: FLEET + FORGE + v2.6.4
+            // Title Line: FLEET + FORGE + v2.6.5
             StackPanel titleLine = new StackPanel();
             titleLine.Orientation = Orientation.Horizontal;
             titleLine.HorizontalAlignment = HorizontalAlignment.Center;
@@ -705,7 +705,7 @@ namespace FleetForge
             verBadge.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#CBD5E1" : "#3E3E46"));
 
             TextBlock txtVer = new TextBlock();
-            txtVer.Text = "v2.6.4";
+            txtVer.Text = "v2.6.5";
             txtVer.FontSize = 10;
             txtVer.FontWeight = FontWeights.Bold;
             txtVer.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString(isLight ? "#475569" : "#A1A1AA"));
@@ -1103,7 +1103,7 @@ namespace FleetForge
         {
             Console.WriteLine();
             Console.WriteLine("================================================================================");
-            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.4");
+            Console.WriteLine("  FleetForge Enterprise CLI Provisioning Engine v2.6.5");
             Console.WriteLine("  Love Malhotra • Windows 11 Automated Deployment");
             Console.WriteLine("================================================================================");
             Console.WriteLine();
@@ -1503,7 +1503,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.4");
+                            wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.5");
                             wc.DownloadFile(directUrl, downloadTarget);
                         }
 
@@ -2105,7 +2105,7 @@ namespace FleetForge
 
     public class MainWindow : Window
     {
-        public const string CurrentAppVersion = "2.6.4";
+        public const string CurrentAppVersion = "2.6.5";
         public const int CurrentAppVersionCode = 264;
 
         private string appDir;
@@ -4089,7 +4089,7 @@ namespace FleetForge
                         </Border>
                         <StackPanel Grid.Column=""1"" VerticalAlignment=""Center"">
                             <TextBlock x:Name=""TxtUpdateTitle"" Text=""You are running the latest version!"" FontSize=""14"" FontWeight=""Bold"" Foreground=""#34D399""/>
-                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.4 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
+                            <TextBlock x:Name=""TxtUpdateDetail"" Text=""FleetForge v2.6.5 (Enterprise IT Edition • Love Malhotra) is up to date."" FontSize=""11.5"" Foreground=""#94A3B8"" Margin=""0,3,0,0""/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -4236,7 +4236,7 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtAboutCompany"" Text=""Love Malhotra"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#5f6d84""/>
                         </Border>
                         <Border x:Name=""BadgeAboutEdition"" Background=""#1E293B"" CornerRadius=""5"" Padding=""8,3"" BorderThickness=""1"" BorderBrush=""#334155"">
-                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.4 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
+                            <TextBlock x:Name=""TxtAboutEdition"" Text=""v2.6.5 • Personal &amp; Work Edition"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#94A3B8""/>
                         </Border>
                     </StackPanel>
                 </StackPanel>
@@ -4259,7 +4259,7 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSpecOrgVal"" Text=""Love Malhotra"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#5f6d84"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecEngLbl"" Text=""Deployment Engine:"" FontSize=""10.5"" Foreground=""#64748B""/>
-                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.4"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
+                            <TextBlock x:Name=""TxtSpecEngVal"" Text=""FleetForge Engine v2.6.5"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" Margin=""0,1,0,8""/>
 
                             <TextBlock x:Name=""TxtSpecLibLbl"" Text=""App Library:"" FontSize=""10.5"" Foreground=""#64748B""/>
                             <TextBlock x:Name=""TxtSpecLibVal"" Text=""FleetForge Enterprise Cloud Catalog"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
@@ -6137,7 +6137,7 @@ namespace FleetForge
                         }
                         if (txtUpdateDetail != null)
                         {
-                            txtUpdateDetail.Text = "FleetForge v2.6.4 (Enterprise IT Edition • Love Malhotra) is up to date.";
+                            txtUpdateDetail.Text = "FleetForge v2.6.5 (Enterprise IT Edition • Love Malhotra) is up to date.";
                         }
                         if (btnDownloadInstall != null)
                         {
@@ -6148,7 +6148,7 @@ namespace FleetForge
                         if (info != null)
                         {
                             MessageBox.Show(
-                                "You are running the latest version of FleetForge (v2.6.4).\n\nNo newer updates were found.",
+                                "You are running the latest version of FleetForge (v2.6.5).\n\nNo newer updates were found.",
                                 "No Update Found — FleetForge",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Information);
@@ -6323,7 +6323,7 @@ namespace FleetForge
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.4");
+                        wc.Headers.Add("User-Agent", "FleetForge-Updater/2.6.5");
                         wc.DownloadProgressChanged += (s, e) =>
                         {
                             Dispatcher.Invoke(new Action(delegate
@@ -8841,7 +8841,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.5");
                             string json = wc.DownloadString(directUrl);
                             if (!string.IsNullOrEmpty(json))
                             {
@@ -8878,7 +8878,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.5");
                             string json = wc.DownloadString(directCustUrl);
                             if (!string.IsNullOrEmpty(json))
                             {
@@ -8956,7 +8956,7 @@ namespace FleetForge
                         using (WebClient wc = new WebClient())
                         {
                             wc.Encoding = Encoding.UTF8;
-                            wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                            wc.Headers.Add("User-Agent", "FleetForge/2.6.5");
                             string json = wc.DownloadString(directUrl);
                             var ser = new JavaScriptSerializer();
                             ser.MaxJsonLength = int.MaxValue;
@@ -9024,7 +9024,7 @@ namespace FleetForge
                     using (WebClient wc = new WebClient())
                     {
                         wc.Encoding = Encoding.UTF8;
-                        wc.Headers.Add("User-Agent", "FleetForge/2.6.4");
+                        wc.Headers.Add("User-Agent", "FleetForge/2.6.5");
                         string json = wc.DownloadString(directUrl);
                         newConfig = jsonSerializer.Deserialize<ConfigModel>(json);
                         if (newConfig != null && newConfig.apps != null && newConfig.apps.Count > 0)
@@ -13676,7 +13676,7 @@ namespace FleetForge
                             using (WebClient wc = new WebClient())
                             {
                                 wc.Encoding = Encoding.UTF8;
-                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.4");
+                                wc.Headers.Add("User-Agent", "FleetForge-Delivery-Engine/2.6.5");
                                 wc.DownloadFile(directUrl, downloadTarget);
                             }
 
