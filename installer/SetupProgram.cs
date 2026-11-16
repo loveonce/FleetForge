@@ -1042,12 +1042,14 @@ namespace FleetForge
                     if (!Directory.Exists(dataDir)) Directory.CreateDirectory(dataDir);
                     string configDir = Path.Combine(targetDir, "config");
                     if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
-                    string logsDir = Path.Combine(targetDir, "logs");
-                    if (!Directory.Exists(logsDir)) Directory.CreateDirectory(logsDir);
                     string offlineDir = Path.Combine(targetDir, "offline_installers");
                     if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
-                    string reportsDir = Path.Combine(targetDir, "reports");
-                    if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
+                    try
+                    {
+                        string legacyReports = Path.Combine(targetDir, "reports");
+                        if (Directory.Exists(legacyReports)) Directory.Delete(legacyReports, true);
+                    }
+                    catch { }
                     Thread.Sleep(100);
 
                     // 2. Extract & Overwrite FleetForge.exe
@@ -1253,6 +1255,12 @@ namespace FleetForge
             if (!Directory.Exists(configDir)) Directory.CreateDirectory(configDir);
             string offlineDir = Path.Combine(targetDir, "offline_installers");
             if (!Directory.Exists(offlineDir)) Directory.CreateDirectory(offlineDir);
+            try
+            {
+                string legacyReports = Path.Combine(targetDir, "reports");
+                if (Directory.Exists(legacyReports)) Directory.Delete(legacyReports, true);
+            }
+            catch { }
         }
 
         public static void SafeExtractResource(string resourceName, string targetFilePath)

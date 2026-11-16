@@ -244,14 +244,18 @@ namespace FleetForge
         {
             try
             {
-                string reportsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "reports");
-                if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
+                string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string targetFolder = Path.Combine(localApp, "FleetForge");
+                if (!Directory.Exists(targetFolder))
+                {
+                    try { Directory.CreateDirectory(targetFolder); } catch { }
+                }
 
                 string filePath = customPath;
                 if (string.IsNullOrEmpty(filePath))
                 {
                     string safeTime = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-                    filePath = Path.Combine(reportsDir, string.Format("Deployment-Report-{0}.html", safeTime));
+                    filePath = Path.Combine(targetFolder, string.Format("Deployment-Report-{0}.html", safeTime));
                 }
 
                 StringBuilder rows = new StringBuilder();
@@ -419,14 +423,18 @@ namespace FleetForge
         {
             try
             {
-                string reportsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "reports");
-                if (!Directory.Exists(reportsDir)) Directory.CreateDirectory(reportsDir);
+                string localApp = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                string targetFolder = Path.Combine(localApp, "FleetForge");
+                if (!Directory.Exists(targetFolder))
+                {
+                    try { Directory.CreateDirectory(targetFolder); } catch { }
+                }
 
                 string filePath = customPath;
                 if (string.IsNullOrEmpty(filePath))
                 {
                     string safeTime = DateTime.Now.ToString("yyyyMMdd-HHmmss");
-                    filePath = Path.Combine(reportsDir, string.Format("Deployment-Report-{0}.json", safeTime));
+                    filePath = Path.Combine(targetFolder, string.Format("Deployment-Report-{0}.json", safeTime));
                 }
 
                 JavaScriptSerializer ser = new JavaScriptSerializer();
@@ -2940,9 +2948,15 @@ namespace FleetForge
             }
             sessionStatePath = Path.Combine(dataDir, "deployment_session.json");
 
-            // Strictly do NOT create reports directory or report files in AppData\Local\FleetForge
+            // Strictly do NOT create reports directory; clean up any legacy reports directory if present
             try
             {
+                string legacyReportsAppDir = Path.Combine(appDir, "reports");
+                if (Directory.Exists(legacyReportsAppDir))
+                {
+                    Directory.Delete(legacyReportsAppDir, true);
+                }
+
                 string lingeringReportsDir = Path.Combine(appDataFolder, "reports");
                 if (Directory.Exists(lingeringReportsDir))
                 {
