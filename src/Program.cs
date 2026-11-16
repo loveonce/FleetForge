@@ -3195,8 +3195,8 @@ namespace FleetForge
                     </Grid>
                 </Button>
 
-                <!-- Nav 3: Cloud Sync -->
-                <Button x:Name=""NavBtnCloud"" Visibility=""Visible"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync"">
+                <!-- Nav 3: Cloud Sync (Hidden / Removed from navigation) -->
+                <Button x:Name=""NavBtnCloud"" Visibility=""Collapsed"" Height=""40"" Margin=""0,0,0,4"" Background=""Transparent"" BorderThickness=""0"" Cursor=""Hand"" HorizontalContentAlignment=""Left"" ToolTip=""Cloud Sync"">
                     <Grid Margin=""2,0,4,0"">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width=""4""/>
@@ -3299,8 +3299,8 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtResumeBannerDesc"" Text=""A previous installation was stopped before finishing. Click Resume to install the remaining apps."" FontSize=""11"" Foreground=""#E2E8F0"" Margin=""0,2,0,0"" TextWrapping=""Wrap""/>
                         </StackPanel>
                         <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""12,0,0,0"">
-                            <Button x:Name=""BtnResumeSession"" Content=""Resume Installation"" Background=""#F59E0B"" Foreground=""#000000"" FontWeight=""Bold"" FontSize=""11"" Padding=""12,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""0""/>
-                            <Button x:Name=""BtnDismissResume"" Content=""Dismiss"" Background=""#374151"" Foreground=""#E2E8F0"" FontSize=""11"" Padding=""10,6"" Cursor=""Hand"" BorderThickness=""0""/>
+                            <Button x:Name=""BtnResumeSession"" Content=""Resume Installation"" Background=""#0066FF"" Foreground=""#FFFFFF"" FontWeight=""SemiBold"" FontSize=""11.5"" Padding=""14,6"" Margin=""0,0,8,0"" Cursor=""Hand"" BorderThickness=""0""/>
+                            <Button x:Name=""BtnDismissResume"" Content=""Dismiss"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1"" FontWeight=""SemiBold"" FontSize=""11.5"" Padding=""12,6"" Cursor=""Hand""/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -3437,8 +3437,8 @@ namespace FleetForge
                             <CheckBox x:Name=""ChkSelectAllCatalog"" Grid.Column=""0"" Content=""Select All Apps"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center"" Cursor=""Hand""/>
                             <TextBlock x:Name=""TxtCatalogListHeaderCount"" Grid.Column=""1"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"" FontSize=""11"" Foreground=""#A0A0A0"" Margin=""0,0,14,0"" Text=""""/>
                             <Button x:Name=""BtnCatalogSort"" Grid.Column=""2"" Content=""Sort Apps ▾""
-                                    Background=""#2D2D2D"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" FontSize=""11""
-                                    Padding=""10,4"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" VerticalAlignment=""Center""/>
+                                    Background=""#FFFFFF"" Foreground=""#0F172A"" FontWeight=""SemiBold"" FontSize=""11.5""
+                                    Padding=""12,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#CBD5E1"" VerticalAlignment=""Center""/>
                         </Grid>
                     </Border>
 
@@ -3511,12 +3511,12 @@ namespace FleetForge
             <Grid Grid.Row=""1"" Margin=""0,0,0,10"">
                 <TextBlock x:Name=""TxtLogsHeader"" Text=""Installation Progress &amp; History"" FontSize=""14"" FontWeight=""SemiBold"" Foreground=""#FFFFFF"" VerticalAlignment=""Center""/>
                 <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
-                    <Button x:Name=""BtnViewReport"" Content=""Summary Report"" Background=""#0078D4"" Foreground=""#FFFFFF""
-                            Padding=""12,5"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11"" Visibility=""Collapsed""/>
-                    <Button x:Name=""BtnOpenLogFile"" Content=""Open Log File"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
-                            Padding=""12,5"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
-                    <Button x:Name=""BtnClearLogConsole"" Content=""Clear Screen"" Background=""#2D2D2D"" Foreground=""#F3F3F3""
-                            Padding=""12,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
+                    <Button x:Name=""BtnViewReport"" Content=""Summary Report"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                            FontWeight=""SemiBold"" Padding=""14,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" Visibility=""Collapsed""/>
+                    <Button x:Name=""BtnOpenLogFile"" Content=""Open Log File"" Background=""#FFFFFF"" Foreground=""#0F172A""
+                            FontWeight=""SemiBold"" Padding=""14,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#CBD5E1"" FontSize=""11.5""/>
+                    <Button x:Name=""BtnClearLogConsole"" Content=""Clear Screen"" Background=""#FFFFFF"" Foreground=""#0F172A""
+                            FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#CBD5E1"" FontSize=""11.5""/>
                 </StackPanel>
             </Grid>
 
@@ -3547,8 +3547,8 @@ namespace FleetForge
                         </StackPanel>
                     </Border>
                     <Button x:Name=""BtnSearchWingetOnlineBottom"" Content=""Search Online Apps""
-                            Background=""#7C3AED"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
-                            Padding=""14,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
+                            Background=""#0066FF"" Foreground=""#FFFFFF"" FontWeight=""SemiBold""
+                            Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""
                             Visibility=""Collapsed""/>
                 </StackPanel>
 
@@ -3557,8 +3557,8 @@ namespace FleetForge
                 </StackPanel>
 
                 <StackPanel Grid.Column=""2"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#222222"" Foreground=""#C8C8C8""
-                            Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#333333"" FontSize=""12"" Visibility=""Collapsed""/>
+                    <Button x:Name=""BtnOpenOfflineFolder"" Content=""Saved Installers"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                            Padding=""14,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12"" FontWeight=""SemiBold"" Visibility=""Collapsed""/>
                     <Button x:Name=""BtnImportPack"" Content=""📥 Import Pack""
                             Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""14,8"" Margin=""0,0,8,0""
@@ -3648,15 +3648,15 @@ namespace FleetForge
                              Text=""Filter software...""/>
 
                     <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
-                        <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0078D4"" Foreground=""#FFFFFF""
-                                Padding=""9,5"" Margin=""0,0,5,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11"" FontWeight=""SemiBold""/>
-                        <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""9,5"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
-                        <TextBlock x:Name=""TxtModalSelectedCount"" Text=""0 selected"" FontSize=""11"" Foreground=""#4CC2FF"" FontWeight=""SemiBold"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
-                        <Button x:Name=""BtnModalSelectAll"" Content=""Select All"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""8,5"" Margin=""0,0,5,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
-                        <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#2B2B2B"" Foreground=""#CCCCCC""
-                                Padding=""8,5"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""11""/>
+                        <Button x:Name=""BtnModalFilterTabAll"" Content=""All Software"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                                Padding=""12,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                        <Button x:Name=""BtnModalFilterTabSelected"" Content=""Selected (0)"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                Padding=""12,6"" Margin=""0,0,12,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                        <TextBlock x:Name=""TxtModalSelectedCount"" Text=""0 selected"" FontSize=""11.5"" Foreground=""#0066FF"" FontWeight=""SemiBold"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
+                        <Button x:Name=""BtnModalSelectAll"" Content=""Select All"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                Padding=""10,6"" Margin=""0,0,6,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
+                        <Button x:Name=""BtnModalClearAll"" Content=""Clear"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                Padding=""10,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" FontWeight=""SemiBold""/>
                     </StackPanel>
                 </Grid>
 
@@ -3670,18 +3670,18 @@ namespace FleetForge
                 <!-- 6. Footer Actions -->
                 <Grid Grid.Row=""6"">
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"">
-                        <Button x:Name=""BtnDeleteGroup"" Content=""Delete Pack"" Background=""#3D1A1A"" Foreground=""#F87171""
-                                FontWeight=""SemiBold"" Padding=""14,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#7F1D1D""
+                        <Button x:Name=""BtnDeleteGroup"" Content=""Delete Pack"" Background=""#DC2626"" Foreground=""#FFFFFF""
+                                FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" BorderThickness=""0""
                                 FontSize=""12"" Visibility=""Collapsed""/>
-                        <Button x:Name=""BtnModalExportGroup"" Content=""Export Pack"" Background=""#2B2B2B"" Foreground=""#E0E0E0""
-                                FontWeight=""SemiBold"" Padding=""14,8"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D""
+                        <Button x:Name=""BtnModalExportGroup"" Content=""Export Pack"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""16,8"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1""
                                 FontSize=""12"" Visibility=""Collapsed"" ToolTip=""Export this pack to a .json file""/>
                     </StackPanel>
 
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"">
-                        <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#2B2B2B"" Foreground=""#F3F3F3""
-                                Padding=""18,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#3D3D3D"" FontSize=""12""/>
-                        <Button x:Name=""BtnSaveGroup"" Content=""Save Pack"" Background=""#0078D4"" Foreground=""#FFFFFF""
+                        <Button x:Name=""BtnCancelModal"" Content=""Cancel"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""18,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
+                        <Button x:Name=""BtnSaveGroup"" Content=""Save Pack"" Background=""#0066FF"" Foreground=""#FFFFFF""
                                 FontWeight=""Bold"" Padding=""22,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
                     </StackPanel>
                 </Grid>
@@ -3752,9 +3752,9 @@ namespace FleetForge
                 <!-- Action Buttons -->
                 <Grid>
                     <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Center"">
-                        <Button x:Name=""BtnCheckUpdatesAgain"" Content=""Check for Updates"" Background=""#1E293B"" Foreground=""#E2E8F0"" FontWeight=""SemiBold""
-                                Padding=""22,8"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""12""/>
-                        <Button x:Name=""BtnDownloadInstall"" Content=""Download &amp; Install Update"" Background=""#0078D4"" Foreground=""#FFFFFF"" FontWeight=""Bold""
+                        <Button x:Name=""BtnCheckUpdatesAgain"" Content=""Check for Updates"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" FontWeight=""SemiBold""
+                                Padding=""22,8"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
+                        <Button x:Name=""BtnDownloadInstall"" Content=""Download &amp; Install Update"" Background=""#0066FF"" Foreground=""#FFFFFF"" FontWeight=""Bold""
                                 Padding=""22,8"" Margin=""12,0,0,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12"" Visibility=""Collapsed""/>
                     </StackPanel>
                 </Grid>
@@ -3806,12 +3806,12 @@ namespace FleetForge
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name=""TxtSettingOfflineDir"" Grid.Column=""0"" Height=""34"" Background=""#0B0D11"" Foreground=""#FFFFFF""
                                      BorderBrush=""#252B38"" BorderThickness=""1"" Padding=""10,6"" FontSize=""11.5"" VerticalContentAlignment=""Center""/>
-                            <Button x:Name=""BtnBrowseOfflineDir"" Grid.Column=""1"" Content=""Browse..."" Background=""#1E293B"" Foreground=""#FFFFFF""
-                                    Padding=""14,6"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11.5""/>
+                            <Button x:Name=""BtnBrowseOfflineDir"" Grid.Column=""1"" Content=""Browse..."" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                    FontWeight=""SemiBold"" Padding=""14,6"" Margin=""8,0,0,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5""/>
                         </Grid>
                         <StackPanel Orientation=""Horizontal"">
-                            <Button x:Name=""BtnClearCache"" Content=""Clear Downloaded Files &amp; Logs"" Background=""#1E293B"" Foreground=""#94A3B8""
-                                    Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11"" Margin=""0,0,10,0""/>
+                            <Button x:Name=""BtnClearCache"" Content=""Clear Downloaded Files &amp; Logs"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                    FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11"" Margin=""0,0,10,0""/>
                             <TextBlock x:Name=""TxtCacheStatus"" Text=""Cache: Ready"" FontSize=""11"" Foreground=""#64748B"" VerticalAlignment=""Center""/>
                         </StackPanel>
                     </StackPanel>
@@ -3829,16 +3829,16 @@ namespace FleetForge
                             <TextBlock x:Name=""TxtSettingCatalogInfo"" Text=""16,349 Apps Available in Local Library"" FontSize=""12.5"" FontWeight=""SemiBold"" Foreground=""#FFFFFF""/>
                             <TextBlock x:Name=""TxtSettingCatalogSource"" Text=""Source: Official Microsoft Windows App Store"" FontSize=""11"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
                         </StackPanel>
-                        <Button x:Name=""BtnExportCatalog"" Grid.Column=""1"" Content=""Export App List"" Background=""#1E293B"" Foreground=""#FFFFFF""
-                                Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#334155"" FontSize=""11.5"" VerticalAlignment=""Center""/>
+                        <Button x:Name=""BtnExportCatalog"" Grid.Column=""1"" Content=""Export App List"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""14,6"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""11.5"" VerticalAlignment=""Center""/>
                     </Grid>
                 </Border>
 
                 <!-- Bottom Actions -->
                 <Grid>
-                    <Button x:Name=""BtnCancelSettings"" Content=""Cancel"" Background=""#262D3D"" Foreground=""#A0AEC0""
-                            Padding=""20,8"" HorizontalAlignment=""Left"" Cursor=""Hand"" BorderThickness=""1"" BorderBrush=""#353E50"" FontSize=""12""/>
-                    <Button x:Name=""BtnSaveSettings"" Content=""Save Settings"" Background=""#0078D4"" Foreground=""#FFFFFF""
+                    <Button x:Name=""BtnCancelSettings"" Content=""Cancel"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1""
+                            FontWeight=""SemiBold"" Padding=""20,8"" HorizontalAlignment=""Left"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
+                    <Button x:Name=""BtnSaveSettings"" Content=""Save Settings"" Background=""#0066FF"" Foreground=""#FFFFFF""
                             FontWeight=""Bold"" Padding=""26,8"" HorizontalAlignment=""Right"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12""/>
                 </Grid>
             </StackPanel>
@@ -6128,9 +6128,9 @@ namespace FleetForge
             }
             if (btnCatalogSort != null)
             {
-                btnCatalogSort.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
-                btnCatalogSort.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnCatalogSort.Foreground = isLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF");
+                btnCatalogSort.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnCatalogSort.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnCatalogSort.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
 
             // Cloud Sync Page
@@ -6198,17 +6198,22 @@ namespace FleetForge
             {
                 txtLog.Foreground = isLight ? HexBrush("#047857") : HexBrush("#6EE7B7");
             }
+            if (btnViewReport != null)
+            {
+                btnViewReport.Background = HexBrush("#0066FF");
+                btnViewReport.Foreground = HexBrush("#FFFFFF");
+            }
             if (btnOpenLogFile != null)
             {
-                btnOpenLogFile.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnOpenLogFile.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnOpenLogFile.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                btnOpenLogFile.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnOpenLogFile.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnOpenLogFile.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnClearLogConsole != null)
             {
-                btnClearLogConsole.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnClearLogConsole.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnClearLogConsole.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                btnClearLogConsole.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnClearLogConsole.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnClearLogConsole.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
 
             // Bottom Bar
@@ -6239,21 +6244,14 @@ namespace FleetForge
             if (progressBar != null) progressBar.Background = isLight ? HexBrush("#E5E5E5") : HexBrush("#262626");
             if (btnSearchWingetOnlineBottom != null)
             {
-                if (activeCategory == "winget_online")
-                {
-                    btnSearchWingetOnlineBottom.Background = isLight ? HexBrush("#0067C0") : HexBrush("#0369A1");
-                }
-                else
-                {
-                    btnSearchWingetOnlineBottom.Background = isLight ? HexBrush("#7C3AED") : HexBrush("#6D28D9");
-                }
+                btnSearchWingetOnlineBottom.Background = HexBrush("#0066FF");
                 btnSearchWingetOnlineBottom.Foreground = HexBrush("#FFFFFF");
             }
             if (btnOpenOfflineFolder != null)
             {
-                btnOpenOfflineFolder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
-                btnOpenOfflineFolder.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnOpenOfflineFolder.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                btnOpenOfflineFolder.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnOpenOfflineFolder.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnOpenOfflineFolder.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnInstall != null)
             {
@@ -6311,41 +6309,51 @@ namespace FleetForge
             UpdateModalTabStyles();
             if (btnModalSelectAll != null)
             {
-                btnModalSelectAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnModalSelectAll.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnModalSelectAll.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#CCCCCC");
+                btnModalSelectAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalSelectAll.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnModalSelectAll.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnModalClearAll != null)
             {
-                btnModalClearAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnModalClearAll.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnModalClearAll.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#CCCCCC");
+                btnModalClearAll.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalClearAll.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnModalClearAll.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnModalLoadMore != null)
             {
-                btnModalLoadMore.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnModalLoadMore.Foreground = isLight ? HexBrush("#0067C0") : HexBrush("#38BDF8");
-                btnModalLoadMore.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3A3A3A");
+                btnModalLoadMore.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalLoadMore.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnModalLoadMore.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnCancelModal != null)
             {
-                btnCancelModal.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnCancelModal.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnCancelModal.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
+                btnCancelModal.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnCancelModal.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnCancelModal.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnModalExportGroup != null)
             {
-                btnModalExportGroup.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
-                btnModalExportGroup.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
-                btnModalExportGroup.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#E0E0E0");
+                btnModalExportGroup.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnModalExportGroup.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnModalExportGroup.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (btnSaveGroup != null)
+            {
+                btnSaveGroup.Background = HexBrush("#0066FF");
+                btnSaveGroup.Foreground = HexBrush("#FFFFFF");
+            }
+            if (btnDeleteGroup != null)
+            {
+                btnDeleteGroup.Background = HexBrush("#DC2626");
+                btnDeleteGroup.Foreground = HexBrush("#FFFFFF");
             }
 
             // Help Button
             if (btnHelpMenu != null)
             {
-                btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2D2D2D");
-                btnHelpMenu.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-                btnHelpMenu.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnHelpMenu.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                btnHelpMenu.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
             }
 
             // Updates Modal
@@ -6393,9 +6401,14 @@ namespace FleetForge
             }
             if (btnCheckUpdatesAgain != null)
             {
-                btnCheckUpdatesAgain.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnCheckUpdatesAgain.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-                btnCheckUpdatesAgain.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnCheckUpdatesAgain.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnCheckUpdatesAgain.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnCheckUpdatesAgain.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (btnDownloadInstall != null)
+            {
+                btnDownloadInstall.Background = HexBrush("#0066FF");
+                btnDownloadInstall.Foreground = HexBrush("#FFFFFF");
             }
 
             // Settings Modal
@@ -6438,15 +6451,15 @@ namespace FleetForge
             }
             if (btnBrowseOfflineDir != null)
             {
-                btnBrowseOfflineDir.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnBrowseOfflineDir.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-                btnBrowseOfflineDir.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnBrowseOfflineDir.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnBrowseOfflineDir.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnBrowseOfflineDir.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
             if (btnClearCache != null)
             {
-                btnClearCache.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnClearCache.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#94A3B8");
-                btnClearCache.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnClearCache.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnClearCache.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnClearCache.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
 
             if (txtSettingsSec3Title != null) txtSettingsSec3Title.Foreground = isLight ? HexBrush("#0067C0") : HexBrush("#38BDF8");
@@ -6459,16 +6472,21 @@ namespace FleetForge
             if (txtSettingCatalogSource != null) txtSettingCatalogSource.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#64748B");
             if (btnExportCatalog != null)
             {
-                btnExportCatalog.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                btnExportCatalog.Foreground = isLight ? HexBrush("#1B1B1B") : HexBrush("#FFFFFF");
-                btnExportCatalog.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                btnExportCatalog.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnExportCatalog.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnExportCatalog.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
             }
 
             if (btnCancelSettings != null)
             {
-                btnCancelSettings.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#262D3D");
-                btnCancelSettings.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0AEC0");
-                btnCancelSettings.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#353E50");
+                btnCancelSettings.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnCancelSettings.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnCancelSettings.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (btnSaveSettings != null)
+            {
+                btnSaveSettings.Background = HexBrush("#0066FF");
+                btnSaveSettings.Foreground = HexBrush("#FFFFFF");
             }
 
             // About Modal
@@ -8115,25 +8133,25 @@ namespace FleetForge
             {
                 if (modalShowSelectedOnly)
                 {
-                    btnModalFilterTabSelected.Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
+                    btnModalFilterTabSelected.Background = HexBrush("#0066FF");
                     btnModalFilterTabSelected.Foreground = HexBrush("#FFFFFF");
                     btnModalFilterTabSelected.BorderThickness = new Thickness(0);
 
-                    btnModalFilterTabAll.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                    btnModalFilterTabAll.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#CCCCCC");
+                    btnModalFilterTabAll.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                    btnModalFilterTabAll.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                     btnModalFilterTabAll.BorderThickness = new Thickness(1);
-                    btnModalFilterTabAll.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                    btnModalFilterTabAll.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 }
                 else
                 {
-                    btnModalFilterTabAll.Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4");
+                    btnModalFilterTabAll.Background = HexBrush("#0066FF");
                     btnModalFilterTabAll.Foreground = HexBrush("#FFFFFF");
                     btnModalFilterTabAll.BorderThickness = new Thickness(0);
 
-                    btnModalFilterTabSelected.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2E2E2E");
-                    btnModalFilterTabSelected.Foreground = currentThemeIsLight ? HexBrush("#1B1B1B") : HexBrush("#CCCCCC");
+                    btnModalFilterTabSelected.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                    btnModalFilterTabSelected.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                     btnModalFilterTabSelected.BorderThickness = new Thickness(1);
-                    btnModalFilterTabSelected.BorderBrush = currentThemeIsLight ? HexBrush("#D1D5DB") : HexBrush("#3D3D3D");
+                    btnModalFilterTabSelected.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 }
             }
         }
@@ -8483,13 +8501,13 @@ namespace FleetForge
                     {
                         Margin = new Thickness(0, 8, 0, 4),
                         Padding = new Thickness(14, 6, 14, 6),
-                        Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#252525"),
-                        Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8"),
-                        BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#3A3A3A"),
+                        Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547"),
+                        Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                        BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569"),
                         BorderThickness = new Thickness(1),
                         Cursor = Cursors.Hand,
                         FontWeight = FontWeights.SemiBold,
-                        FontSize = 11,
+                        FontSize = 11.5,
                         HorizontalAlignment = HorizontalAlignment.Center
                     };
                     btnModalLoadMore.Click += delegate
@@ -8499,9 +8517,9 @@ namespace FleetForge
                 }
                 else
                 {
-                    btnModalLoadMore.Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#252525");
-                    btnModalLoadMore.Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
-                    btnModalLoadMore.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#3A3A3A");
+                    btnModalLoadMore.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                    btnModalLoadMore.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                    btnModalLoadMore.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                 }
 
                 btnModalLoadMore.Content = string.Format("⬇ Load More Catalog Software ({0:N0} remaining)", remaining);
@@ -9142,8 +9160,8 @@ namespace FleetForge
 
             if (isActive)
             {
-                btn.Background = isOnline ? HexBrush("#7C3AED") : windowsAccentBrush;
-                btn.BorderBrush = isOnline ? HexBrush("#A855F7") : windowsAccentBorderBrush;
+                btn.Background = isOnline ? HexBrush("#7C3AED") : HexBrush("#0066FF");
+                btn.BorderBrush = isOnline ? HexBrush("#A855F7") : HexBrush("#0052CC");
                 btn.BorderThickness = new Thickness(1);
                 if (txtIcon != null) txtIcon.Foreground = HexBrush("#FFFFFF");
                 if (txtTitle != null) txtTitle.Foreground = HexBrush("#FFFFFF");
@@ -9164,13 +9182,13 @@ namespace FleetForge
                 }
                 else
                 {
-                    btn.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#232A36");
-                    btn.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#333C4D");
+                    btn.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                    btn.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
                     btn.BorderThickness = new Thickness(1);
                     if (txtIcon != null) txtIcon.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
-                    if (txtTitle != null) txtTitle.Foreground = currentThemeIsLight ? HexBrush("#334155") : HexBrush("#CBD5E1");
-                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#181F2A");
-                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
+                    if (txtTitle != null) txtTitle.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                    if (badge != null) badge.Background = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#1E293B");
+                    if (txtBadge != null) txtBadge.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
                 }
             }
         }
@@ -9241,10 +9259,10 @@ namespace FleetForge
             btnLoadMore = new Button()
             {
                 Content = "\u26A1 Load More (+250)",
-                Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#202530"),
-                Foreground = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#38BDF8"),
+                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547"),
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                 BorderThickness = new Thickness(1),
-                BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#2F3746"),
+                BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569"),
                 Padding = new Thickness(18, 10, 18, 10),
                 Margin = new Thickness(0, 0, 10, 0),
                 Cursor = Cursors.Hand,
@@ -9260,7 +9278,7 @@ namespace FleetForge
             btnLoadAll = new Button()
             {
                 Content = "\uD83D\uDE80 Show All Apps",
-                Background = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#0078D4"),
+                Background = HexBrush("#0066FF"),
                 Foreground = HexBrush("#FFFFFF"),
                 BorderThickness = new Thickness(0),
                 Padding = new Thickness(20, 10, 20, 10),
@@ -9627,7 +9645,7 @@ namespace FleetForge
             btnExecuteOnlineSearch = new Button()
             {
                 Content = "Search Online",
-                Background = HexBrush("#7C3AED"),
+                Background = HexBrush("#0066FF"),
                 Foreground = HexBrush("#FFFFFF"),
                 Padding = new Thickness(16, 0, 16, 0),
                 Margin = new Thickness(8, 0, 0, 0),
@@ -9659,12 +9677,13 @@ namespace FleetForge
                     Content = curTag,
                     Padding = new Thickness(10, 4, 10, 4),
                     Margin = new Thickness(0, 0, 6, 6),
-                    Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#241D35"),
-                    Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#C4B5FD"),
+                    Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547"),
+                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                     BorderThickness = new Thickness(1),
-                    BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#3B2E58"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569"),
                     Cursor = Cursors.Hand,
-                    FontSize = 11
+                    FontSize = 11,
+                    FontWeight = FontWeights.SemiBold
                 };
                 tagBtn.Click += delegate
                 {
@@ -10001,11 +10020,12 @@ namespace FleetForge
             {
                 Content = alreadyInCatalog ? "✓ In List" : "➕ Add to My List",
                 IsEnabled = !alreadyInCatalog,
-                Background = alreadyInCatalog ? (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#242B38")) : HexBrush("#0078D4"),
+                Background = alreadyInCatalog ? (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#242B38")) : HexBrush("#0066FF"),
                 Foreground = HexBrush("#FFFFFF"),
-                Padding = new Thickness(10, 5, 10, 5),
+                FontWeight = FontWeights.SemiBold,
+                Padding = new Thickness(12, 6, 12, 6),
                 Margin = new Thickness(0, 0, 6, 0),
-                FontSize = 11,
+                FontSize = 11.5,
                 Cursor = alreadyInCatalog ? Cursors.Arrow : Cursors.Hand,
                 BorderThickness = new Thickness(0)
             };
@@ -10028,8 +10048,9 @@ namespace FleetForge
                 Content = "Install Now",
                 Background = HexBrush("#059669"),
                 Foreground = HexBrush("#FFFFFF"),
-                Padding = new Thickness(10, 5, 10, 5),
-                FontSize = 11,
+                FontWeight = FontWeights.SemiBold,
+                Padding = new Thickness(12, 6, 12, 6),
+                FontSize = 11.5,
                 Cursor = Cursors.Hand,
                 BorderThickness = new Thickness(0)
             };
@@ -10542,7 +10563,8 @@ namespace FleetForge
                     {
                         btnInstall.Content = "Install Selected Apps";
                     }
-                    btnInstall.Background = windowsAccentBrush;
+                    btnInstall.Background = HexBrush("#0066FF");
+                    btnInstall.Foreground = HexBrush("#FFFFFF");
                 }
             }
             if (btnHeroInstall != null)
@@ -10555,7 +10577,8 @@ namespace FleetForge
                 {
                     btnHeroInstall.Content = "Install Selected Apps";
                 }
-                btnHeroInstall.Background = windowsAccentBrush;
+                btnHeroInstall.Background = HexBrush("#0066FF");
+                btnHeroInstall.Foreground = HexBrush("#FFFFFF");
             }
             if (txtHeroStatusSubtitle != null)
             {
