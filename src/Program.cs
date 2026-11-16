@@ -2729,6 +2729,30 @@ namespace FleetForge
         private Button btnModalExportGroup;
         private Button btnCancelModal;
         private Button btnSaveGroup;
+
+        // Online Search Modal References
+        private Grid modalOnlineSearchOverlay;
+        private Border borderOnlineSearchCard;
+        private TextBlock txtOnlineModalTitle;
+        private TextBlock txtOnlineModalSubtitle;
+        private Border borderOnlineModalIcon;
+        private Button btnCloseOnlineModal;
+        private Border borderOnlineSearchInput;
+        private TextBox txtOnlineModalSearchInput;
+        private Button btnOnlineClearSearch;
+        private Button btnOnlineModalExecuteSearch;
+        private TextBlock txtOnlineSearchBtnText;
+        private WrapPanel onlineSearchTagsPanel;
+        private Border borderOnlineModalStatusHeader;
+        private TextBlock txtOnlineModalStatus;
+        private Border borderOnlineModalResultsContainer;
+        private ScrollViewer onlineModalResultsScrollViewer;
+        private StackPanel onlineModalResultsPanel;
+        private TextBlock txtOnlineModalSelectedCount;
+        private Button btnCancelOnlineModal;
+        private Button btnOnlineAddSelected;
+        private Button btnOnlineInstallSelected;
+        private List<AppModel> modalOnlineSelectedApps = new List<AppModel>();
         private string[] quickIcons = new string[] { "🎨", "💻", "</>", "✏️", "📄", "🚀", "📊", "🛠️", "🎬", "📷", "🧮", "🔒", "⚡", "🌐", "🎮", "💼" };
 
         // Help Menu, Theme Toggle & Brand Icon
@@ -3920,6 +3944,128 @@ namespace FleetForge
 
 
     <!-- ========================================================================= -->
+    <!-- MODAL: ONLINE / WINGET CLOUD SEARCH                                       -->
+    <!-- ========================================================================= -->
+    <Grid x:Name=""ModalOnlineSearchOverlay"" Grid.ColumnSpan=""2"" Background=""#90000000"" Visibility=""Collapsed"">
+        <Border x:Name=""BorderOnlineSearchCard"" Width=""980"" MaxHeight=""780"" Background=""#FFFFFF"" CornerRadius=""16""
+                BorderBrush=""#E2E8F0"" BorderThickness=""1"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""
+                Padding=""26,22,26,20"">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius=""32"" ShadowDepth=""6"" Direction=""270"" Color=""#000000"" Opacity=""0.25""/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=""Auto""/> <!-- 0. Header (Title, Subtitle & Close) -->
+                    <RowDefinition Height=""Auto""/> <!-- 1. Search Bar & Quick Suggestion Tags -->
+                    <RowDefinition Height=""Auto""/> <!-- 2. Status & Source Indicator Bar -->
+                    <RowDefinition Height=""*"" MinHeight=""340"" MaxHeight=""450""/> <!-- 3. Scrollable Results Area -->
+                    <RowDefinition Height=""Auto""/> <!-- 4. Bottom Actions Footer -->
+                </Grid.RowDefinitions>
+
+                <!-- 0. Header Area -->
+                <Grid Grid.Row=""0"" Margin=""0,0,0,16"">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=""*""/>
+                        <ColumnDefinition Width=""Auto""/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                        <Border x:Name=""BorderOnlineModalIcon"" Width=""42"" Height=""42"" CornerRadius=""10"" Background=""#7C3AED"" Margin=""0,0,14,0"" VerticalAlignment=""Center"">
+                            <TextBlock Text=""&#xE753;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""20"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                        </Border>
+                        <StackPanel VerticalAlignment=""Center"">
+                            <TextBlock x:Name=""TxtOnlineModalTitle"" Text=""Search Online Applications"" FontSize=""20"" FontWeight=""Bold"" Foreground=""#0F172A""/>
+                            <TextBlock x:Name=""TxtOnlineModalSubtitle"" Text=""Query millions of Windows applications in real-time from Microsoft Winget &amp; Cloud repository."" FontSize=""12.5"" Foreground=""#64748B"" Margin=""0,2,0,0""/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Button x:Name=""BtnCloseOnlineModal"" Grid.Column=""1"" Content=""✕"" Background=""#F1F5F9"" Foreground=""#64748B"" FontSize=""12"" FontWeight=""Bold""
+                            Width=""32"" Height=""32"" Cursor=""Hand"" BorderThickness=""0"" HorizontalAlignment=""Right"" VerticalAlignment=""Center""/>
+                </Grid>
+
+                <!-- 1. Search Bar & Quick Suggestion Chips -->
+                <StackPanel Grid.Row=""1"" Margin=""0,0,0,12"">
+                    <!-- Search Input Row -->
+                    <Grid Margin=""0,0,0,8"">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition Width=""Auto""/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border x:Name=""BorderOnlineSearchInput"" Height=""42"" CornerRadius=""8"" Background=""#FFFFFF"" BorderBrush=""#CBD5E1"" BorderThickness=""1"" Padding=""12,0"" Margin=""0,0,10,0"">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=""Auto""/>
+                                    <ColumnDefinition Width=""*""/>
+                                    <ColumnDefinition Width=""Auto""/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text=""🔍"" FontSize=""13"" VerticalAlignment=""Center"" Margin=""0,0,10,0""/>
+                                <TextBox x:Name=""TxtOnlineModalSearchInput"" Grid.Column=""1"" BorderThickness=""0"" Background=""Transparent"" Foreground=""#0F172A""
+                                         FontSize=""13.5"" VerticalContentAlignment=""Center"" Text=""Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...""/>
+                                <Button x:Name=""BtnOnlineClearSearch"" Grid.Column=""2"" Content=""✕"" Width=""22"" Height=""22"" Background=""Transparent"" Foreground=""#94A3B8""
+                                        BorderThickness=""0"" Cursor=""Hand"" FontSize=""11"" Visibility=""Collapsed"" VerticalAlignment=""Center""/>
+                            </Grid>
+                        </Border>
+
+                        <Button x:Name=""BtnOnlineModalExecuteSearch"" Grid.Column=""1"" Height=""42"" Padding=""22,0"" Background=""#7C3AED"" Foreground=""#FFFFFF""
+                                BorderThickness=""0"" FontWeight=""Bold"" FontSize=""13"" Cursor=""Hand"">
+                            <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                                <TextBlock Text=""🔍"" Margin=""0,0,8,0"" FontSize=""12""/>
+                                <TextBlock x:Name=""TxtOnlineSearchBtnText"" Text=""Search Online""/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Quick Suggestion Tags -->
+                    <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                        <TextBlock Text=""Popular:"" FontSize=""11.5"" FontWeight=""SemiBold"" Foreground=""#64748B"" VerticalAlignment=""Center"" Margin=""2,0,8,0""/>
+                        <WrapPanel x:Name=""OnlineSearchTagsPanel"" VerticalAlignment=""Center""/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- 2. Status & Count Bar (Pinned Header Style) -->
+                <Border x:Name=""BorderOnlineModalStatusHeader"" Grid.Row=""2"" Background=""#F8FAFC"" CornerRadius=""8"" Padding=""14,9"" Margin=""0,0,0,10"" BorderBrush=""#E2E8F0"" BorderThickness=""1"">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""*""/>
+                            <ColumnDefinition Width=""Auto""/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name=""TxtOnlineModalStatus"" Grid.Column=""0"" Text=""Enter any software name above and press Enter or click Search Online."" FontSize=""12"" Foreground=""#64748B"" VerticalAlignment=""Center"" TextTrimming=""CharacterEllipsis""/>
+                        <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                            <Border Background=""#EDE9FE"" CornerRadius=""10"" Padding=""10,2"">
+                                <TextBlock Text=""🌐 Microsoft Winget Cloud"" FontSize=""10.5"" FontWeight=""Bold"" Foreground=""#7C3AED""/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 3. Scrollable Results Area -->
+                <Border x:Name=""BorderOnlineModalResultsContainer"" Grid.Row=""3"" Background=""#FFFFFF"" CornerRadius=""10"" Padding=""10"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Margin=""0,0,0,14"">
+                    <ScrollViewer x:Name=""OnlineModalResultsScrollViewer"" VerticalScrollBarVisibility=""Auto"" HorizontalScrollBarVisibility=""Disabled"">
+                        <StackPanel x:Name=""OnlineModalResultsPanel""/>
+                    </ScrollViewer>
+                </Border>
+
+                <!-- 4. Footer Actions Area -->
+                <Grid Grid.Row=""4"">
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Left"" VerticalAlignment=""Center"">
+                        <TextBlock x:Name=""TxtOnlineModalSelectedCount"" Text=""0 apps selected"" FontSize=""12"" FontWeight=""SemiBold"" Foreground=""#64748B"" VerticalAlignment=""Center""/>
+                    </StackPanel>
+
+                    <StackPanel Orientation=""Horizontal"" HorizontalAlignment=""Right"" VerticalAlignment=""Center"">
+                        <Button x:Name=""BtnCancelOnlineModal"" Content=""Close"" Background=""#FFFFFF"" Foreground=""#334155"" BorderBrush=""#CBD5E1""
+                                FontWeight=""SemiBold"" Padding=""20,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""1"" FontSize=""12""/>
+                        <Button x:Name=""BtnOnlineAddSelected"" Content=""➕ Add Selected to Catalog"" Background=""#0066FF"" Foreground=""#FFFFFF""
+                                FontWeight=""Bold"" Padding=""18,8"" Margin=""0,0,10,0"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12"" Visibility=""Collapsed""/>
+                        <Button x:Name=""BtnOnlineInstallSelected"" Content=""⚡ Install Selected"" Background=""#059669"" Foreground=""#FFFFFF""
+                                FontWeight=""Bold"" Padding=""20,8"" Cursor=""Hand"" BorderThickness=""0"" FontSize=""12"" Visibility=""Collapsed""/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+
+    <!-- ========================================================================= -->
     <!-- MODAL 1: CHECK FOR UPDATES                                                -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalUpdatesOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
@@ -4744,6 +4890,30 @@ namespace FleetForge
             btnCancelModal = (Button)root.FindName("BtnCancelModal");
             btnSaveGroup = (Button)root.FindName("BtnSaveGroup");
 
+            // Online Search Modal
+            modalOnlineSearchOverlay = (Grid)root.FindName("ModalOnlineSearchOverlay");
+            borderOnlineSearchCard = (Border)root.FindName("BorderOnlineSearchCard");
+            borderOnlineModalIcon = (Border)root.FindName("BorderOnlineModalIcon");
+            txtOnlineModalTitle = (TextBlock)root.FindName("TxtOnlineModalTitle");
+            txtOnlineModalSubtitle = (TextBlock)root.FindName("TxtOnlineModalSubtitle");
+            btnCloseOnlineModal = (Button)root.FindName("BtnCloseOnlineModal");
+            borderOnlineSearchInput = (Border)root.FindName("BorderOnlineSearchInput");
+            txtOnlineModalSearchInput = (TextBox)root.FindName("TxtOnlineModalSearchInput");
+            btnOnlineClearSearch = (Button)root.FindName("BtnOnlineClearSearch");
+            btnOnlineModalExecuteSearch = (Button)root.FindName("BtnOnlineModalExecuteSearch");
+            txtOnlineSearchBtnText = (TextBlock)root.FindName("TxtOnlineSearchBtnText");
+            onlineSearchTagsPanel = (WrapPanel)root.FindName("OnlineSearchTagsPanel");
+            borderOnlineModalStatusHeader = (Border)root.FindName("BorderOnlineModalStatusHeader");
+            txtOnlineModalStatus = (TextBlock)root.FindName("TxtOnlineModalStatus");
+            borderOnlineModalResultsContainer = (Border)root.FindName("BorderOnlineModalResultsContainer");
+            onlineModalResultsScrollViewer = (ScrollViewer)root.FindName("OnlineModalResultsScrollViewer");
+            onlineModalResultsPanel = (StackPanel)root.FindName("OnlineModalResultsPanel");
+            txtOnlineModalSelectedCount = (TextBlock)root.FindName("TxtOnlineModalSelectedCount");
+            btnCancelOnlineModal = (Button)root.FindName("BtnCancelOnlineModal");
+            btnOnlineAddSelected = (Button)root.FindName("BtnOnlineAddSelected");
+            btnOnlineInstallSelected = (Button)root.FindName("BtnOnlineInstallSelected");
+            PopulateOnlineSearchSuggestionTags();
+
             // Brand Logo & Help Menu
             imgBrandLogo = (Image)root.FindName("ImgBrandLogo");
             TextBlock txtFallbackBrand = (TextBlock)root.FindName("TxtFallbackBrand");
@@ -5217,6 +5387,21 @@ namespace FleetForge
             // 1. Keyboard Shortcut: Press Ctrl + Shift + B anywhere in FleetForge
             this.KeyDown += (s, e) =>
             {
+                if (e.Key == Key.Escape)
+                {
+                    if (modalOnlineSearchOverlay != null && modalOnlineSearchOverlay.Visibility == Visibility.Visible)
+                    {
+                        CloseOnlineSearchModal();
+                        e.Handled = true;
+                        return;
+                    }
+                    if (groupModalOverlay != null && groupModalOverlay.Visibility == Visibility.Visible)
+                    {
+                        CloseGroupModal();
+                        e.Handled = true;
+                        return;
+                    }
+                }
                 if ((Keyboard.Modifiers & ModifierKeys.Control) != 0 && (Keyboard.Modifiers & ModifierKeys.Shift) != 0 && e.Key == Key.B)
                 {
                     ShowCustomAppBuilderModal();
@@ -5433,27 +5618,95 @@ namespace FleetForge
                 Process.Start("notepad.exe", configPath);
             };
 
-            // Bottom Search Winget Online Button
+            // Bottom Search Winget Online Button -> Open Modal Popup
             if (btnSearchWingetOnlineBottom != null)
             {
                 btnSearchWingetOnlineBottom.Click += delegate
                 {
-                    if (activeCategory == "winget_online")
+                    string q = txtSearch != null ? txtSearch.Text.Trim() : "";
+                    if (q == "Search applications..." || q == "find an app, setting or pack...") q = "";
+                    OpenOnlineSearchModal(q);
+                };
+            }
+
+            // Online Search Modal Events
+            if (modalOnlineSearchOverlay != null)
+            {
+                modalOnlineSearchOverlay.MouseDown += delegate(object s, MouseButtonEventArgs e)
+                {
+                    if (e.OriginalSource == modalOnlineSearchOverlay) CloseOnlineSearchModal();
+                };
+            }
+            if (btnCloseOnlineModal != null) btnCloseOnlineModal.Click += delegate { CloseOnlineSearchModal(); };
+            if (btnCancelOnlineModal != null) btnCancelOnlineModal.Click += delegate { CloseOnlineSearchModal(); };
+            if (btnOnlineClearSearch != null)
+            {
+                btnOnlineClearSearch.Click += delegate
+                {
+                    if (txtOnlineModalSearchInput != null)
                     {
-                        SetCategoryFilter("all");
+                        txtOnlineModalSearchInput.Text = "";
+                        txtOnlineModalSearchInput.Focus();
                     }
-                    else
+                    btnOnlineClearSearch.Visibility = Visibility.Collapsed;
+                    ShowOnlineSearchEmptyState();
+                };
+            }
+            if (txtOnlineModalSearchInput != null)
+            {
+                txtOnlineModalSearchInput.GotFocus += delegate
+                {
+                    if (txtOnlineModalSearchInput.Text == "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...")
                     {
-                        string q = txtSearch != null ? txtSearch.Text.Trim() : "";
-                        if (q == "Search applications...") q = "";
-                        SetCategoryFilter("winget_online");
-                        if (!string.IsNullOrEmpty(q) && txtOnlineSearchInput != null)
-                        {
-                            txtOnlineSearchInput.Text = q;
-                            RunWingetOnlineSearch(q);
-                        }
+                        txtOnlineModalSearchInput.Text = "";
+                        txtOnlineModalSearchInput.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                     }
                 };
+                txtOnlineModalSearchInput.LostFocus += delegate
+                {
+                    if (string.IsNullOrWhiteSpace(txtOnlineModalSearchInput.Text))
+                    {
+                        txtOnlineModalSearchInput.Text = "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...";
+                        txtOnlineModalSearchInput.Foreground = HexBrush("#94A3B8");
+                        if (btnOnlineClearSearch != null) btnOnlineClearSearch.Visibility = Visibility.Collapsed;
+                    }
+                };
+                txtOnlineModalSearchInput.TextChanged += delegate
+                {
+                    string t = txtOnlineModalSearchInput.Text;
+                    bool hasText = !string.IsNullOrWhiteSpace(t) && t != "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...";
+                    if (btnOnlineClearSearch != null)
+                    {
+                        btnOnlineClearSearch.Visibility = hasText ? Visibility.Visible : Visibility.Collapsed;
+                    }
+                };
+                txtOnlineModalSearchInput.KeyDown += delegate(object s, KeyEventArgs e)
+                {
+                    if (e.Key == Key.Enter)
+                    {
+                        string q = txtOnlineModalSearchInput.Text.Trim();
+                        if (q == "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...") q = "";
+                        RunWingetOnlineSearchModal(q);
+                        e.Handled = true;
+                    }
+                };
+            }
+            if (btnOnlineModalExecuteSearch != null)
+            {
+                btnOnlineModalExecuteSearch.Click += delegate
+                {
+                    string q = txtOnlineModalSearchInput != null ? txtOnlineModalSearchInput.Text.Trim() : "";
+                    if (q == "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...") q = "";
+                    RunWingetOnlineSearchModal(q);
+                };
+            }
+            if (btnOnlineAddSelected != null)
+            {
+                btnOnlineAddSelected.Click += delegate { AddSelectedOnlineAppsToCatalog(); };
+            }
+            if (btnOnlineInstallSelected != null)
+            {
+                btnOnlineInstallSelected.Click += delegate { InstallSelectedOnlineApps(); };
             }
 
             // Log events
@@ -6775,6 +7028,32 @@ namespace FleetForge
                 borderModalAppsContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A");
                 borderModalAppsContainer.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
             }
+            if (borderOnlineSearchCard != null)
+            {
+                borderOnlineSearchCard.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
+                borderOnlineSearchCard.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
+            }
+            if (txtOnlineModalTitle != null) txtOnlineModalTitle.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            if (txtOnlineModalSubtitle != null) txtOnlineModalSubtitle.Foreground = isLight ? HexBrush("#64748B") : HexBrush("#94A3B8");
+            if (borderOnlineSearchInput != null)
+            {
+                borderOnlineSearchInput.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A");
+                borderOnlineSearchInput.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+            }
+            if (txtOnlineModalSearchInput != null && txtOnlineModalSearchInput.Text != "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...")
+            {
+                txtOnlineModalSearchInput.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+            }
+            if (borderOnlineModalStatusHeader != null)
+            {
+                borderOnlineModalStatusHeader.Background = isLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B");
+                borderOnlineModalStatusHeader.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
+            }
+            if (borderOnlineModalResultsContainer != null)
+            {
+                borderOnlineModalResultsContainer.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A");
+                borderOnlineModalResultsContainer.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
+            }
             if (borderModalTableHeader != null)
             {
                 borderModalTableHeader.BorderBrush = isLight ? HexBrush("#F1F5F9") : HexBrush("#334155");
@@ -7446,6 +7725,10 @@ namespace FleetForge
                     }
                     string rawName = (activeGroup != null && !string.IsNullOrWhiteSpace(activeGroup.name)) ? activeGroup.name : "Top Choice • Recommended";
                     txtBottomSelectedPackInfo.Text = "App pack selected: " + FixMojibake(rawName);
+                    if (txtStatus != null && txtStatus.Text != null && txtStatus.Text.StartsWith("App pack selected:"))
+                    {
+                        txtStatus.Text = "";
+                    }
                 }
             }
 
@@ -10762,12 +11045,7 @@ namespace FleetForge
             {
                 string q = txtSearch.Text.Trim();
                 if (q.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) || q.Equals("search applications...", StringComparison.OrdinalIgnoreCase)) q = "";
-                SetCategoryFilter("winget_online");
-                if (!string.IsNullOrEmpty(q))
-                {
-                    if (txtOnlineSearchInput != null) txtOnlineSearchInput.Text = q;
-                    RunWingetOnlineSearch(q);
-                }
+                OpenOnlineSearchModal(q);
             };
             localAppsPanel.Children.Add(bannerSearchWingetPrompt);
 
@@ -11225,6 +11503,697 @@ namespace FleetForge
             });
 
             return card;
+        }
+
+
+        // =========================================================================
+        // ONLINE SEARCH MODAL POPUP
+        // =========================================================================
+        private void OpenOnlineSearchModal(string initialQuery)
+        {
+            if (modalOnlineSearchOverlay == null) return;
+            modalOnlineSearchOverlay.Visibility = Visibility.Visible;
+            modalOnlineSelectedApps.Clear();
+            UpdateOnlineModalSelectionUI();
+
+            if (!string.IsNullOrWhiteSpace(initialQuery) &&
+                initialQuery != "Search applications..." &&
+                initialQuery != "find an app, setting or pack...")
+            {
+                if (txtOnlineModalSearchInput != null)
+                {
+                    txtOnlineModalSearchInput.Text = initialQuery;
+                    txtOnlineModalSearchInput.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                }
+                if (btnOnlineClearSearch != null) btnOnlineClearSearch.Visibility = Visibility.Visible;
+                RunWingetOnlineSearchModal(initialQuery);
+            }
+            else
+            {
+                if (txtOnlineModalSearchInput != null)
+                {
+                    txtOnlineModalSearchInput.Text = "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...";
+                    txtOnlineModalSearchInput.Foreground = HexBrush("#94A3B8");
+                }
+                if (btnOnlineClearSearch != null) btnOnlineClearSearch.Visibility = Visibility.Collapsed;
+                ShowOnlineSearchEmptyState();
+            }
+
+            if (txtOnlineModalSearchInput != null) txtOnlineModalSearchInput.Focus();
+        }
+
+        private void CloseOnlineSearchModal()
+        {
+            if (modalOnlineSearchOverlay != null)
+            {
+                modalOnlineSearchOverlay.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void PopulateOnlineSearchSuggestionTags()
+        {
+            if (onlineSearchTagsPanel == null) return;
+            onlineSearchTagsPanel.Children.Clear();
+
+            string[] suggestions = new string[] { "Discord", "Zoom", "Steam", "Spotify", "Blender", "VS Code", "Git", "Node.js", "Docker", "Canva", "Postman", "7-Zip" };
+            foreach (string item in suggestions)
+            {
+                string term = item;
+                Button chip = new Button()
+                {
+                    Content = term,
+                    Height = 26,
+                    Padding = new Thickness(10, 0, 10, 0),
+                    Margin = new Thickness(0, 2, 6, 2),
+                    FontSize = 11,
+                    FontWeight = FontWeights.SemiBold,
+                    Background = currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155"),
+                    Foreground = currentThemeIsLight ? HexBrush("#334155") : HexBrush("#E2E8F0"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#475569"),
+                    BorderThickness = new Thickness(1),
+                    Cursor = Cursors.Hand
+                };
+                chip.Click += delegate
+                {
+                    if (txtOnlineModalSearchInput != null)
+                    {
+                        txtOnlineModalSearchInput.Text = term;
+                        txtOnlineModalSearchInput.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                        if (btnOnlineClearSearch != null) btnOnlineClearSearch.Visibility = Visibility.Visible;
+                    }
+                    RunWingetOnlineSearchModal(term);
+                };
+                onlineSearchTagsPanel.Children.Add(chip);
+            }
+        }
+
+        private void ShowOnlineSearchEmptyState()
+        {
+            if (onlineModalResultsPanel == null) return;
+            onlineModalResultsPanel.Children.Clear();
+
+            if (txtOnlineModalStatus != null)
+            {
+                txtOnlineModalStatus.Text = "Enter any software name above and press Enter or click Search Online.";
+            }
+
+            Border emptyCard = new Border()
+            {
+                Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(12),
+                Padding = new Thickness(30, 36, 30, 36),
+                Margin = new Thickness(10, 16, 10, 16),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            StackPanel sp = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+
+            Border iconCircle = new Border()
+            {
+                Width = 56,
+                Height = 56,
+                CornerRadius = new CornerRadius(28),
+                Background = currentThemeIsLight ? HexBrush("#EDE9FE") : HexBrush("#2E1065"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 14)
+            };
+            TextBlock txtIcon = new TextBlock()
+            {
+                Text = "🌐",
+                FontSize = 26,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            iconCircle.Child = txtIcon;
+            sp.Children.Add(iconCircle);
+
+            TextBlock txtH = new TextBlock()
+            {
+                Text = "Search Microsoft Winget Cloud Catalog",
+                FontSize = 16,
+                FontWeight = FontWeights.Bold,
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 6)
+            };
+            sp.Children.Add(txtH);
+
+            TextBlock txtP = new TextBlock()
+            {
+                Text = "Type any application name above or click popular tags to discover software from Microsoft's repository.",
+                FontSize = 12.5,
+                Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+                MaxWidth = 520,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(0, 0, 0, 16)
+            };
+            sp.Children.Add(txtP);
+
+            WrapPanel quickWrap = new WrapPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+            string[] popular = new string[] { "Discord", "Zoom", "Steam", "Spotify", "Blender", "VS Code", "Git", "Postman" };
+            foreach (string tag in popular)
+            {
+                string curTag = tag;
+                Button b = new Button()
+                {
+                    Content = "🔍 " + curTag,
+                    Height = 28,
+                    Padding = new Thickness(12, 0, 12, 0),
+                    Margin = new Thickness(4),
+                    FontSize = 11.5,
+                    FontWeight = FontWeights.SemiBold,
+                    Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#0F172A"),
+                    Foreground = HexBrush("#7C3AED"),
+                    BorderBrush = HexBrush("#DDD6FE"),
+                    BorderThickness = new Thickness(1),
+                    Cursor = Cursors.Hand
+                };
+                b.Click += delegate
+                {
+                    if (txtOnlineModalSearchInput != null)
+                    {
+                        txtOnlineModalSearchInput.Text = curTag;
+                        txtOnlineModalSearchInput.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                        if (btnOnlineClearSearch != null) btnOnlineClearSearch.Visibility = Visibility.Visible;
+                    }
+                    RunWingetOnlineSearchModal(curTag);
+                };
+                quickWrap.Children.Add(b);
+            }
+            sp.Children.Add(quickWrap);
+
+            emptyCard.Child = sp;
+            onlineModalResultsPanel.Children.Add(emptyCard);
+        }
+
+        private void RunWingetOnlineSearchModal(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query == "Type software name (e.g. Discord, Blender, Spotify, Zoom, Steam)...")
+            {
+                if (txtOnlineModalStatus != null) txtOnlineModalStatus.Text = "Please enter an app name (e.g. Discord, Spotify, Zoom, Steam).";
+                return;
+            }
+
+            if (string.IsNullOrEmpty(wingetCmd))
+            {
+                if (txtOnlineModalStatus != null) txtOnlineModalStatus.Text = "Windows App Store (Winget) is not available on this system.";
+                return;
+            }
+
+            if (txtOnlineModalStatus != null)
+            {
+                txtOnlineModalStatus.Text = string.Format("⏳ Searching Microsoft Winget cloud repository for '{0}'... Please wait.", query);
+            }
+
+            if (btnOnlineModalExecuteSearch != null) btnOnlineModalExecuteSearch.IsEnabled = false;
+            if (txtOnlineSearchBtnText != null) txtOnlineSearchBtnText.Text = "Searching...";
+
+            modalOnlineSelectedApps.Clear();
+            UpdateOnlineModalSelectionUI();
+
+            if (onlineModalResultsPanel != null)
+            {
+                onlineModalResultsPanel.Children.Clear();
+                Border loadingCard = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(24, 30, 24, 30),
+                    Margin = new Thickness(10, 20, 10, 20),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                StackPanel loadSp = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+                TextBlock loadIcon = new TextBlock()
+                {
+                    Text = "⏳",
+                    FontSize = 28,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Margin = new Thickness(0, 0, 0, 10)
+                };
+                TextBlock loadText = new TextBlock()
+                {
+                    Text = string.Format("Querying Microsoft Winget live cloud index for '{0}'...", query),
+                    FontSize = 13.5,
+                    FontWeight = FontWeights.SemiBold,
+                    Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+                loadSp.Children.Add(loadIcon);
+                loadSp.Children.Add(loadText);
+                loadingCard.Child = loadSp;
+                onlineModalResultsPanel.Children.Add(loadingCard);
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                List<AppModel> foundApps = new List<AppModel>();
+                string errorMsg = null;
+                try
+                {
+                    string args = string.Format("search -q \"{0}\" -n 50 --accept-source-agreements", query);
+                    ProcessStartInfo psi = new ProcessStartInfo(wingetCmd, args);
+                    psi.CreateNoWindow = true;
+                    psi.UseShellExecute = false;
+                    psi.RedirectStandardOutput = true;
+                    psi.RedirectStandardError = true;
+
+                    List<string> lines = new List<string>();
+                    using (Process proc = Process.Start(psi))
+                    {
+                        while (!proc.StandardOutput.EndOfStream)
+                        {
+                            lines.Add(proc.StandardOutput.ReadLine());
+                        }
+                        proc.WaitForExit();
+                    }
+
+                    int hdrIndex = -1;
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i] != null && System.Text.RegularExpressions.Regex.IsMatch(lines[i], @"^Name\s+Id"))
+                        {
+                            hdrIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (hdrIndex >= 0 && lines.Count > hdrIndex + 2)
+                    {
+                        string hdr = lines[hdrIndex];
+                        int idPos = hdr.IndexOf("Id");
+                        int verPos = hdr.IndexOf("Version");
+                        int matchPos = hdr.IndexOf("Match");
+                        int srcPos = hdr.IndexOf("Source");
+
+                        for (int i = hdrIndex + 2; i < lines.Count; i++)
+                        {
+                            string line = lines[i];
+                            if (string.IsNullOrWhiteSpace(line)) continue;
+
+                            string name = (idPos > 0 && line.Length >= idPos) ? line.Substring(0, idPos).Trim() : line.Trim();
+                            string id = "";
+                            if (idPos > 0 && line.Length > idPos)
+                            {
+                                int end = (verPos > idPos) ? Math.Min(line.Length - idPos, verPos - idPos) : line.Length - idPos;
+                                id = line.Substring(idPos, end).Trim();
+                            }
+
+                            string ver = "";
+                            if (verPos > 0 && line.Length > verPos)
+                            {
+                                int limit = (matchPos > verPos) ? matchPos : ((srcPos > verPos) ? srcPos : line.Length);
+                                int end = Math.Min(line.Length - verPos, limit - verPos);
+                                ver = line.Substring(verPos, end).Trim();
+                            }
+
+                            if (!string.IsNullOrEmpty(id))
+                            {
+                                foundApps.Add(new AppModel()
+                                {
+                                    id = id,
+                                    name = string.IsNullOrEmpty(name) ? id : name,
+                                    category = "utilities",
+                                    description = string.IsNullOrEmpty(ver) ? "Package ID: " + id : "Version: " + ver + " • Package ID: " + id
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorMsg = ex.Message;
+                }
+
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    if (btnOnlineModalExecuteSearch != null) btnOnlineModalExecuteSearch.IsEnabled = true;
+                    if (txtOnlineSearchBtnText != null) txtOnlineSearchBtnText.Text = "Search Online";
+
+                    if (onlineModalResultsPanel != null) onlineModalResultsPanel.Children.Clear();
+
+                    if (errorMsg != null)
+                    {
+                        if (txtOnlineModalStatus != null) txtOnlineModalStatus.Text = "Search error: " + errorMsg;
+                        return;
+                    }
+
+                    List<AppModel> matchingCustom = new List<AppModel>();
+                    if (config != null && config.apps != null)
+                    {
+                        string qClean = (query ?? "").Replace(" ", "").ToLowerInvariant();
+                        string qLower = (query ?? "").ToLowerInvariant();
+                        matchingCustom = config.apps.FindAll(delegate(AppModel a)
+                        {
+                            if (a == null || !IsRecommendedApp(a)) return false;
+                            string name = a.name ?? "";
+                            string id = a.id ?? "";
+                            string desc = a.description ?? "";
+                            return name.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   id.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   desc.IndexOf(qLower, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                   name.Replace(" ", "").IndexOf(qClean, StringComparison.OrdinalIgnoreCase) >= 0;
+                        });
+                    }
+
+                    int totalCount = foundApps.Count + matchingCustom.Count;
+                    if (totalCount == 0)
+                    {
+                        if (txtOnlineModalStatus != null) txtOnlineModalStatus.Text = string.Format("No apps found matching '{0}'. Try searching with another name.", query);
+
+                        Border noRes = new Border()
+                        {
+                            Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                            BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                            BorderThickness = new Thickness(1),
+                            CornerRadius = new CornerRadius(10),
+                            Padding = new Thickness(24, 30, 24, 30),
+                            Margin = new Thickness(10, 20, 10, 20),
+                            HorizontalAlignment = HorizontalAlignment.Center
+                        };
+                        StackPanel spNo = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+                        TextBlock iconNo = new TextBlock() { Text = "🔍", FontSize = 28, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 8) };
+                        TextBlock titleNo = new TextBlock() { Text = string.Format("No software packages found for \"{0}\"", query), FontSize = 14, FontWeight = FontWeights.Bold, Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"), HorizontalAlignment = HorizontalAlignment.Center };
+                        TextBlock descNo = new TextBlock() { Text = "Check spelling or search by publisher (e.g. 'Mozilla.Firefox' or 'Microsoft.VisualStudioCode').", FontSize = 12, Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"), HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0) };
+                        spNo.Children.Add(iconNo);
+                        spNo.Children.Add(titleNo);
+                        spNo.Children.Add(descNo);
+                        noRes.Child = spNo;
+                        if (onlineModalResultsPanel != null) onlineModalResultsPanel.Children.Add(noRes);
+                        return;
+                    }
+
+                    if (txtOnlineModalStatus != null)
+                    {
+                        txtOnlineModalStatus.Text = string.Format("✓ Found {0} package(s) matching '{1}' from Microsoft Winget:", totalCount, query);
+                    }
+
+                    foreach (AppModel recApp in matchingCustom)
+                    {
+                        Border card = CreateOnlineModalAppCard(recApp);
+                        if (onlineModalResultsPanel != null) onlineModalResultsPanel.Children.Add(card);
+                    }
+
+                    foreach (AppModel app in foundApps)
+                    {
+                        if (matchingCustom.Exists(delegate (AppModel m) { return string.Equals(m.id, app.id, StringComparison.OrdinalIgnoreCase); }))
+                            continue;
+                        AppModel curApp = app;
+                        Border card = CreateOnlineModalAppCard(curApp);
+                        if (onlineModalResultsPanel != null) onlineModalResultsPanel.Children.Add(card);
+                    }
+                }));
+            });
+        }
+
+        private Border CreateOnlineModalAppCard(AppModel curApp)
+        {
+            Border card = new Border()
+            {
+                Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B"),
+                CornerRadius = new CornerRadius(8),
+                Margin = new Thickness(0, 0, 0, 6),
+                Padding = new Thickness(14, 10, 14, 10),
+                BorderThickness = new Thickness(1),
+                BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                Cursor = Cursors.Hand
+            };
+
+            Grid g = new Grid();
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
+            g.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Auto });
+
+            CheckBox cb = new CheckBox()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 14, 0),
+                Cursor = Cursors.Hand
+            };
+
+            Action updateCardVisual = delegate
+            {
+                bool isSel = cb.IsChecked == true;
+                card.Background = isSel
+                    ? (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E3A8A"))
+                    : (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B"));
+                card.BorderBrush = isSel
+                    ? HexBrush("#3B82F6")
+                    : (currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"));
+            };
+
+            cb.Checked += delegate
+            {
+                if (!modalOnlineSelectedApps.Exists(delegate(AppModel a) { return a.id == curApp.id; }))
+                {
+                    modalOnlineSelectedApps.Add(curApp);
+                }
+                updateCardVisual();
+                UpdateOnlineModalSelectionUI();
+            };
+
+            cb.Unchecked += delegate
+            {
+                modalOnlineSelectedApps.RemoveAll(delegate(AppModel a) { return a.id == curApp.id; });
+                updateCardVisual();
+                UpdateOnlineModalSelectionUI();
+            };
+
+            card.MouseLeftButtonUp += delegate (object sender, MouseButtonEventArgs e)
+            {
+                if (!e.Handled && !(e.OriginalSource is CheckBox) && !(e.OriginalSource is Button))
+                {
+                    cb.IsChecked = !(cb.IsChecked == true);
+                }
+            };
+
+            Grid.SetColumn(cb, 0);
+            g.Children.Add(cb);
+
+            // Center Info
+            StackPanel infoStack = new StackPanel() { VerticalAlignment = VerticalAlignment.Center };
+            StackPanel titleStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+            TextBlock txtName = new TextBlock()
+            {
+                Text = curApp.name,
+                FontSize = 13.5,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF")
+            };
+            titleStack.Children.Add(txtName);
+
+            bool isRec = IsRecommendedApp(curApp);
+            Border badge = new Border()
+            {
+                Background = isRec ? (currentThemeIsLight ? HexBrush("#FEF3C7") : HexBrush("#78350F")) : (currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#3B0764")),
+                CornerRadius = new CornerRadius(4),
+                Margin = new Thickness(8, 0, 0, 0),
+                Padding = new Thickness(6, 1, 6, 1),
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            TextBlock txtBadge = new TextBlock()
+            {
+                Text = isRec ? "TOP CHOICE • CLOUD" : "WINGET",
+                FontSize = 9.5,
+                FontWeight = FontWeights.Bold,
+                Foreground = isRec ? HexBrush("#D97706") : (currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC"))
+            };
+            badge.Child = txtBadge;
+            titleStack.Children.Add(badge);
+            infoStack.Children.Add(titleStack);
+
+            TextBlock txtDesc = new TextBlock()
+            {
+                Text = curApp.description,
+                FontSize = 11.5,
+                Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
+                Margin = new Thickness(0, 3, 0, 0),
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+            infoStack.Children.Add(txtDesc);
+            Grid.SetColumn(infoStack, 1);
+            g.Children.Add(infoStack);
+
+            // Action Buttons
+            StackPanel actionStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+
+            bool alreadyInCatalog = config.apps.Exists(delegate (AppModel a) { return a.id == curApp.id; });
+            Button btnAddCatalog = new Button()
+            {
+                Content = alreadyInCatalog ? "✓ In Catalog" : "➕ Add to Catalog",
+                IsEnabled = !alreadyInCatalog,
+                Background = alreadyInCatalog ? (currentThemeIsLight ? HexBrush("#F1F5F9") : HexBrush("#334155")) : HexBrush("#0066FF"),
+                Foreground = alreadyInCatalog ? (currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8")) : HexBrush("#FFFFFF"),
+                FontWeight = FontWeights.SemiBold,
+                Padding = new Thickness(12, 6, 12, 6),
+                Margin = new Thickness(0, 0, 8, 0),
+                FontSize = 11.5,
+                Cursor = alreadyInCatalog ? Cursors.Arrow : Cursors.Hand,
+                BorderThickness = new Thickness(0)
+            };
+            btnAddCatalog.Click += delegate
+            {
+                if (!config.apps.Exists(delegate (AppModel a) { return a.id == curApp.id; }))
+                {
+                    config.apps.Add(curApp);
+                    SaveConfigToFile();
+                    btnAddCatalog.Content = "✓ In Catalog";
+                    btnAddCatalog.IsEnabled = false;
+                    btnAddCatalog.Background = HexBrush("#16A34A");
+                    btnAddCatalog.Foreground = HexBrush("#FFFFFF");
+                    if (txtStatus != null) txtStatus.Text = string.Format("Added '{0}' to your catalog.", curApp.name);
+                    BuildCatalog();
+                }
+            };
+            actionStack.Children.Add(btnAddCatalog);
+
+            Button btnInstallNow = new Button()
+            {
+                Content = "⚡ Install Now",
+                Background = HexBrush("#059669"),
+                Foreground = HexBrush("#FFFFFF"),
+                FontWeight = FontWeights.SemiBold,
+                Padding = new Thickness(12, 6, 12, 6),
+                FontSize = 11.5,
+                Cursor = Cursors.Hand,
+                BorderThickness = new Thickness(0)
+            };
+            btnInstallNow.Click += delegate
+            {
+                MessageBoxResult res = MessageBox.Show(
+                    string.Format("Do you want to install '{0}' now?", curApp.name),
+                    "Install Software",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+                if (res == MessageBoxResult.Yes)
+                {
+                    if (!config.apps.Exists(delegate (AppModel a) { return a.id == curApp.id; }))
+                    {
+                        config.apps.Add(curApp);
+                        SaveConfigToFile();
+                        BuildCatalog();
+                    }
+                    CloseOnlineSearchModal();
+                    InstallSingleApp(curApp);
+                }
+            };
+            actionStack.Children.Add(btnInstallNow);
+
+            Grid.SetColumn(actionStack, 2);
+            g.Children.Add(actionStack);
+
+            card.Child = g;
+            return card;
+        }
+
+        private void UpdateOnlineModalSelectionUI()
+        {
+            int count = modalOnlineSelectedApps != null ? modalOnlineSelectedApps.Count : 0;
+            if (txtOnlineModalSelectedCount != null)
+            {
+                txtOnlineModalSelectedCount.Text = count > 0 ? string.Format("{0} app(s) selected", count) : "0 apps selected";
+            }
+            if (btnOnlineAddSelected != null)
+            {
+                btnOnlineAddSelected.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                btnOnlineAddSelected.Content = string.Format("➕ Add Selected ({0}) to Catalog", count);
+            }
+            if (btnOnlineInstallSelected != null)
+            {
+                btnOnlineInstallSelected.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                btnOnlineInstallSelected.Content = string.Format("⚡ Install Selected ({0})", count);
+            }
+        }
+
+        private void AddSelectedOnlineAppsToCatalog()
+        {
+            if (modalOnlineSelectedApps == null || modalOnlineSelectedApps.Count == 0) return;
+            int addedCount = 0;
+            foreach (AppModel a in modalOnlineSelectedApps)
+            {
+                if (a != null && !config.apps.Exists(delegate(AppModel x) { return x.id == a.id; }))
+                {
+                    config.apps.Add(a);
+                    addedCount++;
+                }
+            }
+            if (addedCount > 0)
+            {
+                SaveConfigToFile();
+                BuildCatalog();
+                MessageBox.Show(
+                    string.Format("Successfully added {0} application(s) to your catalog!", addedCount),
+                    "Apps Added",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("All selected applications are already in your catalog.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            modalOnlineSelectedApps.Clear();
+            UpdateOnlineModalSelectionUI();
+            if (onlineModalResultsPanel != null)
+            {
+                foreach (UIElement elem in onlineModalResultsPanel.Children)
+                {
+                    Border b = elem as Border;
+                    if (b != null && b.Child is Grid)
+                    {
+                        Grid g = b.Child as Grid;
+                        if (g != null && g.Children.Count >= 3)
+                        {
+                            StackPanel act = g.Children[2] as StackPanel;
+                            if (act != null && act.Children.Count >= 1)
+                            {
+                                Button btn = act.Children[0] as Button;
+                                if (btn != null)
+                                {
+                                    btn.Content = "✓ In Catalog";
+                                    btn.IsEnabled = false;
+                                    btn.Background = HexBrush("#16A34A");
+                                    btn.Foreground = HexBrush("#FFFFFF");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void InstallSelectedOnlineApps()
+        {
+            if (modalOnlineSelectedApps == null || modalOnlineSelectedApps.Count == 0) return;
+            MessageBoxResult res = MessageBox.Show(
+                string.Format("Ready to install {0} selected application(s) on your computer.\n\nDo you want to start now?", modalOnlineSelectedApps.Count),
+                "Install Selected Applications",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (res != MessageBoxResult.Yes) return;
+
+            List<string> idsToInstall = new List<string>();
+            foreach (AppModel a in modalOnlineSelectedApps)
+            {
+                if (a == null) continue;
+                if (!config.apps.Exists(delegate(AppModel x) { return x.id == a.id; }))
+                {
+                    config.apps.Add(a);
+                }
+                idsToInstall.Add(a.id);
+                if (!selectedAppIds.Contains(a.id))
+                {
+                    selectedAppIds.Add(a.id);
+                }
+            }
+            SaveConfigToFile();
+            BuildCatalog();
+            CloseOnlineSearchModal();
+            StartInstallation(false, idsToInstall, null, "Online Winget Selection");
         }
 
         private void BuildWingetOnlinePanel()
@@ -11849,35 +12818,21 @@ namespace FleetForge
 
             if (cat == "winget_online")
             {
-                localAppsPanel.Visibility = Visibility.Collapsed;
-                wingetOnlinePanel.Visibility = Visibility.Visible;
-                if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Collapsed;
+                OpenOnlineSearchModal("");
+                return;
             }
-            else
-            {
-                localAppsPanel.Visibility = Visibility.Visible;
-                wingetOnlinePanel.Visibility = Visibility.Collapsed;
-                if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Visible;
-                ApplyFilters();
-            }
+            localAppsPanel.Visibility = Visibility.Visible;
+            if (wingetOnlinePanel != null) wingetOnlinePanel.Visibility = Visibility.Collapsed;
+            if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Visible;
+            ApplyFilters();
 
             if (btnSearchWingetOnlineBottom != null)
             {
-                if (cat == "winget_online")
-                {
-                    btnSearchWingetOnlineBottom.Content = "↩ Back to App Catalog";
-                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#0369A1");
-                    btnSearchWingetOnlineBottom.Foreground = HexBrush("#FFFFFF");
-                    btnSearchWingetOnlineBottom.BorderThickness = new Thickness(0);
-                }
-                else
-                {
-                    btnSearchWingetOnlineBottom.Content = "🔍  Search Online Apps";
-                    btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                    btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
-                    btnSearchWingetOnlineBottom.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                    btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
-                }
+                btnSearchWingetOnlineBottom.Content = "🔍  Search Online Apps";
+                btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
+                btnSearchWingetOnlineBottom.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+                btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
             }
         }
 
