@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FleetForge — Cloud Catalog & Affiliate Apps Builder</title>
+  <link rel="icon" href="../src/assets/appicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --border: #E2E8F0;
+      --border-focus: #3B82F6;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --primary: #0066FF;
+      --primary-hover: #0052CC;
+      --primary-light: #EFF6FF;
+      --purple: #7C3AED;
+      --purple-hover: #6D28D9;
+      --purple-light: #F3E8FF;
+      --success: #10B981;
+      --success-light: #ECFDF5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEF2F2;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #0066FF 0%, #7C3AED 100%);
+      color: #FFFFFF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 10px rgba(0, 102, 255, 0.25);
+    }
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      font-size: 10px;
+      text-transform: uppercase;
+      background: #7C3AED;
+      color: #FFFFFF;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Catalog Mode Switcher Tabs in Header */
+    .mode-switcher {
+      display: flex;
+      background: #F1F5F9;
+      padding: 3px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+    }
+    .mode-tab {
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      transition: all 0.15s ease;
+    }
+    .mode-tab.active {
+      background: #FFFFFF;
+      color: #0F172A;
+      box-shadow: var(--shadow-sm);
+    }
+    .mode-tab.active.tab-affiliate {
+      color: #7C3AED;
+    }
+    .mode-tab.active.tab-recommended {
+      color: #B45309;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease-in-out;
+      text-decoration: none;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-purple { background: var(--purple); color: #FFFFFF; }
+    .btn-purple:hover { background: var(--purple-hover); }
+    .btn-secondary {
+      background: #FFFFFF;
+      color: #334155;
+      border-color: var(--border);
+    }
+    .btn-secondary:hover {
+      background: #F8FAFC;
+      border-color: #CBD5E1;
+      color: #0F172A;
+    }
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: #FECACA;
+    }
+    .btn-danger:hover {
+      background: #FEE2E2;
+    }
+    .btn-sm {
+      padding: 5px 9px;
+      font-size: 11.5px;
+      border-radius: 6px;
+    }
+
+    /* Main Layout */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(650px, 1fr) 420px;
+      gap: 24px;
+      padding: 24px 28px;
+      max-width: 1680px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Form Fields */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+    .col-span-2 {
+      grid-column: span 2;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .field-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .field-label span.req { color: var(--danger); margin-left: 2px; }
+    .field-hint { font-size: 10.5px; color: var(--text-muted); font-weight: normal; }
+
+    .input, select, textarea {
+      font-family: inherit;
+      font-size: 12.5px;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: #0F172A;
+      background: #FFFFFF;
+      transition: all 0.15s ease;
+      outline: none;
+      width: 100%;
+    }
+    .input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    textarea { resize: vertical; min-height: 48px; }
+
+    /* Quick Preset Pills */
+    .preset-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 4px;
+    }
+    .pill {
+      font-size: 10.5px;
+      background: #F1F5F9;
+      color: #334155;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid #E2E8F0;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s;
+    }
+    .pill:hover {
+      background: #E2E8F0;
+      color: #0F172A;
+      border-color: #CBD5E1;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .badge-direct { background: #F3E8FF; color: #7C3AED; }
+    .badge-web { background: #ECFDF5; color: #059669; }
+    .badge-winget { background: #F1F5F9; color: #64748B; }
+
+    /* App Item Card in List */
+    .app-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .app-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: var(--shadow-sm);
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .app-num {
+      width: 24px;
+      height: 24px;
+      background: #EFF6FF;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 11px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .app-title-preview {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1E293B;
+      flex: 1;
+      margin-left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .app-controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    /* Cloud Sync Banner */
+    .cloud-banner {
+      background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+      border: 1px solid #DDD6FE;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .cloud-icon { font-size: 22px; }
+    .cloud-body h3 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #5B21B6;
+      margin-bottom: 3px;
+    }
+    .cloud-body p {
+      font-size: 12px;
+      color: #6D28D9;
+      line-height: 1.45;
+    }
+    .cloud-body ol {
+      margin-top: 5px;
+      margin-left: 18px;
+      font-size: 11.5px;
+      color: #6D28D9;
+    }
+
+    /* Right Preview Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 105px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .preview-card {
+      background: #0F172A;
+      color: #F8FAFC;
+      border-radius: 12px;
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      border: 1px solid #1E293B;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #334155;
+    }
+    .preview-title {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #94A3B8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .json-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #CBD5E1;
+      background: #0B0F19;
+      padding: 10px;
+      border-radius: 8px;
+      flex: 1;
+      overflow: auto;
+      white-space: pre;
+      user-select: text;
+    }
+
+    /* Modal for Import JSON */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 620px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 6px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 12px 28px;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand-block">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>FleetForge Catalog Builder <span class="brand-badge">Admin Cloud Panel</span></h1>
+        <p>Configure affiliate URLs, direct packages &amp; push updates to cloud without recompiling the app</p>
+      </div>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="mode-switcher">
+      <button id="tabAffiliate" class="mode-tab active tab-affiliate" onclick="switchCatalogMode('custom')">
+        🟣 Custom &amp; Affiliate Catalog (custom_apps.json)
+      </button>
+      <button id="tabRecommended" class="mode-tab tab-recommended" onclick="switchCatalogMode('recommended')">
+        ⭐ Top Choice • Recommended (recommended_apps.json)
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="openImportModal()">
+        📂 Import JSON
+      </button>
+      <button class="btn btn-secondary" onclick="resetToTemplate()">
+        🔄 Reset
+      </button>
+      <button class="btn btn-purple" id="btnDownloadTarget" onclick="downloadCurrentCatalog()">
+        📥 Download custom_apps.json
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Work Area -->
+  <main>
+    <!-- Left Section: Configuration & Software List -->
+    <section>
+      <!-- Cloud Instructions Banner -->
+      <div class="cloud-banner">
+        <div class="cloud-icon">☁️</div>
+        <div class="cloud-body">
+          <h3 id="bannerTitle">How Cloud Deployment Works: Zero Re-Releases Needed!</h3>
+          <p id="bannerDesc">
+            When you configure affiliate links and partner software here, you don't need to rebuild FleetForge.exe:
+          </p>
+          <ol>
+            <li>Configure your affiliate download links or browser redirect URLs below.</li>
+            <li>Click <strong>Download <span id="bannerTargetFile">custom_apps.json</span></strong> (or Copy JSON).</li>
+            <li>Commit/upload the file to your GitHub repository under <code>data/<span id="bannerTargetFile2">custom_apps.json</span></code>.</li>
+            <li><strong>All FleetForge client apps worldwide</strong> automatically fetch and apply these links silently on launch!</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Optional: Group Settings (Visible in Recommended Mode Only) -->
+      <div id="cardGroupSettings" class="card" style="display: none;">
+        <div class="card-title">
+          <span>⚙️ Recommended Pack Group Header Settings</span>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Pinned as Tier 1 in FleetForge Quick Setup</span>
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label class="field-label">Pack Title <span class="req">*</span></label>
+            <input type="text" id="groupName" class="input" value="Top Choice • Recommended" oninput="updateLiveJson()">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Group ID</label>
+            <input type="text" id="groupId" class="input" value="recommended" readonly style="background:#F1F5F9; color:#64748B;">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Emoji Icon</label>
+            <div style="display:flex; gap:6px;">
+              <input type="text" id="groupIcon" class="input" value="⭐" style="width:60px; text-align:center; font-size:16px;" oninput="updateLiveJson()">
+              <div class="preset-pills" style="margin-top:0;">
+                <span class="pill" onclick="setGroupIcon('⭐')">⭐</span>
+                <span class="pill" onclick="setGroupIcon('🚀')">🚀</span>
+                <span class="pill" onclick="setGroupIcon('💎')">💎</span>
+                <span class="pill" onclick="setGroupIcon('🔥')">🔥</span>
+                <span class="pill" onclick="setGroupIcon('⚡')">⚡</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Accent Color</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="color" id="groupAccentColor" value="#F59E0B" style="width:36px; height:32px; padding:2px; border-radius:6px; cursor:pointer;" oninput="document.getElementById('groupAccentHex').value = this.value; updateLiveJson();">
+              <input type="text" id="groupAccentHex" class="input" value="#F59E0B" style="width:100px;" oninput="document.getElementById('groupAccentColor').value = this.value; updateLiveJson();">
+            </div>
+          </div>
+          <div class="field-group col-span-2">
+            <label class="field-label">Pack Description</label>
+            <input type="text" id="groupDesc" class="input" value="Curated partner software, essential premium tools, and top-rated recommendations." oninput="updateLiveJson()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Software Items Header -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+        <h2 style="font-size: 15px; font-weight: 700; color: #1E293B;">
+          <span id="listTitle">📦 Configured Custom &amp; Affiliate Packages</span> (<span id="appCount">0</span>)
+        </h2>
+        <button class="btn btn-primary btn-sm" onclick="addNewApp()">
+          ➕ Add Software Package
+        </button>
+      </div>
+
+      <!-- Container for Dynamic Application Cards -->
+      <div id="appsListContainer">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <!-- Add Button at the Bottom -->
+      <div style="text-align: center; margin-top: 8px;">
+        <button class="btn btn-secondary" style="width: 100%; padding: 10px; font-size: 13px; border-style: dashed;" onclick="addNewApp()">
+          ➕ Add Another Software Package
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Sidebar with Live Preview & Export -->
+    <aside class="sidebar">
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="preview-title">
+            <span>📄</span> Live JSON (<span id="previewFileName">custom_apps.json</span>)
+          </div>
+          <span id="charCountBadge" style="font-size: 11px; color: #94A3B8;">0 bytes</span>
+        </div>
+        <div id="jsonPreview" class="json-code"></div>
+        <div style="margin-top: 10px; display: flex; gap: 8px;">
+          <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="copyJsonToClipboard()">
+            📋 Copy JSON
+          </button>
+          <button class="btn btn-purple btn-sm" id="btnSidebarDownload" style="flex: 1;" onclick="downloadCurrentCatalog()">
+            📥 Download File
+          </button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Import Modal -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-title">📂 Import Catalog JSON</div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px;">
+        Select an existing <code>custom_apps.json</code> or <code>recommended_apps.json</code> from your computer or paste content below:
+      </p>
+      <div style="margin-bottom: 12px;">
+        <input type="file" id="fileInput" accept=".json" onchange="handleFileUpload(event)" style="font-size: 12px;">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Or Paste JSON Content Directly:</label>
+        <textarea id="pasteJsonText" rows="10" placeholder='{ "apps": [...] }' style="font-family: monospace; font-size: 11.5px;"></textarea>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px;">
+        <button class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
+        <button class="btn btn-purple" onclick="applyPastedJson()">Apply &amp; Load Catalog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div id="toast" class="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Action completed successfully</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    FleetForge Enterprise Deployment Platform • Cloud Catalog Admin Panel • Designed &amp; Developed by <strong>Love Malhotra</strong>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    const CATEGORIES = [
+      { id: "browsers", label: "Web Browsers", icon: "🌐" },
+      { id: "development", label: "Development & Code", icon: "💻" },
+      { id: "utilities", label: "Utilities & Tools", icon: "🛠️" },
+      { id: "media", label: "Media & Creative", icon: "🎬" },
+      { id: "communication", label: "Communication & Collab", icon: "💬" },
+      { id: "productivity", label: "Productivity & Office", icon: "📄" },
+      { id: "security", label: "Security & Privacy", icon: "🛡️" },
+      { id: "cloud", label: "Cloud & Storage", icon: "☁️" },
+      { id: "gaming", label: "Gaming & Entertainment", icon: "🎮" }
+    ];
+
+    // Seed Data: Custom & Affiliate Catalog (custom_apps.json)
+    const SEED_CUSTOM_APPS = [
+      {
+        id: "Google.Chrome",
+        name: "Google Chrome",
+        category: "browsers",
+        description: "Fast, secure web browser built by Google (Custom Affiliate / Direct Cloud Package).",
+        downloadUrl: "https://dl.google.com/chrome/install/ChromeStandaloneSetup64.exe",
+        silentArgs: "/silent /install"
+      },
+      {
+        id: "Brave.Brave",
+        name: "Brave Browser",
+        category: "browsers",
+        description: "Privacy-focused high performance browser (Affiliate Partner Build).",
+        downloadUrl: "https://laptop-updates.brave.com/latest/winx64",
+        silentArgs: "/silent /install"
+      },
+      {
+        id: "NordVPN.NordVPN",
+        name: "NordVPN",
+        category: "security",
+        description: "High-speed secure VPN with threat protection (Partner Discount & Activation).",
+        affiliateWebUrl: "https://nordvpn.com/special-deal/?coupon=fleetforge"
+      }
+    ];
+
+    // Seed Data: Recommended Apps (recommended_apps.json)
+    const SEED_RECOMMENDED_APPS = {
+      _comment: "FleetForge Top Choice • Partner & Affiliate Software Catalog. Apps configured here are pinned to Tier 1.",
+      version: "1.0",
+      group: {
+        id: "recommended",
+        name: "Top Choice • Recommended",
+        icon: "⭐",
+        description: "Curated partner software, essential premium tools, and top-rated recommendations.",
+        accentColor: "#F59E0B"
+      },
+      apps: [
+        {
+          id: "isolve.iSecureVPN",
+          name: "iSecure VPN",
+          category: "security",
+          description: "iSecure VPN protects your connection so you can browse, stream, and work without worry.",
+          downloadUrl: "https://dl.isecurevpn.com/setup.exe",
+          silentArgs: "/S"
+        },
+        {
+          id: "bitguardian.Winriser",
+          name: "Win Riser",
+          category: "utilities",
+          description: "Ultimate Windows Security and Performance Tool.",
+          downloadUrl: "https://dl.winriser.com/WinRiserSetup.exe",
+          silentArgs: "/S"
+        },
+        {
+          id: "BitGuardian.BitDriverUpdater",
+          name: "Bit Driver Updater",
+          category: "utilities",
+          description: "Up-to-date drivers can improve performance, stability & security of your computer.",
+          downloadUrl: "https://dl.bitdriverupdater.com/BitDriverUpdaterSetup.exe",
+          silentArgs: "/S"
+        }
+      ]
+    };
+
+    // State
+    let currentMode = "custom"; // "custom" or "recommended"
+    let customAppsData = JSON.parse(JSON.stringify(SEED_CUSTOM_APPS));
+    let recommendedAppsData = JSON.parse(JSON.stringify(SEED_RECOMMENDED_APPS.apps));
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderApps();
+      updateLiveJson();
+    });
+
+    function switchCatalogMode(mode) {
+      currentMode = mode;
+      const tabAff = document.getElementById("tabAffiliate");
+      const tabRec = document.getElementById("tabRecommended");
+      const cardGroup = document.getElementById("cardGroupSettings");
+      const btnDownload = document.getElementById("btnDownloadTarget");
+      const btnSideDownload = document.getElementById("btnSidebarDownload");
+      const previewFileName = document.getElementById("previewFileName");
+      const listTitle = document.getElementById("listTitle");
+      const bannerTarget = document.getElementById("bannerTargetFile");
+      const bannerTarget2 = document.getElementById("bannerTargetFile2");
+
+      if (mode === "custom") {
+        tabAff.classList.add("active");
+        tabRec.classList.remove("active");
+        cardGroup.style.display = "none";
+        btnDownload.textContent = "📥 Download custom_apps.json";
+        btnDownload.className = "btn btn-purple";
+        btnSideDownload.className = "btn btn-purple btn-sm";
+        previewFileName.textContent = "custom_apps.json";
+        listTitle.textContent = "📦 Configured Custom & Affiliate Packages";
+        bannerTarget.textContent = "custom_apps.json";
+        bannerTarget2.textContent = "custom_apps.json";
+      } else {
+        tabRec.classList.add("active");
+        tabAff.classList.remove("active");
+        cardGroup.style.display = "block";
+        btnDownload.textContent = "📥 Download recommended_apps.json";
+        btnDownload.className = "btn btn-primary";
+        btnSideDownload.className = "btn btn-primary btn-sm";
+        previewFileName.textContent = "recommended_apps.json";
+        listTitle.textContent = "⭐ Recommended Tier 1 Software";
+        bannerTarget.textContent = "recommended_apps.json";
+        bannerTarget2.textContent = "recommended_apps.json";
+      }
+
+      renderApps();
+      updateLiveJson();
+      showToast(`Switched to ${mode === 'custom' ? 'Custom & Affiliate Catalog' : 'Recommended OEM Pack'}`);
+    }
+
+    function getCurrentAppsList() {
+      return currentMode === "custom" ? customAppsData : recommendedAppsData;
+    }
+
+    function setGroupIcon(emoji) {
+      document.getElementById("groupIcon").value = emoji;
+      updateLiveJson();
+    }
+
+    function renderApps() {
+      const list = getCurrentAppsList();
+      const container = document.getElementById("appsListContainer");
+      container.innerHTML = "";
+      document.getElementById("appCount").textContent = list.length;
+
+      list.forEach((app, index) => {
+        const card = document.createElement("div");
+        card.className = "app-card";
+        card.id = `app-card-${index}`;
+
+        const categoryOptions = CATEGORIES.map(cat => {
+          const selected = cat.id === (app.category || "utilities") ? "selected" : "";
+          return `<option value="${cat.id}" ${selected}>${cat.icon} ${cat.label} (${cat.id})</option>`;
+        }).join("");
+
+        // Badges
+        let badgesHtml = "";
+        if (app.downloadUrl) badgesHtml += `<span class="badge badge-direct">⚡ Direct Download</span> `;
+        if (app.affiliateWebUrl) badgesHtml += `<span class="badge badge-web">🌐 Web Redirect</span> `;
+        if (!app.downloadUrl && !app.affiliateWebUrl) badgesHtml += `<span class="badge badge-winget">📦 Winget Engine</span>`;
+
+        card.innerHTML = `
+          <div class="app-header">
+            <div class="app-num">${index + 1}</div>
+            <div class="app-title-preview" id="title-preview-${index}">
+              <span>${escapeHtml(app.name || "Untitled Application")}</span>
+              <span style="font-weight: normal; font-size: 11px; color: var(--text-muted);">[${escapeHtml(app.id || "")}]</span>
+              ${badgesHtml}
+            </div>
+            <div class="app-controls">
+              <button class="btn btn-secondary btn-sm" title="Move Up" onclick="moveApp(${index}, -1)" ${index === 0 ? "disabled" : ""}>⬆️</button>
+              <button class="btn btn-secondary btn-sm" title="Move Down" onclick="moveApp(${index}, 1)" ${index === list.length - 1 ? "disabled" : ""}>⬇️</button>
+              <button class="btn btn-danger btn-sm" title="Delete" onclick="removeApp(${index})">🗑️ Delete</button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label class="field-label">Software Name <span class="req">*</span></label>
+              <input type="text" class="input" value="${escapeHtml(app.name || "")}" 
+                placeholder="e.g. Google Chrome, NordVPN" 
+                oninput="updateAppField(${index}, 'name', this.value)">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <span>Unique App ID (Winget or Custom ID) <span class="req">*</span></span>
+                <span class="field-hint">e.g. Google.Chrome</span>
+              </label>
+              <input type="text" class="input" value="${escapeHtml(app.id || "")}" 
+                placeholder="Vendor.PackageName" 
+                oninput="updateAppField(${index}, 'id', this.value)">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Category (FleetForge Group) <span class="req">*</span></label>
+              <select onchange="updateAppField(${index}, 'category', this.value)">
+                ${categoryOptions}
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <span>Direct Download URL (EXE/MSI)</span>
+                <span class="field-hint">Optional: Silent cloud install</span>
+              </label>
+              <input type="text" class="input" value="${escapeHtml(app.downloadUrl || "")}" 
+                placeholder="https://dl.vendor.com/setup.exe" 
+                oninput="updateAppField(${index}, 'downloadUrl', this.value)">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">
+                <span>Affiliate Web Redirect URL (Browser Discount / Signup)</span>
+                <span class="field-hint">Opens in browser on install (VPNs/SaaS)</span>
+              </label>
+              <input type="text" class="input" value="${escapeHtml(app.affiliateWebUrl || "")}" 
+                placeholder="https://nordvpn.com/special-deal/?coupon=..." 
+                oninput="updateAppField(${index}, 'affiliateWebUrl', this.value)">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Silent Install Arguments</label>
+              <input type="text" class="input" value="${escapeHtml(app.silentArgs || "")}" 
+                placeholder="e.g. /silent /install or /S" 
+                oninput="updateAppField(${index}, 'silentArgs', this.value)">
+              <div class="preset-pills">
+                <span class="pill" onclick="setPresetArgs(${index}, '/silent /install')">/silent /install</span>
+                <span class="pill" onclick="setPresetArgs(${index}, '/S')">/S</span>
+                <span class="pill" onclick="setPresetArgs(${index}, '/VERYSILENT /NORESTART')">/VERYSILENT</span>
+                <span class="pill" onclick="setPresetArgs(${index}, '/qn /norestart')">/qn</span>
+              </div>
+            </div>
+
+            <div class="field-group col-span-2">
+              <label class="field-label">Short Description</label>
+              <textarea class="input" placeholder="Short description displayed on card..." 
+                oninput="updateAppField(${index}, 'description', this.value)">${escapeHtml(app.description || "")}</textarea>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function updateAppField(index, field, value) {
+      const list = getCurrentAppsList();
+      if (!list[index]) return;
+      if (value.trim() === "") {
+        delete list[index][field];
+      } else {
+        list[index][field] = value.trim();
+      }
+      if (field === "name" || field === "id" || field === "downloadUrl" || field === "affiliateWebUrl") {
+        renderApps();
+      }
+      updateLiveJson();
+    }
+
+    function setPresetArgs(index, args) {
+      const list = getCurrentAppsList();
+      if (!list[index]) return;
+      list[index].silentArgs = args;
+      renderApps();
+      updateLiveJson();
+    }
+
+    function addNewApp() {
+      const list = getCurrentAppsList();
+      list.push({
+        id: "",
+        name: "New Software Application",
+        category: "utilities",
+        description: ""
+      });
+      renderApps();
+      updateLiveJson();
+      const newCard = document.getElementById(`app-card-${list.length - 1}`);
+      if (newCard) newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      showToast("Added new software package card");
+    }
+
+    function removeApp(index) {
+      const list = getCurrentAppsList();
+      if (confirm(`Remove "${list[index].name || 'this item'}" from catalog?`)) {
+        list.splice(index, 1);
+        renderApps();
+        updateLiveJson();
+        showToast("Removed software package");
+      }
+    }
+
+    function moveApp(index, direction) {
+      const list = getCurrentAppsList();
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= list.length) return;
+      const temp = list[index];
+      list[index] = list[targetIndex];
+      list[targetIndex] = temp;
+      renderApps();
+      updateLiveJson();
+    }
+
+    function generateJsonOutput() {
+      if (currentMode === "custom") {
+        return {
+          _comment: "FleetForge Custom & Affiliate Software Catalog. Apps configured here take priority over data/apps.json with zero duplicates. You can customize downloadUrl and affiliateWebUrl to monetize distributions.",
+          version: "1.0",
+          name: "Custom & Affiliate Apps Catalog",
+          description: "User-defined software packages and customized direct download affiliate URLs.",
+          apps: customAppsData
+        };
+      } else {
+        const groupName = document.getElementById("groupName").value || "Top Choice • Recommended";
+        const groupIcon = document.getElementById("groupIcon").value || "⭐";
+        const groupDesc = document.getElementById("groupDesc").value || "";
+        const groupAccent = document.getElementById("groupAccentHex").value || "#F59E0B";
+
+        return {
+          _comment: "FleetForge Top Choice • Partner & Affiliate Software Catalog. Pinned as Tier 1 in Quick Setup.",
+          version: "1.0",
+          group: {
+            id: "recommended",
+            name: groupName,
+            icon: groupIcon,
+            description: groupDesc,
+            accentColor: groupAccent,
+            apps: recommendedAppsData.map(a => a.id).filter(id => Boolean(id))
+          },
+          apps: recommendedAppsData
+        };
+      }
+    }
+
+    function updateLiveJson() {
+      const data = generateJsonOutput();
+      const jsonStr = JSON.stringify(data, null, 2);
+      document.getElementById("jsonPreview").textContent = jsonStr;
+      const bytes = new Blob([jsonStr]).size;
+      document.getElementById("charCountBadge").textContent = `${bytes.toLocaleString()} bytes`;
+    }
+
+    function copyJsonToClipboard() {
+      const data = generateJsonOutput();
+      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+        showToast("JSON copied to clipboard!");
+      }).catch(err => {
+        alert("Failed to copy: " + err);
+      });
+    }
+
+    function downloadCurrentCatalog() {
+      const data = generateJsonOutput();
+      const jsonStr = JSON.stringify(data, null, 2);
+      const filename = currentMode === "custom" ? "custom_apps.json" : "recommended_apps.json";
+      const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded ${filename} successfully!`);
+    }
+
+    function resetToTemplate() {
+      if (confirm("Reset current catalog to default seed values?")) {
+        if (currentMode === "custom") {
+          customAppsData = JSON.parse(JSON.stringify(SEED_CUSTOM_APPS));
+        } else {
+          recommendedAppsData = JSON.parse(JSON.stringify(SEED_RECOMMENDED_APPS.apps));
+        }
+        renderApps();
+        updateLiveJson();
+        showToast("Reset to defaults");
+      }
+    }
+
+    // Modal Import Handlers
+    function openImportModal() {
+      document.getElementById("importModal").classList.add("open");
+    }
+    function closeImportModal() {
+      document.getElementById("importModal").classList.remove("open");
+      document.getElementById("pasteJsonText").value = "";
+    }
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        document.getElementById("pasteJsonText").value = event.target.result;
+      };
+      reader.readAsText(file, "UTF-8");
+    }
+    function applyPastedJson() {
+      const text = document.getElementById("pasteJsonText").value.trim();
+      if (!text) { alert("Please provide valid JSON content"); return; }
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed.apps && Array.isArray(parsed.apps)) {
+          if (parsed.group) {
+            currentMode = "recommended";
+            recommendedAppsData = parsed.apps;
+            if (parsed.group.name) document.getElementById("groupName").value = parsed.group.name;
+            if (parsed.group.icon) document.getElementById("groupIcon").value = parsed.group.icon;
+            if (parsed.group.description) document.getElementById("groupDesc").value = parsed.group.description;
+            if (parsed.group.accentColor) {
+              document.getElementById("groupAccentHex").value = parsed.group.accentColor;
+              document.getElementById("groupAccentColor").value = parsed.group.accentColor;
+            }
+            switchCatalogMode("recommended");
+          } else {
+            currentMode = "custom";
+            customAppsData = parsed.apps;
+            switchCatalogMode("custom");
+          }
+        } else if (Array.isArray(parsed)) {
+          if (currentMode === "custom") customAppsData = parsed;
+          else recommendedAppsData = parsed;
+          renderApps();
+          updateLiveJson();
+        } else {
+          alert("Unrecognized JSON format. Expected { apps: [...] } or an Array of apps.");
+          return;
+        }
+        closeImportModal();
+        showToast("Catalog successfully loaded from JSON!");
+      } catch (err) {
+        alert("Invalid JSON: " + err.message);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toastMsg").textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => { toast.classList.remove("show"); }, 3000);
+    }
+  </script>
+</body>
+</html>
