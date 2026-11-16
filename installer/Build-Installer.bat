@@ -13,6 +13,21 @@ set ICON_FILE=..\src\assets\appicon.ico
 if not exist "%ICON_FILE%" set ICON_FILE=..\src\appicon.ico
 if not exist "%ICON_FILE%" set ICON_FILE=src\appicon.ico
 
+set MASCOT_FILE=..\src\assets\hero_mascot.png
+if not exist "%MASCOT_FILE%" set MASCOT_FILE=src\assets\hero_mascot.png
+
+set PACK_DEV_FILE=..\src\assets\pack_dev.png
+if not exist "%PACK_DEV_FILE%" set PACK_DEV_FILE=src\assets\pack_dev.png
+
+set PACK_OFFICE_FILE=..\src\assets\pack_office.png
+if not exist "%PACK_OFFICE_FILE%" set PACK_OFFICE_FILE=src\assets\pack_office.png
+
+set PACK_DESIGN_FILE=..\src\assets\pack_design.png
+if not exist "%PACK_DESIGN_FILE%" set PACK_DESIGN_FILE=src\assets\pack_design.png
+
+set PACK_MINIMAL_FILE=..\src\assets\pack_minimal.png
+if not exist "%PACK_MINIMAL_FILE%" set PACK_MINIMAL_FILE=src\assets\pack_minimal.png
+
 set APPS_JSON=..\data\apps.json
 if not exist "%APPS_JSON%" set APPS_JSON=..\apps.json
 
@@ -66,6 +81,11 @@ ping -n 2 127.0.0.1 >nul 2>&1
     /resource:%ICON_FILE%,appicon.ico ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
     /resource:%RECOMMENDED_JSON%,recommended_apps.json ^
+    /resource:%MASCOT_FILE%,hero_mascot.png ^
+    /resource:%PACK_DEV_FILE%,pack_dev.png ^
+    /resource:%PACK_OFFICE_FILE%,pack_office.png ^
+    /resource:%PACK_DESIGN_FILE%,pack_design.png ^
+    /resource:%PACK_MINIMAL_FILE%,pack_minimal.png ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationCore.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^
@@ -99,6 +119,11 @@ if exist ..\FleetForge-Setup.exe (
     /resource:%SETTINGS_JSON%,settings.json ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
     /resource:%RECOMMENDED_JSON%,recommended_apps.json ^
+    /resource:%MASCOT_FILE%,hero_mascot.png ^
+    /resource:%PACK_DEV_FILE%,pack_dev.png ^
+    /resource:%PACK_OFFICE_FILE%,pack_office.png ^
+    /resource:%PACK_DESIGN_FILE%,pack_design.png ^
+    /resource:%PACK_MINIMAL_FILE%,pack_minimal.png ^
     /resource:%ICON_FILE%,appicon.ico ^
     /resource:Uninstall.exe,Uninstall.exe ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^

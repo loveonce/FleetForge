@@ -9,6 +9,11 @@ if not exist "%CSC%" (
 )
 
 set ICON_FILE=src\assets\appicon.ico
+set MASCOT_FILE=src\assets\hero_mascot.png
+set PACK_DEV_FILE=src\assets\pack_dev.png
+set PACK_OFFICE_FILE=src\assets\pack_office.png
+set PACK_DESIGN_FILE=src\assets\pack_design.png
+set PACK_MINIMAL_FILE=src\assets\pack_minimal.png
 
 set APP_URLS_JSON=app_urls.json
 if not exist "%APP_URLS_JSON%" set APP_URLS_JSON=config\app_urls.json
@@ -36,6 +41,11 @@ if exist FleetForge.exe (
     /resource:%ICON_FILE%,appicon.ico ^
     /resource:%APP_URLS_JSON%,app_urls.json ^
     /resource:%RECOMMENDED_JSON%,recommended_apps.json ^
+    /resource:%MASCOT_FILE%,hero_mascot.png ^
+    /resource:%PACK_DEV_FILE%,pack_dev.png ^
+    /resource:%PACK_OFFICE_FILE%,pack_office.png ^
+    /resource:%PACK_DESIGN_FILE%,pack_design.png ^
+    /resource:%PACK_MINIMAL_FILE%,pack_minimal.png ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationCore.dll" ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\WindowsBase.dll" ^
