@@ -28,6 +28,9 @@ if not exist "%PACK_DESIGN_FILE%" set PACK_DESIGN_FILE=src\assets\pack_design.pn
 set PACK_MINIMAL_FILE=..\src\assets\pack_minimal.png
 if not exist "%PACK_MINIMAL_FILE%" set PACK_MINIMAL_FILE=src\assets\pack_minimal.png
 
+set PACK_RECOMMENDED_FILE=..\src\assets\recommended.png
+if not exist "%PACK_RECOMMENDED_FILE%" set PACK_RECOMMENDED_FILE=src\assets\recommended.png
+
 set HERO_CATALOG_FILE=..\src\assets\hero_catalog.png
 if not exist "%HERO_CATALOG_FILE%" set HERO_CATALOG_FILE=src\assets\hero_catalog.png
 
@@ -96,6 +99,7 @@ ping -n 2 127.0.0.1 >nul 2>&1
     /resource:%PACK_OFFICE_FILE%,pack_office.png ^
     /resource:%PACK_DESIGN_FILE%,pack_design.png ^
     /resource:%PACK_MINIMAL_FILE%,pack_minimal.png ^
+    /resource:%PACK_RECOMMENDED_FILE%,recommended.png ^
     /resource:%HERO_CATALOG_FILE%,hero_catalog.png ^
     /resource:%BRAND_CUBE_FILE%,brand_cube.png ^
     /reference:"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF\PresentationFramework.dll" ^

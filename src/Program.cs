@@ -2699,6 +2699,9 @@ namespace FleetForge
         private Border borderModalHeaderBadge;
         private Button btnCloseModal;
         private Border borderPackIconCard;
+        private Image imgPackIconPreview;
+        private Border borderPackIconBadgeEdit;
+        private TextBlock txtModalHeaderGlyph;
         private TextBlock txtPackIconPreview;
         private TextBox txtGroupNameInput;
         private Border borderGroupName;
@@ -3789,7 +3792,7 @@ namespace FleetForge
 
                     <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
                         <Border x:Name=""BorderModalHeaderBadge"" Width=""42"" Height=""42"" CornerRadius=""10"" Background=""#0066FF"" Margin=""0,0,14,0"" VerticalAlignment=""Center"">
-                            <TextBlock Text=""&#xE74C;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""20"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
+                            <TextBlock x:Name=""TxtModalHeaderGlyph"" Text=""&#xE74C;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""20"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                         </Border>
                         <StackPanel VerticalAlignment=""Center"">
                             <TextBlock x:Name=""TxtModalTitle"" Text=""Edit App Pack"" FontSize=""20"" FontWeight=""Bold"" Foreground=""#0F172A""/>
@@ -3813,8 +3816,9 @@ namespace FleetForge
                         <TextBlock Text=""Pack Icon"" FontSize=""11"" FontWeight=""SemiBold"" Foreground=""#475569"" Margin=""0,0,0,5""/>
                         <Border x:Name=""BorderPackIconCard"" Width=""74"" Height=""74"" CornerRadius=""12"" Background=""#F8FAFC"" BorderBrush=""#E2E8F0"" BorderThickness=""1"" Cursor=""Hand"" ToolTip=""Click to cycle icon"">
                             <Grid>
+                                <Image x:Name=""ImgPackIconPreview"" Width=""46"" Height=""46"" Stretch=""Uniform"" HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Visibility=""Collapsed""/>
                                 <TextBlock x:Name=""TxtPackIconPreview"" Text=""🎨"" FontSize=""34"" FontFamily=""Segoe UI Emoji, Segoe UI Symbol, Segoe UI"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
-                                <Border Width=""20"" Height=""20"" CornerRadius=""10"" Background=""#0066FF"" HorizontalAlignment=""Right"" VerticalAlignment=""Bottom"" Margin=""0,0,4,4"">
+                                <Border x:Name=""BorderPackIconBadgeEdit"" Width=""20"" Height=""20"" CornerRadius=""10"" Background=""#0066FF"" HorizontalAlignment=""Right"" VerticalAlignment=""Bottom"" Margin=""0,0,4,4"">
                                     <TextBlock Text=""&#xE70F;"" FontFamily=""Segoe MDL2 Assets, Segoe Fluent Icons, Segoe UI Symbol"" FontSize=""9.5"" Foreground=""#FFFFFF"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""/>
                                 </Border>
                             </Grid>
@@ -4846,6 +4850,9 @@ namespace FleetForge
             txtModalSubtitle = (TextBlock)root.FindName("TxtModalSubtitle");
             btnCloseModal = (Button)root.FindName("BtnCloseModal");
             borderPackIconCard = (Border)root.FindName("BorderPackIconCard");
+            imgPackIconPreview = (Image)root.FindName("ImgPackIconPreview");
+            borderPackIconBadgeEdit = (Border)root.FindName("BorderPackIconBadgeEdit");
+            txtModalHeaderGlyph = (TextBlock)root.FindName("TxtModalHeaderGlyph");
             txtPackIconPreview = (TextBlock)root.FindName("TxtPackIconPreview");
             borderGroupName = (Border)root.FindName("BorderGroupName");
             txtGroupNameInput = (TextBox)root.FindName("TxtGroupNameInput");
@@ -7517,8 +7524,13 @@ namespace FleetForge
 
         private void SelectQuickIcon(string icon)
         {
+            if (imgPackIconPreview != null) imgPackIconPreview.Visibility = Visibility.Collapsed;
+            if (txtPackIconPreview != null)
+            {
+                txtPackIconPreview.Visibility = Visibility.Visible;
+                txtPackIconPreview.Text = icon;
+            }
             if (txtGroupIconInput != null) txtGroupIconInput.Text = icon;
-            if (txtPackIconPreview != null) txtPackIconPreview.Text = icon;
             if (emojiChipsPanel != null)
             {
                 foreach (UIElement child in emojiChipsPanel.Children)
@@ -9382,10 +9394,14 @@ namespace FleetForge
 
                 string gid = (currentGrp.id ?? "").ToLowerInvariant();
                 ImageSource packImg = null;
-                if (gid.Contains("developer") || gid.Contains("dev")) packImg = LoadEmbeddedImage("pack_dev.png");
+                if (isRecGroup || gid == "recommended" || gid.Contains("topchoice") || gid.Contains("top choice") || gid.Contains("recommend"))
+                {
+                    packImg = LoadEmbeddedImage("recommended.png");
+                }
+                else if (gid.Contains("developer") || gid.Contains("dev")) packImg = LoadEmbeddedImage("pack_dev.png");
                 else if (gid.Contains("office") || gid.Contains("productiv")) packImg = LoadEmbeddedImage("pack_office.png");
                 else if (gid.Contains("media") || gid.Contains("design") || gid.Contains("creative")) packImg = LoadEmbeddedImage("pack_design.png");
-                else if (gid.Contains("minimal") || gid.Contains("essential") || isRecGroup || gid.Contains("recommend")) packImg = LoadEmbeddedImage("pack_minimal.png");
+                else if (gid.Contains("minimal") || gid.Contains("essential")) packImg = LoadEmbeddedImage("pack_minimal.png");
 
                 Border iconBox = new Border()
                 {
@@ -9707,7 +9723,43 @@ namespace FleetForge
             string icon = GetSafeGroupIcon(grp);
             txtGroupIconInput.Text = icon;
             txtGroupIconInput.IsReadOnly = isRecommended;
-            if (txtPackIconPreview != null) txtPackIconPreview.Text = icon;
+
+            string modGid = (grp.id ?? "").ToLowerInvariant();
+            ImageSource modPackImg = null;
+            if (isRecommended || modGid == "recommended" || modGid.Contains("topchoice") || modGid.Contains("top choice") || modGid.Contains("recommend"))
+            {
+                modPackImg = LoadEmbeddedImage("recommended.png");
+            }
+            else if (modGid.Contains("developer") || modGid.Contains("dev")) modPackImg = LoadEmbeddedImage("pack_dev.png");
+            else if (modGid.Contains("office") || modGid.Contains("productiv")) modPackImg = LoadEmbeddedImage("pack_office.png");
+            else if (modGid.Contains("media") || modGid.Contains("design") || modGid.Contains("creative")) modPackImg = LoadEmbeddedImage("pack_design.png");
+            else if (modGid.Contains("minimal") || modGid.Contains("essential")) modPackImg = LoadEmbeddedImage("pack_minimal.png");
+
+            if (modPackImg != null && imgPackIconPreview != null)
+            {
+                imgPackIconPreview.Source = modPackImg;
+                imgPackIconPreview.Visibility = Visibility.Visible;
+                if (txtPackIconPreview != null) txtPackIconPreview.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                if (imgPackIconPreview != null) imgPackIconPreview.Visibility = Visibility.Collapsed;
+                if (txtPackIconPreview != null)
+                {
+                    txtPackIconPreview.Visibility = Visibility.Visible;
+                    txtPackIconPreview.Text = icon;
+                }
+            }
+
+            if (borderPackIconBadgeEdit != null)
+            {
+                borderPackIconBadgeEdit.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
+            }
+            if (borderPackIconCard != null)
+            {
+                borderPackIconCard.Cursor = isRecommended ? Cursors.Arrow : Cursors.Hand;
+                borderPackIconCard.ToolTip = isRecommended ? "Top Choice Protected System Pack Icon" : "Click to cycle icon";
+            }
 
             txtGroupDescInput.Text = grp.description;
             txtGroupDescInput.IsReadOnly = isRecommended;
@@ -9720,6 +9772,14 @@ namespace FleetForge
             if (badgeModalHeaderRole != null)
             {
                 badgeModalHeaderRole.Background = isRecommended ? HexBrush("#F59E0B") : HexBrush("#0066FF");
+            }
+            if (borderModalHeaderBadge != null)
+            {
+                borderModalHeaderBadge.Background = isRecommended ? HexBrush("#F59E0B") : HexBrush("#0066FF");
+            }
+            if (txtModalHeaderGlyph != null)
+            {
+                txtModalHeaderGlyph.Text = isRecommended ? "\uE735" : "\uE74C";
             }
 
             btnDeleteGroup.Visibility = isRecommended ? Visibility.Collapsed : Visibility.Visible;
