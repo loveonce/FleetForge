@@ -148,6 +148,7 @@ namespace FleetForge
         public bool silent { get; set; }
         public bool accept_agreements { get; set; }
         public bool tutorialCompleted { get; set; }
+        public string displayScale { get; set; }
 
         public SettingsModel()
         {
@@ -159,6 +160,7 @@ namespace FleetForge
             silent = true;
             accept_agreements = true;
             tutorialCompleted = false;
+            displayScale = "Auto";
         }
     }
 
@@ -2759,6 +2761,17 @@ namespace FleetForge
         private string[] quickIcons = new string[] { "🎨", "💻", "</>", "✏️", "📄", "🚀", "📊", "🛠️", "🎬", "📷", "🧮", "🔒", "⚡", "🌐", "🎮", "💼" };
 
         // Help Menu, Theme Toggle & Brand Icon
+        // Dynamic Resolution & UI Scaling
+        private ScaleTransform uiScaleTransform = new ScaleTransform(1.0, 1.0);
+        private string displayScaleSetting = "Auto";
+        private Border borderSettingsSecDisplay;
+        private TextBlock txtSettingsSecDisplayTitle;
+        private RadioButton rbScaleAuto;
+        private RadioButton rbScale100;
+        private RadioButton rbScale90;
+        private RadioButton rbScale80;
+        private TextBlock txtCurrentScaleActive;
+
         private Grid rootGrid;
         private Button btnToggleTheme;
         private TextBlock txtToggleThemeIcon;
@@ -3220,11 +3233,31 @@ namespace FleetForge
         private void InitializeWindow()
         {
             this.Title = "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment";
-            this.Width = 1180;
-            this.Height = 850;
-            this.MinWidth = 980;
-            this.MinHeight = 720;
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            // Dynamic WorkArea & Resolution Adaptation
+            Rect wa = SystemParameters.WorkArea;
+            const double desiredW = 1180;
+            const double desiredH = 850;
+
+            // Safe constraint against available work area (leaving margin for taskbar and borders)
+            double maxAllowedW = Math.Max(720, wa.Width - 16);
+            double maxAllowedH = Math.Max(480, wa.Height - 16);
+
+            this.MinWidth = Math.Min(780, Math.Max(640, wa.Width * 0.75));
+            this.MinHeight = Math.Min(500, Math.Max(440, wa.Height * 0.75));
+
+            this.Width = Math.Min(desiredW, maxAllowedW);
+            this.Height = Math.Min(desiredH, maxAllowedH);
+
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            this.Left = wa.Left + Math.Max(0.0, (wa.Width - this.Width) / 2.0);
+            this.Top = wa.Top + Math.Max(0.0, (wa.Height - this.Height) / 2.0);
+
+            // On compact screens (1366x768, 1280x720, or high DPI scaling), auto-maximize for full workspace
+            if (wa.Width <= 1280 || wa.Height <= 768)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
             this.Background = HexBrush("#202020");
             this.Foreground = HexBrush("#FFFFFF");
             this.FontFamily = new System.Windows.Media.FontFamily("Segoe UI Variable Text, Segoe UI Variable, Segoe UI, sans-serif");
@@ -3767,7 +3800,7 @@ namespace FleetForge
     <!-- GROUP EDITOR MODAL OVERLAY (CREATE / UPDATE GROUP)                        -->
     <!-- ========================================================================= -->
     <Grid x:Name=""GroupModalOverlay"" Grid.ColumnSpan=""2"" Background=""#90000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderModalCard"" Width=""980"" MaxHeight=""820"" Background=""#FFFFFF"" CornerRadius=""16""
+        <Border x:Name=""BorderModalCard"" MaxWidth=""980"" MaxHeight=""780"" Margin=""16,10,16,10"" Background=""#FFFFFF"" CornerRadius=""16""
                 BorderBrush=""#E2E8F0"" BorderThickness=""1"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""
                 Padding=""26,20,26,20"">
             <Border.Effect>
@@ -3779,7 +3812,7 @@ namespace FleetForge
                     <RowDefinition Height=""Auto""/> <!-- 1. Pack Identity (Icon Preview, Name & Description) -->
                     <RowDefinition Height=""Auto""/> <!-- 2. Quick Icon Select Carousel -->
                     <RowDefinition Height=""Auto""/> <!-- 3. App Search & Quick Controls -->
-                    <RowDefinition Height=""*"" MinHeight=""360"" MaxHeight=""440""/> <!-- 4. App Checklist -->
+                    <RowDefinition Height=""*"" MinHeight=""140"" MaxHeight=""440""/> <!-- 4. App Checklist -->
                     <RowDefinition Height=""Auto""/> <!-- 5. Bottom Actions Footer -->
                 </Grid.RowDefinitions>
 
@@ -3938,7 +3971,7 @@ namespace FleetForge
     <!-- MODAL: ONLINE / WINGET CLOUD SEARCH                                       -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalOnlineSearchOverlay"" Grid.ColumnSpan=""2"" Background=""#90000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderOnlineSearchCard"" Width=""980"" MaxHeight=""780"" Background=""#FFFFFF"" CornerRadius=""16""
+        <Border x:Name=""BorderOnlineSearchCard"" MaxWidth=""980"" MaxHeight=""740"" Margin=""16,10,16,10"" Background=""#FFFFFF"" CornerRadius=""16""
                 BorderBrush=""#E2E8F0"" BorderThickness=""1"" HorizontalAlignment=""Center"" VerticalAlignment=""Center""
                 Padding=""26,22,26,20"">
             <Border.Effect>
@@ -3949,7 +3982,7 @@ namespace FleetForge
                     <RowDefinition Height=""Auto""/> <!-- 0. Header (Title, Subtitle & Close) -->
                     <RowDefinition Height=""Auto""/> <!-- 1. Search Bar & Quick Suggestion Tags -->
                     <RowDefinition Height=""Auto""/> <!-- 2. Status & Source Indicator Bar -->
-                    <RowDefinition Height=""*"" MinHeight=""340"" MaxHeight=""450""/> <!-- 3. Scrollable Results Area -->
+                    <RowDefinition Height=""*"" MinHeight=""140"" MaxHeight=""450""/> <!-- 3. Scrollable Results Area -->
                     <RowDefinition Height=""Auto""/> <!-- 4. Bottom Actions Footer -->
                 </Grid.RowDefinitions>
 
@@ -4060,7 +4093,7 @@ namespace FleetForge
     <!-- MODAL 1: CHECK FOR UPDATES                                                -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalUpdatesOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderUpdatesCard"" Width=""580"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+        <Border x:Name=""BorderUpdatesCard"" MaxWidth=""580"" MaxHeight=""640"" Margin=""16,10,16,10"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
                 HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28"">
             <StackPanel>
                 <!-- Title Row -->
@@ -4133,7 +4166,7 @@ namespace FleetForge
     <!-- MODAL 2: SETTINGS                                                         -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalSettingsOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderSettingsCard"" Width=""660"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+        <Border x:Name=""BorderSettingsCard"" MaxWidth=""680"" MaxHeight=""680"" Margin=""16,10,16,10"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
                 HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28"">
             <StackPanel>
                 <!-- Title Row -->
@@ -4158,6 +4191,27 @@ namespace FleetForge
                         <CheckBox x:Name=""ChkSettingSilent"" Content=""Automatic Silent Install (No popups or manual next-clicks)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
                         <CheckBox x:Name=""ChkSettingAgreements"" Content=""Automatically accept license agreements"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Margin=""0,0,0,8"" Cursor=""Hand""/>
                         <CheckBox x:Name=""ChkSettingAutoTheme"" Content=""Match Windows theme automatically (Light / Dark)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""12"" Cursor=""Hand""/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Section 1.5: Display Resolution & UI Scaling -->
+                <TextBlock x:Name=""TxtSettingsSecDisplayTitle"" Text=""🖥️ DISPLAY RESOLUTION &amp; UI SCALING"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#38BDF8"" Margin=""0,0,0,8""/>
+                <Border x:Name=""BorderSettingsSecDisplay"" Background=""#11141A"" CornerRadius=""10"" Padding=""14"" BorderBrush=""#232938"" BorderThickness=""1"" Margin=""0,0,0,14"">
+                    <StackPanel>
+                        <TextBlock Text=""Automatically adapt UI zoom and layout according to your screen resolution: "" FontSize=""11"" Foreground=""#94A3B8"" Margin=""0,0,0,10""/>
+                        <Grid Margin=""0,0,0,4"">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width=""*""/>
+                                <ColumnDefinition Width=""Auto""/>
+                            </Grid.ColumnDefinitions>
+                            <WrapPanel Grid.Column=""0"" VerticalAlignment=""Center"">
+                                <RadioButton x:Name=""RbScaleAuto"" Content=""Auto (Adaptive)"" IsChecked=""True"" Foreground=""#FFFFFF"" FontSize=""11.5"" FontWeight=""SemiBold"" Margin=""0,0,14,4"" Cursor=""Hand""/>
+                                <RadioButton x:Name=""RbScale100"" Content=""100% (Standard)"" Foreground=""#FFFFFF"" FontSize=""11.5"" Margin=""0,0,14,4"" Cursor=""Hand""/>
+                                <RadioButton x:Name=""RbScale90"" Content=""90% (Compact)"" Foreground=""#FFFFFF"" FontSize=""11.5"" Margin=""0,0,14,4"" Cursor=""Hand""/>
+                                <RadioButton x:Name=""RbScale80"" Content=""80% (Small Displays)"" Foreground=""#FFFFFF"" FontSize=""11.5"" Margin=""0,0,14,4"" Cursor=""Hand""/>
+                            </WrapPanel>
+                            <TextBlock x:Name=""TxtCurrentScaleActive"" Grid.Column=""1"" Text=""Active: 100%"" FontSize=""11"" FontWeight=""Bold"" Foreground=""#10B981"" VerticalAlignment=""Center""/>
+                        </Grid>
                     </StackPanel>
                 </Border>
 
@@ -4208,7 +4262,7 @@ namespace FleetForge
     <!-- MODAL 3: ABOUT FLEETFORGE                                                 -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalAboutOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderAboutCard"" Width=""580"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+        <Border x:Name=""BorderAboutCard"" MaxWidth=""580"" MaxHeight=""640"" Margin=""16,10,16,10"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
                 HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28"">
             <StackPanel>
                 <!-- Title Row -->
@@ -4287,7 +4341,7 @@ namespace FleetForge
     <!-- MODAL 4: INTERACTIVE FIRST-TIME TUTORIAL & QUICK GUIDE                    -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalTutorialOverlay"" Grid.ColumnSpan=""2"" Background=""#80000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderTutorialCard"" Width=""680"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+        <Border x:Name=""BorderTutorialCard"" MaxWidth=""680"" MaxHeight=""660"" Margin=""16,10,16,10"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
                 HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""28"">
             <StackPanel>
                 <!-- Title Row -->
@@ -4482,7 +4536,7 @@ namespace FleetForge
     <!-- MODAL: CUSTOM APP & AFFILIATE BUILDER                                     -->
     <!-- ========================================================================= -->
     <Grid x:Name=""ModalCustomAppBuilderOverlay"" Grid.ColumnSpan=""2"" Background=""#75000000"" Visibility=""Collapsed"">
-        <Border x:Name=""BorderCustomAppBuilderCard"" Width=""880"" MaxHeight=""680"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
+        <Border x:Name=""BorderCustomAppBuilderCard"" MaxWidth=""880"" MaxHeight=""640"" Margin=""16,10,16,10"" Background=""#181B22"" CornerRadius=""16"" BorderBrush=""#2D3342"" BorderThickness=""1""
                 HorizontalAlignment=""Center"" VerticalAlignment=""Center"" Padding=""24"">
             <Grid>
                 <Grid.RowDefinitions>
@@ -4623,6 +4677,7 @@ namespace FleetForge
             Grid root = (Grid)XamlReader.Parse(xaml);
             this.Content = root;
             rootGrid = root;
+            rootGrid.LayoutTransform = uiScaleTransform;
 
             // Bind Elements
             navBtnSetup = (Button)root.FindName("NavBtnSetup");
@@ -5030,6 +5085,19 @@ namespace FleetForge
             chkSettingAgreements = (CheckBox)root.FindName("ChkSettingAgreements");
             chkSettingAutoTheme = (CheckBox)root.FindName("ChkSettingAutoTheme");
 
+            borderSettingsSecDisplay = (Border)root.FindName("BorderSettingsSecDisplay");
+            txtSettingsSecDisplayTitle = (TextBlock)root.FindName("TxtSettingsSecDisplayTitle");
+            rbScaleAuto = (RadioButton)root.FindName("RbScaleAuto");
+            rbScale100 = (RadioButton)root.FindName("RbScale100");
+            rbScale90 = (RadioButton)root.FindName("RbScale90");
+            rbScale80 = (RadioButton)root.FindName("RbScale80");
+            txtCurrentScaleActive = (TextBlock)root.FindName("TxtCurrentScaleActive");
+
+            if (rbScaleAuto != null) rbScaleAuto.Checked += delegate { displayScaleSetting = "Auto"; UpdateAutoResolutionScale(); };
+            if (rbScale100 != null) rbScale100.Checked += delegate { displayScaleSetting = "100%"; UpdateAutoResolutionScale(); };
+            if (rbScale90 != null) rbScale90.Checked += delegate { displayScaleSetting = "90%"; UpdateAutoResolutionScale(); };
+            if (rbScale80 != null) rbScale80.Checked += delegate { displayScaleSetting = "80%"; UpdateAutoResolutionScale(); };
+
             borderSettingsSec2 = (Border)root.FindName("BorderSettingsSec2");
             txtSettingsSec2Title = (TextBlock)root.FindName("TxtSettingsSec2Title");
             btnClearCache = (Button)root.FindName("BtnClearCache");
@@ -5103,7 +5171,13 @@ namespace FleetForge
                         {
                             settings.theme = currentThemeIsLight ? "light" : "dark";
                         }
+                        if (rbScale100 != null && rbScale100.IsChecked == true) displayScaleSetting = "100%";
+                        else if (rbScale90 != null && rbScale90.IsChecked == true) displayScaleSetting = "90%";
+                        else if (rbScale80 != null && rbScale80.IsChecked == true) displayScaleSetting = "80%";
+                        else displayScaleSetting = "Auto";
+                        settings.displayScale = displayScaleSetting;
                         SaveSettings();
+                        UpdateAutoResolutionScale();
                         ApplyTheme(GetCurrentThemeIsLight());
                         if (modalSettingsOverlay != null) modalSettingsOverlay.Visibility = Visibility.Collapsed;
                         MessageBox.Show("Preferences saved successfully!", "Settings Saved", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -5910,11 +5984,85 @@ namespace FleetForge
 
             BuildEmojiChips();
             BuildCloudPresets();
+
+            this.Loaded += delegate { UpdateAutoResolutionScale(); };
+            this.SizeChanged += delegate { UpdateAutoResolutionScale(); };
         }
 
         // =========================================================================
         // THEME MANAGEMENT & WINDOWS THEME DETECTION
         // =========================================================================
+
+        // =========================================================================
+        // AUTOMATIC RESOLUTION & UI SCALING ENGINE
+        // =========================================================================
+        private void UpdateAutoResolutionScale()
+        {
+            try
+            {
+                if (uiScaleTransform == null || rootGrid == null) return;
+
+                // Dynamically adjust Quick Setup Role Cards column layout on narrow widths
+                if (roleCardsGrid != null)
+                {
+                    double currentActualW = this.ActualWidth > 0 ? this.ActualWidth : this.Width;
+                    roleCardsGrid.Columns = currentActualW < 840 ? 1 : 2;
+                }
+
+                if (displayScaleSetting == "100%")
+                {
+                    uiScaleTransform.ScaleX = 1.0;
+                    uiScaleTransform.ScaleY = 1.0;
+                    if (txtCurrentScaleActive != null) txtCurrentScaleActive.Text = "Active: 100%";
+                    return;
+                }
+                if (displayScaleSetting == "90%")
+                {
+                    uiScaleTransform.ScaleX = 0.90;
+                    uiScaleTransform.ScaleY = 0.90;
+                    if (txtCurrentScaleActive != null) txtCurrentScaleActive.Text = "Active: 90%";
+                    return;
+                }
+                if (displayScaleSetting == "80%")
+                {
+                    uiScaleTransform.ScaleX = 0.80;
+                    uiScaleTransform.ScaleY = 0.80;
+                    if (txtCurrentScaleActive != null) txtCurrentScaleActive.Text = "Active: 80%";
+                    return;
+                }
+
+                // Auto Mode: dynamically calculate optimal layout scale based on window / screen bounds
+                double w = this.ActualWidth > 0 ? this.ActualWidth : this.Width;
+                double h = this.ActualHeight > 0 ? this.ActualHeight : this.Height;
+
+                if (w <= 0 || h <= 0) return;
+
+                const double refW = 1180.0;
+                const double refH = 850.0;
+
+                double scaleW = w / refW;
+                double scaleH = h / refH;
+
+                // Scale uniformly based on the most constrained dimension (typically vertical height on laptops)
+                double targetScale = Math.Min(scaleW, scaleH);
+
+                // Cap max scale to 1.0 on large displays (keep crisp 100% standard layout)
+                if (targetScale > 1.0) targetScale = 1.0;
+
+                // Minimum safe scale 0.72 so text remains easily readable even in small viewports
+                if (targetScale < 0.72) targetScale = 0.72;
+
+                uiScaleTransform.ScaleX = targetScale;
+                uiScaleTransform.ScaleY = targetScale;
+
+                if (txtCurrentScaleActive != null)
+                {
+                    txtCurrentScaleActive.Text = string.Format("Active: {0:P0}", targetScale);
+                }
+            }
+            catch { }
+        }
+
         public static bool IsWindowsLightTheme()
         {
             try
@@ -6446,6 +6594,15 @@ namespace FleetForge
                     if (chkSettingAutoTheme != null) chkSettingAutoTheme.IsChecked = (settings.theme == "system" || string.IsNullOrEmpty(settings.theme));
                     if (chkSettingSilent != null) chkSettingSilent.IsChecked = settings.silent;
                     if (chkSettingAgreements != null) chkSettingAgreements.IsChecked = settings.accept_agreements;
+                    string curScale = string.IsNullOrEmpty(settings.displayScale) ? "Auto" : settings.displayScale;
+                    if (rbScaleAuto != null) rbScaleAuto.IsChecked = (curScale == "Auto");
+                    if (rbScale100 != null) rbScale100.IsChecked = (curScale == "100%");
+                    if (rbScale90 != null) rbScale90.IsChecked = (curScale == "90%");
+                    if (rbScale80 != null) rbScale80.IsChecked = (curScale == "80%");
+                    if (txtCurrentScaleActive != null && uiScaleTransform != null)
+                    {
+                        txtCurrentScaleActive.Text = string.Format("Active: {0:P0}", uiScaleTransform.ScaleX);
+                    }
                 }
                 modalSettingsOverlay.Visibility = Visibility.Visible;
             }
@@ -7279,6 +7436,17 @@ namespace FleetForge
             if (txtBuilderDesc != null) { txtBuilderDesc.Background = inputBg; txtBuilderDesc.BorderBrush = inputBorder; txtBuilderDesc.Foreground = inputFg; }
             if (cmbBuilderCategory != null) { cmbBuilderCategory.Background = inputBg; cmbBuilderCategory.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF"); }
 
+            if (borderSettingsSecDisplay != null)
+            {
+                borderSettingsSecDisplay.Background = isLight ? HexBrush("#F8FAFC") : HexBrush("#11141A");
+                borderSettingsSecDisplay.BorderBrush = isLight ? HexBrush("#E2E8F0") : HexBrush("#232938");
+            }
+            if (txtSettingsSecDisplayTitle != null) txtSettingsSecDisplayTitle.Foreground = isLight ? HexBrush("#0284C7") : HexBrush("#38BDF8");
+            if (rbScaleAuto != null) rbScaleAuto.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (rbScale100 != null) rbScale100.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (rbScale90 != null) rbScale90.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            if (rbScale80 != null) rbScale80.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+
             if (btnCancelSettings != null)
             {
                 btnCancelSettings.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
@@ -7772,6 +7940,11 @@ namespace FleetForge
 
             txtCloudUrlInput.Text = settings.cloudConfigUrl ?? "";
             chkAutoSync.IsChecked = settings.autoSyncOnLaunch;
+            if (!string.IsNullOrEmpty(settings.displayScale))
+            {
+                displayScaleSetting = settings.displayScale;
+                UpdateAutoResolutionScale();
+            }
         }
 
         private void SaveSettings()

@@ -629,11 +629,22 @@ namespace FleetForge
         private void InitializeWindow()
         {
             this.Title = "FleetForge Setup Wizard — Love Malhotra";
-            this.Width = 680;
-            this.Height = 660;
-            this.MinWidth = 680;
-            this.MinHeight = 660;
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+
+            // Query active display WorkArea (screen minus Windows taskbar & docked bars)
+            Rect wa = SystemParameters.WorkArea;
+            const double desiredW = 680;
+            const double desiredH = 660;
+            double maxAllowedW = Math.Max(500, wa.Width - 16);
+            double maxAllowedH = Math.Max(460, wa.Height - 16);
+
+            this.Width = Math.Min(desiredW, maxAllowedW);
+            this.Height = Math.Min(desiredH, maxAllowedH);
+            this.MinWidth = Math.Min(560, wa.Width * 0.85);
+            this.MinHeight = Math.Min(480, wa.Height * 0.85);
+
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            this.Left = wa.Left + Math.Max(0.0, (wa.Width - this.Width) / 2.0);
+            this.Top = wa.Top + Math.Max(0.0, (wa.Height - this.Height) / 2.0);
             this.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#202020"));
             this.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F3F3"));
             this.FontFamily = new FontFamily("Segoe UI Variable Text, Segoe UI Variable, Segoe UI");
@@ -861,6 +872,13 @@ namespace FleetForge
 
             Grid root = (Grid)XamlReader.Parse(xaml);
             this.Content = root;
+
+            if (this.Width < 680 || this.Height < 660)
+            {
+                double setupScale = Math.Min(this.Width / 680.0, this.Height / 660.0);
+                setupScale = Math.Max(0.75, Math.Min(1.0, setupScale));
+                root.LayoutTransform = new ScaleTransform(setupScale, setupScale);
+            }
 
             txtInstallPath = (TextBox)root.FindName("TxtInstallPath");
             btnBrowse = (Button)root.FindName("BtnBrowse");

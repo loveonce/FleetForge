@@ -7,6 +7,9 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 ## [2.6.5] — 2026-11-16
 
 ### Added & Improved
+- **Automatic Display Resolution & UI Scaling Engine:** Dynamically queries the active display resolution, DPI scaling, and available Windows WorkArea bounds. Automatically scales the entire UI (fonts, cards, buttons, sidebars, and modals) down for compact screens (1366x768, 1280x720, 1080p @ 150% scaling) so controls are never oversized and buttons are never pushed beneath the taskbar.
+- **Display Scaling Preferences in Settings:** Added a dedicated Display Resolution & UI Scaling preference in the Settings modal with selectable modes: Auto (Adaptive), 100% (Standard), 90% (Compact), and 80% (Small Displays) with live active scale feedback.
+- **Responsive Modal Overlays & Flexible Viewports:** Standardized modal card dialogs with responsive maximum dimensions and flexible row heights so that inner checklist and search results scroll smoothly on short screens without clipping modal headers or action buttons.
 - **Dedicated Online Search Modal Popup:** Introduced an instant modal popup for live Winget online search directly from the All Applications catalog, featuring live status indicators, package metadata inspection, and one-click cloud additions.
 - **Unified Modern Item Card Design:** Completely standardized the table row cards in the Edit App Pack modal to match the All Applications catalog (10px rounded borders, active light-blue selection glow, 40x40 Fluent glyph badges, 2-line title/description hierarchy, and green status pill badges).
 - **Dedicated Top Choice 3D Icon:** Assigned a dedicated golden rosette award ribbon icon (`recommended.png`) to the Top Choice • Recommended pack, eliminating icon sharing with Minimal Essentials.
