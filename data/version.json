@@ -7,11 +7,11 @@
   "website": "https://www.google.com",
   "changelog": [
     "Official Release v2.7.0 Enterprise IT Edition with 100% QA certification",
+    "Unified common search box with automatic live Microsoft Winget cloud package integration in the main catalog table",
+    "Seamless continuous list displaying local packages first and live online packages appended cleanly without clutter or separator banners",
     "Automatic Display Resolution & UI Scaling Engine for small screens and laptops (720p, 768p, 1080p, 4K)",
     "User Display Zoom Settings with Auto, 100%, 90%, and 80% responsive presets",
-    "Dedicated Online Search Modal Popup with live status and instant cloud installs",
-    "Unified table design and responsive viewport constraints across all modal dialogs",
-    "Distinct Top Choice amber star icon and clean white-label direct download security",
+    "Eliminated redundant pagination and prompt buttons for an ultra-clean, streamlined user interface",
     "Comprehensive Enterprise QA Automation Suite with 100% Sandbox pass rate across 64 tests"
   ],
   "downloadUrl": "https://raw.githubusercontent.com/loveonce/FleetForge/main/FleetForge-Setup.exe"
