@@ -1,4 +1,4 @@
-{
+﻿{
   "_comment": "FleetForge Custom & Affiliate Software Catalog. Apps configured here take priority over data/apps.json with zero duplicates. You can customize downloadUrl to point to affiliate links or direct installers.",
   "version": "1.0",
   "name": "Custom & Affiliate Apps Catalog",
