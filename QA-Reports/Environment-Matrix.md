@@ -26,9 +26,9 @@
 | **2560 x 1440** | 16:9 | 2K QHD Desktop Monitor | 1.00x | **PASS** | Full 2-column preset card view rendered. |
 | **1920 x 1080** | 16:9 | Standard Full HD Display | 1.00x | **PASS** | Baseline design resolution. Zero clipping. |
 | **1600 x 900** | 16:9 | 900p HD+ Display | 0.95x | **PASS** | Responsive card padding and auto-scaling active. |
-| **1366 x 768** | 16:9 | Common Budget Laptop | 0.85x | **PASS** | Verified via [render_1366x768.png](file:///E:/AI_Technology/My%20Tools/FleetForge/QA-Reports/Evidence/Screenshots/render_1366x768.png). |
-| **1280 x 720** | 16:9 | 720p HD Display / VM | 0.80x | **PASS** | Verified via [render_1280x720.png](file:///E:/AI_Technology/My%20Tools/FleetForge/QA-Reports/Evidence/Screenshots/render_1280x720.png). |
-| **1024 x 600** | 128:75 | Netbook / POS Terminal | 0.70x | **PASS** | Verified via [render_1024x600.png](file:///E:/AI_Technology/My%20Tools/FleetForge/QA-Reports/Evidence/Screenshots/render_1024x600.png). |
+| **1366 x 768** | 16:9 | Common Budget Laptop | 0.85x | **PASS** | Verified via `render_1366x768.png`. |
+| **1280 x 720** | 16:9 | 720p HD Display / VM | 0.80x | **PASS** | Verified via `render_1280x720.png`. |
+| **1024 x 600** | 128:75 | Netbook / POS Terminal | 0.70x | **PASS** | Verified via `render_1024x600.png`. |
 
 ---
 
@@ -36,7 +36,7 @@
 
 | Security Context | Execution Level | Status | Behavior Verified |
 |---|---|:---:|---|
-| **Elevated Administrator** | `requireAdministrator` | **PASS** | Allows full silent installation of packages into `C:\Program Files` and ARP registry registration. |
+| **Elevated Administrator** | `requireAdministrator` | **PASS** | Allows full silent installation of packages into `%ProgramFiles%` and ARP registry registration. |
 | **Standard User / Invoker** | `asInvoker` via `RunAsInvoker` | **PASS** | Full portable operation, UI catalog exploration, and pack editing without triggering UAC prompt. |
 | **Windows Sandbox User** | `WDAGUtilityAccount` | **PASS** | Automated silent provisioning executes with 0 permission exceptions. |
 | **Windows Defender SmartScreen** | Default Enforced | **PASS** | Executable header integrity verified; valid PE checksums and assembly version metadata. |
@@ -58,8 +58,8 @@
 
 | Storage Configuration | Path / Type | Status | Outcome |
 |---|---|:---:|---|
-| **Read-Only Source Volume** | `C:\FleetForgeSource` (WSB Host Mount) | **PASS** | App writes only to writable results and AppData directories; zero write attempts to source. |
-| **Unicode Directory Path** | `C:\FleetForge_æµ‹è¯•_ðŸš€\` | **PASS** | Binary loads, executes, and writes config files with multi-byte Unicode paths. |
+| **Read-Only Source Volume** | Read-Only Host Mount | **PASS** | App writes only to writable results and AppData directories; zero write attempts to source. |
+| **Unicode Directory Path** | Multi-byte Unicode path | **PASS** | Binary loads, executes, and writes config files with multi-byte Unicode paths. |
 | **Extreme Long Path** | Depth > 260 characters | **PASS** | Windows 10/11 long path manifest flag enabled; no path truncation exceptions. |
 | **Corrupted Config Payload** | 0-byte or malformed `settings.json` | **PASS** | Reverts safely to default settings object without application crash. |
 

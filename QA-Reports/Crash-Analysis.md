@@ -56,5 +56,5 @@ We subjected FleetForge v2.7.0 to four destructive failure scenarios to analyze 
 
 During the entire automated verification suite (64 tests executed), **zero unhandled exceptions or Windows Error Reporting (WER) crash dumps** were triggered.
 
-The evidence directory [QA-Reports/Evidence/CrashDumps/](file:///E:/AI_Technology/My%20Tools/FleetForge/QA-Reports/Evidence/CrashDumps/) contains zero dump files (`0 .dmp`), confirming zero native crashes, zero access violations (`0xC0000005`), and zero stack overflows (`0xC00000FD`).
+The evidence directory `QA-Reports/Evidence/CrashDumps/` contains zero dump files (`0 .dmp`), confirming zero native crashes, zero access violations (`0xC0000005`), and zero stack overflows (`0xC00000FD`).
 

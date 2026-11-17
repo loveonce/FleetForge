@@ -45,7 +45,7 @@ The verification scope spanned 10 distinct technical phases comprising **64 auto
 2. **100% Isolated Sandbox Automation Framework:**
    - Provisioned reproducible Windows Sandbox infrastructure (`qa/Sandbox-Test.wsb`, `qa/sandbox-setup.ps1`, `qa/sandbox-run-tests.ps1`, `qa/sandbox-cleanup.ps1`, `qa/sandbox-report.ps1`).
    - Mapped host repository as read-only (`ReadOnly=true`), isolating all runtime side-effects to disposable sandbox storage.
-   - Captured forensic logs, execution traces, and runtime telemetry under [QA-Reports/Evidence/](file:///E:/AI_Technology/My%20Tools/FleetForge/QA-Reports/Evidence/).
+   - Captured forensic logs, execution traces, and runtime telemetry under `QA-Reports/Evidence/`.
 
 3. **Robust Process Lifecycle & UAC Architecture:**
    - Validated dual execution paradigms: full administrative system-level package provisioning via Windows Winget CLI, alongside isolated testing via `RunAsInvoker` tokens.

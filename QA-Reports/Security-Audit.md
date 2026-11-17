@@ -60,7 +60,7 @@ Testing verified that the application operates strictly within its declared secu
     - `System.Core` (v4.0.0.0)
     - `System.Web.Extensions` (v4.0.0.0)
   - Zero private, unmanaged, or unsigned dynamic libraries are loaded from the application folder.
-  - P/Invoke calls (`dwmapi.dll`, `user32.dll`) are loaded exclusively from the protected `C:\Windows\System32\` directory with OS-enforced SafeDllSearchMode.
+  - P/Invoke calls (`dwmapi.dll`, `user32.dll`) are loaded exclusively from the protected `%SystemRoot%\System32\` directory with OS-enforced SafeDllSearchMode.
 - **Verdict:** **PASS â€” DLL Preloading Vector Eliminated.**
 
 ### 2.4 Credential Leaks & Secret Exposure (`SEC-004`)
@@ -91,7 +91,7 @@ The web companion tools (`tools/RecommendedAppsBuilder.html` and `tools/Affiliat
    - User inputs (software names, descriptions, URLs) are escaped via explicit HTML entity encoding or assigned to safe DOM properties (`element.textContent`, `element.value`).
    - InnerHTML interpolation of unvalidated external content is strictly prohibited.
 2. **Local File Inclusion:**
-   - Companion tools execute entirely offline via local file protocols (`file:///`), with no dynamic external scripts or third-party tracking beacons.
+   - Companion tools execute entirely offline via local file access, with no dynamic external scripts or third-party tracking beacons.
 
 ---
 

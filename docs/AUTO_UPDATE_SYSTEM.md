@@ -70,7 +70,7 @@ FleetForge uses a centralized GitHub Release Manifest (`version.json`) hosted on
 [Current FleetForge.exe gracefully exits via Application.Current.Shutdown()]
              |
              v
-[Setup Wizard extracts updated binaries to C:\Program Files\FleetForge]
+[Setup Wizard extracts updated binaries to %ProgramFiles%\FleetForge]
              |
              v
 [Setup Wizard relaunches updated FleetForge.exe]

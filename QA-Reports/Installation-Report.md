@@ -21,8 +21,8 @@ All 9 test cases in Phase 5 achieved a **PASS** status. The installer supports h
 |---|---|:---:|:---:|:---:|---|
 | **INST-001** | Fresh Silent Installation | CLI (`/silent`) | 177 ms | **PASS** | Deployed application files into `%LOCALAPPDATA%\FleetForge\`. |
 | **INST-002** | GUI Interactive Installation | Windowed UI | 2,015 ms | **PASS** | Setup GUI window launched, bound DWM chrome, and terminated cleanly. |
-| **INST-003** | Custom Target Path Installation | CLI (`/dir="C:\FleetForgeCustomDir"`) | 159 ms | **PASS** | Installer parsed custom destination override accurately. |
-| **INST-004** | Unicode Path Installation | File I/O (`C:\FleetForge_æµ‹è¯•_ðŸš€\`) | 5 ms | **PASS** | Binary copied and initialized without character encoding faults. |
+| **INST-003** | Custom Target Path Installation | CLI (`/dir="%PROGRAMFILES%\FleetForge"`) | 159 ms | **PASS** | Installer parsed custom destination override accurately. |
+| **INST-004** | Unicode Path Installation | Multi-byte Unicode Path Test | 5 ms | **PASS** | Binary copied and initialized without character encoding faults. |
 | **INST-005** | Upgrade & Overwrite Existing Install | CLI (`/silent /update`) | 159 ms | **PASS** | Overwrote older version payload cleanly without file lock failures. |
 | **INST-006** | Desktop & Start Menu Shortcuts | Shell Inspection | 0 ms | **PASS** | Shortcuts created at `%USERPROFILE%\Desktop\FleetForge.lnk` and Start Menu. |
 | **INST-007** | ARP Registry Registration | Registry Inspection | 8 ms | **PASS** | Created `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge` (Version 2.7.0). |
@@ -52,7 +52,7 @@ To deploy FleetForge across an enterprise fleet using Microsoft Intune, SCCM, or
 Start-Process -FilePath "FleetForge-Setup.exe" -ArgumentList "/silent /update" -Wait
 
 # Custom Target Installation Directory
-Start-Process -FilePath "FleetForge-Setup.exe" -ArgumentList "/silent /dir=`"C:\EnterpriseApps\FleetForge`"" -Wait
+Start-Process -FilePath "FleetForge-Setup.exe" -ArgumentList "/silent /dir=`"%ProgramFiles%\FleetForge`"" -Wait
 
 # Silent Uninstallation
 Start-Process -FilePath "$env:LOCALAPPDATA\FleetForge\Uninstall.exe" -ArgumentList "/silent" -Wait

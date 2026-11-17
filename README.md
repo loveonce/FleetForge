@@ -10,7 +10,7 @@
 
 A single, self-contained Windows setup wizard that deploys FleetForge onto any PC:
 * **Single-File Setup:** Share `FleetForge-Setup.exe` across IT teams via USB, Google Drive, OneDrive, or network share.
-* **Standard Windows Installation:** Installs to `C:\Program Files\FleetForge`.
+* **Standard Windows Installation:** Installs to `%ProgramFiles%\FleetForge`.
 * **Desktop & Start Menu Shortcuts:** Creates clean shortcuts with custom high-resolution icon (`src/assets/appicon.ico`).
 * **Windows Installed Apps Integration:** Registers in `Settings > Apps > Installed apps` with an official clean uninstaller (`Uninstall.exe`).
 

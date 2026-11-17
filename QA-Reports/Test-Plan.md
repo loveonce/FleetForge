@@ -3,7 +3,7 @@
 **Version:** 2.7.0  
 **Document Revision:** 3.0  
 **Target Platform:** Windows 10 & Windows 11 (x64 / ARM64 via Emulation)  
-**Execution Environment:** Windows Sandbox (`C:\Users\WDAGUtilityAccount\Desktop`)  
+**Execution Environment:** Isolated Windows Sandbox Environment  
 **Security Classification:** Confidential â€” Internal Engineering Document  
 
 ---
