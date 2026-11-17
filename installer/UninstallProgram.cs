@@ -13,9 +13,9 @@ using Microsoft.Win32;
 [assembly: AssemblyCopyright("Copyright © 2026 Love Malhotra. All rights reserved.")]
 [assembly: AssemblyTrademark("FleetForge™")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("2.6.5.0")]
-[assembly: AssemblyFileVersion("2.6.5.0")]
-[assembly: AssemblyInformationalVersion("2.6.5")]
+[assembly: AssemblyVersion("2.7.0.0")]
+[assembly: AssemblyFileVersion("2.7.0.0")]
+[assembly: AssemblyInformationalVersion("2.7.0")]
 
 namespace FleetForge
 {

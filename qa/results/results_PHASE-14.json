@@ -3,7 +3,7 @@
         "id":  "CRASH-001",
         "name":  "Process Force-Kill Recovery State",
         "error":  "",
-        "durationMs":  1531,
+        "durationMs":  1552,
         "evidence":  "Relaunched healthy after sudden SIGKILL",
         "phase":  "PHASE-14",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "CRASH-004",
         "name":  "Multi-Instance Mutex \u0026 Concurrency Lock",
         "error":  "",
-        "durationMs":  1533,
+        "durationMs":  1524,
         "evidence":  "Concurrent instance execution verified without file contention",
         "phase":  "PHASE-14",
         "status":  "PASS"

@@ -1,4 +1,4 @@
-BugID,Title,Severity,Component,DetectedIn,RootCause,Resolution,Status,VerifiedBy
+﻿BugID,Title,Severity,Component,DetectedIn,RootCause,Resolution,Status,VerifiedBy
 BUG-001,UI clipping and off-screen overflow on 768p and 720p laptop screens,High,UI Engine,Manual QA,Fixed pixel dimensions exceeding compact viewport WorkArea,Implemented dynamic WorkArea detection with LayoutTransform auto-scaling down to 0.80x and constrained modal dialog MaxWidth/MaxHeight,FIXED,UI-002
 BUG-002,Online Search Apps button did not open dedicated modal,Medium,UI Modals,User Request,Feature was originally integrated directly into main window catalog,Created dedicated search online modal with live Winget querying and unified table styling,FIXED,FUNC-007
 BUG-003,Remove All Software button cluttered custom pack editor bar,Low,Pack Editor,User Request,Legacy button remained in pack editing toolbar,Removed button and matched Edit Pack table design style with All Applications catalog,FIXED,FUNC-008
@@ -9,3 +9,4 @@ BUG-007,Automated process launch failed with Win32 Error 50 in headless executio
 BUG-008,CreateProcessW failed with Win32 Error 740 (Elevation Required),High,QA Harness,Automated Suite,Embedded requireAdministrator manifest prevented non-elevated test automation,Set __COMPAT_LAYER=RunAsInvoker environment variable inside test process harness,FIXED,INST-001
 BUG-009,PSInvalidOperationException in concurrent Task.WaitAll verification,Medium,Diagnostics,Automated Suite,PowerShell scriptblocks require Runspace TLS context unavailable on ThreadPool,Replaced scriptblock delegate with native Task.Delay concurrency tasks,FIXED,DOTNET-002
 BUG-010,Role preset group count failed on recommended_apps.json schema,Low,Test Suite,Automated Suite,Test inspected recommended_apps.json which uses singular group rather than groups array,Updated FUNC-003 test to inspect data/apps.json groups collection,FIXED,FUNC-003
+

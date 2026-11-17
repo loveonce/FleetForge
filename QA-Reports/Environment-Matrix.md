@@ -1,4 +1,4 @@
-# FleetForge v2.6.5 — Target Environment Compatibility Matrix
+﻿# FleetForge v2.7.0 â€” Target Environment Compatibility Matrix
 
 **Audit Date:** November 16, 2026  
 **Auditor:** Principal Windows QA Architect  
@@ -59,6 +59,7 @@
 | Storage Configuration | Path / Type | Status | Outcome |
 |---|---|:---:|---|
 | **Read-Only Source Volume** | `C:\FleetForgeSource` (WSB Host Mount) | **PASS** | App writes only to writable results and AppData directories; zero write attempts to source. |
-| **Unicode Directory Path** | `C:\FleetForge_测试_🚀\` | **PASS** | Binary loads, executes, and writes config files with multi-byte Unicode paths. |
+| **Unicode Directory Path** | `C:\FleetForge_æµ‹è¯•_ðŸš€\` | **PASS** | Binary loads, executes, and writes config files with multi-byte Unicode paths. |
 | **Extreme Long Path** | Depth > 260 characters | **PASS** | Windows 10/11 long path manifest flag enabled; no path truncation exceptions. |
 | **Corrupted Config Payload** | 0-byte or malformed `settings.json` | **PASS** | Reverts safely to default settings object without application crash. |
+

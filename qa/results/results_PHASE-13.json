@@ -3,8 +3,8 @@
         "id":  "PERF-001",
         "name":  "Cold Start \u0026 Warm Start Launch Latency",
         "error":  "",
-        "durationMs":  635,
-        "evidence":  "Cold start achieved in 635 ms (\u003c3000ms threshold)",
+        "durationMs":  631,
+        "evidence":  "Cold start achieved in 631 ms (\u003c3000ms threshold)",
         "phase":  "PHASE-13",
         "status":  "PASS"
     },
@@ -12,8 +12,8 @@
         "id":  "PERF-002",
         "name":  "Idle \u0026 Peak Working Set Memory Footprint",
         "error":  "",
-        "durationMs":  2025,
-        "evidence":  "Memory footprint: 198.04 MB",
+        "durationMs":  2026,
+        "evidence":  "Memory footprint: 164.39 MB",
         "phase":  "PHASE-13",
         "status":  "PASS"
     },
@@ -21,8 +21,8 @@
         "id":  "PERF-003",
         "name":  "16,349 Packages Search Query Benchmark (\u003c50ms)",
         "error":  "",
-        "durationMs":  152,
-        "evidence":  "Searched 16,349 apps in 152 ms, matched 162 items",
+        "durationMs":  118,
+        "evidence":  "Searched 16,349 apps in 118 ms, matched 162 items",
         "phase":  "PHASE-13",
         "status":  "PASS"
     },
@@ -30,7 +30,7 @@
         "id":  "PERF-004",
         "name":  "Repeated Rapid Launch/Exit Stress (20 iterations)",
         "error":  "",
-        "durationMs":  1576,
+        "durationMs":  1568,
         "evidence":  "5 rapid launch/exit cycles completed without process or lock leak",
         "phase":  "PHASE-13",
         "status":  "PASS"
@@ -39,8 +39,8 @@
         "id":  "PERF-005",
         "name":  "Handle Count \u0026 GDI Resource Stability",
         "error":  "",
-        "durationMs":  1016,
-        "evidence":  "Total handles: 730 (optimal \u003c800)",
+        "durationMs":  1018,
+        "evidence":  "Total handles: 727 (optimal \u003c800)",
         "phase":  "PHASE-13",
         "status":  "PASS"
     }

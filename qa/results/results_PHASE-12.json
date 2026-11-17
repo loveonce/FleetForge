@@ -21,7 +21,7 @@
         "id":  "SEC-003",
         "name":  "DLL Preloading \u0026 Hijacking Analysis",
         "error":  "",
-        "durationMs":  30,
+        "durationMs":  36,
         "evidence":  "Zero unmanaged local dynamic dependencies; 100% pure BCL",
         "phase":  "PHASE-12",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "SEC-004",
         "name":  "Hardcoded Secrets \u0026 Credential Leak Audit",
         "error":  "",
-        "durationMs":  25,
+        "durationMs":  35,
         "evidence":  "Zero hardcoded API keys, passwords, or tokens in source code",
         "phase":  "PHASE-12",
         "status":  "PASS"

@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$SourceDir = "C:\FleetForgeSource",
     [string]$ResultsDir = "C:\TestResults"
 )
@@ -244,8 +244,8 @@ try {
     $verPath = Join-Path $SourceDir "data\version.json"
     $verObj = Get-Content -Path $verPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $sw.Stop()
-    if ($verObj.version -eq "2.6.5" -and $verObj.versionCode -eq 265) {
-        Add-Result "FUNC-012" "Update Center Manifest Detection & Parsing" "PASS" $sw.ElapsedMilliseconds "" "Version 2.6.5 manifest validated"
+    if ($verObj.version -eq "2.7.0" -and $verObj.versionCode -eq 270) {
+        Add-Result "FUNC-012" "Update Center Manifest Detection & Parsing" "PASS" $sw.ElapsedMilliseconds "" "Version 2.7.0 manifest validated"
     } else {
         Add-Result "FUNC-012" "Update Center Manifest Detection & Parsing" "FAIL" $sw.ElapsedMilliseconds "Version mismatch: $($verObj.version)" ""
     }

@@ -3,7 +3,7 @@
         "id":  "NET-001",
         "name":  "Total Offline Air-Gapped Operation",
         "error":  "",
-        "durationMs":  22,
+        "durationMs":  21,
         "evidence":  "Local offline catalog cached with zero online dependency",
         "phase":  "PHASE-11",
         "status":  "PASS"
@@ -12,7 +12,7 @@
         "id":  "NET-002",
         "name":  "DNS Failure \u0026 Connection Timeout Trapping",
         "error":  "",
-        "durationMs":  16,
+        "durationMs":  162,
         "evidence":  "DNS failure caught safely within timeout window",
         "phase":  "PHASE-11",
         "status":  "PASS"
@@ -21,7 +21,7 @@
         "id":  "NET-003",
         "name":  "Multi-Source CDN / GitHub Failover Logic",
         "error":  "",
-        "durationMs":  26,
+        "durationMs":  25,
         "evidence":  "Multi-endpoint URLs configured: GitHub Origin \u0026 jsDelivr Edge",
         "phase":  "PHASE-11",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "NET-004",
         "name":  "Corrupt Server Response (HTTP 500/HTML Error)",
         "error":  "",
-        "durationMs":  3,
+        "durationMs":  4,
         "evidence":  "HTML error body safely rejected by JSON deserializer",
         "phase":  "PHASE-11",
         "status":  "PASS"

@@ -3,20 +3,20 @@
     "environment":  {
 
                     },
-    "version":  "2.6.5",
+    "version":  "2.7.0",
     "passed":  64,
     "failed":  0,
     "passRatePercent":  100,
     "totalTests":  64,
     "notRun":  0,
-    "runDate":  "2026-11-16 19.39.16",
+    "runDate":  "2026-11-17 10.25.11",
     "tests":  {
                   "value":  [
                                 {
                                     "id":  "INST-001",
                                     "name":  "Fresh Silent Installation",
                                     "error":  "",
-                                    "durationMs":  177,
+                                    "durationMs":  1118,
                                     "evidence":  "Silent install executed successfully",
                                     "phase":  "PHASE-05",
                                     "status":  "PASS"
@@ -43,7 +43,7 @@
                                     "id":  "INST-005",
                                     "name":  "Upgrade \u0026 Overwrite Existing Install",
                                     "error":  "",
-                                    "durationMs":  159,
+                                    "durationMs":  155,
                                     "evidence":  "Silent upgrade and overwrite routine validated",
                                     "phase":  "PHASE-05",
                                     "status":  "PASS"
@@ -52,7 +52,7 @@
                                     "id":  "INST-003",
                                     "name":  "Custom Target Path Installation",
                                     "error":  "",
-                                    "durationMs":  159,
+                                    "durationMs":  156,
                                     "evidence":  "Custom path parameter accepted",
                                     "phase":  "PHASE-05",
                                     "status":  "PASS"
@@ -70,7 +70,7 @@
                                     "id":  "INST-002",
                                     "name":  "GUI Interactive Installation",
                                     "error":  "",
-                                    "durationMs":  2015,
+                                    "durationMs":  2024,
                                     "evidence":  "Installer launched GUI window and responded",
                                     "phase":  "PHASE-05",
                                     "status":  "PASS"
@@ -97,7 +97,7 @@
                                     "id":  "FUNC-001",
                                     "name":  "Application Cold Launch \u0026 SplashScreen",
                                     "error":  "",
-                                    "durationMs":  2030,
+                                    "durationMs":  2349,
                                     "evidence":  "FleetForge process launched and initialized",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -106,7 +106,7 @@
                                     "id":  "FUNC-002",
                                     "name":  "Catalog Database (16,349 Apps) Integrity \u0026 Loading",
                                     "error":  "",
-                                    "durationMs":  268,
+                                    "durationMs":  259,
                                     "evidence":  "Loaded 16350 applications successfully",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -115,7 +115,7 @@
                                     "id":  "FUNC-003",
                                     "name":  "Role Presets Selection \u0026 App Count Synchronization",
                                     "error":  "",
-                                    "durationMs":  332,
+                                    "durationMs":  357,
                                     "evidence":  "Found 5 role preset groups",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -124,7 +124,7 @@
                                     "id":  "FUNC-004",
                                     "name":  "Catalog Search \u0026 Real-time Filter Debounce",
                                     "error":  "",
-                                    "durationMs":  103,
+                                    "durationMs":  113,
                                     "evidence":  "Found 19 results for \u0027chrome\u0027",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -133,7 +133,7 @@
                                     "id":  "FUNC-005",
                                     "name":  "Category Pill Filtering \u0026 Master Checkbox",
                                     "error":  "",
-                                    "durationMs":  30,
+                                    "durationMs":  31,
                                     "evidence":  "Found 9 distinct categories",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -178,7 +178,7 @@
                                     "id":  "FUNC-010",
                                     "name":  "Export \u0026 Import Custom Pack JSON Workflow",
                                     "error":  "",
-                                    "durationMs":  5,
+                                    "durationMs":  12,
                                     "evidence":  "Pack exported and re-imported successfully",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
@@ -197,7 +197,7 @@
                                     "name":  "Update Center Manifest Detection \u0026 Parsing",
                                     "error":  "",
                                     "durationMs":  0,
-                                    "evidence":  "Version 2.6.5 manifest validated",
+                                    "evidence":  "Version 2.7.0 manifest validated",
                                     "phase":  "PHASE-06",
                                     "status":  "PASS"
                                 },
@@ -223,7 +223,7 @@
                                     "id":  "UI-002",
                                     "name":  "Responsive Resolution Scaling (1080p, 768p, 720p)",
                                     "error":  "",
-                                    "durationMs":  22,
+                                    "durationMs":  21,
                                     "evidence":  "UpdateAutoResolutionScale engine found and verified",
                                     "phase":  "PHASE-07",
                                     "status":  "PASS"
@@ -241,7 +241,7 @@
                                     "id":  "UI-004",
                                     "name":  "Windows Light \u0026 Dark Theme Real-time Sync",
                                     "error":  "",
-                                    "durationMs":  4,
+                                    "durationMs":  3,
                                     "evidence":  "Theme detection returned: isLight = True",
                                     "phase":  "PHASE-07",
                                     "status":  "PASS"
@@ -295,7 +295,7 @@
                                     "id":  "DOTNET-002",
                                     "name":  "Zero-Leak Threading \u0026 Background Worker Safety",
                                     "error":  "",
-                                    "durationMs":  25,
+                                    "durationMs":  26,
                                     "evidence":  "10 concurrent background worker tasks executed and completed cleanly",
                                     "phase":  "PHASE-08",
                                     "status":  "PASS"
@@ -304,7 +304,7 @@
                                     "id":  "DOTNET-003",
                                     "name":  "JSON Serialization Edge Cases \u0026 Extreme Payloads",
                                     "error":  "",
-                                    "durationMs":  64,
+                                    "durationMs":  69,
                                     "evidence":  "Serialized and restored 5,000 item complex payload",
                                     "phase":  "PHASE-08",
                                     "status":  "PASS"
@@ -331,8 +331,8 @@
                                     "id":  "DOTNET-006",
                                     "name":  "Memory Disposal \u0026 Large Object Heap Allocations",
                                     "error":  "",
-                                    "durationMs":  85,
-                                    "evidence":  "GC collected memory cleanly (delta: 90.85 KB)",
+                                    "durationMs":  89,
+                                    "evidence":  "GC collected memory cleanly (delta: 91.59 KB)",
                                     "phase":  "PHASE-08",
                                     "status":  "PASS"
                                 },
@@ -340,7 +340,7 @@
                                     "id":  "JS-001",
                                     "name":  "AffiliateAppsBuilder HTML Syntax \u0026 ES6 Validation",
                                     "error":  "",
-                                    "durationMs":  18,
+                                    "durationMs":  33,
                                     "evidence":  "Validated HTML5 structure and inline JS engine",
                                     "phase":  "PHASE-09",
                                     "status":  "PASS"
@@ -349,7 +349,7 @@
                                     "id":  "JS-002",
                                     "name":  "RecommendedAppsBuilder HTML Syntax \u0026 DOM Events",
                                     "error":  "",
-                                    "durationMs":  1,
+                                    "durationMs":  21,
                                     "evidence":  "Render routines and event bindings verified",
                                     "phase":  "PHASE-09",
                                     "status":  "PASS"
@@ -358,7 +358,7 @@
                                     "id":  "JS-003",
                                     "name":  "apps_data.js Global Catalog Array Integrity",
                                     "error":  "",
-                                    "durationMs":  10,
+                                    "durationMs":  21,
                                     "evidence":  "Standalone tools catalog data verified",
                                     "phase":  "PHASE-09",
                                     "status":  "PASS"
@@ -430,7 +430,7 @@
                                     "id":  "NET-001",
                                     "name":  "Total Offline Air-Gapped Operation",
                                     "error":  "",
-                                    "durationMs":  22,
+                                    "durationMs":  21,
                                     "evidence":  "Local offline catalog cached with zero online dependency",
                                     "phase":  "PHASE-11",
                                     "status":  "PASS"
@@ -439,7 +439,7 @@
                                     "id":  "NET-002",
                                     "name":  "DNS Failure \u0026 Connection Timeout Trapping",
                                     "error":  "",
-                                    "durationMs":  16,
+                                    "durationMs":  162,
                                     "evidence":  "DNS failure caught safely within timeout window",
                                     "phase":  "PHASE-11",
                                     "status":  "PASS"
@@ -448,7 +448,7 @@
                                     "id":  "NET-003",
                                     "name":  "Multi-Source CDN / GitHub Failover Logic",
                                     "error":  "",
-                                    "durationMs":  26,
+                                    "durationMs":  25,
                                     "evidence":  "Multi-endpoint URLs configured: GitHub Origin \u0026 jsDelivr Edge",
                                     "phase":  "PHASE-11",
                                     "status":  "PASS"
@@ -457,7 +457,7 @@
                                     "id":  "NET-004",
                                     "name":  "Corrupt Server Response (HTTP 500/HTML Error)",
                                     "error":  "",
-                                    "durationMs":  3,
+                                    "durationMs":  4,
                                     "evidence":  "HTML error body safely rejected by JSON deserializer",
                                     "phase":  "PHASE-11",
                                     "status":  "PASS"
@@ -484,7 +484,7 @@
                                     "id":  "SEC-003",
                                     "name":  "DLL Preloading \u0026 Hijacking Analysis",
                                     "error":  "",
-                                    "durationMs":  30,
+                                    "durationMs":  36,
                                     "evidence":  "Zero unmanaged local dynamic dependencies; 100% pure BCL",
                                     "phase":  "PHASE-12",
                                     "status":  "PASS"
@@ -493,7 +493,7 @@
                                     "id":  "SEC-004",
                                     "name":  "Hardcoded Secrets \u0026 Credential Leak Audit",
                                     "error":  "",
-                                    "durationMs":  25,
+                                    "durationMs":  35,
                                     "evidence":  "Zero hardcoded API keys, passwords, or tokens in source code",
                                     "phase":  "PHASE-12",
                                     "status":  "PASS"
@@ -511,8 +511,8 @@
                                     "id":  "PERF-001",
                                     "name":  "Cold Start \u0026 Warm Start Launch Latency",
                                     "error":  "",
-                                    "durationMs":  635,
-                                    "evidence":  "Cold start achieved in 635 ms (\u003c3000ms threshold)",
+                                    "durationMs":  631,
+                                    "evidence":  "Cold start achieved in 631 ms (\u003c3000ms threshold)",
                                     "phase":  "PHASE-13",
                                     "status":  "PASS"
                                 },
@@ -520,8 +520,8 @@
                                     "id":  "PERF-002",
                                     "name":  "Idle \u0026 Peak Working Set Memory Footprint",
                                     "error":  "",
-                                    "durationMs":  2025,
-                                    "evidence":  "Memory footprint: 198.04 MB",
+                                    "durationMs":  2026,
+                                    "evidence":  "Memory footprint: 164.39 MB",
                                     "phase":  "PHASE-13",
                                     "status":  "PASS"
                                 },
@@ -529,8 +529,8 @@
                                     "id":  "PERF-003",
                                     "name":  "16,349 Packages Search Query Benchmark (\u003c50ms)",
                                     "error":  "",
-                                    "durationMs":  152,
-                                    "evidence":  "Searched 16,349 apps in 152 ms, matched 162 items",
+                                    "durationMs":  118,
+                                    "evidence":  "Searched 16,349 apps in 118 ms, matched 162 items",
                                     "phase":  "PHASE-13",
                                     "status":  "PASS"
                                 },
@@ -538,7 +538,7 @@
                                     "id":  "PERF-004",
                                     "name":  "Repeated Rapid Launch/Exit Stress (20 iterations)",
                                     "error":  "",
-                                    "durationMs":  1576,
+                                    "durationMs":  1568,
                                     "evidence":  "5 rapid launch/exit cycles completed without process or lock leak",
                                     "phase":  "PHASE-13",
                                     "status":  "PASS"
@@ -547,8 +547,8 @@
                                     "id":  "PERF-005",
                                     "name":  "Handle Count \u0026 GDI Resource Stability",
                                     "error":  "",
-                                    "durationMs":  1016,
-                                    "evidence":  "Total handles: 730 (optimal \u003c800)",
+                                    "durationMs":  1018,
+                                    "evidence":  "Total handles: 727 (optimal \u003c800)",
                                     "phase":  "PHASE-13",
                                     "status":  "PASS"
                                 },
@@ -556,7 +556,7 @@
                                     "id":  "CRASH-001",
                                     "name":  "Process Force-Kill Recovery State",
                                     "error":  "",
-                                    "durationMs":  1531,
+                                    "durationMs":  1552,
                                     "evidence":  "Relaunched healthy after sudden SIGKILL",
                                     "phase":  "PHASE-14",
                                     "status":  "PASS"
@@ -583,7 +583,7 @@
                                     "id":  "CRASH-004",
                                     "name":  "Multi-Instance Mutex \u0026 Concurrency Lock",
                                     "error":  "",
-                                    "durationMs":  1533,
+                                    "durationMs":  1524,
                                     "evidence":  "Concurrent instance execution verified without file contention",
                                     "phase":  "PHASE-14",
                                     "status":  "PASS"

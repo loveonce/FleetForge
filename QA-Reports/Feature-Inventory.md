@@ -1,6 +1,6 @@
-# FleetForge v2.6.5 — Complete Application Feature Inventory & Traceability Matrix
+﻿# FleetForge v2.7.0 â€” Complete Application Feature Inventory & Traceability Matrix
 
-**Version:** 2.6.5  
+**Version:** 2.7.0  
 **Generated:** November 16, 2026  
 **Audience:** QA Engineers, Product Managers, Developers  
 
@@ -22,7 +22,7 @@
 | **Packs** | `FEAT-010` | Pack Editor Modal | In-app modal dialog to add, remove, and reorder apps, with dynamic emoji icon cycling. | Med | `FUNC-008` |
 | **Packs** | `FEAT-011` | Pack Import/Export | JSON-based import and export engine allowing enterprise IT admins to share customized presets. | Med | `FUNC-010` |
 | **Online** | `FEAT-012` | Online Winget Search Modal | Dedicated pop-up search dialog querying Microsoft Winget repository for apps outside local database. | High | `FUNC-007` |
-| **Top Choice** | `FEAT-013` | Curated Affiliate & Partner Tools | Distinct visual identity (⭐ amber badge, no affiliate tag leakage, hidden direct download URLs). | High | `JS-001`, `FUNC-009` |
+| **Top Choice** | `FEAT-013` | Curated Affiliate & Partner Tools | Distinct visual identity (â­ amber badge, no affiliate tag leakage, hidden direct download URLs). | High | `JS-001`, `FUNC-009` |
 | **Custom App** | `FEAT-014` | Custom App Builder Tool | Standalone HTML5 web application for generating customized `custom_apps.json` manifests. | Med | `JS-001`, `JS-002` |
 | **Installer** | `FEAT-015` | Silent Auto-Deployment | Command-line installation switch `/silent` executing hands-off deployment across fleets. | Critical | `INST-001`, `INST-005` |
 | **Installer** | `FEAT-016` | Custom Path Deployment | User and administrator ability to define target install path via `/dir="<path>"`. | Med | `INST-003` |
@@ -37,14 +37,14 @@
 
 ```
 [Requirement]                        [Feature ID]            [Test Cases]               [Status]
-REQ-RES-01 (Small-Screen Scaling) ───► FEAT-001, FEAT-002 ───► UI-002, UI-003, FUNC-011 ─► PASS
-REQ-CAT-01 (16,349 Apps Index)    ───► FEAT-005, FEAT-006 ───► FUNC-002, PERF-003       ─► PASS
-REQ-MOD-01 (Search Online Modal)  ───► FEAT-012           ───► FUNC-007, UI-005         ─► PASS
-REQ-PCK-01 (Custom Pack Editor)   ───► FEAT-010, FEAT-011 ───► FUNC-008, FUNC-010       ─► PASS
-REQ-INS-01 (Silent Installer)     ───► FEAT-015, FEAT-017 ───► INST-001, INST-007       ─► PASS
-REQ-SEC-01 (No Secrets / Pure BCL)───► FEAT-003, FEAT-013 ───► SEC-001, SEC-004         ─► PASS
-REQ-NET-01 (Air-Gapped Operation) ───► FEAT-005, FEAT-019 ───► NET-001, NET-002         ─► PASS
-REQ-REL-01 (Crash Resiliency)     ───► FEAT-020           ───► CRASH-001, CRASH-004     ─► PASS
+REQ-RES-01 (Small-Screen Scaling) â”€â”€â”€â–º FEAT-001, FEAT-002 â”€â”€â”€â–º UI-002, UI-003, FUNC-011 â”€â–º PASS
+REQ-CAT-01 (16,349 Apps Index)    â”€â”€â”€â–º FEAT-005, FEAT-006 â”€â”€â”€â–º FUNC-002, PERF-003       â”€â–º PASS
+REQ-MOD-01 (Search Online Modal)  â”€â”€â”€â–º FEAT-012           â”€â”€â”€â–º FUNC-007, UI-005         â”€â–º PASS
+REQ-PCK-01 (Custom Pack Editor)   â”€â”€â”€â–º FEAT-010, FEAT-011 â”€â”€â”€â–º FUNC-008, FUNC-010       â”€â–º PASS
+REQ-INS-01 (Silent Installer)     â”€â”€â”€â–º FEAT-015, FEAT-017 â”€â”€â”€â–º INST-001, INST-007       â”€â–º PASS
+REQ-SEC-01 (No Secrets / Pure BCL)â”€â”€â”€â–º FEAT-003, FEAT-013 â”€â”€â”€â–º SEC-001, SEC-004         â”€â–º PASS
+REQ-NET-01 (Air-Gapped Operation) â”€â”€â”€â–º FEAT-005, FEAT-019 â”€â”€â”€â–º NET-001, NET-002         â”€â–º PASS
+REQ-REL-01 (Crash Resiliency)     â”€â”€â”€â–º FEAT-020           â”€â”€â”€â–º CRASH-001, CRASH-004     â”€â–º PASS
 ```
 
 ---
@@ -62,3 +62,4 @@ REQ-REL-01 (Crash Resiliency)     ───► FEAT-020           ───► C
 3. **In-Memory Catalog Parsing (16,349 Objects):**
    - *Risk:* Large Object Heap (LOH) fragmentation causing memory footprint explosion.
    - *Mitigation:* Measured working set across 20 iterations. Memory remains stable at < 45MB with instantaneous LOH GC cleanup.
+

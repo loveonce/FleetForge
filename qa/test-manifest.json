@@ -1,10 +1,10 @@
 {
   "testSuite": "FleetForge Enterprise QA Automation Suite",
-  "version": "2.6.5",
+  "version": "2.7.0",
   "targetOS": "Windows 10 / Windows 11 (x64)",
   "executionMode": "Windows Sandbox Isolated Client VM",
   "author": "Love Malhotra (QA Engineering)",
-  "date": "2026-11-16",
+  "date": "2026-11-17",
   "phases": [
     {
       "id": "PHASE-05",

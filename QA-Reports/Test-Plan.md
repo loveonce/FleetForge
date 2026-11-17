@@ -1,10 +1,10 @@
-# FleetForge Enterprise QA Master Test Plan
+﻿# FleetForge Enterprise QA Master Test Plan
 
-**Version:** 2.6.5  
+**Version:** 2.7.0  
 **Document Revision:** 3.0  
 **Target Platform:** Windows 10 & Windows 11 (x64 / ARM64 via Emulation)  
 **Execution Environment:** Windows Sandbox (`C:\Users\WDAGUtilityAccount\Desktop`)  
-**Security Classification:** Confidential — Internal Engineering Document  
+**Security Classification:** Confidential â€” Internal Engineering Document  
 
 ---
 
@@ -36,32 +36,32 @@ The primary purpose of this master test plan is to establish a deterministic, re
 The test infrastructure is strictly decoupled into orchestration, test runners, execution sandboxes, and evidence sinks:
 
 ```
-                          ┌───────────────────────────┐
-                          │   Host Windows Machine    │
-                          │   (Strictly Protected)    │
-                          └─────────────┬─────────────┘
-                                        │ Spawns via .wsb
-                                        ▼
-                  ┌───────────────────────────────────────────┐
-                  │              Windows Sandbox              │
-                  │   Desktop\FleetForge (ReadOnly Mapping)   │
-                  │   Desktop\results    (Writable Mapping)   │
-                  └─────────────────────┬─────────────────────┘
-                                        │
-                 ┌──────────────────────┴──────────────────────┐
-                 ▼                                             ▼
+                          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                          â”‚   Host Windows Machine    â”‚
+                          â”‚   (Strictly Protected)    â”‚
+                          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                        â”‚ Spawns via .wsb
+                                        â–¼
+                  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                  â”‚              Windows Sandbox              â”‚
+                  â”‚   Desktop\FleetForge (ReadOnly Mapping)   â”‚
+                  â”‚   Desktop\results    (Writable Mapping)   â”‚
+                  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                        â”‚
+                 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                 â–¼                                             â–¼
        [sandbox-setup.ps1]                            [sandbox-run-tests.ps1]
-       • Detects Environment                         • Iterates 10 Test Phases
-       • Validates Mappings                          • Collects Metrics & Logs
-       • Generates environment_info.json             • Emits test_results_raw.json
-                 │                                             │
-                 └──────────────────────┬──────────────────────┘
-                                        │
-                                        ▼
+       â€¢ Detects Environment                         â€¢ Iterates 10 Test Phases
+       â€¢ Validates Mappings                          â€¢ Collects Metrics & Logs
+       â€¢ Generates environment_info.json             â€¢ Emits test_results_raw.json
+                 â”‚                                             â”‚
+                 â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                        â”‚
+                                        â–¼
                               [sandbox-report.ps1]
-                              • Computes Pass Rates
-                              • Aggregates Phase Summaries
-                              • Outputs test_summary.json
+                              â€¢ Computes Pass Rates
+                              â€¢ Aggregates Phase Summaries
+                              â€¢ Outputs test_summary.json
 ```
 
 ---
@@ -122,3 +122,4 @@ The test infrastructure is strictly decoupled into orchestration, test runners, 
 2. Overall test pass rate must exceed 95% (Achieved: **100%**).
 3. Zero memory leaks or orphaned processes remaining after test execution.
 4. All forensic logs and evidence captured under `QA-Reports/Evidence/`.
+

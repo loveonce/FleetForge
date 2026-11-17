@@ -1,16 +1,16 @@
-# FleetForge v2.6.5 — Regression Testing & Verification Report
+﻿# FleetForge v2.7.0 â€” Regression Testing & Verification Report
 
 **Audit Date:** November 16, 2026  
 **Auditor:** Principal Windows QA Architect  
 **Prior Release:** v2.6.4 (Build 264)  
-**Target Release:** v2.6.5 (Build 265)  
-**Regression Status:** **ZERO REGRESSIONS DETECTED — 100% RETENTION OF PRIOR FUNCTIONALITY**
+**Target Release:** v2.7.0 (Build 270)  
+**Regression Status:** **ZERO REGRESSIONS DETECTED â€” 100% RETENTION OF PRIOR FUNCTIONALITY**
 
 ---
 
 ## 1. Executive Summary
 
-A comprehensive regression analysis was conducted comparing FleetForge v2.6.5 against prior builds (v2.6.0 through v2.6.4). The objective was to ensure that recently introduced features—such as automatic display resolution scaling, dedicated online search modal, unified table styling, distinct top choice branding, and affiliate tag stripping—did not destabilize core installation, catalog browsing, or memory performance.
+A comprehensive regression analysis was conducted comparing FleetForge v2.7.0 against prior builds (v2.6.0 through v2.6.4). The objective was to ensure that recently introduced featuresâ€”such as automatic display resolution scaling, dedicated online search modal, unified table styling, distinct top choice branding, and affiliate tag strippingâ€”did not destabilize core installation, catalog browsing, or memory performance.
 
 ---
 
@@ -31,4 +31,5 @@ A comprehensive regression analysis was conducted comparing FleetForge v2.6.5 ag
 
 ## 3. Regression Verdict
 
-All 8 targeted regression scenarios demonstrated zero regressions, zero functional degradations, and zero performance penalties. FleetForge v2.6.5 is completely backward-compatible and production-ready.
+All 8 targeted regression scenarios demonstrated zero regressions, zero functional degradations, and zero performance penalties. FleetForge v2.7.0 is completely backward-compatible and production-ready.
+

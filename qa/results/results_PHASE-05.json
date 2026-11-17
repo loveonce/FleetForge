@@ -3,7 +3,7 @@
         "id":  "INST-001",
         "name":  "Fresh Silent Installation",
         "error":  "",
-        "durationMs":  177,
+        "durationMs":  1118,
         "evidence":  "Silent install executed successfully",
         "phase":  "PHASE-05",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "INST-005",
         "name":  "Upgrade \u0026 Overwrite Existing Install",
         "error":  "",
-        "durationMs":  159,
+        "durationMs":  155,
         "evidence":  "Silent upgrade and overwrite routine validated",
         "phase":  "PHASE-05",
         "status":  "PASS"
@@ -39,7 +39,7 @@
         "id":  "INST-003",
         "name":  "Custom Target Path Installation",
         "error":  "",
-        "durationMs":  159,
+        "durationMs":  156,
         "evidence":  "Custom path parameter accepted",
         "phase":  "PHASE-05",
         "status":  "PASS"
@@ -57,7 +57,7 @@
         "id":  "INST-002",
         "name":  "GUI Interactive Installation",
         "error":  "",
-        "durationMs":  2015,
+        "durationMs":  2024,
         "evidence":  "Installer launched GUI window and responded",
         "phase":  "PHASE-05",
         "status":  "PASS"

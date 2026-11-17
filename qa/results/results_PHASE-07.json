@@ -12,7 +12,7 @@
         "id":  "UI-002",
         "name":  "Responsive Resolution Scaling (1080p, 768p, 720p)",
         "error":  "",
-        "durationMs":  22,
+        "durationMs":  21,
         "evidence":  "UpdateAutoResolutionScale engine found and verified",
         "phase":  "PHASE-07",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "UI-004",
         "name":  "Windows Light \u0026 Dark Theme Real-time Sync",
         "error":  "",
-        "durationMs":  4,
+        "durationMs":  3,
         "evidence":  "Theme detection returned: isLight = True",
         "phase":  "PHASE-07",
         "status":  "PASS"

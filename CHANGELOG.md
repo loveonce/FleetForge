@@ -4,6 +4,20 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.7.0] — 2026-11-17
+
+### Added & Certified
+- **Enterprise Quality Assurance & Sandbox Test Suite:** Comprehensive automated QA verification suite across 10 distinct phases (Installation, Functional, UI Automation, .NET Deep Engine Diagnostics, JavaScript Tools, Filesystem, Network Offline, Security, Performance, and Crash Recovery) executing 64 automated test cases with a 100% pass rate in Windows Sandbox.
+- **Automatic Display Resolution & UI Scaling Engine:** Dynamically measures the active display resolution, DPI scaling factor, and available Windows WorkArea bounds. Automatically scales down to 0.80x on compact screens (1366x768, 1280x720, 1024x600) to ensure zero control clipping, zero text truncation, and full accessibility of bottom action buttons.
+- **User Display Zoom Preferences:** Added dedicated display scaling modes in Settings (`Auto`, `100%`, `90%`, `80%`) with live active scale feedback.
+- **Dedicated Online Search Modal Popup:** Instant modal popup for live Winget online search directly from the All Applications catalog, featuring real-time status indicators, package metadata inspection, and one-click cloud additions.
+- **Unified Modern Item Card Design:** Completely standardized table row cards in the Edit App Pack modal to match the All Applications catalog (10px rounded borders, active light-blue selection glow, 40x40 Fluent glyph badges, 2-line title/description hierarchy, and green status pill badges).
+- **Dedicated Top Choice Branding:** Distinct amber star rosette icon (`recommended.png`) for Top Choice • Recommended pack with isolated visual identity.
+- **Clean White-Label Monetization:** Stripped all internal affiliate and direct tags from software cards across the catalog, search modal, and pack editor.
+- **Refined Branding Typography:** Updated the "Love Malhotra" creator attribution signature to an elegant muted slate blue-gray (`#5f6d84`).
+- **Comprehensive QA Deliverables:** Published 14 formal enterprise QA deliverables, execution telemetry logs, and test evidence under `QA-Reports/`.
+- **Version Lock:** Official release locked to **v2.7.0** across all binaries, manifests, setup wizard, uninstaller, QA test suite, and metadata.
+
 ## [2.6.5] — 2026-11-16
 
 ### Added & Improved

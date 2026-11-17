@@ -23,7 +23,7 @@ $passRate = if ($total -gt 0) { [math]::Round(($passed / $total) * 100, 2) } els
 
 $summary = @{
     suiteName = "FleetForge Enterprise Verification Suite"
-    version = "2.6.5"
+    version = "2.7.0"
     runDate = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     environment = $envInfo
     totalTests = $total

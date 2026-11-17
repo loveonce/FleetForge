@@ -1,2 +1,40 @@
-﻿>>> Running Phase 10: Filesystem & Data Integrity Suite...
-Phase 10 finished. Exported 5 results.
+﻿powershell.exe : At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:89 char:48
+At E:\AI_Technology\My Tools\FleetForge\qa\sandbox-run-tests.ps1:69 char:19
++ ...   $output = & powershell.exe -ExecutionPolicy Bypass -NoProfile -File ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (At E:\AI_Techno....ps1:89 char:48:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
++         Add-Result "FS-004" "Special Character & Unicode Path File Ac ...
++                                                ~
+The ampersand (&) character is not allowed. The & operator is reserved for future use; wrap an ampersand in double 
+quotation marks ("&") to pass it as part of a string.
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:89 char:116
++ ... e Path File Access" "PASS" $sw.ElapsedMilliseconds "" "Read & write t ...
++                                                                 ~
+The ampersand (&) character is not allowed. The & operator is reserved for future use; wrap an ampersand in double 
+quotation marks ("&") to pass it as part of a string.
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:91 char:48
++         Add-Result "FS-004" "Special Character & Unicode Path File Ac ...
++                                                ~
+The ampersand (&) character is not allowed. The & operator is reserved for future use; wrap an ampersand in double 
+quotation marks ("&") to pass it as part of a string.
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:95 char:44
++     Add-Result "FS-004" "Special Character & Unicode Path File Access ...
++                                            ~
+The ampersand (&) character is not allowed. The & operator is reserved for future use; wrap an ampersand in double 
+quotation marks ("&") to pass it as part of a string.
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:122 char:79
++ ... ported $($script:phaseResults.Count) results." -ForegroundColor Green
++                                                  ~~~~~~~~~~~~~~~~~~~~~~~~
+The string is missing the terminator: ".
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:82 char:5
++ try {
++     ~
+Missing closing '}' in statement block or type definition.
+At E:\AI_Technology\My Tools\FleetForge\qa\runners\test_filesystem.ps1:123 char:1
++ 
+The Try statement is missing its Catch or Finally block.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : AmpersandNotAllowed
+ 

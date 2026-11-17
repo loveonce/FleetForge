@@ -1,4 +1,4 @@
-# FleetForge v2.6.5 — Installation & Uninstallation QA Report
+﻿# FleetForge v2.7.0 â€” Installation & Uninstallation QA Report
 
 **Audit Date:** November 16, 2026  
 **Auditor:** Principal Windows QA Architect  
@@ -22,10 +22,10 @@ All 9 test cases in Phase 5 achieved a **PASS** status. The installer supports h
 | **INST-001** | Fresh Silent Installation | CLI (`/silent`) | 177 ms | **PASS** | Deployed application files into `%LOCALAPPDATA%\FleetForge\`. |
 | **INST-002** | GUI Interactive Installation | Windowed UI | 2,015 ms | **PASS** | Setup GUI window launched, bound DWM chrome, and terminated cleanly. |
 | **INST-003** | Custom Target Path Installation | CLI (`/dir="C:\FleetForgeCustomDir"`) | 159 ms | **PASS** | Installer parsed custom destination override accurately. |
-| **INST-004** | Unicode Path Installation | File I/O (`C:\FleetForge_测试_🚀\`) | 5 ms | **PASS** | Binary copied and initialized without character encoding faults. |
+| **INST-004** | Unicode Path Installation | File I/O (`C:\FleetForge_æµ‹è¯•_ðŸš€\`) | 5 ms | **PASS** | Binary copied and initialized without character encoding faults. |
 | **INST-005** | Upgrade & Overwrite Existing Install | CLI (`/silent /update`) | 159 ms | **PASS** | Overwrote older version payload cleanly without file lock failures. |
 | **INST-006** | Desktop & Start Menu Shortcuts | Shell Inspection | 0 ms | **PASS** | Shortcuts created at `%USERPROFILE%\Desktop\FleetForge.lnk` and Start Menu. |
-| **INST-007** | ARP Registry Registration | Registry Inspection | 8 ms | **PASS** | Created `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge` (Version 2.6.5). |
+| **INST-007** | ARP Registry Registration | Registry Inspection | 8 ms | **PASS** | Created `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge` (Version 2.7.0). |
 | **INST-008** | Clean Uninstallation & Cleanup | CLI (`/silent`) | 0 ms | **PASS** | Removed desktop shortcuts, purged installation directory, and removed registry key. |
 | **INST-009** | User Data Preservation Check | AppData Inspection | 5 ms | **PASS** | Preserved user preferences inside `%LOCALAPPDATA%\FleetForge\config\` when desired. |
 
@@ -36,7 +36,7 @@ All 9 test cases in Phase 5 achieved a **PASS** status. The installer supports h
 Inspection of the Add/Remove Programs registry hierarchy verified proper metadata registration:
 - **Registry Key:** `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\FleetForge`
 - **DisplayName:** `FleetForge - Software Pre Installer`
-- **DisplayVersion:** `2.6.5`
+- **DisplayVersion:** `2.7.0`
 - **Publisher:** `Love Malhotra`
 - **DisplayIcon:** `FleetForge.exe,0`
 - **UninstallString:** `"%LOCALAPPDATA%\FleetForge\Uninstall.exe"`
@@ -57,3 +57,4 @@ Start-Process -FilePath "FleetForge-Setup.exe" -ArgumentList "/silent /dir=`"C:\
 # Silent Uninstallation
 Start-Process -FilePath "$env:LOCALAPPDATA\FleetForge\Uninstall.exe" -ArgumentList "/silent" -Wait
 ```
+
