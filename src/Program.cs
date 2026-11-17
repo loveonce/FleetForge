@@ -1585,6 +1585,77 @@ namespace FleetForge
             return false;
         }
 
+        // =========================================================================
+        // EMBEDDED HIGH-RESOLUTION COUNTRY FLAGS & ICONS (BASE64 PNG)
+        // =========================================================================
+        private static Dictionary<string, string> _flagBase64 = null;
+        private static readonly Dictionary<string, System.Windows.Media.Imaging.BitmapImage> _flagBitmaps = new Dictionary<string, System.Windows.Media.Imaging.BitmapImage>(StringComparer.OrdinalIgnoreCase);
+
+        public static void InitializeFlags()
+        {
+            if (_flagBase64 != null) return;
+            _flagBase64 = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _flagBase64["us"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAVBAMAAADGNLEtAAAALVBMVEX////GU3LZjKGzGUINM2PsxtAYPWotT3hed5enma46WoBPa46zGkMkR3Jrgp+6ntXWAAAAiklEQVQY02Nwc0lJcQMSxghgw+CRVdaWkVXWooQEGFxaPLxKWjxcGJCBn1fJExAWRAJglUuAKlEEPdyXgA1A0e62LTu9bFt2CopF3iCh9LItKE5yX5tVe31tVgmq9pL0NLcy95RQJMAAdiUQo2ifCQUoKrECY0xgw6CEBWDXLogFYBfECrBahM1JAItMTcEiMDpsAAAAAElFTkSuQmCC";
+            _flagBase64["in"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbBAMAAAD8PtBdAAAAMFBMVEUEajj/aCD////f3/GpqNhPTa7MzOiOjMthX7f5+fxubLyFg8b4+Py+veF1dMD9/f41r+HyAAAATElEQVQoz2MQxAIYhoqgEhRoloZPgrHhgqZuKcEYgotNnK3QBfXb/J5koAsq722NuG2Ern2Z95YsDDOLTZzNMQRPuKX0YAiiuHMoAwA5/S6KfoLQ6QAAAABJRU5ErkJggg==";
+            _flagBase64["es"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAApVBMVEX6vQCtFRnBPxP3tgCkSRTxsQC9miCtkjL3ugDcdwrVkwndpwauUEi3k3ecLQyvGx01YomtXy3Zhha+gw+4LiCzn4jKeBKyYgjmoAOkXUK/RhC1kJmmKh+0oKCbYwN5OAWWHxSVi0HypQNcdGsDAgC9g1j6vgSWhnLfsSXCn169cE24eBuaNwzQaiOYagW8bxWIOhqoKhPLdq4yUHR+UgVZLWaBHkAs3esWAAAAk0lEQVQ4y+WTVxLDIAxESQwBAwb33tKc3sv9j5YbWJp8JvurNzsrzYpMkCI/BU6RIt9phqIcJSOpEGBu7c2WA+iXOWmbtTmTACh42PdelSgwp+d2nXdvTjuAc3X5vL6qJo4XQEZ9qd8PXaR7yDE5GFOf6XbNRrmB8cgcKaUraJm5z4NiE4RLH3FyIUaG6Pb85XN9AIg9CvrV7UGSAAAAAElFTkSuQmCC";
+            _flagBase64["fr"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbBAMAAAD8PtBdAAAAD1BMVEUAJlT////OESbvr7aqtsYrjF9NAAAAGUlEQVQoz2NgAAMWQTAwUgIDhlHBUUG8ggBpKyX5efKDZQAAAABJRU5ErkJggg==";
+            _flagBase64["de"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAYAgMAAAD16ldTAAAACVBMVEUAAADdAAD/zgDGIigcAAAAFUlEQVQY02NgoBEIhQPqMlfBAVWZANYST7G6bxb2AAAAAElFTkSuQmCC";
+            _flagBase64["ru"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbAgMAAABzfiX9AAAACVBMVEUAOabVKx7///95ANL1AAAAFUlEQVQY02NYBQcMtGLSAYTCAa2YAJQLWaccQRfwAAAAAElFTkSuQmCC";
+            _flagBase64["cn"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAAOVBMVEXuHCX3jRL//wDuISPyURvvLCH6ugrwPh7xSRz0ZxjwNyD1ehX+6QP7wgn/+AH5ow793wX3lhHzXBqicYSuAAAAX0lEQVQYGe3BSRKCQBAAweplVgYB//9YY/QMdHgmk7+kxB1janvhhjD5mzvD+XHn3CKbriIJsG3lXMqqOipTMa4MVSegvo5d+KqdC61gwmQ5GyG9E+ALMS0XYhKPR9wHPPwBnsz8tAoAAAAASUVORK5CYII=";
+            _flagBase64["jp"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAAOVBMVEW8AC3dfJPMPF7ILFHQTGvuvcjADzn////55urjkaXyzte9BTHqrbvDHEP++fr77/Hst8PmobHXZ4H4lhdsAAAAcUlEQVQ4y9XTuw6AIAyF4XKVclXf/2FNjDF0OMjgwj9/YWgLbZPRkjA4Zhc+YbB0Z8MYHp6efB7BmOgtRQyroQ6aCmEm0Q6hklBBqCXUEHoJPYRm9kUr4QkhS8gQttK70vBmHM1tRkyS/7me+Xtc+hdeTWcZDIhvaeAAAAAASUVORK5CYII=";
+            _flagBase64["br"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAcCAMAAAAkyw3kAAAAkFBMVEUAlED/ywAwJoEOlzwemjdQSI83oDHjxQZKpC2fthhGN3NAM3VZU5fywAjEmyQ/NYf5yQFoU101K4OVd0OvuRRzdKTSwQuOshx8ryFjqifCvQ+p0MFGP4y8w8q+0tKXrLjwyATrxwXltRC+lyhkXp+JdW12XlWkgji0uM+rqnXr8vDS593K4tmZflSJj7ROQ3x/jyqZAAAA70lEQVQ4y82T2RKCMAxFTaEKBSwUcQEUF9y3//87IwVxpEp9cbyPmTNZbpJO56/U7WphxghgZLRzVg9QPasFM20oZX9MOpmDFwaOE4QeLCbv08UAfUYKsT5AbKq5sY8ceQhJf6zyZIiNeawGmYeB4atThhxiPzsektku4i6SW8VQ0hOAtStE6kZZMkVyI2NPTpmDypOqMo2SLGVVdGA2QAchLtnLKWqAdemAins+eifzaaN0PUzICTYniurpWb2hwp6lQzjFjJzQnC5V9lSGr8ppXC5Wbwx/WeH1wwr1j+KLM9M/XPkKvs4r6D/Xz3QDO1IMs+uu/zEAAAAASUVORK5CYII=";
+            _flagBase64["sa"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAAQlBMVEUAVDBvnoohakoTYD9bkHkGWDU7e2ACVTFDgWaBq5kmbU95pZJRinFVjXU1d1pLhm2Os6OiwbMtclRkl4EKWje50MYuwG0pAAAAnklEQVQ4y+XTuQ4DMQgEULABj+9r9/9/NV0qK0qRajP1k9AgoEBfJdBDoRJdpD5cpEtTUtJ0HWEraXNp1sCoq0ssUo/QbY3ZyoZUKa5ice9H2GXbkI6SknCrSFHkCCtszlmQMTJ2he98Hg0Doy1nc9y5GXuzcoQ2B3oemfdwbQgyO3feYwruIu+8Nu8V60FHoZ/K+BzfueOUf3iFH8EXincH0Y/Lci4AAAAASUVORK5CYII=";
+            _flagBase64["it"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbBAMAAAD8PtBdAAAAElBMVEXOKzcAkkb///+q28EBkkbvt7tlcfnnAAAAGUlEQVQoz2NwFAQBYSUwCGCAgFHBUUG8ggBTFC/I4rFoIQAAAABJRU5ErkJggg==";
+            _flagBase64["kr"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAAvVBMVEX///8AR6DNLjrt7e6cnJwKCgoaGhrY2NiMjIxAQEB5eXmvr6+8vLyEhIQdQ5IgICCYmJivMUn59vfExMQ6OjrGxsaJiYlkZGReXl5wcHDQR1P55OYMT6TyyczH1ur+/f0RERGVlZWhoaEhISFoiLzZ4/HmvsZnOWx7n84HRZzlk5rOND/FLj3109XOMT3Ozs5HR0ff398zMzMgXqyFNl3dcXmWkrfkjpVKPXvCgpUmYq65zOXIqLuwvtqfudvB4UIoAAABKklEQVQ4y7WTWXeCMBCFmZCEQEBRW8oiKuC+Vbvv//9nFdLIaRPl+GDvS3KG73CTmRvD+D9Zpl4zLb02vHN6aq3nXOkgawfU/fNT06WsjVVuTzjB5PZ36ZpkJA9UczvahXb0s082XbHe2OFONccFpgGtvifLGCH0mFTeDqe5Yo75yCduuUlXSGiVCnOfcuWUlmeH5TLdIqltKsw9vUGsvHI3RrXiypydaPr0QHXWCG0apvMksRYsZmjZAI4fJFfq5bkBnMNsLTmA1wZwALCQGMDHCai6tfEGtVrDo7eWfRz0a/DzaB/rydTkVxUz4o+UyeQFo5mYtTm/B+iP38WsXZqpQbMjzg7pmUwMmR7GtejuyzT6ah59grU8Gqzw9IR7esLPfzNnv8KL6RtMsRLeZtvj3wAAAABJRU5ErkJggg==";
+            _flagBase64["tr"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbCAMAAAA5zj1cAAAARVBMVEXjChf70dPqRlDnMDvnLDflIi383N7jCxj////kFCHmJjL4v8Pwe4LvbnbtZW3sUlv+8PHlHSn0naL3trrpO0XyjZPyiZBeDlMuAAAAjUlEQVQ4y+WTyxKDIAwAw0NYQETR9v8/tQenehHl3ObE7OxAQhLx0hVeflZctOkQ/egAlf2DODhQU1zKdC/6BHk/xVvxBfWgw9AUPRAOapNYcy0aUCfVzC5ciwXWLwsVKI2nI7iTbrNTjRtl7sxRRnj3VC2SYP/qYB86o6BuIY65r9er7pse+4c7cyd+AOKjBXOHX0j9AAAAAElFTkSuQmCC";
+            _flagBase64["nl"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbAgMAAABzfiX9AAAACVBMVEX///8hRouuHChfbmbQAAAAFUlEQVQY02NYBQcMtGLSAYTCAa2YAJQLWaccQRfwAAAAAElFTkSuQmCC";
+            _flagBase64["pl"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAZAgMAAAA+toT2AAAACVBMVEXcFDz////tip5hJkzaAAAAFElEQVQY02MIhQOGAWOuggOGQQAAG50ufcR4g+sAAAAASUVORK5CYII=";
+            _flagBase64["vn"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAbBAMAAAD8PtBdAAAAMFBMVEX/AAD/6wD/1QD/OAD/ggD/SgD/nAD/4QD/GgD/6gD/WgD/CQD/vAD/kwD/IgD/QQDiVXETAAAAY0lEQVQoz2NgoDvg3oBFkDUAiyBbAhbB7dVYBANFsQhelEUX6REEgxOoop4gsSloSvkVBQWFDNAN6BQUnIFhj6GgoDCGoKOQogiGoGL2NiF0MeYqBobl6BZxPWBg4FvAMGgBAGCuDd0kl5lmAAAAAElFTkSuQmCC";
+            _flagBase64["globe"] = "iVBORw0KGgoAAAANSUhEUgAAACgAAAAcCAYAAAATFf3WAAABJElEQVR4nO2Xuw3CMBCGz4aCGkRJicQO7MAQ9LiEGaAMPUOwAzsgUVIiqNMgUBCHjBXL94iiBPE3Vpyz/fk/+QXwl04GKtBodnwU5XI1/tRt1qdXed5PVGOYKsBCuBBSA2q0YD5ctruBm/chBikBtaCA6w0HX3C+8Lv4X8SVta8cMITjSAppNXDunc7QPRTWY5wEkp1irnPa9iRAnK0WDoX9UFxkO4hKpTeWZq5s3e5xXRQ7WJcsNFwmFbA93Fkbq0SLace01sFuKgDP0nCRxFaxK6mPxeaXaxKw8Q7aVADePiiz5Qj7S91uxA5SN2BH3NBVgFW7mBPdEzmohcyZ7cmA/mxxkCyR5jC9Phz1Zs1ysAySKglcK94kBn7xVVfnuxiarifVgqNgXFZFywAAAABJRU5ErkJggg==";
+        }
+
+        public static System.Windows.Media.Imaging.BitmapImage GetFlagBitmap(string code)
+        {
+            if (string.IsNullOrEmpty(code)) code = CurrentLanguage;
+            if (code.Equals("auto", StringComparison.OrdinalIgnoreCase)) code = "globe";
+            string c = code.ToLowerInvariant();
+            if (c == "en") c = "us";
+            else if (c == "hi") c = "in";
+            else if (c == "zh") c = "cn";
+            else if (c == "ja") c = "jp";
+            else if (c == "pt") c = "br";
+            else if (c == "ar") c = "sa";
+            else if (c == "ko") c = "kr";
+            else if (c == "vi") c = "vn";
+
+            System.Windows.Media.Imaging.BitmapImage cached;
+            if (_flagBitmaps.TryGetValue(c, out cached)) return cached;
+
+            if (_flagBase64 == null) InitializeFlags();
+            string b64;
+            if (_flagBase64 != null && _flagBase64.TryGetValue(c, out b64))
+            {
+                try
+                {
+                    byte[] bytes = Convert.FromBase64String(b64);
+                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream(bytes))
+                    {
+                        System.Windows.Media.Imaging.BitmapImage bmp = new System.Windows.Media.Imaging.BitmapImage();
+                        bmp.BeginInit();
+                        bmp.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                        bmp.StreamSource = ms;
+                        bmp.EndInit();
+                        bmp.Freeze();
+                        _flagBitmaps[c] = bmp;
+                        return bmp;
+                    }
+                }
+                catch { }
+            }
+            return null;
+        }
+
+
         public static bool IsKnownPlaceholder(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return true;
@@ -4253,7 +4324,7 @@ namespace FleetForge
         private TextBlock txtToggleThemeIcon;
         private Button btnHelpMenu;
         private Button btnLanguageSelector;
-        private TextBlock txtLanguageFlag;
+        private Image imgLanguageFlag;
         private TextBlock txtLanguageName;
         private string activeLanguageCode = "auto";
         private Image imgBrandLogo;
@@ -4744,10 +4815,16 @@ namespace FleetForge
         private void UpdateLanguageButtonDisplay()
         {
             if (btnLanguageSelector == null) return;
-            LanguageDefinition current = Localization.GetLanguage(Localization.CurrentLanguage);
-            if (txtLanguageFlag != null)
+            string langCode = Localization.CurrentLanguage;
+            if (string.IsNullOrEmpty(langCode) || langCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
             {
-                txtLanguageFlag.Text = current != null ? current.Flag : "\uD83C\uDF10";
+                langCode = Localization.DetectSystemLanguage();
+            }
+
+            LanguageDefinition current = Localization.GetLanguage(langCode);
+            if (imgLanguageFlag != null)
+            {
+                imgLanguageFlag.Source = Localization.GetFlagBitmap(langCode);
             }
             if (txtLanguageName != null)
             {
@@ -5108,7 +5185,9 @@ namespace FleetForge
                     <Button x:Name=""BtnLanguageSelector"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""10,6"" Margin=""0,0,8,0"" Cursor=""Hand"" ToolTip=""Change Language / &#x092D;&#x093E;&#x0937;&#x093E; &#x092C;&#x0926;&#x0932;&#x0947;&#x0902;"" VerticalAlignment=""Center"">
                         <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
-                            <TextBlock x:Name=""TxtLanguageFlag"" Text=""&#x1F310;"" FontSize=""13"" Margin=""0,0,5,0"" VerticalAlignment=""Center""/>
+                            <Border Width=""20"" Height=""14"" CornerRadius=""2"" BorderThickness=""1"" BorderBrush=""#CBD5E1"" Margin=""0,0,7,0"" VerticalAlignment=""Center"" ClipToBounds=""True"">
+                                <Image x:Name=""ImgLanguageFlag"" Stretch=""UniformToFill""/>
+                            </Border>
                             <TextBlock x:Name=""TxtLanguageName"" Text=""English"" FontSize=""12"" FontWeight=""SemiBold"" VerticalAlignment=""Center""/>
                             <TextBlock Text="" &#x25BE;"" FontSize=""10"" Foreground=""#64748B"" Margin=""2,0,0,0"" VerticalAlignment=""Center""/>
                         </StackPanel>
@@ -6616,10 +6695,11 @@ namespace FleetForge
             }
 
                         btnLanguageSelector = (Button)root.FindName("BtnLanguageSelector");
-            txtLanguageFlag = (TextBlock)root.FindName("TxtLanguageFlag");
+            imgLanguageFlag = (Image)root.FindName("ImgLanguageFlag");
             txtLanguageName = (TextBlock)root.FindName("TxtLanguageName");
 
             Localization.InitializeTranslations();
+            Localization.InitializeFlags();
             activeLanguageCode = (settings != null && !string.IsNullOrEmpty(settings.language)) ? settings.language : "auto";
             if (activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
             {
@@ -6642,19 +6722,43 @@ namespace FleetForge
 
                     // Item 0: Auto (System Default)
                     MenuItem itmAuto = new MenuItem();
+                    bool isAuto = activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase);
                     string detected = Localization.DetectSystemLanguage();
                     LanguageDefinition detectedLang = Localization.GetLanguage(detected);
-                    string autoLabel = string.Format("\uD83C\uDF10  {0} ({1} {2})", Localization.T("lang_auto"), detectedLang != null ? detectedLang.Flag : "", detectedLang != null ? detectedLang.NativeName : "");
-                    if (activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
+
+                    StackPanel autoStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+                    TextBlock autoCheck = new TextBlock()
                     {
-                        autoLabel = "\u2713  " + autoLabel;
-                        itmAuto.FontWeight = FontWeights.Bold;
-                    }
-                    else
+                        Text = isAuto ? "\u2713 " : "   ",
+                        FontWeight = FontWeights.Bold,
+                        Foreground = isAuto ? HexBrush("#0066FF") : Brushes.Transparent,
+                        Width = 18,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    autoStack.Children.Add(autoCheck);
+
+                    Border autoIconBorder = new Border()
                     {
-                        autoLabel = "    " + autoLabel;
-                    }
-                    itmAuto.Header = autoLabel;
+                        Width = 20,
+                        Height = 14,
+                        CornerRadius = new CornerRadius(2),
+                        Margin = new Thickness(0, 0, 8, 0),
+                        VerticalAlignment = VerticalAlignment.Center,
+                        ClipToBounds = true
+                    };
+                    Image autoIcon = new Image() { Source = Localization.GetFlagBitmap("globe"), Stretch = Stretch.Uniform };
+                    autoIconBorder.Child = autoIcon;
+                    autoStack.Children.Add(autoIconBorder);
+
+                    TextBlock autoLabel = new TextBlock()
+                    {
+                        Text = string.Format("{0} ({1} {2})", Localization.T("lang_auto"), detectedLang != null ? detectedLang.NativeName : "", detectedLang != null ? detectedLang.Name : ""),
+                        FontWeight = isAuto ? FontWeights.Bold : FontWeights.Normal,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    autoStack.Children.Add(autoLabel);
+
+                    itmAuto.Header = autoStack;
                     itmAuto.Click += delegate
                     {
                         SetApplicationLanguage("auto");
@@ -6662,7 +6766,7 @@ namespace FleetForge
                     menu.Items.Add(itmAuto);
                     menu.Items.Add(new Separator());
 
-                    // All 16 Supported Languages
+                    // All 16 Supported Languages with Real High-Res Country Flags
                     foreach (LanguageDefinition langDef in Localization.SupportedLanguages)
                     {
                         LanguageDefinition curL = langDef;
@@ -6670,11 +6774,46 @@ namespace FleetForge
                         bool isCurrent = !activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase) &&
                                          activeLanguageCode.Equals(curL.Code, StringComparison.OrdinalIgnoreCase);
 
-                        string prefix = isCurrent ? "\u2713  " : "    ";
-                        string label = string.Format("{0}{1}  {2} ({3})", prefix, curL.Flag, curL.NativeName, curL.Name);
-                        itmLang.Header = label;
-                        if (isCurrent) itmLang.FontWeight = FontWeights.Bold;
+                        StackPanel itmStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
 
+                        TextBlock chkTxt = new TextBlock()
+                        {
+                            Text = isCurrent ? "\u2713 " : "   ",
+                            FontWeight = FontWeights.Bold,
+                            Foreground = isCurrent ? HexBrush("#0066FF") : Brushes.Transparent,
+                            Width = 18,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        itmStack.Children.Add(chkTxt);
+
+                        Border flagBrd = new Border()
+                        {
+                            Width = 20,
+                            Height = 14,
+                            CornerRadius = new CornerRadius(2),
+                            BorderThickness = new Thickness(1),
+                            BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569"),
+                            Margin = new Thickness(0, 0, 8, 0),
+                            VerticalAlignment = VerticalAlignment.Center,
+                            ClipToBounds = true
+                        };
+                        Image flagImg = new Image()
+                        {
+                            Source = Localization.GetFlagBitmap(curL.Code),
+                            Stretch = Stretch.UniformToFill
+                        };
+                        flagBrd.Child = flagImg;
+                        itmStack.Children.Add(flagBrd);
+
+                        TextBlock lblTxt = new TextBlock()
+                        {
+                            Text = string.Format("{0} ({1})", curL.NativeName, curL.Name),
+                            FontWeight = isCurrent ? FontWeights.Bold : FontWeights.Normal,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        itmStack.Children.Add(lblTxt);
+
+                        itmLang.Header = itmStack;
                         itmLang.Click += delegate
                         {
                             SetApplicationLanguage(curL.Code);
