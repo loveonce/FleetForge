@@ -4,6 +4,19 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 
 ---
 
+## [2.7.1] — 2026-11-17
+
+### Added & Certified
+- **Multi-Language Enterprise Platform:** Converted FleetForge into a full dynamic multilingual platform with zero-restart live translation across 16 global languages:
+  - English (United States), Hindi (हिन्दी), Spanish (Español), French (Français), German (Deutsch), Russian (Русский), Chinese (简体中文), Japanese (日本語), Portuguese (Português - Brasil), Arabic (العربية), Italian (Italiano), Korean (한국어), Turkish (Türkçe), Dutch (Nederlands), Polish (Polski), and Vietnamese (Tiếng Việt).
+- **Zero-Restart Live UI Switching:** Language changes take effect instantly across all active views (Quick Setup cards, pack action buttons, All Applications catalog, category filter chips, search box placeholders, ready status badges, package counter status, Settings modal, About dialog, and update views) without requiring an application restart.
+- **Automatic System Language Detection:** Automatically detects the host Windows OS display language on initial launch (CultureInfo.CurrentUICulture) and activates the corresponding native language dictionary seamlessly.
+- **Native Country Flag Badges:** Embedded crisp, official PNG country flag images for all 16 supported languages and auto globe icon, overcoming Windows DirectWrite / Segoe UI Emoji font limitations where country flags render as two-letter country codes.
+- **Direct 16-Language Dropdown Selector:** Clean dropdown menu positioned immediately next to the Help button in the header bar. Opens directly to the full language catalog with active language pre-checked with visual indicator (✓) and bold accent styling.
+- **Search Debounce & Locale Isolation:** Integrated intelligent search input debounce that ignores localized placeholder texts, preventing unintended filter triggers or cloud queries upon dynamic language transitions.
+- **Localized Action Badges & Packs:** Fully translated Quick Setup pack action buttons (Select Pack, Customize Apps, Export Pack), selection counter footers, and live row status badges (✔ Ready / ✔ तैयार / ✔ Listo / ✔ 準備完了 / ✔ Bereit).
+- **Version Lock:** Official release locked to **v2.7.1** across all binaries, manifests, setup wizard, uninstaller, and metadata.
+
 ## [2.7.0] — 2026-11-17
 
 ### Added & Certified
