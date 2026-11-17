@@ -4792,6 +4792,11 @@ namespace FleetForge
 
         private void SetApplicationLanguage(string code)
         {
+            if (string.IsNullOrEmpty(code) || code.Equals("auto", StringComparison.OrdinalIgnoreCase))
+            {
+                code = Localization.DetectSystemLanguage();
+            }
+
             activeLanguageCode = code;
             if (settings != null)
             {
@@ -4799,15 +4804,7 @@ namespace FleetForge
                 SaveSettings();
             }
 
-            if (code.Equals("auto", StringComparison.OrdinalIgnoreCase))
-            {
-                Localization.CurrentLanguage = Localization.DetectSystemLanguage();
-            }
-            else
-            {
-                Localization.CurrentLanguage = code;
-            }
-
+            Localization.CurrentLanguage = code;
             UpdateLanguageButtonDisplay();
             ApplyLanguageLive();
         }
@@ -6700,15 +6697,11 @@ namespace FleetForge
 
             Localization.InitializeTranslations();
             Localization.InitializeFlags();
-            activeLanguageCode = (settings != null && !string.IsNullOrEmpty(settings.language)) ? settings.language : "auto";
-            if (activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
-            {
-                Localization.CurrentLanguage = Localization.DetectSystemLanguage();
-            }
-            else
-            {
-                Localization.CurrentLanguage = activeLanguageCode;
-            }
+            string initialLang = (settings != null && !string.IsNullOrEmpty(settings.language) && !settings.language.Equals("auto", StringComparison.OrdinalIgnoreCase)) 
+                ? settings.language 
+                : Localization.DetectSystemLanguage();
+            activeLanguageCode = initialLang;
+            Localization.CurrentLanguage = initialLang;
 
             if (btnLanguageSelector != null)
             {
@@ -6720,59 +6713,14 @@ namespace FleetForge
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
                     menu.FontSize = 12;
 
-                    // Item 0: Auto (System Default)
-                    MenuItem itmAuto = new MenuItem();
-                    bool isAuto = activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase);
-                    string detected = Localization.DetectSystemLanguage();
-                    LanguageDefinition detectedLang = Localization.GetLanguage(detected);
+                    string currentCode = !string.IsNullOrEmpty(activeLanguageCode) ? activeLanguageCode : Localization.CurrentLanguage;
 
-                    StackPanel autoStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-                    TextBlock autoCheck = new TextBlock()
-                    {
-                        Text = isAuto ? "\u2713 " : "   ",
-                        FontWeight = FontWeights.Bold,
-                        Foreground = isAuto ? HexBrush("#0066FF") : Brushes.Transparent,
-                        Width = 18,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    autoStack.Children.Add(autoCheck);
-
-                    Border autoIconBorder = new Border()
-                    {
-                        Width = 20,
-                        Height = 14,
-                        CornerRadius = new CornerRadius(2),
-                        Margin = new Thickness(0, 0, 8, 0),
-                        VerticalAlignment = VerticalAlignment.Center,
-                        ClipToBounds = true
-                    };
-                    Image autoIcon = new Image() { Source = Localization.GetFlagBitmap("globe"), Stretch = Stretch.Uniform };
-                    autoIconBorder.Child = autoIcon;
-                    autoStack.Children.Add(autoIconBorder);
-
-                    TextBlock autoLabel = new TextBlock()
-                    {
-                        Text = string.Format("{0} ({1} {2})", Localization.T("lang_auto"), detectedLang != null ? detectedLang.NativeName : "", detectedLang != null ? detectedLang.Name : ""),
-                        FontWeight = isAuto ? FontWeights.Bold : FontWeights.Normal,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-                    autoStack.Children.Add(autoLabel);
-
-                    itmAuto.Header = autoStack;
-                    itmAuto.Click += delegate
-                    {
-                        SetApplicationLanguage("auto");
-                    };
-                    menu.Items.Add(itmAuto);
-                    menu.Items.Add(new Separator());
-
-                    // All 16 Supported Languages with Real High-Res Country Flags
+                    // All 16 Supported Languages with Real High-Res Country Flags (Direct language list with active selected)
                     foreach (LanguageDefinition langDef in Localization.SupportedLanguages)
                     {
                         LanguageDefinition curL = langDef;
                         MenuItem itmLang = new MenuItem();
-                        bool isCurrent = !activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase) &&
-                                         activeLanguageCode.Equals(curL.Code, StringComparison.OrdinalIgnoreCase);
+                        bool isCurrent = curL.Code.Equals(currentCode, StringComparison.OrdinalIgnoreCase);
 
                         StackPanel itmStack = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
 
@@ -6809,6 +6757,7 @@ namespace FleetForge
                         {
                             Text = string.Format("{0} ({1})", curL.NativeName, curL.Name),
                             FontWeight = isCurrent ? FontWeights.Bold : FontWeights.Normal,
+                            Foreground = isCurrent ? (currentThemeIsLight ? HexBrush("#0066FF") : HexBrush("#38BDF8")) : (currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF")),
                             VerticalAlignment = VerticalAlignment.Center
                         };
                         itmStack.Children.Add(lblTxt);
