@@ -13541,31 +13541,6 @@ namespace FleetForge
 
                         if (newOnlineApps.Count > 0)
                         {
-                            Border sectionHeader = new Border()
-                            {
-                                Background = currentThemeIsLight ? HexBrush("#F5F3FF") : HexBrush("#1E1B4B"),
-                                BorderBrush = currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6D28D9"),
-                                BorderThickness = new Thickness(1),
-                                CornerRadius = new CornerRadius(8),
-                                Padding = new Thickness(14, 9, 14, 9),
-                                Margin = new Thickness(0, 12, 0, 8),
-                                HorizontalAlignment = HorizontalAlignment.Stretch
-                            };
-                            StackPanel spHdr = new StackPanel() { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
-                            TextBlock icnHdr = new TextBlock() { Text = "🌐", FontSize = 13, Margin = new Thickness(0, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
-                            TextBlock txtHdr = new TextBlock()
-                            {
-                                Text = string.Format("Online Winget Cloud Packages for \"{0}\" ({1} additional apps):", queryToExecute, newOnlineApps.Count),
-                                FontSize = 12,
-                                FontWeight = FontWeights.Bold,
-                                Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC"),
-                                VerticalAlignment = VerticalAlignment.Center
-                            };
-                            spHdr.Children.Add(icnHdr);
-                            spHdr.Children.Add(txtHdr);
-                            sectionHeader.Child = spHdr;
-                            localCardsContainer.Children.Add(sectionHeader);
-
                             foreach (AppModel app in newOnlineApps)
                             {
                                 if (!knownOnlineApps.ContainsKey(app.id)) knownOnlineApps[app.id] = app;
