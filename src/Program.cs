@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -138,6 +139,1474 @@ namespace FleetForge
         }
     }
 
+    public class LanguageDefinition
+    {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string NativeName { get; set; }
+        public string Flag { get; set; }
+
+        public LanguageDefinition(string code, string name, string nativeName, string flag)
+        {
+            Code = code;
+            Name = name;
+            NativeName = nativeName;
+            Flag = flag;
+        }
+    }
+
+    public static class Localization
+    {
+        public static string CurrentLanguage = "en";
+
+        public static readonly List<LanguageDefinition> SupportedLanguages = new List<LanguageDefinition>()
+        {
+            new LanguageDefinition("en", "English", "English", "\uD83C\uDDFA\uD83C\uDDF8"),
+            new LanguageDefinition("hi", "Hindi", "\u0939\u093F\u0928\u094D\u0926\u0940", "\uD83C\uDDEE\uD83C\uDDF3"),
+            new LanguageDefinition("es", "Spanish", "Espa\u00F1ol", "\uD83C\uDDEA\uD83C\uDDF8"),
+            new LanguageDefinition("fr", "French", "Fran\u00E7ais", "\uD83C\uDDEB\uD83C\uDDF7"),
+            new LanguageDefinition("de", "German", "Deutsch", "\uD83C\uDDE9\uD83C\uDDEA"),
+            new LanguageDefinition("ru", "Russian", "\u0420\u0443\u0441\u0441\u043A\u0438\u0439", "\uD83C\uDDF7\uD83C\uDDFA"),
+            new LanguageDefinition("zh", "Chinese", "\u7B80\u4F53\u4E2D\u6587", "\uD83C\uDDE8\uD83C\uDDF3"),
+            new LanguageDefinition("ja", "Japanese", "\u65E5\u672C\u8A9E", "\uD83C\uDDEF\uD83C\uDDF5"),
+            new LanguageDefinition("pt", "Portuguese", "Portugu\u00EAs", "\uD83C\uDDE7\uD83C\uDDF7"),
+            new LanguageDefinition("ar", "Arabic", "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", "\uD83C\uDDF8\uD83C\uDDE6"),
+            new LanguageDefinition("it", "Italian", "Italiano", "\uD83C\uDDEE\uD83C\uDDF9"),
+            new LanguageDefinition("ko", "Korean", "\uD55C\uAD6D\uC5B4", "\uD83C\uDDF0\uD83C\uDDF7"),
+            new LanguageDefinition("tr", "Turkish", "T\u00FCrk\u00E7e", "\uD83C\uDDF9\uD83C\uDDF7"),
+            new LanguageDefinition("nl", "Dutch", "Nederlands", "\uD83C\uDDF3\uD83C\uDDF1"),
+            new LanguageDefinition("pl", "Polish", "Polski", "\uD83C\uDDF5\uD83C\uDDF1"),
+            new LanguageDefinition("vi", "Vietnamese", "Ti\u1EBFng Vi\u1EC7t", "\uD83C\uDDFB\uD83C\uDDF3"),
+        };
+
+        private static Dictionary<string, Dictionary<string, string>> _translations = null;
+
+        public static void InitializeTranslations()
+        {
+            if (_translations != null) return;
+            _translations = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+
+            // Language: en
+            Dictionary<string, string> dict_en = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_en["btn_select_pack"] = "Select Pack";
+            dict_en["btn_customize_pack"] = "Customize Apps";
+            dict_en["btn_export_pack"] = "Export Pack";
+            dict_en["nav_quick_setup"] = "Quick Setup";
+            dict_en["nav_all_apps"] = "All Apps";
+            dict_en["nav_cloud_sync"] = "Cloud Sync";
+            dict_en["nav_history"] = "Install History";
+            dict_en["search_placeholder"] = "Find an app, setting or pack...";
+            dict_en["help_button"] = "Help ?";
+            dict_en["lang_auto"] = "Auto (System Default)";
+            dict_en["menu_guide"] = "How to Use (Interactive Guide)...";
+            dict_en["menu_updates"] = "Check for Updates...";
+            dict_en["menu_settings"] = "Settings...";
+            dict_en["menu_about"] = "About FleetForge...";
+            dict_en["quick_setup_title"] = "Quick Setup";
+            dict_en["quick_setup_subtitle"] = "Choose a pack, pick apps and get started in one click.";
+            dict_en["step1_title"] = "Pick a Pack";
+            dict_en["step1_desc"] = "Choose your needs";
+            dict_en["step2_title"] = "Review Apps";
+            dict_en["step2_desc"] = "Check selection";
+            dict_en["step3_title"] = "Install";
+            dict_en["step3_desc"] = "Start using";
+            dict_en["available_packs_title"] = "Available App Packs";
+            dict_en["available_packs_subtitle"] = "Select a ready-made pack or choose individual apps.";
+            dict_en["top_choice_badge"] = "TOP CHOICE";
+            dict_en["recommended_badge"] = "RECOMMENDED";
+            dict_en["custom_badge"] = "CUSTOM PACK";
+            dict_en["partner_apps_count"] = "{0} partner apps";
+            dict_en["apps_count"] = "{0} apps";
+            dict_en["catalog_title"] = "All Applications";
+            dict_en["catalog_subtitle"] = "Browse 16,349 software packages with instant search and one-click selection.";
+            dict_en["select_all"] = "Select All Apps";
+            dict_en["sort_button"] = "Sort Apps \u25BE";
+            dict_en["sort_selected_top"] = "Selected & Recommended";
+            dict_en["sort_name_az"] = "Name (A to Z)";
+            dict_en["sort_name_za"] = "Name (Z to A)";
+            dict_en["sort_category"] = "By Category";
+            dict_en["cat_all"] = "All";
+            dict_en["cat_browsers"] = "Web Browsers";
+            dict_en["cat_dev"] = "Development & Code";
+            dict_en["cat_collab"] = "Communication & Collab";
+            dict_en["cat_office"] = "Productivity & Office";
+            dict_en["cat_tools"] = "Utilities & Tools";
+            dict_en["cat_media"] = "Media & Creative";
+            dict_en["cat_sec"] = "Security & Network";
+            dict_en["cat_cloud"] = "Cloud & Storage";
+            dict_en["cat_games"] = "Gaming & Engines";
+            dict_en["btn_install"] = "\uD83D\uDCE5  Install Selected Apps ({0})";
+            dict_en["btn_install_no_count"] = "\uD83D\uDCE5  Install Selected Apps";
+            dict_en["btn_stop"] = "Stop Install";
+            dict_en["btn_import_pack"] = "\uD83D\uDCE5 Import Pack";
+            dict_en["btn_create_pack"] = "+ Create New Pack";
+            dict_en["badge_ready"] = "Ready";
+            dict_en["badge_installed"] = "Installed";
+            dict_en["badge_installing"] = "Installing...";
+            dict_en["badge_failed"] = "Failed";
+            dict_en["showing_count"] = "Showing {0:N0} of {1:N0} apps";
+            dict_en["showing_count_selected"] = "Showing {0:N0} of {1:N0} apps ({2:N0} selected)";
+            dict_en["showing_local_online"] = "Showing {0} local + {1} online apps for \"{2}\"";
+            dict_en["showing_local_online_selected"] = "Showing {0} local + {1} online apps for \"{2}\" ({3:N0} selected)";
+            dict_en["found_online_count"] = "Found {0:N0} online apps for \"{1}\"";
+            dict_en["found_online_count_selected"] = "Found {0:N0} online apps for \"{1}\" ({2:N0} selected)";
+            dict_en["showing_query_count"] = "Showing {0:N0} apps for \"{1}\"";
+            dict_en["showing_query_count_selected"] = "Showing {0:N0} apps for \"{1}\" ({2:N0} selected)";
+            dict_en["searching_online"] = "\uD83D\uDD0D Searching online Winget repository for \"{0}\"...";
+            dict_en["no_apps_found"] = "No software packages found for \"{0}\"";
+            dict_en["no_apps_found_desc"] = "Not found in local database or online Winget repository. Check spelling or try a publisher name.";
+            dict_en["type_to_search"] = "Please type at least 2 characters to search applications.";
+            dict_en["no_winget_title"] = "No local applications found for \"{0}\"";
+            dict_en["no_winget_desc"] = "Microsoft Winget is not available on this system to search online repository.";
+            dict_en["bottom_tip"] = "Tip: You can customize any pack, add or remove apps, and export your setup for later use.";
+            dict_en["pack_selected_prefix"] = "App pack selected: {0}";
+            dict_en["logs_title"] = "Install History";
+            dict_en["logs_subtitle"] = "Live deployment watchdog, stdout streaming, and audit logs.";
+            dict_en["btn_summary_report"] = "Summary Report";
+            dict_en["btn_open_logfile"] = "Open Log File";
+            dict_en["btn_clear_screen"] = "Clear Screen";
+            _translations["en"] = dict_en;
+
+            // Language: hi
+            Dictionary<string, string> dict_hi = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_hi["btn_select_pack"] = "\u092A\u0948\u0915 \u091A\u0941\u0928\u0947\u0902";
+            dict_hi["btn_customize_pack"] = "\u0910\u092A\u094D\u0938 \u0915\u0938\u094D\u091F\u092E\u093E\u0907\u091C\u093C \u0915\u0930\u0947\u0902";
+            dict_hi["btn_export_pack"] = "\u092A\u0948\u0915 \u0928\u093F\u0930\u094D\u092F\u093E\u0924 \u0915\u0930\u0947\u0902";
+            dict_hi["nav_quick_setup"] = "\u0924\u094D\u0935\u0930\u093F\u0924 \u0938\u0947\u091F\u0905\u092A";
+            dict_hi["nav_all_apps"] = "\u0938\u092D\u0940 \u0910\u092A\u094D\u0938";
+            dict_hi["nav_cloud_sync"] = "\u0915\u094D\u0932\u093E\u0909\u0921 \u0938\u093F\u0902\u0915";
+            dict_hi["nav_history"] = "\u0938\u094D\u0925\u093E\u092A\u0928\u093E \u0907\u0924\u093F\u0939\u093E\u0938";
+            dict_hi["search_placeholder"] = "\u0915\u094B\u0908 \u0910\u092A, \u0938\u0947\u091F\u093F\u0902\u0917 \u092F\u093E \u092A\u0948\u0915 \u0916\u094B\u091C\u0947\u0902...";
+            dict_hi["help_button"] = "\u0938\u0939\u093E\u092F\u0924\u093E ?";
+            dict_hi["lang_auto"] = "\u0938\u094D\u0935\u0924\u0903 (\u0938\u093F\u0938\u094D\u091F\u092E \u0921\u093F\u092B\u093C\u0949\u0932\u094D\u091F)";
+            dict_hi["menu_guide"] = "\u0909\u092A\u092F\u094B\u0917 \u0915\u0948\u0938\u0947 \u0915\u0930\u0947\u0902 (\u0917\u093E\u0907\u0921)...";
+            dict_hi["menu_updates"] = "\u0905\u092A\u0921\u0947\u091F \u0915\u0940 \u091C\u093E\u0902\u091A \u0915\u0930\u0947\u0902...";
+            dict_hi["menu_settings"] = "\u0938\u0947\u091F\u093F\u0902\u0917\u094D\u0938...";
+            dict_hi["menu_about"] = "FleetForge \u0915\u0947 \u092C\u093E\u0930\u0947 \u092E\u0947\u0902...";
+            dict_hi["quick_setup_title"] = "\u0924\u094D\u0935\u0930\u093F\u0924 \u0938\u0947\u091F\u0905\u092A";
+            dict_hi["quick_setup_subtitle"] = "\u090F\u0915 \u092A\u0948\u0915 \u091A\u0941\u0928\u0947\u0902, \u0910\u092A\u094D\u0938 \u091A\u0941\u0928\u0947\u0902 \u0914\u0930 \u090F\u0915 \u0915\u094D\u0932\u093F\u0915 \u092E\u0947\u0902 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0964";
+            dict_hi["step1_title"] = "\u092A\u0948\u0915 \u091A\u0941\u0928\u0947\u0902";
+            dict_hi["step1_desc"] = "\u0905\u092A\u0928\u0940 \u0906\u0935\u0936\u094D\u092F\u0915\u0924\u093E \u091A\u0941\u0928\u0947\u0902";
+            dict_hi["step2_title"] = "\u0910\u092A\u094D\u0938 \u0915\u0940 \u0938\u092E\u0940\u0915\u094D\u0937\u093E \u0915\u0930\u0947\u0902";
+            dict_hi["step2_desc"] = "\u091A\u092F\u0928 \u0915\u0940 \u092A\u0941\u0937\u094D\u091F\u093F \u0915\u0930\u0947\u0902";
+            dict_hi["step3_title"] = "\u0907\u0902\u0938\u094D\u091F\u0949\u0932 \u0915\u0930\u0947\u0902";
+            dict_hi["step3_desc"] = "\u0909\u092A\u092F\u094B\u0917 \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902";
+            dict_hi["available_packs_title"] = "\u0909\u092A\u0932\u092C\u094D\u0927 \u0910\u092A \u092A\u0948\u0915";
+            dict_hi["available_packs_subtitle"] = "\u0924\u0948\u092F\u093E\u0930 \u092A\u0948\u0915 \u091A\u0941\u0928\u0947\u0902 \u092F\u093E \u0905\u0932\u0917-\u0905\u0932\u0917 \u0910\u092A\u094D\u0938 \u091A\u0941\u0928\u0947\u0902\u0964";
+            dict_hi["top_choice_badge"] = "\u0938\u0930\u094D\u0935\u0936\u094D\u0930\u0947\u0937\u094D\u0920 \u0935\u093F\u0915\u0932\u094D\u092A";
+            dict_hi["recommended_badge"] = "\u0905\u0928\u0941\u0936\u0902\u0938\u093F\u0924";
+            dict_hi["custom_badge"] = "\u0915\u0938\u094D\u091F\u092E \u092A\u0948\u0915";
+            dict_hi["partner_apps_count"] = "{0} \u092A\u093E\u0930\u094D\u091F\u0928\u0930 \u0910\u092A\u094D\u0938";
+            dict_hi["apps_count"] = "{0} \u0910\u092A\u094D\u0938";
+            dict_hi["catalog_title"] = "\u0938\u092D\u0940 \u090F\u092A\u094D\u0932\u093F\u0915\u0947\u0936\u0928";
+            dict_hi["catalog_subtitle"] = "\u0924\u094D\u0935\u0930\u093F\u0924 \u0916\u094B\u091C \u0914\u0930 \u090F\u0915-\u0915\u094D\u0932\u093F\u0915 \u091A\u092F\u0928 \u0915\u0947 \u0938\u093E\u0925 16,349 \u0938\u0949\u092B\u094D\u091F\u0935\u0947\u092F\u0930 \u092A\u0948\u0915\u0947\u091C \u092C\u094D\u0930\u093E\u0909\u091C\u093C \u0915\u0930\u0947\u0902\u0964";
+            dict_hi["select_all"] = "\u0938\u092D\u0940 \u0910\u092A\u094D\u0938 \u091A\u0941\u0928\u0947\u0902";
+            dict_hi["sort_button"] = "\u0910\u092A\u094D\u0938 \u0915\u094D\u0930\u092E\u092C\u0926\u094D\u0927 \u0915\u0930\u0947\u0902 \u25BE";
+            dict_hi["sort_selected_top"] = "\u091A\u092F\u0928\u093F\u0924 \u0914\u0930 \u0905\u0928\u0941\u0936\u0902\u0938\u093F\u0924";
+            dict_hi["sort_name_az"] = "\u0928\u093E\u092E (A \u0938\u0947 Z)";
+            dict_hi["sort_name_za"] = "\u0928\u093E\u092E (Z \u0938\u0947 A)";
+            dict_hi["sort_category"] = "\u0936\u094D\u0930\u0947\u0923\u0940 \u0905\u0928\u0941\u0938\u093E\u0930";
+            dict_hi["cat_all"] = "\u0938\u092D\u0940";
+            dict_hi["cat_browsers"] = "\u0935\u0947\u092C \u092C\u094D\u0930\u093E\u0909\u091C\u093C\u0930";
+            dict_hi["cat_dev"] = "\u0921\u0947\u0935\u0932\u092A\u092E\u0947\u0902\u091F \u0914\u0930 \u0915\u094B\u0921";
+            dict_hi["cat_collab"] = "\u0938\u0902\u091A\u093E\u0930 \u0914\u0930 \u0938\u0939\u092F\u094B\u0917";
+            dict_hi["cat_office"] = "\u0909\u0924\u094D\u092A\u093E\u0926\u0915\u0924\u093E \u0914\u0930 \u0915\u093E\u0930\u094D\u092F\u093E\u0932\u092F";
+            dict_hi["cat_tools"] = "\u0909\u092A\u092F\u094B\u0917\u093F\u0924\u093E\u090F\u0901 \u0914\u0930 \u0909\u092A\u0915\u0930\u0923";
+            dict_hi["cat_media"] = "\u092E\u0940\u0921\u093F\u092F\u093E \u0914\u0930 \u0930\u091A\u0928\u093E\u0924\u094D\u092E\u0915";
+            dict_hi["cat_sec"] = "\u0938\u0941\u0930\u0915\u094D\u0937\u093E \u0914\u0930 \u0928\u0947\u091F\u0935\u0930\u094D\u0915";
+            dict_hi["cat_cloud"] = "\u0915\u094D\u0932\u093E\u0909\u0921 \u0914\u0930 \u0938\u094D\u091F\u094B\u0930\u0947\u091C";
+            dict_hi["cat_games"] = "\u0917\u0947\u092E\u093F\u0902\u0917 \u0914\u0930 \u0907\u0902\u091C\u0928";
+            dict_hi["btn_install"] = "\uD83D\uDCE5  \u091A\u0941\u0928\u093F\u0902\u0926\u093E \u0910\u092A\u094D\u0938 \u0907\u0902\u0938\u094D\u091F\u0949\u0932 \u0915\u0930\u0947\u0902 ({0})";
+            dict_hi["btn_install_no_count"] = "\uD83D\uDCE5  \u091A\u0941\u0928\u093F\u0902\u0926\u093E \u0910\u092A\u094D\u0938 \u0907\u0902\u0938\u094D\u091F\u0949\u0932 \u0915\u0930\u0947\u0902";
+            dict_hi["btn_stop"] = "\u0938\u094D\u0925\u093E\u092A\u0928\u093E \u0930\u094B\u0915\u0947\u0902";
+            dict_hi["btn_import_pack"] = "\uD83D\uDCE5 \u092A\u0948\u0915 \u0906\u092F\u093E\u0924 \u0915\u0930\u0947\u0902";
+            dict_hi["btn_create_pack"] = "+ \u0928\u092F\u093E \u092A\u0948\u0915 \u092C\u0928\u093E\u090F\u0902";
+            dict_hi["badge_ready"] = "\u0924\u0948\u092F\u093E\u0930";
+            dict_hi["badge_installed"] = "\u0938\u094D\u0925\u093E\u092A\u093F\u0924";
+            dict_hi["badge_installing"] = "\u0907\u0902\u0938\u094D\u091F\u0949\u0932 \u0939\u094B \u0930\u0939\u093E \u0939\u0948...";
+            dict_hi["badge_failed"] = "\u0935\u093F\u092B\u0932";
+            dict_hi["showing_count"] = "{1:N0} \u092E\u0947\u0902 \u0938\u0947 {0:N0} \u0910\u092A\u094D\u0938 \u0926\u093F\u0916\u093E\u090F \u091C\u093E \u0930\u0939\u0947 \u0939\u0948\u0902";
+            dict_hi["showing_count_selected"] = "{1:N0} \u092E\u0947\u0902 \u0938\u0947 {0:N0} \u0910\u092A\u094D\u0938 ({2:N0} \u091A\u092F\u0928\u093F\u0924)";
+            dict_hi["showing_local_online"] = "\"{2}\" \u0915\u0947 \u0932\u093F\u090F {0} \u0938\u094D\u0925\u093E\u0928\u0940\u092F + {1} \u0911\u0928\u0932\u093E\u0907\u0928 \u0910\u092A\u094D\u0938";
+            dict_hi["showing_local_online_selected"] = "\"{2}\" \u0915\u0947 \u0932\u093F\u090F {0} \u0938\u094D\u0925\u093E\u0928\u0940\u092F + {1} \u0911\u0928\u0932\u093E\u0907\u0928 \u0910\u092A\u094D\u0938 ({3:N0} \u091A\u092F\u0928\u093F\u0924)";
+            dict_hi["found_online_count"] = "\"{1}\" \u0915\u0947 \u0932\u093F\u090F {0:N0} \u0911\u0928\u0932\u093E\u0907\u0928 \u0910\u092A\u094D\u0938 \u092E\u093F\u0932\u0947";
+            dict_hi["found_online_count_selected"] = "\"{1}\" \u0915\u0947 \u0932\u093F\u090F {0:N0} \u0911\u0928\u0932\u093E\u0907\u0928 \u0910\u092A\u094D\u0938 \u092E\u093F\u0932\u0947 ({2:N0} \u091A\u092F\u0928\u093F\u0924)";
+            dict_hi["showing_query_count"] = "\"{1}\" \u0915\u0947 \u0932\u093F\u090F {0:N0} \u0910\u092A\u094D\u0938 \u092A\u094D\u0930\u0926\u0930\u094D\u0936\u093F\u0924";
+            dict_hi["showing_query_count_selected"] = "\"{1}\" \u0915\u0947 \u0932\u093F\u090F {0:N0} \u0910\u092A\u094D\u0938 \u092A\u094D\u0930\u0926\u0930\u094D\u0936\u093F\u0924 ({2:N0} \u091A\u092F\u0928\u093F\u0924)";
+            dict_hi["searching_online"] = "\uD83D\uDD0D \"{0}\" \u0915\u0947 \u0932\u093F\u090F \u0911\u0928\u0932\u093E\u0907\u0928 \u0935\u093F\u0902\u0917\u0947\u091F \u0930\u093F\u092A\u0949\u091C\u093F\u091F\u0930\u0940 \u092E\u0947\u0902 \u0916\u094B\u091C \u091C\u093E\u0930\u0940...";
+            dict_hi["no_apps_found"] = "\"{0}\" \u0915\u0947 \u0932\u093F\u090F \u0915\u094B\u0908 \u0938\u0949\u092B\u094D\u091F\u0935\u0947\u092F\u0930 \u092A\u0948\u0915\u0947\u091C \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E";
+            dict_hi["no_apps_found_desc"] = "\u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0921\u0947\u091F\u093E\u092C\u0947\u0938 \u092F\u093E \u0935\u093F\u0902\u0917\u0947\u091F \u092E\u0947\u0902 \u0909\u092A\u0932\u092C\u094D\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964 \u0938\u094D\u092A\u0947\u0932\u093F\u0902\u0917 \u091C\u093E\u0902\u091A\u0947\u0902 \u092F\u093E \u092A\u094D\u0930\u0915\u093E\u0936\u0915 \u0915\u093E \u0928\u093E\u092E \u0906\u091C\u093C\u092E\u093E\u090F\u0902\u0964";
+            dict_hi["type_to_search"] = "\u090F\u092A\u094D\u0932\u093F\u0915\u0947\u0936\u0928 \u0916\u094B\u091C\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0915\u0943\u092A\u092F\u093E \u0915\u092E \u0938\u0947 \u0915\u092E 2 \u0905\u0915\u094D\u0937\u0930 \u091F\u093E\u0907\u092A \u0915\u0930\u0947\u0902\u0964";
+            dict_hi["no_winget_title"] = "\"{0}\" \u0915\u0947 \u0932\u093F\u090F \u0915\u094B\u0908 \u0938\u094D\u0925\u093E\u0928\u0940\u092F \u0910\u092A \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E";
+            dict_hi["no_winget_desc"] = "\u0911\u0928\u0932\u093E\u0907\u0928 \u0930\u093F\u092A\u0949\u091C\u093F\u091F\u0930\u0940 \u0916\u094B\u091C\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F Microsoft Winget \u0909\u092A\u0932\u092C\u094D\u0927 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964";
+            dict_hi["bottom_tip"] = "\u0938\u0941\u091D\u093E\u0935: \u0906\u092A \u0915\u093F\u0938\u0940 \u092D\u0940 \u092A\u0948\u0915 \u0915\u094B \u0915\u0938\u094D\u091F\u092E\u093E\u0907\u091C\u093C \u0915\u0930 \u0938\u0915\u0924\u0947 \u0939\u0948\u0902, \u0910\u092A\u094D\u0938 \u091C\u094B\u0921\u093C \u092F\u093E \u0939\u091F\u093E \u0938\u0915\u0924\u0947 \u0939\u0948\u0902\u0964";
+            dict_hi["pack_selected_prefix"] = "\u091A\u092F\u0928\u093F\u0924 \u0910\u092A \u092A\u0948\u0915: {0}";
+            dict_hi["logs_title"] = "\u0938\u094D\u0925\u093E\u092A\u0928\u093E \u0907\u0924\u093F\u0939\u093E\u0938";
+            dict_hi["logs_subtitle"] = "\u0932\u093E\u0907\u0935 \u092A\u0930\u093F\u0928\u093F\u092F\u094B\u091C\u0928 \u0928\u093F\u0917\u0930\u093E\u0928\u0940 \u0914\u0930 \u0911\u0921\u093F\u091F \u0932\u0949\u0917\u0964";
+            dict_hi["btn_summary_report"] = "\u0938\u093E\u0930\u093E\u0902\u0936 \u0930\u093F\u092A\u094B\u0930\u094D\u091F";
+            dict_hi["btn_open_logfile"] = "\u0932\u0949\u0917 \u092B\u093C\u093E\u0907\u0932 \u0916\u094B\u0932\u0947\u0902";
+            dict_hi["btn_clear_screen"] = "\u0938\u094D\u0915\u094D\u0930\u0940\u0928 \u0938\u093E\u092B\u093C \u0915\u0930\u0947\u0902";
+            _translations["hi"] = dict_hi;
+
+            // Language: es
+            Dictionary<string, string> dict_es = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_es["btn_select_pack"] = "Seleccionar pack";
+            dict_es["btn_customize_pack"] = "Personalizar apps";
+            dict_es["btn_export_pack"] = "Exportar pack";
+            dict_es["nav_quick_setup"] = "Configuraci\u00F3n r\u00E1pida";
+            dict_es["nav_all_apps"] = "Todas las aplicaciones";
+            dict_es["nav_cloud_sync"] = "Sincronizaci\u00F3n en la nube";
+            dict_es["nav_history"] = "Historial de instalaci\u00F3n";
+            dict_es["search_placeholder"] = "Buscar aplicaci\u00F3n, ajuste o paquete...";
+            dict_es["help_button"] = "Ayuda ?";
+            dict_es["lang_auto"] = "Autom\u00E1tico (Predeterminado del sistema)";
+            dict_es["menu_guide"] = "C\u00F3mo usar (Gu\u00EDa interactiva)...";
+            dict_es["menu_updates"] = "Buscar actualizaciones...";
+            dict_es["menu_settings"] = "Configuraci\u00F3n...";
+            dict_es["menu_about"] = "Acerca de FleetForge...";
+            dict_es["quick_setup_title"] = "Configuraci\u00F3n r\u00E1pida";
+            dict_es["quick_setup_subtitle"] = "Elige un paquete, selecciona aplicaciones y comienza con un clic.";
+            dict_es["step1_title"] = "Elige un paquete";
+            dict_es["step1_desc"] = "Seg\u00FAn tus necesidades";
+            dict_es["step2_title"] = "Revisar aplicaciones";
+            dict_es["step2_desc"] = "Comprueba la selecci\u00F3n";
+            dict_es["step3_title"] = "Instalar";
+            dict_es["step3_desc"] = "Comenzar a usar";
+            dict_es["available_packs_title"] = "Paquetes de aplicaciones disponibles";
+            dict_es["available_packs_subtitle"] = "Selecciona un paquete listo o aplicaciones individuales.";
+            dict_es["top_choice_badge"] = "MEJOR OPCI\u00D3N";
+            dict_es["recommended_badge"] = "RECOMENDADO";
+            dict_es["custom_badge"] = "PAQUETE PERSONALIZADO";
+            dict_es["partner_apps_count"] = "{0} apps asociadas";
+            dict_es["apps_count"] = "{0} aplicaciones";
+            dict_es["catalog_title"] = "Todas las aplicaciones";
+            dict_es["catalog_subtitle"] = "Explora 16.349 paquetes de software con b\u00FAsqueda instant\u00E1nea y selecci\u00F3n con un clic.";
+            dict_es["select_all"] = "Seleccionar todas";
+            dict_es["sort_button"] = "Ordenar aplicaciones \u25BE";
+            dict_es["sort_selected_top"] = "Seleccionadas y recomendadas";
+            dict_es["sort_name_az"] = "Nombre (A a Z)";
+            dict_es["sort_name_za"] = "Nombre (Z a A)";
+            dict_es["sort_category"] = "Por categor\u00EDa";
+            dict_es["cat_all"] = "Todas";
+            dict_es["cat_browsers"] = "Navegadores web";
+            dict_es["cat_dev"] = "Desarrollo y c\u00F3digo";
+            dict_es["cat_collab"] = "Comunicaci\u00F3n y colaboraci\u00F3n";
+            dict_es["cat_office"] = "Productividad y oficina";
+            dict_es["cat_tools"] = "Utilidades y herramientas";
+            dict_es["cat_media"] = "Medios y creatividad";
+            dict_es["cat_sec"] = "Seguridad y redes";
+            dict_es["cat_cloud"] = "Nube y almacenamiento";
+            dict_es["cat_games"] = "Juegos y motores";
+            dict_es["btn_install"] = "\uD83D\uDCE5  Instalar aplicaciones seleccionadas ({0})";
+            dict_es["btn_install_no_count"] = "\uD83D\uDCE5  Instalar aplicaciones seleccionadas";
+            dict_es["btn_stop"] = "Detener instalaci\u00F3n";
+            dict_es["btn_import_pack"] = "\uD83D\uDCE5 Importar paquete";
+            dict_es["btn_create_pack"] = "+ Crear nuevo paquete";
+            dict_es["badge_ready"] = "Listo";
+            dict_es["badge_installed"] = "Instalado";
+            dict_es["badge_installing"] = "Instalando...";
+            dict_es["badge_failed"] = "Fall\u00F3";
+            dict_es["showing_count"] = "Mostrando {0:N0} de {1:N0} apps";
+            dict_es["showing_count_selected"] = "Mostrando {0:N0} de {1:N0} apps ({2:N0} seleccionadas)";
+            dict_es["showing_local_online"] = "Mostrando {0} locales + {1} en l\u00EDnea para \"{2}\"";
+            dict_es["showing_local_online_selected"] = "Mostrando {0} locales + {1} en l\u00EDnea para \"{2}\" ({3:N0} seleccionadas)";
+            dict_es["found_online_count"] = "Se encontraron {0:N0} aplicaciones en l\u00EDnea para \"{1}\"";
+            dict_es["found_online_count_selected"] = "Se encontraron {0:N0} aplicaciones en l\u00EDnea para \"{1}\" ({2:N0} seleccionadas)";
+            dict_es["showing_query_count"] = "Mostrando {0:N0} aplicaciones para \"{1}\"";
+            dict_es["showing_query_count_selected"] = "Mostrando {0:N0} aplicaciones para \"{1}\" ({2:N0} seleccionadas)";
+            dict_es["searching_online"] = "\uD83D\uDD0D Buscando en repositorio Winget en l\u00EDnea para \"{0}\"...";
+            dict_es["no_apps_found"] = "No se encontraron paquetes de software para \"{0}\"";
+            dict_es["no_apps_found_desc"] = "No encontrado localmente ni en Winget en l\u00EDnea. Verifique la ortograf\u00EDa.";
+            dict_es["type_to_search"] = "Escriba al menos 2 caracteres para buscar aplicaciones.";
+            dict_es["no_winget_title"] = "No se encontraron aplicaciones locales para \"{0}\"";
+            dict_es["no_winget_desc"] = "Microsoft Winget no est\u00E1 disponible para buscar en l\u00EDnea.";
+            dict_es["bottom_tip"] = "Consejo: Puedes personalizar cualquier paquete, agregar o eliminar aplicaciones.";
+            dict_es["pack_selected_prefix"] = "Paquete de aplicaciones seleccionado: {0}";
+            dict_es["logs_title"] = "Historial de instalaci\u00F3n";
+            dict_es["logs_subtitle"] = "Supervisi\u00F3n de despliegue en vivo y registros de auditor\u00EDa.";
+            dict_es["btn_summary_report"] = "Informe de resumen";
+            dict_es["btn_open_logfile"] = "Abrir archivo de registro";
+            dict_es["btn_clear_screen"] = "Limpiar pantalla";
+            _translations["es"] = dict_es;
+
+            // Language: fr
+            Dictionary<string, string> dict_fr = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_fr["btn_select_pack"] = "S\u00E9lectionner";
+            dict_fr["btn_customize_pack"] = "Personnaliser";
+            dict_fr["btn_export_pack"] = "Exporter";
+            dict_fr["nav_quick_setup"] = "Configuration rapide";
+            dict_fr["nav_all_apps"] = "Toutes les applications";
+            dict_fr["nav_cloud_sync"] = "Synchronisation Cloud";
+            dict_fr["nav_history"] = "Historique d'installation";
+            dict_fr["search_placeholder"] = "Rechercher une application, r\u00E9glage ou pack...";
+            dict_fr["help_button"] = "Aide ?";
+            dict_fr["lang_auto"] = "Automatique (Syst\u00E8me)";
+            dict_fr["menu_guide"] = "Guide d'utilisation interactif...";
+            dict_fr["menu_updates"] = "V\u00E9rifier les mises \u00E0 jour...";
+            dict_fr["menu_settings"] = "Param\u00E8tres...";
+            dict_fr["menu_about"] = "\u00C0 propos de FleetForge...";
+            dict_fr["quick_setup_title"] = "Configuration rapide";
+            dict_fr["quick_setup_subtitle"] = "Choisissez un pack, s\u00E9lectionnez des applications et d\u00E9marrez en un clic.";
+            dict_fr["step1_title"] = "Choisir un pack";
+            dict_fr["step1_desc"] = "Selon vos besoins";
+            dict_fr["step2_title"] = "V\u00E9rifier les apps";
+            dict_fr["step2_desc"] = "V\u00E9rifiez la s\u00E9lection";
+            dict_fr["step3_title"] = "Installer";
+            dict_fr["step3_desc"] = "Commencer \u00E0 utiliser";
+            dict_fr["available_packs_title"] = "Packs d'applications disponibles";
+            dict_fr["available_packs_subtitle"] = "S\u00E9lectionnez un pack pr\u00EAt \u00E0 l'emploi ou des applications individuelles.";
+            dict_fr["top_choice_badge"] = "MEILLEUR CHOIX";
+            dict_fr["recommended_badge"] = "RECOMMAND\u00C9";
+            dict_fr["custom_badge"] = "PACK PERSONNALIS\u00C9";
+            dict_fr["partner_apps_count"] = "{0} apps partenaires";
+            dict_fr["apps_count"] = "{0} applications";
+            dict_fr["catalog_title"] = "Toutes les applications";
+            dict_fr["catalog_subtitle"] = "Parcourez 16 349 logiciels avec recherche instantan\u00E9e et s\u00E9lection en un clic.";
+            dict_fr["select_all"] = "Tout s\u00E9lectionner";
+            dict_fr["sort_button"] = "Trier les applications \u25BE";
+            dict_fr["sort_selected_top"] = "S\u00E9lectionn\u00E9es et recommand\u00E9es";
+            dict_fr["sort_name_az"] = "Nom (A \u00E0 Z)";
+            dict_fr["sort_name_za"] = "Nom (Z \u00E0 A)";
+            dict_fr["sort_category"] = "Par cat\u00E9gorie";
+            dict_fr["cat_all"] = "Tous";
+            dict_fr["cat_browsers"] = "Navigateurs Web";
+            dict_fr["cat_dev"] = "D\u00E9veloppement et code";
+            dict_fr["cat_collab"] = "Communication & Collab";
+            dict_fr["cat_office"] = "Productivit\u00E9 & Bureau";
+            dict_fr["cat_tools"] = "Utilitaires et outils";
+            dict_fr["cat_media"] = "M\u00E9dias et cr\u00E9ation";
+            dict_fr["cat_sec"] = "S\u00E9curit\u00E9 et r\u00E9seau";
+            dict_fr["cat_cloud"] = "Cloud et stockage";
+            dict_fr["cat_games"] = "Jeux et moteurs";
+            dict_fr["btn_install"] = "\uD83D\uDCE5  Installer les applications s\u00E9lectionn\u00E9es ({0})";
+            dict_fr["btn_install_no_count"] = "\uD83D\uDCE5  Installer les applications s\u00E9lectionn\u00E9es";
+            dict_fr["btn_stop"] = "Arr\u00EAter l'installation";
+            dict_fr["btn_import_pack"] = "\uD83D\uDCE5 Importer un pack";
+            dict_fr["btn_create_pack"] = "+ Cr\u00E9er un nouveau pack";
+            dict_fr["badge_ready"] = "Pr\u00EAt";
+            dict_fr["badge_installed"] = "Install\u00E9";
+            dict_fr["badge_installing"] = "Installation...";
+            dict_fr["badge_failed"] = "\u00C9chou\u00E9";
+            dict_fr["showing_count"] = "Affichage de {0:N0} sur {1:N0} apps";
+            dict_fr["showing_count_selected"] = "Affichage de {0:N0} sur {1:N0} apps ({2:N0} s\u00E9lectionn\u00E9es)";
+            dict_fr["showing_local_online"] = "Affichage de {0} local(es) + {1} en ligne pour \"{2}\"";
+            dict_fr["showing_local_online_selected"] = "Affichage de {0} local(es) + {1} en ligne pour \"{2}\" ({3:N0} s\u00E9lectionn\u00E9es)";
+            dict_fr["found_online_count"] = "{0:N0} application(s) trouv\u00E9e(s) en ligne pour \"{1}\"";
+            dict_fr["found_online_count_selected"] = "{0:N0} application(s) trouv\u00E9e(s) en ligne pour \"{1}\" ({2:N0} s\u00E9lectionn\u00E9es)";
+            dict_fr["showing_query_count"] = "Affichage de {0:N0} apps pour \"{1}\"";
+            dict_fr["showing_query_count_selected"] = "Affichage de {0:N0} apps pour \"{1}\" ({2:N0} s\u00E9lectionn\u00E9es)";
+            dict_fr["searching_online"] = "\uD83D\uDD0D Recherche en ligne dans Winget pour \"{0}\"...";
+            dict_fr["no_apps_found"] = "Aucun logiciel trouv\u00E9 pour \"{0}\"";
+            dict_fr["no_apps_found_desc"] = "Introuvable dans la base locale ou Winget. V\u00E9rifiez l'orthographe.";
+            dict_fr["type_to_search"] = "Veuillez saisir au moins 2 caract\u00E8res pour rechercher.";
+            dict_fr["no_winget_title"] = "Aucune application locale trouv\u00E9e pour \"{0}\"";
+            dict_fr["no_winget_desc"] = "Microsoft Winget n'est pas disponible pour la recherche en ligne.";
+            dict_fr["bottom_tip"] = "Astuce : Vous pouvez personnaliser n'importe quel pack et exporter votre s\u00E9lection.";
+            dict_fr["pack_selected_prefix"] = "Pack d'applications s\u00E9lectionn\u00E9 : {0}";
+            dict_fr["logs_title"] = "Historique d'installation";
+            dict_fr["logs_subtitle"] = "Surveillance du d\u00E9ploiement en direct et journaux d'audit.";
+            dict_fr["btn_summary_report"] = "Rapport r\u00E9capitulatif";
+            dict_fr["btn_open_logfile"] = "Ouvrir le fichier journal";
+            dict_fr["btn_clear_screen"] = "Effacer l'\u00E9cran";
+            _translations["fr"] = dict_fr;
+
+            // Language: de
+            Dictionary<string, string> dict_de = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_de["btn_select_pack"] = "Paket w\u00E4hlen";
+            dict_de["btn_customize_pack"] = "Anpassen";
+            dict_de["btn_export_pack"] = "Exportieren";
+            dict_de["nav_quick_setup"] = "Schnelleinrichtung";
+            dict_de["nav_all_apps"] = "Alle Apps";
+            dict_de["nav_cloud_sync"] = "Cloud-Synchronisierung";
+            dict_de["nav_history"] = "Installationsverlauf";
+            dict_de["search_placeholder"] = "App, Einstellung oder Paket suchen...";
+            dict_de["help_button"] = "Hilfe ?";
+            dict_de["lang_auto"] = "Automatisch (Systemstandard)";
+            dict_de["menu_guide"] = "Bedienungsanleitung (Interaktiv)...";
+            dict_de["menu_updates"] = "Nach Updates suchen...";
+            dict_de["menu_settings"] = "Einstellungen...";
+            dict_de["menu_about"] = "\u00DCber FleetForge...";
+            dict_de["quick_setup_title"] = "Schnelleinrichtung";
+            dict_de["quick_setup_subtitle"] = "W\u00E4hlen Sie ein Paket, Apps ausw\u00E4hlen und mit einem Klick starten.";
+            dict_de["step1_title"] = "Paket w\u00E4hlen";
+            dict_de["step1_desc"] = "Nach Ihrem Bedarf";
+            dict_de["step2_title"] = "Apps pr\u00FCfen";
+            dict_de["step2_desc"] = "Auswahl pr\u00FCfen";
+            dict_de["step3_title"] = "Installieren";
+            dict_de["step3_desc"] = "Sofort loslegen";
+            dict_de["available_packs_title"] = "Verf\u00FCgbare App-Pakete";
+            dict_de["available_packs_subtitle"] = "W\u00E4hlen Sie ein vorgefertigtes Paket oder einzelne Apps.";
+            dict_de["top_choice_badge"] = "TOP-AUSWAHL";
+            dict_de["recommended_badge"] = "EMPFOHLEN";
+            dict_de["custom_badge"] = "BENUTZERDEFINIERTES PAKET";
+            dict_de["partner_apps_count"] = "{0} Partner-Apps";
+            dict_de["apps_count"] = "{0} Apps";
+            dict_de["catalog_title"] = "Alle Anwendungen";
+            dict_de["catalog_subtitle"] = "Durchsuchen Sie 16.349 Softwarepakete mit Sofortsuche und Ein-Klick-Auswahl.";
+            dict_de["select_all"] = "Alle Apps ausw\u00E4hlen";
+            dict_de["sort_button"] = "Apps sortieren \u25BE";
+            dict_de["sort_selected_top"] = "Ausgew\u00E4hlt & Empfohlen";
+            dict_de["sort_name_az"] = "Name (A bis Z)";
+            dict_de["sort_name_za"] = "Name (Z bis A)";
+            dict_de["sort_category"] = "Nach Kategorie";
+            dict_de["cat_all"] = "Alle";
+            dict_de["cat_browsers"] = "Webbrowser";
+            dict_de["cat_dev"] = "Entwicklung & Code";
+            dict_de["cat_collab"] = "Kommunikation & Team";
+            dict_de["cat_office"] = "Produktivit\u00E4t & B\u00FCro";
+            dict_de["cat_tools"] = "Dienstprogramme & Tools";
+            dict_de["cat_media"] = "Medien & Kreatives";
+            dict_de["cat_sec"] = "Sicherheit & Netzwerk";
+            dict_de["cat_cloud"] = "Cloud & Speicher";
+            dict_de["cat_games"] = "Gaming & Engines";
+            dict_de["btn_install"] = "\uD83D\uDCE5  Ausgew\u00E4hlte Apps installieren ({0})";
+            dict_de["btn_install_no_count"] = "\uD83D\uDCE5  Ausgew\u00E4hlte Apps installieren";
+            dict_de["btn_stop"] = "Installation anhalten";
+            dict_de["btn_import_pack"] = "\uD83D\uDCE5 Paket importieren";
+            dict_de["btn_create_pack"] = "+ Neues Paket erstellen";
+            dict_de["badge_ready"] = "Bereit";
+            dict_de["badge_installed"] = "Installiert";
+            dict_de["badge_installing"] = "Wird installiert...";
+            dict_de["badge_failed"] = "Fehlgeschlagen";
+            dict_de["showing_count"] = "{0:N0} von {1:N0} Apps angezeigt";
+            dict_de["showing_count_selected"] = "{0:N0} von {1:N0} Apps angezeigt ({2:N0} ausgew\u00E4hlt)";
+            dict_de["showing_local_online"] = "{0} lokale + {1} Online-Apps f\u00FCr \u201E{2}\u201C";
+            dict_de["showing_local_online_selected"] = "{0} lokale + {1} Online-Apps f\u00FCr \u201E{2}\u201C ({3:N0} ausgew\u00E4hlt)";
+            dict_de["found_online_count"] = "{0:N0} Online-Apps f\u00FCr \u201E{1}\u201C gefunden";
+            dict_de["found_online_count_selected"] = "{0:N0} Online-Apps f\u00FCr \u201E{1}\u201C gefunden ({2:N0} ausgew\u00E4hlt)";
+            dict_de["showing_query_count"] = "{0:N0} Apps f\u00FCr \u201E{1}\u201C angezeigt";
+            dict_de["showing_query_count_selected"] = "{0:N0} Apps f\u00FCr \u201E{1}\u201C angezeigt ({2:N0} ausgew\u00E4hlt)";
+            dict_de["searching_online"] = "\uD83D\uDD0D Suche im Online-Winget-Repository nach \u201E{0}\u201C...";
+            dict_de["no_apps_found"] = "Keine Softwarepakete f\u00FCr \u201E{0}\u201C gefunden";
+            dict_de["no_apps_found_desc"] = "Weder lokal noch im Online-Repository gefunden. Bitte Schreibweise pr\u00FCfen.";
+            dict_de["type_to_search"] = "Bitte mindestens 2 Zeichen eingeben, um zu suchen.";
+            dict_de["no_winget_title"] = "Keine lokalen Apps f\u00FCr \u201E{0}\u201C gefunden";
+            dict_de["no_winget_desc"] = "Microsoft Winget ist f\u00FCr die Online-Suche nicht verf\u00FCgbar.";
+            dict_de["bottom_tip"] = "Tipp: Sie k\u00F6nnen jedes Paket anpassen, Apps hinzuf\u00FCgen oder entfernen.";
+            dict_de["pack_selected_prefix"] = "Ausgew\u00E4hltes App-Paket: {0}";
+            dict_de["logs_title"] = "Installationsverlauf";
+            dict_de["logs_subtitle"] = "Live-Bereitstellungs\u00FCberwachung und \u00DCberwachungsprotokolle.";
+            dict_de["btn_summary_report"] = "Zusammenfassender Bericht";
+            dict_de["btn_open_logfile"] = "Protokolldatei \u00F6ffnen";
+            dict_de["btn_clear_screen"] = "Bildschirm leeren";
+            _translations["de"] = dict_de;
+
+            // Language: ru
+            Dictionary<string, string> dict_ru = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_ru["btn_select_pack"] = "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u043F\u0430\u043A\u0435\u0442";
+            dict_ru["btn_customize_pack"] = "\u041D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C";
+            dict_ru["btn_export_pack"] = "\u042D\u043A\u0441\u043F\u043E\u0440\u0442";
+            dict_ru["nav_quick_setup"] = "\u0411\u044B\u0441\u0442\u0440\u0430\u044F \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430";
+            dict_ru["nav_all_apps"] = "\u0412\u0441\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F";
+            dict_ru["nav_cloud_sync"] = "\u041E\u0431\u043B\u0430\u0447\u043D\u0430\u044F \u0441\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0430\u0446\u0438\u044F";
+            dict_ru["nav_history"] = "\u0418\u0441\u0442\u043E\u0440\u0438\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0438";
+            dict_ru["search_placeholder"] = "\u041D\u0430\u0439\u0442\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435, \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0443 \u0438\u043B\u0438 \u043F\u0430\u043A\u0435\u0442...";
+            dict_ru["help_button"] = "\u0421\u043F\u0440\u0430\u0432\u043A\u0430 ?";
+            dict_ru["lang_auto"] = "\u0410\u0432\u0442\u043E (\u041F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E)";
+            dict_ru["menu_guide"] = "\u0420\u0443\u043A\u043E\u0432\u043E\u0434\u0441\u0442\u0432\u043E \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F...";
+            dict_ru["menu_updates"] = "\u041F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F...";
+            dict_ru["menu_settings"] = "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438...";
+            dict_ru["menu_about"] = "\u041E \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0435 FleetForge...";
+            dict_ru["quick_setup_title"] = "\u0411\u044B\u0441\u0442\u0440\u0430\u044F \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430";
+            dict_ru["quick_setup_subtitle"] = "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043A\u0435\u0442, \u043E\u0442\u043C\u0435\u0442\u044C\u0442\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F \u0438 \u043D\u0430\u0447\u043D\u0438\u0442\u0435 \u0432 \u043E\u0434\u0438\u043D \u043A\u043B\u0438\u043A.";
+            dict_ru["step1_title"] = "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043A\u0435\u0442";
+            dict_ru["step1_desc"] = "\u041F\u043E \u0432\u0430\u0448\u0438\u043C \u043F\u043E\u0442\u0440\u0435\u0431\u043D\u043E\u0441\u0442\u044F\u043C";
+            dict_ru["step2_title"] = "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439";
+            dict_ru["step2_desc"] = "\u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0432\u044B\u0431\u043E\u0440";
+            dict_ru["step3_title"] = "\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C";
+            dict_ru["step3_desc"] = "\u041D\u0430\u0447\u043D\u0438\u0442\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C";
+            dict_ru["available_packs_title"] = "\u0414\u043E\u0441\u0442\u0443\u043F\u043D\u044B\u0435 \u043F\u0430\u043A\u0435\u0442\u044B \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439";
+            dict_ru["available_packs_subtitle"] = "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0433\u043E\u0442\u043E\u0432\u044B\u0439 \u043F\u0430\u043A\u0435\u0442 \u0438\u043B\u0438 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u044B\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F.";
+            dict_ru["top_choice_badge"] = "\u041B\u0423\u0427\u0428\u0418\u0419 \u0412\u042B\u0411\u041E\u0420";
+            dict_ru["recommended_badge"] = "\u0420\u0415\u041A\u041E\u041C\u0415\u041D\u0414\u0423\u0415\u0422\u0421\u042F";
+            dict_ru["custom_badge"] = "\u041F\u041E\u041B\u042C\u0417\u041E\u0412\u0410\u0422\u0415\u041B\u042C\u0421\u041A\u0418\u0419 \u041F\u0410\u041A\u0415\u0422";
+            dict_ru["partner_apps_count"] = "{0} \u043F\u0430\u0440\u0442\u043D\u0435\u0440\u0441\u043A\u0438\u0445 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439";
+            dict_ru["apps_count"] = "{0} \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439";
+            dict_ru["catalog_title"] = "\u0412\u0441\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F";
+            dict_ru["catalog_subtitle"] = "\u041F\u0440\u043E\u0441\u043C\u0430\u0442\u0440\u0438\u0432\u0430\u0439\u0442\u0435 16 349 \u043F\u0430\u043A\u0435\u0442\u043E\u0432 \u041F\u041E \u0441 \u043C\u0433\u043D\u043E\u0432\u0435\u043D\u043D\u044B\u043C \u043F\u043E\u0438\u0441\u043A\u043E\u043C \u0438 \u0432\u044B\u0431\u043E\u0440\u043E\u043C \u0432 \u043E\u0434\u0438\u043D \u043A\u043B\u0438\u043A.";
+            dict_ru["select_all"] = "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u0432\u0441\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F";
+            dict_ru["sort_button"] = "\u0421\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u25BE";
+            dict_ru["sort_selected_top"] = "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u0438 \u0440\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0435\u043C\u044B\u0435";
+            dict_ru["sort_name_az"] = "\u0418\u043C\u044F (\u0410-\u042F)";
+            dict_ru["sort_name_za"] = "\u0418\u043C\u044F (\u042F-\u0410)";
+            dict_ru["sort_category"] = "\u041F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u0438";
+            dict_ru["cat_all"] = "\u0412\u0441\u0435";
+            dict_ru["cat_browsers"] = "\u0412\u0435\u0431-\u0431\u0440\u0430\u0443\u0437\u0435\u0440\u044B";
+            dict_ru["cat_dev"] = "\u0420\u0430\u0437\u0440\u0430\u0431\u043E\u0442\u043A\u0430 \u0438 \u043A\u043E\u0434";
+            dict_ru["cat_collab"] = "\u0421\u0432\u044F\u0437\u044C \u0438 \u0441\u043E\u0442\u0440\u0443\u0434\u043D\u0438\u0447\u0435\u0441\u0442\u0432\u043E";
+            dict_ru["cat_office"] = "\u041E\u0444\u0438\u0441 \u0438 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u044C";
+            dict_ru["cat_tools"] = "\u0423\u0442\u0438\u043B\u0438\u0442\u044B \u0438 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B";
+            dict_ru["cat_media"] = "\u041C\u0435\u0434\u0438\u0430 \u0438 \u0442\u0432\u043E\u0440\u0447\u0435\u0441\u0442\u0432\u043E";
+            dict_ru["cat_sec"] = "\u0411\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u043E\u0441\u0442\u044C \u0438 \u0441\u0435\u0442\u044C";
+            dict_ru["cat_cloud"] = "\u041E\u0431\u043B\u0430\u043A\u043E \u0438 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435";
+            dict_ru["cat_games"] = "\u0418\u0433\u0440\u044B \u0438 \u0434\u0432\u0438\u0436\u043A\u0438";
+            dict_ru["btn_install"] = "\uD83D\uDCE5  \u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F ({0})";
+            dict_ru["btn_install_no_count"] = "\uD83D\uDCE5  \u0423\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F";
+            dict_ru["btn_stop"] = "\u041E\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0443";
+            dict_ru["btn_import_pack"] = "\uD83D\uDCE5 \u0418\u043C\u043F\u043E\u0440\u0442 \u043F\u0430\u043A\u0435\u0442\u0430";
+            dict_ru["btn_create_pack"] = "+ \u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043D\u043E\u0432\u044B\u0439 \u043F\u0430\u043A\u0435\u0442";
+            dict_ru["badge_ready"] = "\u0413\u043E\u0442\u043E\u0432\u043E";
+            dict_ru["badge_installed"] = "\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u043E";
+            dict_ru["badge_installing"] = "\u0423\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430...";
+            dict_ru["badge_failed"] = "\u041E\u0448\u0438\u0431\u043A\u0430";
+            dict_ru["showing_count"] = "\u041E\u0442\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435 {0:N0} \u0438\u0437 {1:N0} \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439";
+            dict_ru["showing_count_selected"] = "\u041E\u0442\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435 {0:N0} \u0438\u0437 {1:N0} \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 ({2:N0} \u0432\u044B\u0431\u0440\u0430\u043D\u043E)";
+            dict_ru["showing_local_online"] = "\u041D\u0430\u0439\u0434\u0435\u043D\u043E {0} \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u044B\u0445 + {1} \u043E\u043D\u043B\u0430\u0439\u043D \u0434\u043B\u044F \"{2}\"";
+            dict_ru["showing_local_online_selected"] = "\u041D\u0430\u0439\u0434\u0435\u043D\u043E {0} \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u044B\u0445 + {1} \u043E\u043D\u043B\u0430\u0439\u043D \u0434\u043B\u044F \"{2}\" ({3:N0} \u0432\u044B\u0431\u0440\u0430\u043D\u043E)";
+            dict_ru["found_online_count"] = "\u041D\u0430\u0439\u0434\u0435\u043D\u043E {0:N0} \u043E\u043D\u043B\u0430\u0439\u043D-\u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \"{1}\"";
+            dict_ru["found_online_count_selected"] = "\u041D\u0430\u0439\u0434\u0435\u043D\u043E {0:N0} \u043E\u043D\u043B\u0430\u0439\u043D-\u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \"{1}\" ({2:N0} \u0432\u044B\u0431\u0440\u0430\u043D\u043E)";
+            dict_ru["showing_query_count"] = "\u041F\u043E\u043A\u0430\u0437\u0430\u043D\u043E {0:N0} \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 \"{1}\"";
+            dict_ru["showing_query_count_selected"] = "\u041F\u043E\u043A\u0430\u0437\u0430\u043D\u043E {0:N0} \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 \u043F\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0443 \"{1}\" ({2:N0} \u0432\u044B\u0431\u0440\u0430\u043D\u043E)";
+            dict_ru["searching_online"] = "\uD83D\uDD0D \u041F\u043E\u0438\u0441\u043A \u0432 \u043E\u043D\u043B\u0430\u0439\u043D-\u0440\u0435\u043F\u043E\u0437\u0438\u0442\u043E\u0440\u0438\u0438 Winget \u0434\u043B\u044F \"{0}\"...";
+            dict_ru["no_apps_found"] = "\u041D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u043D\u044B\u0445 \u043F\u0430\u043A\u0435\u0442\u043E\u0432 \u0434\u043B\u044F \"{0}\"";
+            dict_ru["no_apps_found_desc"] = "\u041D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u0432 \u0431\u0430\u0437\u0435 \u0438\u043B\u0438 \u043E\u043D\u043B\u0430\u0439\u043D Winget. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u043E\u0441\u0442\u044C \u043D\u0430\u043F\u0438\u0441\u0430\u043D\u0438\u044F.";
+            dict_ru["type_to_search"] = "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043D\u0435 \u043C\u0435\u043D\u0435\u0435 2 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432 \u0434\u043B\u044F \u043F\u043E\u0438\u0441\u043A\u0430 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439.";
+            dict_ru["no_winget_title"] = "\u041D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u044B\u0445 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \"{0}\"";
+            dict_ru["no_winget_desc"] = "Microsoft Winget \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u0434\u043B\u044F \u043F\u043E\u0438\u0441\u043A\u0430 \u0432 \u043E\u043D\u043B\u0430\u0439\u043D-\u0440\u0435\u043F\u043E\u0437\u0438\u0442\u043E\u0440\u0438\u0438.";
+            dict_ru["bottom_tip"] = "\u0421\u043E\u0432\u0435\u0442: \u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0438\u0442\u044C \u043B\u044E\u0431\u043E\u0439 \u043F\u0430\u043A\u0435\u0442, \u0434\u043E\u0431\u0430\u0432\u043B\u044F\u0442\u044C \u0438\u043B\u0438 \u0443\u0434\u0430\u043B\u044F\u0442\u044C \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F.";
+            dict_ru["pack_selected_prefix"] = "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u043F\u0430\u043A\u0435\u0442: {0}";
+            dict_ru["logs_title"] = "\u0418\u0441\u0442\u043E\u0440\u0438\u044F \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0438";
+            dict_ru["logs_subtitle"] = "\u041C\u043E\u043D\u0438\u0442\u043E\u0440\u0438\u043D\u0433 \u0440\u0430\u0437\u0432\u0435\u0440\u0442\u044B\u0432\u0430\u043D\u0438\u044F \u0432 \u0440\u0435\u0430\u043B\u044C\u043D\u043E\u043C \u0432\u0440\u0435\u043C\u0435\u043D\u0438 \u0438 \u0436\u0443\u0440\u043D\u0430\u043B\u044B \u0430\u0443\u0434\u0438\u0442\u0430.";
+            dict_ru["btn_summary_report"] = "\u0421\u0432\u043E\u0434\u043D\u044B\u0439 \u043E\u0442\u0447\u0435\u0442";
+            dict_ru["btn_open_logfile"] = "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0444\u0430\u0439\u043B \u0436\u0443\u0440\u043D\u0430\u043B\u0430";
+            dict_ru["btn_clear_screen"] = "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u044C \u044D\u043A\u0440\u0430\u043D";
+            _translations["ru"] = dict_ru;
+
+            // Language: zh
+            Dictionary<string, string> dict_zh = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_zh["btn_select_pack"] = "\u9009\u62E9\u8F6F\u4EF6\u5305";
+            dict_zh["btn_customize_pack"] = "\u81EA\u5B9A\u4E49\u5E94\u7528";
+            dict_zh["btn_export_pack"] = "\u5BFC\u51FA\u8F6F\u4EF6\u5305";
+            dict_zh["nav_quick_setup"] = "\u5FEB\u901F\u8BBE\u7F6E";
+            dict_zh["nav_all_apps"] = "\u6240\u6709\u5E94\u7528";
+            dict_zh["nav_cloud_sync"] = "\u4E91\u540C\u6B65";
+            dict_zh["nav_history"] = "\u5B89\u88C5\u5386\u53F2";
+            dict_zh["search_placeholder"] = "\u641C\u7D22\u5E94\u7528\u3001\u8BBE\u7F6E\u6216\u8F6F\u4EF6\u5305...";
+            dict_zh["help_button"] = "\u5E2E\u52A9 ?";
+            dict_zh["lang_auto"] = "\u81EA\u52A8 (\u7CFB\u7EDF\u9ED8\u8BA4)";
+            dict_zh["menu_guide"] = "\u4F7F\u7528\u6307\u5357 (\u4EA4\u4E92\u5F0F\u6559\u7A0B)...";
+            dict_zh["menu_updates"] = "\u68C0\u67E5\u66F4\u65B0...";
+            dict_zh["menu_settings"] = "\u8BBE\u7F6E...";
+            dict_zh["menu_about"] = "\u5173\u4E8E FleetForge...";
+            dict_zh["quick_setup_title"] = "\u5FEB\u901F\u8BBE\u7F6E";
+            dict_zh["quick_setup_subtitle"] = "\u9009\u62E9\u4E00\u4E2A\u8F6F\u4EF6\u5305\uFF0C\u6311\u9009\u5E94\u7528\uFF0C\u4E00\u952E\u5F00\u542F\u3002";
+            dict_zh["step1_title"] = "\u9009\u62E9\u8F6F\u4EF6\u5305";
+            dict_zh["step1_desc"] = "\u6839\u636E\u60A8\u7684\u9700\u6C42";
+            dict_zh["step2_title"] = "\u5BA1\u67E5\u5E94\u7528";
+            dict_zh["step2_desc"] = "\u68C0\u67E5\u5DF2\u9009\u9879\u76EE";
+            dict_zh["step3_title"] = "\u5B89\u88C5";
+            dict_zh["step3_desc"] = "\u5F00\u59CB\u4F7F\u7528";
+            dict_zh["available_packs_title"] = "\u53EF\u7528\u5E94\u7528\u5305";
+            dict_zh["available_packs_subtitle"] = "\u9009\u62E9\u73B0\u6210\u8F6F\u4EF6\u5305\u6216\u81EA\u7531\u6311\u9009\u72EC\u7ACB\u5E94\u7528\u3002";
+            dict_zh["top_choice_badge"] = "\u6700\u4F73\u9009\u62E9";
+            dict_zh["recommended_badge"] = "\u63A8\u8350";
+            dict_zh["custom_badge"] = "\u81EA\u5B9A\u4E49\u5E94\u7528\u5305";
+            dict_zh["partner_apps_count"] = "{0} \u4E2A\u5408\u4F5C\u4F19\u4F34\u5E94\u7528";
+            dict_zh["apps_count"] = "{0} \u6B3E\u5E94\u7528";
+            dict_zh["catalog_title"] = "\u6240\u6709\u5E94\u7528\u7A0B\u5E8F";
+            dict_zh["catalog_subtitle"] = "\u6D4F\u89C8 16,349 \u6B3E\u8F6F\u4EF6\u5305\uFF0C\u652F\u6301\u5373\u65F6\u641C\u7D22\u4E0E\u4E00\u952E\u9009\u53D6\u3002";
+            dict_zh["select_all"] = "\u9009\u62E9\u6240\u6709\u5E94\u7528";
+            dict_zh["sort_button"] = "\u5E94\u7528\u6392\u5E8F \u25BE";
+            dict_zh["sort_selected_top"] = "\u5DF2\u9009\u4E0E\u63A8\u8350";
+            dict_zh["sort_name_az"] = "\u540D\u79F0 (A \u5230 Z)";
+            dict_zh["sort_name_za"] = "\u540D\u79F0 (Z \u5230 A)";
+            dict_zh["sort_category"] = "\u6309\u7C7B\u522B";
+            dict_zh["cat_all"] = "\u5168\u90E8";
+            dict_zh["cat_browsers"] = "\u7F51\u9875\u6D4F\u89C8\u5668";
+            dict_zh["cat_dev"] = "\u5F00\u53D1\u4E0E\u7F16\u7A0B";
+            dict_zh["cat_collab"] = "\u901A\u8BAF\u4E0E\u534F\u4F5C";
+            dict_zh["cat_office"] = "\u751F\u4EA7\u529B\u4E0E\u529E\u516C";
+            dict_zh["cat_tools"] = "\u5B9E\u7528\u5DE5\u5177";
+            dict_zh["cat_media"] = "\u5A92\u4F53\u4E0E\u521B\u4F5C";
+            dict_zh["cat_sec"] = "\u5B89\u5168\u4E0E\u7F51\u7EDC";
+            dict_zh["cat_cloud"] = "\u4E91\u7AEF\u4E0E\u5B58\u50A8";
+            dict_zh["cat_games"] = "\u6E38\u620F\u4E0E\u5F15\u64CE";
+            dict_zh["btn_install"] = "\uD83D\uDCE5  \u5B89\u88C5\u5DF2\u9009\u5E94\u7528 ({0})";
+            dict_zh["btn_install_no_count"] = "\uD83D\uDCE5  \u5B89\u88C5\u5DF2\u9009\u5E94\u7528";
+            dict_zh["btn_stop"] = "\u505C\u6B62\u5B89\u88C5";
+            dict_zh["btn_import_pack"] = "\uD83D\uDCE5 \u5BFC\u5165\u8F6F\u4EF6\u5305";
+            dict_zh["btn_create_pack"] = "+ \u521B\u5EFA\u65B0\u8F6F\u4EF6\u5305";
+            dict_zh["badge_ready"] = "\u5C31\u7EEA";
+            dict_zh["badge_installed"] = "\u5DF2\u5B89\u88C5";
+            dict_zh["badge_installing"] = "\u6B63\u5728\u5B89\u88C5...";
+            dict_zh["badge_failed"] = "\u5931\u8D25";
+            dict_zh["showing_count"] = "\u663E\u793A {0:N0} / {1:N0} \u6B3E\u5E94\u7528";
+            dict_zh["showing_count_selected"] = "\u663E\u793A {0:N0} / {1:N0} \u6B3E\u5E94\u7528 ({2:N0} \u4E2A\u5DF2\u9009)";
+            dict_zh["showing_local_online"] = "\u4E3A\u201C{2}\u201D\u663E\u793A {0} \u4E2A\u672C\u5730 + {1} \u4E2A\u5728\u7EBF\u5E94\u7528";
+            dict_zh["showing_local_online_selected"] = "\u4E3A\u201C{2}\u201D\u663E\u793A {0} \u4E2A\u672C\u5730 + {1} \u4E2A\u5728\u7EBF\u5E94\u7528 ({3:N0} \u4E2A\u5DF2\u9009)";
+            dict_zh["found_online_count"] = "\u627E\u5230 {0:N0} \u4E2A\u9488\u5BF9\u201C{1}\u201D\u7684\u5728\u7EBF\u5E94\u7528";
+            dict_zh["found_online_count_selected"] = "\u627E\u5230 {0:N0} \u4E2A\u9488\u5BF9\u201C{1}\u201D\u7684\u5728\u7EBF\u5E94\u7528 ({2:N0} \u4E2A\u5DF2\u9009)";
+            dict_zh["showing_query_count"] = "\u663E\u793A {0:N0} \u6B3E\u7B26\u5408\u201C{1}\u201D\u7684\u5E94\u7528";
+            dict_zh["showing_query_count_selected"] = "\u663E\u793A {0:N0} \u6B3E\u7B26\u5408\u201C{1}\u201D\u7684\u5E94\u7528 ({2:N0} \u4E2A\u5DF2\u9009)";
+            dict_zh["searching_online"] = "\uD83D\uDD0D \u6B63\u5728\u5728\u7EBF Winget \u8F6F\u4EF6\u5E93\u4E2D\u641C\u7D22\u201C{0}\u201D...";
+            dict_zh["no_apps_found"] = "\u672A\u627E\u5230\u4E0E\u201C{0}\u201D\u76F8\u5173\u7684\u8F6F\u4EF6\u5305";
+            dict_zh["no_apps_found_desc"] = "\u672C\u5730\u6570\u636E\u5E93\u6216\u5728\u7EBF Winget \u5747\u672A\u627E\u5230\u3002\u8BF7\u68C0\u67E5\u62FC\u5199\u6216\u5C1D\u8BD5\u53D1\u5E03\u8005\u540D\u79F0\u3002";
+            dict_zh["type_to_search"] = "\u8BF7\u81F3\u5C11\u8F93\u5165 2 \u4E2A\u5B57\u7B26\u4EE5\u641C\u7D22\u5E94\u7528\u3002";
+            dict_zh["no_winget_title"] = "\u672A\u627E\u5230\u672C\u5730\u5E94\u7528\u201C{0}\u201D";
+            dict_zh["no_winget_desc"] = "\u6B64\u7CFB\u7EDF\u672A\u68C0\u6D4B\u5230 Microsoft Winget\uFF0C\u65E0\u6CD5\u6267\u884C\u5728\u7EBF\u641C\u7D22\u3002";
+            dict_zh["bottom_tip"] = "\u63D0\u793A\uFF1A\u60A8\u53EF\u4EE5\u81EA\u5B9A\u4E49\u4EFB\u4F55\u8F6F\u4EF6\u5305\uFF0C\u6DFB\u52A0\u6216\u5220\u9664\u5E94\u7528\u5E76\u5BFC\u51FA\u5907\u4EFD\u3002";
+            dict_zh["pack_selected_prefix"] = "\u5DF2\u9009\u5E94\u7528\u5305\uFF1A{0}";
+            dict_zh["logs_title"] = "\u5B89\u88C5\u5386\u53F2";
+            dict_zh["logs_subtitle"] = "\u5B9E\u65F6\u90E8\u7F72\u76D1\u63A7\u3001\u8F93\u51FA\u6D41\u4E0E\u5BA1\u8BA1\u65E5\u5FD7\u3002";
+            dict_zh["btn_summary_report"] = "\u603B\u7ED3\u62A5\u544A";
+            dict_zh["btn_open_logfile"] = "\u6253\u5F00\u65E5\u5FD7\u6587\u4EF6";
+            dict_zh["btn_clear_screen"] = "\u6E05\u9664\u5C4F\u5E55";
+            _translations["zh"] = dict_zh;
+
+            // Language: ja
+            Dictionary<string, string> dict_ja = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_ja["btn_select_pack"] = "\u30D1\u30C3\u30AF\u3092\u9078\u629E";
+            dict_ja["btn_customize_pack"] = "\u30A2\u30D7\u30EA\u3092\u30AB\u30B9\u30BF\u30DE\u30A4\u30BA";
+            dict_ja["btn_export_pack"] = "\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8";
+            dict_ja["nav_quick_setup"] = "\u30AF\u30A4\u30C3\u30AF\u30BB\u30C3\u30C8\u30A2\u30C3\u30D7";
+            dict_ja["nav_all_apps"] = "\u3059\u3079\u3066\u306E\u30A2\u30D7\u30EA";
+            dict_ja["nav_cloud_sync"] = "\u30AF\u30E9\u30A6\u30C9\u540C\u671F";
+            dict_ja["nav_history"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u5C65\u6B74";
+            dict_ja["search_placeholder"] = "\u30A2\u30D7\u30EA\u3001\u8A2D\u5B9A\u3001\u30D1\u30C3\u30AF\u3092\u691C\u7D22...";
+            dict_ja["help_button"] = "\u30D8\u30EB\u30D7 ?";
+            dict_ja["lang_auto"] = "\u81EA\u52D5 (\u30B7\u30B9\u30C6\u30E0\u65E2\u5B9A)";
+            dict_ja["menu_guide"] = "\u4F7F\u3044\u65B9 (\u30A4\u30F3\u30BF\u30E9\u30AF\u30C6\u30A3\u30D6\u30AC\u30A4\u30C9)...";
+            dict_ja["menu_updates"] = "\u66F4\u65B0\u3092\u78BA\u8A8D...";
+            dict_ja["menu_settings"] = "\u8A2D\u5B9A...";
+            dict_ja["menu_about"] = "FleetForge \u306B\u3064\u3044\u3066...";
+            dict_ja["quick_setup_title"] = "\u30AF\u30A4\u30C3\u30AF\u30BB\u30C3\u30C8\u30A2\u30C3\u30D7";
+            dict_ja["quick_setup_subtitle"] = "\u30D1\u30C3\u30AF\u3092\u9078\u629E\u3057\u3001\u30A2\u30D7\u30EA\u3092\u9078\u3093\u3067\u30EF\u30F3\u30AF\u30EA\u30C3\u30AF\u3067\u958B\u59CB\u3002";
+            dict_ja["step1_title"] = "\u30D1\u30C3\u30AF\u3092\u9078\u629E";
+            dict_ja["step1_desc"] = "\u30CB\u30FC\u30BA\u306B\u5408\u308F\u305B\u3066";
+            dict_ja["step2_title"] = "\u30A2\u30D7\u30EA\u306E\u78BA\u8A8D";
+            dict_ja["step2_desc"] = "\u9078\u629E\u5185\u5BB9\u3092\u78BA\u8A8D";
+            dict_ja["step3_title"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB";
+            dict_ja["step3_desc"] = "\u5229\u7528\u958B\u59CB";
+            dict_ja["available_packs_title"] = "\u5229\u7528\u53EF\u80FD\u306A\u30A2\u30D7\u30EA\u30D1\u30C3\u30AF";
+            dict_ja["available_packs_subtitle"] = "\u3059\u3050\u306B\u4F7F\u3048\u308B\u30D1\u30C3\u30AF\u3092\u9078\u3076\u304B\u3001\u500B\u5225\u306E\u30A2\u30D7\u30EA\u3092\u9078\u629E\u3002";
+            dict_ja["top_choice_badge"] = "\u304A\u3059\u3059\u3081";
+            dict_ja["recommended_badge"] = "\u63A8\u5968";
+            dict_ja["custom_badge"] = "\u30AB\u30B9\u30BF\u30E0\u30D1\u30C3\u30AF";
+            dict_ja["partner_apps_count"] = "{0} \u500B\u306E\u30D1\u30FC\u30C8\u30CA\u30FC\u30A2\u30D7\u30EA";
+            dict_ja["apps_count"] = "{0} \u500B\u306E\u30A2\u30D7\u30EA";
+            dict_ja["catalog_title"] = "\u3059\u3079\u3066\u306E\u30A2\u30D7\u30EA\u30B1\u30FC\u30B7\u30E7\u30F3";
+            dict_ja["catalog_subtitle"] = "\u30A4\u30F3\u30B9\u30BF\u30F3\u30C8\u691C\u7D22\u3068\u30EF\u30F3\u30AF\u30EA\u30C3\u30AF\u9078\u629E\u3067 16,349 \u500B\u306E\u30D1\u30C3\u30B1\u30FC\u30B8\u3092\u95B2\u89A7\u3002";
+            dict_ja["select_all"] = "\u3059\u3079\u3066\u306E\u30A2\u30D7\u30EA\u3092\u9078\u629E";
+            dict_ja["sort_button"] = "\u30A2\u30D7\u30EA\u4E26\u3079\u66FF\u3048 \u25BE";
+            dict_ja["sort_selected_top"] = "\u9078\u629E\u4E2D\uFF06\u304A\u3059\u3059\u3081";
+            dict_ja["sort_name_az"] = "\u540D\u524D (A\u301CZ)";
+            dict_ja["sort_name_za"] = "\u540D\u524D (Z\u301CA)";
+            dict_ja["sort_category"] = "\u30AB\u30C6\u30B4\u30EA\u5225";
+            dict_ja["cat_all"] = "\u3059\u3079\u3066";
+            dict_ja["cat_browsers"] = "\u30A6\u30A7\u30D6\u30D6\u30E9\u30A6\u30B6";
+            dict_ja["cat_dev"] = "\u958B\u767A\u3068\u30B3\u30FC\u30C9";
+            dict_ja["cat_collab"] = "\u30B3\u30DF\u30E5\u30CB\u30B1\u30FC\u30B7\u30E7\u30F3";
+            dict_ja["cat_office"] = "\u751F\u7523\u6027\u3068\u30AA\u30D5\u30A3\u30B9";
+            dict_ja["cat_tools"] = "\u30E6\u30FC\u30C6\u30A3\u30EA\u30C6\u30A3\u3068\u30C4\u30FC\u30EB";
+            dict_ja["cat_media"] = "\u30E1\u30C7\u30A3\u30A2\u3068\u30AF\u30EA\u30A8\u30A4\u30C6\u30A3\u30D6";
+            dict_ja["cat_sec"] = "\u30BB\u30AD\u30E5\u30EA\u30C6\u30A3\u3068\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF";
+            dict_ja["cat_cloud"] = "\u30AF\u30E9\u30A6\u30C9\u3068\u30B9\u30C8\u30EC\u30FC\u30B8";
+            dict_ja["cat_games"] = "\u30B2\u30FC\u30E0\u3068\u30A8\u30F3\u30B8\u30F3";
+            dict_ja["btn_install"] = "\uD83D\uDCE5  \u9078\u629E\u3057\u305F\u30A2\u30D7\u30EA\u3092\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB ({0})";
+            dict_ja["btn_install_no_count"] = "\uD83D\uDCE5  \u9078\u629E\u3057\u305F\u30A2\u30D7\u30EA\u3092\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB";
+            dict_ja["btn_stop"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u505C\u6B62";
+            dict_ja["btn_import_pack"] = "\uD83D\uDCE5 \u30D1\u30C3\u30AF\u3092\u30A4\u30F3\u30DD\u30FC\u30C8";
+            dict_ja["btn_create_pack"] = "+ \u65B0\u898F\u30D1\u30C3\u30AF\u4F5C\u6210";
+            dict_ja["badge_ready"] = "\u6E96\u5099\u5B8C\u4E86";
+            dict_ja["badge_installed"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u6E08\u307F";
+            dict_ja["badge_installing"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u4E2D...";
+            dict_ja["badge_failed"] = "\u5931\u6557";
+            dict_ja["showing_count"] = "{1:N0} \u4EF6\u4E2D {0:N0} \u4EF6\u306E\u30A2\u30D7\u30EA\u3092\u8868\u793A";
+            dict_ja["showing_count_selected"] = "{1:N0} \u4EF6\u4E2D {0:N0} \u4EF6\u3092\u8868\u793A ({2:N0} \u500B\u9078\u629E\u4E2D)";
+            dict_ja["showing_local_online"] = "\u300C{2}\u300D\u306E {0} \u500B\u306E\u30ED\u30FC\u30AB\u30EB + {1} \u500B\u306E\u30AA\u30F3\u30E9\u30A4\u30F3 \u30A2\u30D7\u30EA";
+            dict_ja["showing_local_online_selected"] = "\u300C{2}\u300D\u306E {0} \u500B\u306E\u30ED\u30FC\u30AB\u30EB + {1} \u500B\u306E\u30AA\u30F3\u30E9\u30A4\u30F3 \u30A2\u30D7\u30EA ({3:N0} \u500B\u9078\u629E\u4E2D)";
+            dict_ja["found_online_count"] = "\u300C{1}\u300D\u306E\u30AA\u30F3\u30E9\u30A4\u30F3 \u30A2\u30D7\u30EA\u304C {0:N0} \u4EF6\u898B\u3064\u304B\u308A\u307E\u3057\u305F";
+            dict_ja["found_online_count_selected"] = "\u300C{1}\u300D\u306E\u30AA\u30F3\u30E9\u30A4\u30F3 \u30A2\u30D7\u30EA\u304C {0:N0} \u4EF6\u898B\u3064\u304B\u308A\u307E\u3057\u305F ({2:N0} \u500B\u9078\u629E\u4E2D)";
+            dict_ja["showing_query_count"] = "\u300C{1}\u300D\u306B\u4E00\u81F4\u3059\u308B {0:N0} \u4EF6\u306E\u30A2\u30D7\u30EA";
+            dict_ja["showing_query_count_selected"] = "\u300C{1}\u300D\u306B\u4E00\u81F4\u3059\u308B {0:N0} \u4EF6\u306E\u30A2\u30D7\u30EA ({2:N0} \u500B\u9078\u629E\u4E2D)";
+            dict_ja["searching_online"] = "\uD83D\uDD0D \u30AA\u30F3\u30E9\u30A4\u30F3 Winget \u30EA\u30DD\u30B8\u30C8\u30EA\u3067\u300C{0}\u300D\u3092\u691C\u7D22\u4E2D...";
+            dict_ja["no_apps_found"] = "\u300C{0}\u300D\u306B\u4E00\u81F4\u3059\u308B\u30BD\u30D5\u30C8\u30A6\u30A7\u30A2 \u30D1\u30C3\u30B1\u30FC\u30B8\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093";
+            dict_ja["no_apps_found_desc"] = "\u30ED\u30FC\u30AB\u30EB \u30C7\u30FC\u30BF\u30D9\u30FC\u30B9\u304A\u3088\u3073\u30AA\u30F3\u30E9\u30A4\u30F3 Winget \u306B\u898B\u3064\u304B\u308A\u307E\u305B\u3093\u3067\u3057\u305F\u3002\u7DB4\u308A\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002";
+            dict_ja["type_to_search"] = "\u691C\u7D22\u3059\u308B\u306B\u306F\u5C11\u306A\u304F\u3068\u3082 2 \u6587\u5B57\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044\u3002";
+            dict_ja["no_winget_title"] = "\u300C{0}\u300D\u306E\u30ED\u30FC\u30AB\u30EB \u30A2\u30D7\u30EA\u304C\u898B\u3064\u304B\u308A\u307E\u305B\u3093";
+            dict_ja["no_winget_desc"] = "\u30AA\u30F3\u30E9\u30A4\u30F3 \u30EA\u30DD\u30B8\u30C8\u30EA\u3092\u691C\u7D22\u3059\u308B\u305F\u3081\u306E Microsoft Winget \u304C\u5229\u7528\u3067\u304D\u307E\u305B\u3093\u3002";
+            dict_ja["bottom_tip"] = "\u30D2\u30F3\u30C8: \u4EFB\u610F\u306E\u30D1\u30C3\u30AF\u3092\u30AB\u30B9\u30BF\u30DE\u30A4\u30BA\u3057\u3001\u30A2\u30D7\u30EA\u3092\u8FFD\u52A0\u307E\u305F\u306F\u524A\u9664\u3067\u304D\u307E\u3059\u3002";
+            dict_ja["pack_selected_prefix"] = "\u9078\u629E\u3055\u308C\u305F\u30A2\u30D7\u30EA\u30D1\u30C3\u30AF: {0}";
+            dict_ja["logs_title"] = "\u30A4\u30F3\u30B9\u30C8\u30FC\u30EB\u5C65\u6B74";
+            dict_ja["logs_subtitle"] = "\u30EA\u30A2\u30EB\u30BF\u30A4\u30E0\u306E\u30C7\u30D7\u30ED\u30A4\u76E3\u8996\u3068\u76E3\u67FB\u30ED\u30B0\u3002";
+            dict_ja["btn_summary_report"] = "\u30B5\u30DE\u30EA\u30FC\u30EC\u30DD\u30FC\u30C8";
+            dict_ja["btn_open_logfile"] = "\u30ED\u30B0\u30D5\u30A1\u30A4\u30EB\u3092\u958B\u304F";
+            dict_ja["btn_clear_screen"] = "\u753B\u9762\u3092\u30AF\u30EA\u30A2";
+            _translations["ja"] = dict_ja;
+
+            // Language: pt
+            Dictionary<string, string> dict_pt = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_pt["btn_select_pack"] = "Selecionar pacote";
+            dict_pt["btn_customize_pack"] = "Personalizar";
+            dict_pt["btn_export_pack"] = "Exportar";
+            dict_pt["nav_quick_setup"] = "Configura\u00E7\u00E3o r\u00E1pida";
+            dict_pt["nav_all_apps"] = "Todos os aplicativos";
+            dict_pt["nav_cloud_sync"] = "Sincroniza\u00E7\u00E3o na nuvem";
+            dict_pt["nav_history"] = "Hist\u00F3rico de instala\u00E7\u00E3o";
+            dict_pt["search_placeholder"] = "Buscar aplicativo, configura\u00E7\u00E3o ou pacote...";
+            dict_pt["help_button"] = "Ajuda ?";
+            dict_pt["lang_auto"] = "Autom\u00E1tico (Padr\u00E3o)";
+            dict_pt["menu_guide"] = "Como usar (Guia interativo)...";
+            dict_pt["menu_updates"] = "Verificar atualiza\u00E7\u00F5es...";
+            dict_pt["menu_settings"] = "Configura\u00E7\u00F5es...";
+            dict_pt["menu_about"] = "Sobre o FleetForge...";
+            dict_pt["quick_setup_title"] = "Configura\u00E7\u00E3o r\u00E1pida";
+            dict_pt["quick_setup_subtitle"] = "Escolha um pacote, selecione aplicativos e comece em um clique.";
+            dict_pt["step1_title"] = "Escolha um pacote";
+            dict_pt["step1_desc"] = "De acordo com suas necessidades";
+            dict_pt["step2_title"] = "Revisar aplicativos";
+            dict_pt["step2_desc"] = "Verifique a sele\u00E7\u00E3o";
+            dict_pt["step3_title"] = "Instalar";
+            dict_pt["step3_desc"] = "Comece a usar";
+            dict_pt["available_packs_title"] = "Pacotes de aplicativos dispon\u00EDveis";
+            dict_pt["available_packs_subtitle"] = "Selecione um pacote pronto ou escolha aplicativos individuais.";
+            dict_pt["top_choice_badge"] = "MELHOR ESCOLHA";
+            dict_pt["recommended_badge"] = "RECOMENDADO";
+            dict_pt["custom_badge"] = "PACOTE PERSONALIZADO";
+            dict_pt["partner_apps_count"] = "{0} apps parceiros";
+            dict_pt["apps_count"] = "{0} aplicativos";
+            dict_pt["catalog_title"] = "Todos os aplicativos";
+            dict_pt["catalog_subtitle"] = "Explore 16.349 pacotes de software com busca instant\u00E2nea e sele\u00E7\u00E3o com um clique.";
+            dict_pt["select_all"] = "Selecionar todos os aplicativos";
+            dict_pt["sort_button"] = "Ordenar aplicativos \u25BE";
+            dict_pt["sort_selected_top"] = "Selecionados e recomendados";
+            dict_pt["sort_name_az"] = "Nome (A a Z)";
+            dict_pt["sort_name_za"] = "Nome (Z a A)";
+            dict_pt["sort_category"] = "Por categoria";
+            dict_pt["cat_all"] = "Todos";
+            dict_pt["cat_browsers"] = "Navegadores web";
+            dict_pt["cat_dev"] = "Desenvolvimento e c\u00F3digo";
+            dict_pt["cat_collab"] = "Comunica\u00E7\u00E3o e colabora\u00E7\u00E3o";
+            dict_pt["cat_office"] = "Produtividade e escrit\u00F3rio";
+            dict_pt["cat_tools"] = "Utilit\u00E1rios e ferramentas";
+            dict_pt["cat_media"] = "M\u00EDdia e criatividade";
+            dict_pt["cat_sec"] = "Seguran\u00E7a e rede";
+            dict_pt["cat_cloud"] = "Nuvem e armazenamento";
+            dict_pt["cat_games"] = "Jogos e motores";
+            dict_pt["btn_install"] = "\uD83D\uDCE5  Instalar aplicativos selecionados ({0})";
+            dict_pt["btn_install_no_count"] = "\uD83D\uDCE5  Instalar aplicativos selecionados";
+            dict_pt["btn_stop"] = "Parar instala\u00E7\u00E3o";
+            dict_pt["btn_import_pack"] = "\uD83D\uDCE5 Importar pacote";
+            dict_pt["btn_create_pack"] = "+ Criar novo pacote";
+            dict_pt["badge_ready"] = "Pronto";
+            dict_pt["badge_installed"] = "Instalado";
+            dict_pt["badge_installing"] = "Instalando...";
+            dict_pt["badge_failed"] = "Falhou";
+            dict_pt["showing_count"] = "Mostrando {0:N0} de {1:N0} apps";
+            dict_pt["showing_count_selected"] = "Mostrando {0:N0} de {1:N0} apps ({2:N0} selecionados)";
+            dict_pt["showing_local_online"] = "Mostrando {0} locais + {1} online para \"{2}\"";
+            dict_pt["showing_local_online_selected"] = "Mostrando {0} locais + {1} online para \"{2}\" ({3:N0} selecionados)";
+            dict_pt["found_online_count"] = "Encontrados {0:N0} aplicativos online para \"{1}\"";
+            dict_pt["found_online_count_selected"] = "Encontrados {0:N0} aplicativos online para \"{1}\" ({2:N0} selecionados)";
+            dict_pt["showing_query_count"] = "Mostrando {0:N0} aplicativos para \"{1}\"";
+            dict_pt["showing_query_count_selected"] = "Mostrando {0:N0} aplicativos para \"{1}\" ({2:N0} selecionados)";
+            dict_pt["searching_online"] = "\uD83D\uDD0D Buscando no reposit\u00F3rio Winget online por \"{0}\"...";
+            dict_pt["no_apps_found"] = "Nenhum pacote de software encontrado para \"{0}\"";
+            dict_pt["no_apps_found_desc"] = "N\u00E3o encontrado localmente nem no Winget online. Verifique a ortografia.";
+            dict_pt["type_to_search"] = "Digite pelo menos 2 caracteres para pesquisar.";
+            dict_pt["no_winget_title"] = "Nenhum aplicativo local encontrado para \"{0}\"";
+            dict_pt["no_winget_desc"] = "O Microsoft Winget n\u00E3o est\u00E1 dispon\u00EDvel para busca online.";
+            dict_pt["bottom_tip"] = "Dica: Voc\u00EA pode personalizar qualquer pacote, adicionar ou remover aplicativos.";
+            dict_pt["pack_selected_prefix"] = "Pacote de aplicativos selecionado: {0}";
+            dict_pt["logs_title"] = "Hist\u00F3rico de instala\u00E7\u00E3o";
+            dict_pt["logs_subtitle"] = "Monitoramento de implanta\u00E7\u00E3o ao vivo e logs de auditoria.";
+            dict_pt["btn_summary_report"] = "Relat\u00F3rio resumido";
+            dict_pt["btn_open_logfile"] = "Abrir arquivo de log";
+            dict_pt["btn_clear_screen"] = "Limpar tela";
+            _translations["pt"] = dict_pt;
+
+            // Language: ar
+            Dictionary<string, string> dict_ar = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_ar["btn_select_pack"] = "\u0627\u062E\u062A\u064A\u0627\u0631 \u0627\u0644\u062D\u0632\u0645\u0629";
+            dict_ar["btn_customize_pack"] = "\u062A\u062E\u0635\u064A\u0635 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["btn_export_pack"] = "\u062A\u0635\u062F\u064A\u0631 \u0627\u0644\u062D\u0632\u0645\u0629";
+            dict_ar["nav_quick_setup"] = "\u0625\u0639\u062F\u0627\u062F \u0633\u0631\u064A\u0639";
+            dict_ar["nav_all_apps"] = "\u062C\u0645\u064A\u0639 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["nav_cloud_sync"] = "\u0645\u0632\u0627\u0645\u0646\u0629 \u0633\u062D\u0627\u0628\u064A\u0629";
+            dict_ar["nav_history"] = "\u0633\u062C\u0644 \u0627\u0644\u062A\u062B\u0628\u064A\u062A";
+            dict_ar["search_placeholder"] = "\u0627\u0628\u062D\u062B \u0639\u0646 \u062A\u0637\u0628\u064A\u0642 \u0623\u0648 \u0625\u0639\u062F\u0627\u062F \u0623\u0648 \u062D\u0632\u0645\u0629...";
+            dict_ar["help_button"] = "\u0645\u0633\u0627\u0639\u062F\u0629 \u061F";
+            dict_ar["lang_auto"] = "\u062A\u0644\u0642\u0627\u0626\u064A (\u0627\u0641\u062A\u0631\u0627\u0636\u064A \u0644\u0644\u0646\u0638\u0627\u0645)";
+            dict_ar["menu_guide"] = "\u0643\u064A\u0641\u064A\u0629 \u0627\u0644\u0627\u0633\u062A\u062E\u062F\u0627\u0645 (\u062F\u0644\u064A\u0644)...";
+            dict_ar["menu_updates"] = "\u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0648\u062C\u0648\u062F \u062A\u062D\u062F\u064A\u062B\u0627\u062A...";
+            dict_ar["menu_settings"] = "\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A...";
+            dict_ar["menu_about"] = "\u062D\u0648\u0644 FleetForge...";
+            dict_ar["quick_setup_title"] = "\u0625\u0639\u062F\u0627\u062F \u0633\u0631\u064A\u0639";
+            dict_ar["quick_setup_subtitle"] = "\u0627\u062E\u062A\u0631 \u062D\u0632\u0645\u0629\u060C \u0648\u062D\u062F\u062F \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0648\u0627\u0628\u062F\u0623 \u0628\u0646\u0642\u0631\u0629 \u0648\u0627\u062D\u062F\u0629.";
+            dict_ar["step1_title"] = "\u0627\u062E\u062A\u0631 \u062D\u0632\u0645\u0629";
+            dict_ar["step1_desc"] = "\u062D\u0633\u0628 \u0627\u062D\u062A\u064A\u0627\u062C\u0627\u062A\u0643";
+            dict_ar["step2_title"] = "\u0645\u0631\u0627\u062C\u0639\u0629 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["step2_desc"] = "\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0627\u062E\u062A\u064A\u0627\u0631";
+            dict_ar["step3_title"] = "\u062A\u062B\u0628\u064A\u062A";
+            dict_ar["step3_desc"] = "\u0627\u0628\u062F\u0623 \u0627\u0644\u0627\u0633\u062A\u062E\u062F\u0627\u0645";
+            dict_ar["available_packs_title"] = "\u062D\u0632\u0645 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0645\u062A\u0627\u062D\u0629";
+            dict_ar["available_packs_subtitle"] = "\u0627\u062E\u062A\u0631 \u062D\u0632\u0645\u0629 \u062C\u0627\u0647\u0632\u0629 \u0623\u0648 \u0627\u062E\u062A\u0631 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0641\u0631\u062F\u064A\u0629.";
+            dict_ar["top_choice_badge"] = "\u0627\u0644\u062E\u064A\u0627\u0631 \u0627\u0644\u0623\u0641\u0636\u0644";
+            dict_ar["recommended_badge"] = "\u0645\u0648\u0635\u0649 \u0628\u0647";
+            dict_ar["custom_badge"] = "\u062D\u0632\u0645\u0629 \u0645\u062E\u0635\u0635\u0629";
+            dict_ar["partner_apps_count"] = "{0} \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0634\u0631\u064A\u0643\u0629";
+            dict_ar["apps_count"] = "{0} \u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["catalog_title"] = "\u062C\u0645\u064A\u0639 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["catalog_subtitle"] = "\u062A\u0635\u0641\u062D 16,349 \u062D\u0632\u0645\u0629 \u0628\u0631\u0645\u062C\u064A\u0629 \u0645\u0639 \u0628\u062D\u062B \u0641\u0648\u0631\u064A \u0648\u0627\u062E\u062A\u064A\u0627\u0631 \u0628\u0646\u0642\u0631\u0629 \u0648\u0627\u062D\u062F\u0629.";
+            dict_ar["select_all"] = "\u062A\u062D\u062F\u064A\u062F \u062C\u0645\u064A\u0639 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A";
+            dict_ar["sort_button"] = "\u0641\u0631\u0632 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u25BE";
+            dict_ar["sort_selected_top"] = "\u0627\u0644\u0645\u062E\u062A\u0627\u0631\u0629 \u0648\u0627\u0644\u0645\u0648\u0635\u0649 \u0628\u0647\u0627";
+            dict_ar["sort_name_az"] = "\u0627\u0644\u0627\u0633\u0645 (\u0645\u0646 \u0623 \u0625\u0644\u0649 \u064A)";
+            dict_ar["sort_name_za"] = "\u0627\u0644\u0627\u0633\u0645 (\u0645\u0646 \u064A \u0625\u0644\u0649 \u0623)";
+            dict_ar["sort_category"] = "\u062D\u0633\u0628 \u0627\u0644\u0641\u0626\u0629";
+            dict_ar["cat_all"] = "\u0627\u0644\u0643\u0644";
+            dict_ar["cat_browsers"] = "\u0645\u062A\u0635\u0641\u062D\u0627\u062A \u0627\u0644\u0648\u064A\u0628";
+            dict_ar["cat_dev"] = "\u0627\u0644\u062A\u0637\u0648\u064A\u0631 \u0648\u0627\u0644\u0628\u0631\u0645\u062C\u0629";
+            dict_ar["cat_collab"] = "\u0627\u0644\u062A\u0648\u0627\u0635\u0644 \u0648\u0627\u0644\u062A\u0639\u0627\u0648\u0646";
+            dict_ar["cat_office"] = "\u0627\u0644\u0625\u0646\u062A\u0627\u062C\u064A\u0629 \u0648\u0627\u0644\u0645\u0643\u062A\u0628";
+            dict_ar["cat_tools"] = "\u0627\u0644\u0623\u062F\u0648\u0627\u062A \u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629";
+            dict_ar["cat_media"] = "\u0627\u0644\u0648\u0633\u0627\u0626\u0637 \u0648\u0627\u0644\u0625\u0628\u062F\u0627\u0639";
+            dict_ar["cat_sec"] = "\u0627\u0644\u0623\u0645\u0627\u0646 \u0648\u0627\u0644\u0634\u0628\u0643\u0627\u062A";
+            dict_ar["cat_cloud"] = "\u0627\u0644\u0633\u062D\u0627\u0628\u0629 \u0648\u0627\u0644\u062A\u062E\u0632\u064A\u0646";
+            dict_ar["cat_games"] = "\u0627\u0644\u0623\u0644\u0639\u0627\u0628 \u0648\u0627\u0644\u0645\u062D\u0631\u0643\u0627\u062A";
+            dict_ar["btn_install"] = "\uD83D\uDCE5  \u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0645\u062D\u062F\u062F\u0629 ({0})";
+            dict_ar["btn_install_no_count"] = "\uD83D\uDCE5  \u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0645\u062D\u062F\u062F\u0629";
+            dict_ar["btn_stop"] = "\u0625\u064A\u0642\u0627\u0641 \u0627\u0644\u062A\u062B\u0628\u064A\u062A";
+            dict_ar["btn_import_pack"] = "\uD83D\uDCE5 \u0627\u0633\u062A\u064A\u0631\u0627\u062F \u062D\u0632\u0645\u0629";
+            dict_ar["btn_create_pack"] = "+ \u0625\u0646\u0634\u0627\u0621 \u062D\u0632\u0645\u0629 \u062C\u062F\u064A\u062F\u0629";
+            dict_ar["badge_ready"] = "\u062C\u0627\u0647\u0632";
+            dict_ar["badge_installed"] = "\u0645\u062B\u0628\u062A";
+            dict_ar["badge_installing"] = "\u062C\u0627\u0631\u064A \u0627\u0644\u062A\u062B\u0628\u064A\u062A...";
+            dict_ar["badge_failed"] = "\u0641\u0634\u0644";
+            dict_ar["showing_count"] = "\u0639\u0631\u0636 {0:N0} \u0645\u0646 {1:N0} \u062A\u0637\u0628\u064A\u0642";
+            dict_ar["showing_count_selected"] = "\u0639\u0631\u0636 {0:N0} \u0645\u0646 {1:N0} \u062A\u0637\u0628\u064A\u0642 ({2:N0} \u0645\u062D\u062F\u062F)";
+            dict_ar["showing_local_online"] = "\u0639\u0631\u0636 {0} \u0645\u062D\u0644\u064A + {1} \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0644\u0640 \"{2}\"";
+            dict_ar["showing_local_online_selected"] = "\u0639\u0631\u0636 {0} \u0645\u062D\u0644\u064A + {1} \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0644\u0640 \"{2}\" ({3:N0} \u0645\u062D\u062F\u062F)";
+            dict_ar["found_online_count"] = "\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 {0:N0} \u062A\u0637\u0628\u064A\u0642 \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0644\u0640 \"{1}\"";
+            dict_ar["found_online_count_selected"] = "\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 {0:N0} \u062A\u0637\u0628\u064A\u0642 \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0644\u0640 \"{1}\" ({2:N0} \u0645\u062D\u062F\u062F)";
+            dict_ar["showing_query_count"] = "\u0639\u0631\u0636 {0:N0} \u062A\u0637\u0628\u064A\u0642 \u0644\u0640 \"{1}\"";
+            dict_ar["showing_query_count_selected"] = "\u0639\u0631\u0636 {0:N0} \u062A\u0637\u0628\u064A\u0642 \u0644\u0640 \"{1}\" ({2:N0} \u0645\u062D\u062F\u062F)";
+            dict_ar["searching_online"] = "\uD83D\uDD0D \u0627\u0644\u0628\u062D\u062B \u0641\u064A \u0645\u0633\u062A\u0648\u062F\u0639 Winget \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A \u0639\u0646 \"{0}\"...";
+            dict_ar["no_apps_found"] = "\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 \u062D\u0632\u0645 \u0628\u0631\u0645\u062C\u064A\u0629 \u0644\u0640 \"{0}\"";
+            dict_ar["no_apps_found_desc"] = "\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u064A\u0647\u0627 \u0645\u062D\u0644\u064A\u0627\u064B \u0623\u0648 \u0641\u064A \u0645\u0633\u062A\u0648\u062F\u0639 Winget. \u064A\u0631\u062C\u0649 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u062A\u0647\u062C\u0626\u0629.";
+            dict_ar["type_to_search"] = "\u064A\u0631\u062C\u0649 \u0643\u062A\u0627\u0628\u0629 \u062D\u0631\u0641\u064A\u0646 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644 \u0644\u0644\u0628\u062D\u062B \u0639\u0646 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A.";
+            dict_ar["no_winget_title"] = "\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 \u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0645\u062D\u0644\u064A\u0629 \u0644\u0640 \"{0}\"";
+            dict_ar["no_winget_desc"] = "Microsoft Winget \u063A\u064A\u0631 \u0645\u062A\u0648\u0641\u0631 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u0646\u0638\u0627\u0645 \u0644\u0644\u0628\u062D\u062B \u0639\u0628\u0631 \u0627\u0644\u0625\u0646\u062A\u0631\u0646\u062A.";
+            dict_ar["bottom_tip"] = "\u062A\u0644\u0645\u064A\u062D: \u064A\u0645\u0643\u0646\u0643 \u062A\u062E\u0635\u064A\u0635 \u0623\u064A \u062D\u0632\u0645\u0629 \u0648\u0625\u0636\u0627\u0641\u0629 \u0623\u0648 \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0648\u062A\u0635\u062F\u064A\u0631\u0647\u0627.";
+            dict_ar["pack_selected_prefix"] = "\u062D\u0632\u0645\u0629 \u0627\u0644\u062A\u0637\u0628\u064A\u0642\u0627\u062A \u0627\u0644\u0645\u062D\u062F\u062F\u0629: {0}";
+            dict_ar["logs_title"] = "\u0633\u062C\u0644 \u0627\u0644\u062A\u062B\u0628\u064A\u062A";
+            dict_ar["logs_subtitle"] = "\u0645\u0631\u0627\u0642\u0628\u0629 \u0627\u0644\u0646\u0634\u0631 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u0648\u0633\u062C\u0644\u0627\u062A \u0627\u0644\u062A\u062F\u0642\u064A\u0642.";
+            dict_ar["btn_summary_report"] = "\u062A\u0642\u0631\u064A\u0631 \u0645\u0644\u062E\u0635";
+            dict_ar["btn_open_logfile"] = "\u0641\u062A\u062D \u0645\u0644\u0641 \u0627\u0644\u0633\u062C\u0644";
+            dict_ar["btn_clear_screen"] = "\u0645\u0633\u062D \u0627\u0644\u0634\u0627\u0634\u0629";
+            _translations["ar"] = dict_ar;
+
+            // Language: it
+            Dictionary<string, string> dict_it = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_it["btn_select_pack"] = "Seleziona pacchetto";
+            dict_it["btn_customize_pack"] = "Personalizza";
+            dict_it["btn_export_pack"] = "Esporta";
+            dict_it["nav_quick_setup"] = "Configurazione rapida";
+            dict_it["nav_all_apps"] = "Tutte le applicazioni";
+            dict_it["nav_cloud_sync"] = "Sincronizzazione cloud";
+            dict_it["nav_history"] = "Cronologia installazioni";
+            dict_it["search_placeholder"] = "Cerca app, impostazioni o pacchetto...";
+            dict_it["help_button"] = "Aiuto ?";
+            dict_it["lang_auto"] = "Automatico (Predefinito di sistema)";
+            dict_it["menu_guide"] = "Come usare (Guida interattiva)...";
+            dict_it["menu_updates"] = "Verifica aggiornamenti...";
+            dict_it["menu_settings"] = "Impostazioni...";
+            dict_it["menu_about"] = "Informazioni su FleetForge...";
+            dict_it["quick_setup_title"] = "Configurazione rapida";
+            dict_it["quick_setup_subtitle"] = "Scegli un pacchetto, seleziona le app e inizia con un clic.";
+            dict_it["step1_title"] = "Scegli un pacchetto";
+            dict_it["step1_desc"] = "In base alle tue esigenze";
+            dict_it["step2_title"] = "Revisiona app";
+            dict_it["step2_desc"] = "Controlla selezione";
+            dict_it["step3_title"] = "Installa";
+            dict_it["step3_desc"] = "Inizia a usare";
+            dict_it["available_packs_title"] = "Pacchetti app disponibili";
+            dict_it["available_packs_subtitle"] = "Seleziona un pacchetto pronto o singole applicazioni.";
+            dict_it["top_choice_badge"] = "SCELTA MIGLIORE";
+            dict_it["recommended_badge"] = "CONSIGLIATO";
+            dict_it["custom_badge"] = "PACCHETTO PERSONALIZZATO";
+            dict_it["partner_apps_count"] = "{0} app partner";
+            dict_it["apps_count"] = "{0} applicazioni";
+            dict_it["catalog_title"] = "Tutte le applicazioni";
+            dict_it["catalog_subtitle"] = "Esplora 16.349 pacchetti software con ricerca istantanea e selezione con un clic.";
+            dict_it["select_all"] = "Seleziona tutte le app";
+            dict_it["sort_button"] = "Ordina app \u25BE";
+            dict_it["sort_selected_top"] = "Selezionati e consigliati";
+            dict_it["sort_name_az"] = "Nome (A-Z)";
+            dict_it["sort_name_za"] = "Nome (Z-A)";
+            dict_it["sort_category"] = "Per categoria";
+            dict_it["cat_all"] = "Tutti";
+            dict_it["cat_browsers"] = "Browser Web";
+            dict_it["cat_dev"] = "Sviluppo e codice";
+            dict_it["cat_collab"] = "Comunicazione e team";
+            dict_it["cat_office"] = "Produttivit\u00E0 e ufficio";
+            dict_it["cat_tools"] = "Utilit\u00E0 e strumenti";
+            dict_it["cat_media"] = "Media e grafica";
+            dict_it["cat_sec"] = "Sicurezza e rete";
+            dict_it["cat_cloud"] = "Cloud e archiviazione";
+            dict_it["cat_games"] = "Giochi e motori";
+            dict_it["btn_install"] = "\uD83D\uDCE5  Installa app selezionate ({0})";
+            dict_it["btn_install_no_count"] = "\uD83D\uDCE5  Installa app selezionate";
+            dict_it["btn_stop"] = "Interrompi installazione";
+            dict_it["btn_import_pack"] = "\uD83D\uDCE5 Importa pacchetto";
+            dict_it["btn_create_pack"] = "+ Crea nuovo pacchetto";
+            dict_it["badge_ready"] = "Pronto";
+            dict_it["badge_installed"] = "Installato";
+            dict_it["badge_installing"] = "Installazione...";
+            dict_it["badge_failed"] = "Non riuscito";
+            dict_it["showing_count"] = "Visualizzazione di {0:N0} su {1:N0} app";
+            dict_it["showing_count_selected"] = "Visualizzazione di {0:N0} su {1:N0} app ({2:N0} selezionate)";
+            dict_it["showing_local_online"] = "Mostra {0} locali + {1} online per \"{2}\"";
+            dict_it["showing_local_online_selected"] = "Mostra {0} locali + {1} online per \"{2}\" ({3:N0} selezionate)";
+            dict_it["found_online_count"] = "Trovate {0:N0} app online per \"{1}\"";
+            dict_it["found_online_count_selected"] = "Trovate {0:N0} app online per \"{1}\" ({2:N0} selezionate)";
+            dict_it["showing_query_count"] = "Visualizzazione di {0:N0} app per \"{1}\"";
+            dict_it["showing_query_count_selected"] = "Visualizzazione di {0:N0} app per \"{1}\" ({2:N0} selezionate)";
+            dict_it["searching_online"] = "\uD83D\uDD0D Ricerca nel repository Winget online per \"{0}\"...";
+            dict_it["no_apps_found"] = "Nessun pacchetto software trovato per \"{0}\"";
+            dict_it["no_apps_found_desc"] = "Non trovato in locale n\u00E9 in Winget online. Controllare l'ortografia.";
+            dict_it["type_to_search"] = "Digita almeno 2 caratteri per cercare le app.";
+            dict_it["no_winget_title"] = "Nessuna app locale trovata per \"{0}\"";
+            dict_it["no_winget_desc"] = "Microsoft Winget non \u00E8 disponibile su questo sistema.";
+            dict_it["bottom_tip"] = "Suggerimento: Puoi personalizzare qualsiasi pacchetto, aggiungere o rimuovere app.";
+            dict_it["pack_selected_prefix"] = "Pacchetto app selezionato: {0}";
+            dict_it["logs_title"] = "Cronologia installazioni";
+            dict_it["logs_subtitle"] = "Monitoraggio dell'installazione dal vivo e registri di controllo.";
+            dict_it["btn_summary_report"] = "Riepilogo";
+            dict_it["btn_open_logfile"] = "Apri file di registro";
+            dict_it["btn_clear_screen"] = "Cancella schermo";
+            _translations["it"] = dict_it;
+
+            // Language: ko
+            Dictionary<string, string> dict_ko = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_ko["btn_select_pack"] = "\uD328\uD0A4\uC9C0 \uC120\uD0DD";
+            dict_ko["btn_customize_pack"] = "\uC0AC\uC6A9\uC790 \uC815\uC758";
+            dict_ko["btn_export_pack"] = "\uB0B4\uBCF4\uB0B4\uAE30";
+            dict_ko["nav_quick_setup"] = "\uBE60\uB978 \uC124\uC815";
+            dict_ko["nav_all_apps"] = "\uBAA8\uB4E0 \uC571";
+            dict_ko["nav_cloud_sync"] = "\uD074\uB77C\uC6B0\uB4DC \uB3D9\uAE30\uD654";
+            dict_ko["nav_history"] = "\uC124\uCE58 \uAE30\uB85D";
+            dict_ko["search_placeholder"] = "\uC571, \uC124\uC815 \uB610\uB294 \uD328\uD0A4\uC9C0 \uAC80\uC0C9...";
+            dict_ko["help_button"] = "\uB3C4\uC6C0\uB9D0 ?";
+            dict_ko["lang_auto"] = "\uC790\uB3D9 (\uC2DC\uC2A4\uD15C \uAE30\uBCF8\uAC12)";
+            dict_ko["menu_guide"] = "\uC0AC\uC6A9 \uBC29\uBC95 (\uB300\uD654\uD615 \uAC00\uC774\uB4DC)...";
+            dict_ko["menu_updates"] = "\uC5C5\uB370\uC774\uD2B8 \uD655\uC778...";
+            dict_ko["menu_settings"] = "\uC124\uC815...";
+            dict_ko["menu_about"] = "FleetForge \uC815\uBCF4...";
+            dict_ko["quick_setup_title"] = "\uBE60\uB978 \uC124\uC815";
+            dict_ko["quick_setup_subtitle"] = "\uD328\uD0A4\uC9C0\uB97C \uC120\uD0DD\uD558\uACE0 \uC571\uC744 \uACE8\uB77C \uD55C \uBC88\uC758 \uD074\uB9AD\uC73C\uB85C \uC2DC\uC791\uD558\uC138\uC694.";
+            dict_ko["step1_title"] = "\uD328\uD0A4\uC9C0 \uC120\uD0DD";
+            dict_ko["step1_desc"] = "\uD544\uC694\uC5D0 \uB9DE\uAC8C";
+            dict_ko["step2_title"] = "\uC571 \uAC80\uD1A0";
+            dict_ko["step2_desc"] = "\uC120\uD0DD \uD655\uC778";
+            dict_ko["step3_title"] = "\uC124\uCE58";
+            dict_ko["step3_desc"] = "\uBC14\uB85C \uC0AC\uC6A9";
+            dict_ko["available_packs_title"] = "\uC0AC\uC6A9 \uAC00\uB2A5\uD55C \uC571 \uD328\uD0A4\uC9C0";
+            dict_ko["available_packs_subtitle"] = "\uC0AC\uC804 \uAD6C\uC131\uB41C \uD328\uD0A4\uC9C0\uB97C \uC120\uD0DD\uD558\uAC70\uB098 \uAC1C\uBCC4 \uC571\uC744 \uC120\uD0DD\uD558\uC138\uC694.";
+            dict_ko["top_choice_badge"] = "\uCD5C\uACE0\uC758 \uC120\uD0DD";
+            dict_ko["recommended_badge"] = "\uCD94\uCC9C";
+            dict_ko["custom_badge"] = "\uC0AC\uC6A9\uC790 \uC9C0\uC815 \uD328\uD0A4\uC9C0";
+            dict_ko["partner_apps_count"] = "{0}\uAC1C \uD30C\uD2B8\uB108 \uC571";
+            dict_ko["apps_count"] = "{0}\uAC1C \uC571";
+            dict_ko["catalog_title"] = "\uBAA8\uB4E0 \uC560\uD50C\uB9AC\uCF00\uC774\uC158";
+            dict_ko["catalog_subtitle"] = "\uC989\uC2DC \uAC80\uC0C9 \uBC0F \uC6D0\uD074\uB9AD \uC120\uD0DD\uC73C\uB85C 16,349\uAC1C\uC758 \uC18C\uD504\uD2B8\uC6E8\uC5B4 \uD328\uD0A4\uC9C0\uB97C \uD0D0\uC0C9\uD558\uC138\uC694.";
+            dict_ko["select_all"] = "\uBAA8\uB4E0 \uC571 \uC120\uD0DD";
+            dict_ko["sort_button"] = "\uC571 \uC815\uB82C \u25BE";
+            dict_ko["sort_selected_top"] = "\uC120\uD0DD\uB428 \uBC0F \uCD94\uCC9C";
+            dict_ko["sort_name_az"] = "\uC774\uB984 (A-Z)";
+            dict_ko["sort_name_za"] = "\uC774\uB984 (Z-A)";
+            dict_ko["sort_category"] = "\uCE74\uD14C\uACE0\uB9AC\uBCC4";
+            dict_ko["cat_all"] = "\uC804\uCCB4";
+            dict_ko["cat_browsers"] = "\uC6F9 \uBE0C\uB77C\uC6B0\uC800";
+            dict_ko["cat_dev"] = "\uAC1C\uBC1C \uBC0F \uCF54\uB4DC";
+            dict_ko["cat_collab"] = "\uCEE4\uBBA4\uB2C8\uCF00\uC774\uC158 \uBC0F \uD611\uC5C5";
+            dict_ko["cat_office"] = "\uC0DD\uC0B0\uC131 \uBC0F \uC624\uD53C\uC2A4";
+            dict_ko["cat_tools"] = "\uC720\uD2F8\uB9AC\uD2F0 \uBC0F \uB3C4\uAD6C";
+            dict_ko["cat_media"] = "\uBBF8\uB514\uC5B4 \uBC0F \uD06C\uB9AC\uC5D0\uC774\uD2F0\uBE0C";
+            dict_ko["cat_sec"] = "\uBCF4\uC548 \uBC0F \uB124\uD2B8\uC6CC\uD06C";
+            dict_ko["cat_cloud"] = "\uD074\uB77C\uC6B0\uB4DC \uBC0F \uC2A4\uD1A0\uB9AC\uC9C0";
+            dict_ko["cat_games"] = "\uAC8C\uC784 \uBC0F \uC5D4\uC9C4";
+            dict_ko["btn_install"] = "\uD83D\uDCE5  \uC120\uD0DD\uD55C \uC571 \uC124\uCE58 ({0})";
+            dict_ko["btn_install_no_count"] = "\uD83D\uDCE5  \uC120\uD0DD\uD55C \uC571 \uC124\uCE58";
+            dict_ko["btn_stop"] = "\uC124\uCE58 \uC911\uC9C0";
+            dict_ko["btn_import_pack"] = "\uD83D\uDCE5 \uD328\uD0A4\uC9C0 \uAC00\uC838\uC624\uAE30";
+            dict_ko["btn_create_pack"] = "+ \uC0C8 \uD328\uD0A4\uC9C0 \uB9CC\uB4E4\uAE30";
+            dict_ko["badge_ready"] = "\uC900\uBE44\uB428";
+            dict_ko["badge_installed"] = "\uC124\uCE58\uB428";
+            dict_ko["badge_installing"] = "\uC124\uCE58 \uC911...";
+            dict_ko["badge_failed"] = "\uC2E4\uD328";
+            dict_ko["showing_count"] = "{1:N0}\uAC1C \uC911 {0:N0}\uAC1C \uC571 \uD45C\uC2DC \uC911";
+            dict_ko["showing_count_selected"] = "{1:N0}\uAC1C \uC911 {0:N0}\uAC1C \uC571 \uD45C\uC2DC \uC911 ({2:N0}\uAC1C \uC120\uD0DD\uB428)";
+            dict_ko["showing_local_online"] = "\"{2}\"\uC5D0 \uB300\uD574 {0}\uAC1C \uB85C\uCEEC + {1}\uAC1C \uC628\uB77C\uC778 \uC571 \uD45C\uC2DC";
+            dict_ko["showing_local_online_selected"] = "\"{2}\"\uC5D0 \uB300\uD574 {0}\uAC1C \uB85C\uCEEC + {1}\uAC1C \uC628\uB77C\uC778 \uC571 \uD45C\uC2DC ({3:N0}\uAC1C \uC120\uD0DD\uB428)";
+            dict_ko["found_online_count"] = "\"{1}\"\uC5D0 \uB300\uD55C \uC628\uB77C\uC778 \uC571 {0:N0}\uAC1C \uBC1C\uACAC";
+            dict_ko["found_online_count_selected"] = "\"{1}\"\uC5D0 \uB300\uD55C \uC628\uB77C\uC778 \uC571 {0:N0}\uAC1C \uBC1C\uACAC ({2:N0}\uAC1C \uC120\uD0DD\uB428)";
+            dict_ko["showing_query_count"] = "\"{1}\"\uC5D0 \uB300\uD55C {0:N0}\uAC1C \uC571 \uD45C\uC2DC \uC911";
+            dict_ko["showing_query_count_selected"] = "\"{1}\"\uC5D0 \uB300\uD55C {0:N0}\uAC1C \uC571 \uD45C\uC2DC \uC911 ({2:N0}\uAC1C \uC120\uD0DD\uB428)";
+            dict_ko["searching_online"] = "\uD83D\uDD0D \"{0}\"\uC5D0 \uB300\uD574 \uC628\uB77C\uC778 Winget \uC800\uC7A5\uC18C \uAC80\uC0C9 \uC911...";
+            dict_ko["no_apps_found"] = "\"{0}\"\uC5D0 \uB300\uD55C \uC18C\uD504\uD2B8\uC6E8\uC5B4 \uD328\uD0A4\uC9C0\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4";
+            dict_ko["no_apps_found_desc"] = "\uB85C\uCEEC \uB370\uC774\uD130\uBCA0\uC774\uC2A4\uB098 \uC628\uB77C\uC778 Winget\uC5D0\uC11C \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uCCA0\uC790\uB97C \uD655\uC778\uD558\uC138\uC694.";
+            dict_ko["type_to_search"] = "\uC571\uC744 \uAC80\uC0C9\uD558\uB824\uBA74 \uCD5C\uC18C 2\uC790\uB97C \uC785\uB825\uD558\uC138\uC694.";
+            dict_ko["no_winget_title"] = "\"{0}\"\uC5D0 \uB300\uD55C \uB85C\uCEEC \uC571\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4";
+            dict_ko["no_winget_desc"] = "\uC628\uB77C\uC778 \uC800\uC7A5\uC18C\uB97C \uAC80\uC0C9\uD558\uAE30 \uC704\uD55C Microsoft Winget\uC744 \uC0AC\uC6A9\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.";
+            dict_ko["bottom_tip"] = "\uD301: \uD328\uD0A4\uC9C0\uB97C \uB9DE\uCDA4\uC124\uC815\uD558\uACE0, \uC571\uC744 \uCD94\uAC00/\uC0AD\uC81C\uD558\uC5EC \uC124\uC815\uC744 \uB0B4\uBCF4\uB0BC \uC218 \uC788\uC2B5\uB2C8\uB2E4.";
+            dict_ko["pack_selected_prefix"] = "\uC120\uD0DD\uB41C \uC571 \uD328\uD0A4\uC9C0: {0}";
+            dict_ko["logs_title"] = "\uC124\uCE58 \uAE30\uB85D";
+            dict_ko["logs_subtitle"] = "\uC2E4\uC2DC\uAC04 \uBC30\uD3EC \uAC10\uC2DC \uBC0F \uAC10\uC0AC \uB85C\uADF8.";
+            dict_ko["btn_summary_report"] = "\uC694\uC57D \uBCF4\uACE0\uC11C";
+            dict_ko["btn_open_logfile"] = "\uB85C\uADF8 \uD30C\uC77C \uC5F4\uAE30";
+            dict_ko["btn_clear_screen"] = "\uD654\uBA74 \uC9C0\uC6B0\uAE30";
+            _translations["ko"] = dict_ko;
+
+            // Language: tr
+            Dictionary<string, string> dict_tr = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_tr["btn_select_pack"] = "Paket Se\u00E7";
+            dict_tr["btn_customize_pack"] = "\u00D6zelle\u015Ftir";
+            dict_tr["btn_export_pack"] = "D\u0131\u015Fa Aktar";
+            dict_tr["nav_quick_setup"] = "H\u0131zl\u0131 Kurulum";
+            dict_tr["nav_all_apps"] = "T\u00FCm Uygulamalar";
+            dict_tr["nav_cloud_sync"] = "Bulut Senkronizasyonu";
+            dict_tr["nav_history"] = "Kurulum Ge\u00E7mi\u015Fi";
+            dict_tr["search_placeholder"] = "Uygulama, ayar veya paket ara...";
+            dict_tr["help_button"] = "Yard\u0131m ?";
+            dict_tr["lang_auto"] = "Otomatik (Sistem Varsay\u0131lan\u0131)";
+            dict_tr["menu_guide"] = "Nas\u0131l Kullan\u0131l\u0131r (K\u0131lavuz)...";
+            dict_tr["menu_updates"] = "G\u00FCncellemeleri Denetle...";
+            dict_tr["menu_settings"] = "Ayarlar...";
+            dict_tr["menu_about"] = "FleetForge Hakk\u0131nda...";
+            dict_tr["quick_setup_title"] = "H\u0131zl\u0131 Kurulum";
+            dict_tr["quick_setup_subtitle"] = "Bir paket se\u00E7in, uygulamalar\u0131 belirleyin ve tek t\u0131kla ba\u015Flay\u0131n.";
+            dict_tr["step1_title"] = "Paket Se\u00E7";
+            dict_tr["step1_desc"] = "\u0130htiyac\u0131n\u0131za g\u00F6re";
+            dict_tr["step2_title"] = "Uygulamalar\u0131 \u0130ncele";
+            dict_tr["step2_desc"] = "Se\u00E7imi kontrol et";
+            dict_tr["step3_title"] = "Y\u00FCkle";
+            dict_tr["step3_desc"] = "Kullanmaya ba\u015Flay\u0131n";
+            dict_tr["available_packs_title"] = "Mevcut Uygulama Paketleri";
+            dict_tr["available_packs_subtitle"] = "Haz\u0131r bir paket se\u00E7in veya ba\u011F\u0131ms\u0131z uygulamalar\u0131 belirleyin.";
+            dict_tr["top_choice_badge"] = "EN \u0130Y\u0130 SE\u00C7\u0130M";
+            dict_tr["recommended_badge"] = "\u00D6NER\u0130LEN";
+            dict_tr["custom_badge"] = "\u00D6ZEL PAKET";
+            dict_tr["partner_apps_count"] = "{0} i\u015F orta\u011F\u0131 uygulamas\u0131";
+            dict_tr["apps_count"] = "{0} uygulama";
+            dict_tr["catalog_title"] = "T\u00FCm Uygulamalar";
+            dict_tr["catalog_subtitle"] = "An\u0131nda arama ve tek t\u0131kla se\u00E7imle 16.349 yaz\u0131l\u0131m paketine g\u00F6z at\u0131n.";
+            dict_tr["select_all"] = "T\u00FCm Uygulamalar\u0131 Se\u00E7";
+            dict_tr["sort_button"] = "Uygulamalar\u0131 S\u0131rala \u25BE";
+            dict_tr["sort_selected_top"] = "Se\u00E7ilenler ve \u00D6nerilenler";
+            dict_tr["sort_name_az"] = "\u0130sim (A'dan Z'ye)";
+            dict_tr["sort_name_za"] = "\u0130sim (Z'den A'ya)";
+            dict_tr["sort_category"] = "Kategoriye G\u00F6re";
+            dict_tr["cat_all"] = "T\u00FCm\u00FC";
+            dict_tr["cat_browsers"] = "Web Taray\u0131c\u0131lar\u0131";
+            dict_tr["cat_dev"] = "Geli\u015Ftirme ve Kod";
+            dict_tr["cat_collab"] = "\u0130leti\u015Fim ve \u0130\u015Fbirli\u011Fi";
+            dict_tr["cat_office"] = "\u00DCretkenlik ve Ofis";
+            dict_tr["cat_tools"] = "Yard\u0131mc\u0131 Programlar";
+            dict_tr["cat_media"] = "Medya ve Yarat\u0131c\u0131l\u0131k";
+            dict_tr["cat_sec"] = "G\u00FCvenlik ve A\u011F";
+            dict_tr["cat_cloud"] = "Bulut ve Depolama";
+            dict_tr["cat_games"] = "Oyun ve Motorlar";
+            dict_tr["btn_install"] = "\uD83D\uDCE5  Se\u00E7ilen Uygulamalar\u0131 Y\u00FCkle ({0})";
+            dict_tr["btn_install_no_count"] = "\uD83D\uDCE5  Se\u00E7ilen Uygulamalar\u0131 Y\u00FCkle";
+            dict_tr["btn_stop"] = "Kurulumu Durdur";
+            dict_tr["btn_import_pack"] = "\uD83D\uDCE5 Paket \u0130\u00E7e Aktar";
+            dict_tr["btn_create_pack"] = "+ Yeni Paket Olu\u015Ftur";
+            dict_tr["badge_ready"] = "Haz\u0131r";
+            dict_tr["badge_installed"] = "Y\u00FCklendi";
+            dict_tr["badge_installing"] = "Y\u00FCkleniyor...";
+            dict_tr["badge_failed"] = "Ba\u015Far\u0131s\u0131z";
+            dict_tr["showing_count"] = "{1:N0} uygulamadan {0:N0} tanesi g\u00F6steriliyor";
+            dict_tr["showing_count_selected"] = "{1:N0} uygulamadan {0:N0} tanesi g\u00F6steriliyor ({2:N0} se\u00E7ildi)";
+            dict_tr["showing_local_online"] = "\"{2}\" i\u00E7in {0} yerel + {1} \u00E7evrimi\u00E7i uygulama";
+            dict_tr["showing_local_online_selected"] = "\"{2}\" i\u00E7in {0} yerel + {1} \u00E7evrimi\u00E7i uygulama ({3:N0} se\u00E7ildi)";
+            dict_tr["found_online_count"] = "\"{1}\" i\u00E7in {0:N0} \u00E7evrimi\u00E7i uygulama bulundu";
+            dict_tr["found_online_count_selected"] = "\"{1}\" i\u00E7in {0:N0} \u00E7evrimi\u00E7i uygulama bulundu ({2:N0} se\u00E7ildi)";
+            dict_tr["showing_query_count"] = "\"{1}\" i\u00E7in {0:N0} uygulama g\u00F6steriliyor";
+            dict_tr["showing_query_count_selected"] = "\"{1}\" i\u00E7in {0:N0} uygulama g\u00F6steriliyor ({2:N0} se\u00E7ildi)";
+            dict_tr["searching_online"] = "\uD83D\uDD0D \u00C7evrimi\u00E7i Winget deposunda \"{0}\" aran\u0131yor...";
+            dict_tr["no_apps_found"] = "\"{0}\" i\u00E7in yaz\u0131l\u0131m paketi bulunamad\u0131";
+            dict_tr["no_apps_found_desc"] = "Yerel veritaban\u0131nda veya Winget deposunda bulunamad\u0131. Yaz\u0131m\u0131 kontrol edin.";
+            dict_tr["type_to_search"] = "Arama yapmak i\u00E7in l\u00FCtfen en az 2 karakter yaz\u0131n.";
+            dict_tr["no_winget_title"] = "\"{0}\" i\u00E7in yerel uygulama bulunamad\u0131";
+            dict_tr["no_winget_desc"] = "\u00C7evrimi\u00E7i arama i\u00E7in Microsoft Winget bu sistemde mevcut de\u011Fil.";
+            dict_tr["bottom_tip"] = "\u0130pucu: Herhangi bir paketi \u00F6zelle\u015Ftirebilir, uygulama ekleyip \u00E7\u0131karabilirsiniz.";
+            dict_tr["pack_selected_prefix"] = "Se\u00E7ilen uygulama paketi: {0}";
+            dict_tr["logs_title"] = "Kurulum Ge\u00E7mi\u015Fi";
+            dict_tr["logs_subtitle"] = "Canl\u0131 da\u011F\u0131t\u0131m izleme ve denetim g\u00FCnl\u00FCkleri.";
+            dict_tr["btn_summary_report"] = "\u00D6zet Rapor";
+            dict_tr["btn_open_logfile"] = "G\u00FCnl\u00FCk Dosyas\u0131n\u0131 A\u00E7";
+            dict_tr["btn_clear_screen"] = "Ekran\u0131 Temizle";
+            _translations["tr"] = dict_tr;
+
+            // Language: nl
+            Dictionary<string, string> dict_nl = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_nl["btn_select_pack"] = "Pakket selecteren";
+            dict_nl["btn_customize_pack"] = "Aanpassen";
+            dict_nl["btn_export_pack"] = "Exporteren";
+            dict_nl["nav_quick_setup"] = "Snelle installatie";
+            dict_nl["nav_all_apps"] = "Alle apps";
+            dict_nl["nav_cloud_sync"] = "Cloudsynchronisatie";
+            dict_nl["nav_history"] = "Installatiegeschiedenis";
+            dict_nl["search_placeholder"] = "Zoek app, instelling of pakket...";
+            dict_nl["help_button"] = "Help ?";
+            dict_nl["lang_auto"] = "Automatisch (Systeemstandaard)";
+            dict_nl["menu_guide"] = "Hoe te gebruiken (Handleiding)...";
+            dict_nl["menu_updates"] = "Controleren op updates...";
+            dict_nl["menu_settings"] = "Instellingen...";
+            dict_nl["menu_about"] = "Over FleetForge...";
+            dict_nl["quick_setup_title"] = "Snelle installatie";
+            dict_nl["quick_setup_subtitle"] = "Kies een pakket, selecteer apps en begin met \u00E9\u00E9n klik.";
+            dict_nl["step1_title"] = "Kies een pakket";
+            dict_nl["step1_desc"] = "Kies naar behoefte";
+            dict_nl["step2_title"] = "Apps bekijken";
+            dict_nl["step2_desc"] = "Selectie controleren";
+            dict_nl["step3_title"] = "Installeren";
+            dict_nl["step3_desc"] = "Beginnen met gebruiken";
+            dict_nl["available_packs_title"] = "Beschikbare app-pakketten";
+            dict_nl["available_packs_subtitle"] = "Kies een kant-en-klaar pakket of kies individuele apps.";
+            dict_nl["top_choice_badge"] = "TOPKEUZE";
+            dict_nl["recommended_badge"] = "AANBEVOLEN";
+            dict_nl["custom_badge"] = "AANGEPAST PAKKET";
+            dict_nl["partner_apps_count"] = "{0} partner-apps";
+            dict_nl["apps_count"] = "{0} apps";
+            dict_nl["catalog_title"] = "Alle applicaties";
+            dict_nl["catalog_subtitle"] = "Blader door 16.349 softwarepakketten met direct zoeken en \u00E9\u00E9n-klik selectie.";
+            dict_nl["select_all"] = "Selecteer alle apps";
+            dict_nl["sort_button"] = "Apps sorteren \u25BE";
+            dict_nl["sort_selected_top"] = "Geselecteerd en aanbevolen";
+            dict_nl["sort_name_az"] = "Naam (A tot Z)";
+            dict_nl["sort_name_za"] = "Naam (Z tot A)";
+            dict_nl["sort_category"] = "Op categorie";
+            dict_nl["cat_all"] = "Alles";
+            dict_nl["cat_browsers"] = "Webbrowsers";
+            dict_nl["cat_dev"] = "Ontwikkeling & Code";
+            dict_nl["cat_collab"] = "Communicatie & Samenwerking";
+            dict_nl["cat_office"] = "Productiviteit & Kantoor";
+            dict_nl["cat_tools"] = "Hulpprogramma's & Tools";
+            dict_nl["cat_media"] = "Media & Creatief";
+            dict_nl["cat_sec"] = "Beveiliging & Netwerk";
+            dict_nl["cat_cloud"] = "Cloud & Opslag";
+            dict_nl["cat_games"] = "Gaming & Engines";
+            dict_nl["btn_install"] = "\uD83D\uDCE5  Geselecteerde apps installeren ({0})";
+            dict_nl["btn_install_no_count"] = "\uD83D\uDCE5  Geselecteerde apps installeren";
+            dict_nl["btn_stop"] = "Installatie stoppen";
+            dict_nl["btn_import_pack"] = "\uD83D\uDCE5 Pakket importeren";
+            dict_nl["btn_create_pack"] = "+ Nieuw pakket maken";
+            dict_nl["badge_ready"] = "Gereed";
+            dict_nl["badge_installed"] = "Ge\u00EFnstalleerd";
+            dict_nl["badge_installing"] = "Bezig met installeren...";
+            dict_nl["badge_failed"] = "Mislukt";
+            dict_nl["showing_count"] = "{0:N0} van {1:N0} apps worden weergegeven";
+            dict_nl["showing_count_selected"] = "{0:N0} van {1:N0} apps worden weergegeven ({2:N0} geselecteerd)";
+            dict_nl["showing_local_online"] = "Weergeven van {0} lokale + {1} online apps voor \"{2}\"";
+            dict_nl["showing_local_online_selected"] = "Weergeven van {0} lokale + {1} online apps voor \"{2}\" ({3:N0} geselecteerd)";
+            dict_nl["found_online_count"] = "{0:N0} online apps gevonden voor \"{1}\"";
+            dict_nl["found_online_count_selected"] = "{0:N0} online apps gevonden voor \"{1}\" ({2:N0} geselecteerd)";
+            dict_nl["showing_query_count"] = "{0:N0} apps weergegeven voor \"{1}\"";
+            dict_nl["showing_query_count_selected"] = "{0:N0} apps weergegeven voor \"{1}\" ({2:N0} geselecteerd)";
+            dict_nl["searching_online"] = "\uD83D\uDD0D Online Winget-opslagplaats doorzoeken voor \"{0}\"...";
+            dict_nl["no_apps_found"] = "Geen softwarepakketten gevonden voor \"{0}\"";
+            dict_nl["no_apps_found_desc"] = "Niet gevonden in lokale database of Winget. Controleer spelling.";
+            dict_nl["type_to_search"] = "Typ minimaal 2 tekens om te zoeken.";
+            dict_nl["no_winget_title"] = "Geen lokale apps gevonden voor \"{0}\"";
+            dict_nl["no_winget_desc"] = "Microsoft Winget is niet beschikbaar voor online zoeken.";
+            dict_nl["bottom_tip"] = "Tip: U kunt elk pakket aanpassen, apps toevoegen of verwijderen.";
+            dict_nl["pack_selected_prefix"] = "Geselecteerd app-pakket: {0}";
+            dict_nl["logs_title"] = "Installatiegeschiedenis";
+            dict_nl["logs_subtitle"] = "Live implementatiebewaking en auditlogboeken.";
+            dict_nl["btn_summary_report"] = "Samenvattend rapport";
+            dict_nl["btn_open_logfile"] = "Logbestand openen";
+            dict_nl["btn_clear_screen"] = "Scherm wissen";
+            _translations["nl"] = dict_nl;
+
+            // Language: pl
+            Dictionary<string, string> dict_pl = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_pl["btn_select_pack"] = "Wybierz pakiet";
+            dict_pl["btn_customize_pack"] = "Dostosuj";
+            dict_pl["btn_export_pack"] = "Eksportuj";
+            dict_pl["nav_quick_setup"] = "Szybka konfiguracja";
+            dict_pl["nav_all_apps"] = "Wszystkie aplikacje";
+            dict_pl["nav_cloud_sync"] = "Synchronizacja z chmur\u0105";
+            dict_pl["nav_history"] = "Historia instalacji";
+            dict_pl["search_placeholder"] = "Znajd\u017A aplikacj\u0119, ustawienie lub pakiet...";
+            dict_pl["help_button"] = "Pomoc ?";
+            dict_pl["lang_auto"] = "Automatyczny (Domy\u015Blny systemu)";
+            dict_pl["menu_guide"] = "Jak u\u017Cywa\u0107 (Przewodnik)...";
+            dict_pl["menu_updates"] = "Sprawd\u017A aktualizacje...";
+            dict_pl["menu_settings"] = "Ustawienia...";
+            dict_pl["menu_about"] = "O programie FleetForge...";
+            dict_pl["quick_setup_title"] = "Szybka konfiguracja";
+            dict_pl["quick_setup_subtitle"] = "Wybierz pakiet, wska\u017C aplikacje i zacznij jednym klikni\u0119ciem.";
+            dict_pl["step1_title"] = "Wybierz pakiet";
+            dict_pl["step1_desc"] = "Wed\u0142ug potrzeb";
+            dict_pl["step2_title"] = "Przejrzyj aplikacje";
+            dict_pl["step2_desc"] = "Sprawd\u017A wyb\u00F3r";
+            dict_pl["step3_title"] = "Zainstaluj";
+            dict_pl["step3_desc"] = "Zacznij u\u017Cywa\u0107";
+            dict_pl["available_packs_title"] = "Dost\u0119pne pakiety aplikacji";
+            dict_pl["available_packs_subtitle"] = "Wybierz gotowy pakiet lub pojedyncze aplikacje.";
+            dict_pl["top_choice_badge"] = "NAJLEPSZY WYB\u00D3R";
+            dict_pl["recommended_badge"] = "POLECANE";
+            dict_pl["custom_badge"] = "PAKIET NIESTANDARDOWY";
+            dict_pl["partner_apps_count"] = "{0} aplikacji partnerskich";
+            dict_pl["apps_count"] = "{0} aplikacji";
+            dict_pl["catalog_title"] = "Wszystkie aplikacje";
+            dict_pl["catalog_subtitle"] = "Przegl\u0105daj 16 349 pakiet\u00F3w oprogramowania z natychmiastowym wyszukiwaniem i wyborem jednym klikni\u0119ciem.";
+            dict_pl["select_all"] = "Zaznacz wszystkie";
+            dict_pl["sort_button"] = "Sortuj aplikacje \u25BE";
+            dict_pl["sort_selected_top"] = "Zaznaczone i polecane";
+            dict_pl["sort_name_az"] = "Nazwa (A do Z)";
+            dict_pl["sort_name_za"] = "Nazwa (Z do A)";
+            dict_pl["sort_category"] = "Wed\u0142ug kategorii";
+            dict_pl["cat_all"] = "Wszystkie";
+            dict_pl["cat_browsers"] = "Przegl\u0105darki internetowe";
+            dict_pl["cat_dev"] = "Programowanie i kod";
+            dict_pl["cat_collab"] = "Komunikacja i wsp\u00F3\u0142praca";
+            dict_pl["cat_office"] = "Biuro i produktywno\u015B\u0107";
+            dict_pl["cat_tools"] = "Narz\u0119dzia i u\u0142atwienia";
+            dict_pl["cat_media"] = "Media i tw\u00F3rczo\u015B\u0107";
+            dict_pl["cat_sec"] = "Bezpiecze\u0144stwo i sie\u0107";
+            dict_pl["cat_cloud"] = "Chmura i pami\u0119\u0107";
+            dict_pl["cat_games"] = "Gry i silniki";
+            dict_pl["btn_install"] = "\uD83D\uDCE5  Zainstaluj wybrane aplikacje ({0})";
+            dict_pl["btn_install_no_count"] = "\uD83D\uDCE5  Zainstaluj wybrane aplikacje";
+            dict_pl["btn_stop"] = "Zatrzymaj instalacj\u0119";
+            dict_pl["btn_import_pack"] = "\uD83D\uDCE5 Importuj pakiet";
+            dict_pl["btn_create_pack"] = "+ Utw\u00F3rz nowy pakiet";
+            dict_pl["badge_ready"] = "Gotowy";
+            dict_pl["badge_installed"] = "Zainstalowano";
+            dict_pl["badge_installing"] = "Instalowanie...";
+            dict_pl["badge_failed"] = "Niepowodzenie";
+            dict_pl["showing_count"] = "Wy\u015Bwietlanie {0:N0} z {1:N0} aplikacji";
+            dict_pl["showing_count_selected"] = "Wy\u015Bwietlanie {0:N0} z {1:N0} aplikacji ({2:N0} zaznaczonych)";
+            dict_pl["showing_local_online"] = "Wy\u015Bwietlanie {0} lokalnych + {1} online dla \"{2}\"";
+            dict_pl["showing_local_online_selected"] = "Wy\u015Bwietlanie {0} lokalnych + {1} online dla \"{2}\" ({3:N0} zaznaczonych)";
+            dict_pl["found_online_count"] = "Znaleziono {0:N0} aplikacji online dla \"{1}\"";
+            dict_pl["found_online_count_selected"] = "Znaleziono {0:N0} aplikacji online dla \"{1}\" ({2:N0} zaznaczonych)";
+            dict_pl["showing_query_count"] = "Wy\u015Bwietlanie {0:N0} aplikacji dla \"{1}\"";
+            dict_pl["showing_query_count_selected"] = "Wy\u015Bwietlanie {0:N0} aplikacji dla \"{1}\" ({2:N0} zaznaczonych)";
+            dict_pl["searching_online"] = "\uD83D\uDD0D Wyszukiwanie w repozytorium online Winget dla \"{0}\"...";
+            dict_pl["no_apps_found"] = "Nie znaleziono pakiet\u00F3w oprogramowania dla \"{0}\"";
+            dict_pl["no_apps_found_desc"] = "Nie znaleziono w lokalnej bazie ani w repozytorium Winget. Sprawd\u017A pisowni\u0119.";
+            dict_pl["type_to_search"] = "Wpisz co najmniej 2 znaki, aby wyszuka\u0107.";
+            dict_pl["no_winget_title"] = "Nie znaleziono lokalnych aplikacji dla \"{0}\"";
+            dict_pl["no_winget_desc"] = "Microsoft Winget nie jest dost\u0119pny w tym systemie.";
+            dict_pl["bottom_tip"] = "Wskaz\u00F3wka: Mo\u017Cesz dostosowa\u0107 dowolny pakiet, dodawa\u0107 lub usuwa\u0107 aplikacje.";
+            dict_pl["pack_selected_prefix"] = "Wybrany pakiet aplikacji: {0}";
+            dict_pl["logs_title"] = "Historia instalacji";
+            dict_pl["logs_subtitle"] = "Monitorowanie wdro\u017Cenia na \u017Cywo i dzienniki audytu.";
+            dict_pl["btn_summary_report"] = "Raport podsumowuj\u0105cy";
+            dict_pl["btn_open_logfile"] = "Otw\u00F3rz plik dziennika";
+            dict_pl["btn_clear_screen"] = "Wyczy\u015B\u0107 ekran";
+            _translations["pl"] = dict_pl;
+
+            // Language: vi
+            Dictionary<string, string> dict_vi = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            dict_vi["btn_select_pack"] = "Ch\u1ECDn g\u00F3i";
+            dict_vi["btn_customize_pack"] = "T\u00F9y ch\u1EC9nh";
+            dict_vi["btn_export_pack"] = "Xu\u1EA5t g\u00F3i";
+            dict_vi["nav_quick_setup"] = "Thi\u1EBFt l\u1EADp nhanh";
+            dict_vi["nav_all_apps"] = "T\u1EA5t c\u1EA3 \u1EE9ng d\u1EE5ng";
+            dict_vi["nav_cloud_sync"] = "\u0110\u1ED3ng b\u1ED9 \u0111\u00E1m m\u00E2y";
+            dict_vi["nav_history"] = "L\u1ECBch s\u1EED c\u00E0i \u0111\u1EB7t";
+            dict_vi["search_placeholder"] = "T\u00ECm \u1EE9ng d\u1EE5ng, c\u00E0i \u0111\u1EB7t ho\u1EB7c g\u00F3i...";
+            dict_vi["help_button"] = "Tr\u1EE3 gi\u00FAp ?";
+            dict_vi["lang_auto"] = "T\u1EF1 \u0111\u1ED9ng (M\u1EB7c \u0111\u1ECBnh h\u1EC7 th\u1ED1ng)";
+            dict_vi["menu_guide"] = "H\u01B0\u1EDBng d\u1EABn s\u1EED d\u1EE5ng t\u01B0\u01A1ng t\u00E1c...";
+            dict_vi["menu_updates"] = "Ki\u1EC3m tra c\u1EADp nh\u1EADt...";
+            dict_vi["menu_settings"] = "C\u00E0i \u0111\u1EB7t...";
+            dict_vi["menu_about"] = "V\u1EC1 FleetForge...";
+            dict_vi["quick_setup_title"] = "Thi\u1EBFt l\u1EADp nhanh";
+            dict_vi["quick_setup_subtitle"] = "Ch\u1ECDn g\u00F3i, ch\u1ECDn \u1EE9ng d\u1EE5ng v\u00E0 b\u1EAFt \u0111\u1EA7u ch\u1EC9 v\u1EDBi m\u1ED9t c\u00FA nh\u1EA5p chu\u1ED9t.";
+            dict_vi["step1_title"] = "Ch\u1ECDn g\u00F3i";
+            dict_vi["step1_desc"] = "Theo nhu c\u1EA7u";
+            dict_vi["step2_title"] = "Xem l\u1EA1i \u1EE9ng d\u1EE5ng";
+            dict_vi["step2_desc"] = "Ki\u1EC3m tra l\u1EF1a ch\u1ECDn";
+            dict_vi["step3_title"] = "C\u00E0i \u0111\u1EB7t";
+            dict_vi["step3_desc"] = "B\u1EAFt \u0111\u1EA7u d\u00F9ng";
+            dict_vi["available_packs_title"] = "C\u00E1c g\u00F3i \u1EE9ng d\u1EE5ng c\u00F3 s\u1EB5n";
+            dict_vi["available_packs_subtitle"] = "Ch\u1ECDn g\u00F3i c\u00F3 s\u1EB5n ho\u1EB7c ch\u1ECDn t\u1EEBng \u1EE9ng d\u1EE5ng ri\u00EAng l\u1EBB.";
+            dict_vi["top_choice_badge"] = "L\u1EF0A CH\u1ECCN T\u1ED0T NH\u1EA4T";
+            dict_vi["recommended_badge"] = "KHUY\u00CAN D\u00D9NG";
+            dict_vi["custom_badge"] = "G\u00D3I T\u00D9Y CH\u1EC8NH";
+            dict_vi["partner_apps_count"] = "{0} \u1EE9ng d\u1EE5ng \u0111\u1ED1i t\u00E1c";
+            dict_vi["apps_count"] = "{0} \u1EE9ng d\u1EE5ng";
+            dict_vi["catalog_title"] = "T\u1EA5t c\u1EA3 \u1EE9ng d\u1EE5ng";
+            dict_vi["catalog_subtitle"] = "Duy\u1EC7t qua 16.349 g\u00F3i ph\u1EA7n m\u1EC1m v\u1EDBi t\u00ECm ki\u1EBFm t\u1EE9c th\u00EC v\u00E0 ch\u1ECDn m\u1ED9t c\u00FA nh\u1EA5p.";
+            dict_vi["select_all"] = "Ch\u1ECDn t\u1EA5t c\u1EA3 \u1EE9ng d\u1EE5ng";
+            dict_vi["sort_button"] = "S\u1EAFp x\u1EBFp \u1EE9ng d\u1EE5ng \u25BE";
+            dict_vi["sort_selected_top"] = "\u0110\u00E3 ch\u1ECDn & Khuy\u00EAn d\u00F9ng";
+            dict_vi["sort_name_az"] = "T\u00EAn (A \u0111\u1EBFn Z)";
+            dict_vi["sort_name_za"] = "T\u00EAn (Z \u0111\u1EBFn A)";
+            dict_vi["sort_category"] = "Theo danh m\u1EE5c";
+            dict_vi["cat_all"] = "T\u1EA5t c\u1EA3";
+            dict_vi["cat_browsers"] = "Tr\u00ECnh duy\u1EC7t Web";
+            dict_vi["cat_dev"] = "Ph\u00E1t tri\u1EC3n & M\u00E3 ngu\u1ED3n";
+            dict_vi["cat_collab"] = "Giao ti\u1EBFp & H\u1EE3p t\u00E1c";
+            dict_vi["cat_office"] = "N\u0103ng su\u1EA5t & V\u0103n ph\u00F2ng";
+            dict_vi["cat_tools"] = "Ti\u1EC7n \u00EDch & C\u00F4ng c\u1EE5";
+            dict_vi["cat_media"] = "\u0110a ph\u01B0\u01A1ng ti\u1EC7n & S\u00E1ng t\u1EA1o";
+            dict_vi["cat_sec"] = "B\u1EA3o m\u1EADt & M\u1EA1ng";
+            dict_vi["cat_cloud"] = "\u0110\u00E1m m\u00E2y & L\u01B0u tr\u1EEF";
+            dict_vi["cat_games"] = "Tr\u00F2 ch\u01A1i & C\u00F4ng c\u1EE5";
+            dict_vi["btn_install"] = "\uD83D\uDCE5  C\u00E0i \u0111\u1EB7t c\u00E1c \u1EE9ng d\u1EE5ng \u0111\u00E3 ch\u1ECDn ({0})";
+            dict_vi["btn_install_no_count"] = "\uD83D\uDCE5  C\u00E0i \u0111\u1EB7t c\u00E1c \u1EE9ng d\u1EE5ng \u0111\u00E3 ch\u1ECDn";
+            dict_vi["btn_stop"] = "D\u1EEBng c\u00E0i \u0111\u1EB7t";
+            dict_vi["btn_import_pack"] = "\uD83D\uDCE5 Nh\u1EADp g\u00F3i";
+            dict_vi["btn_create_pack"] = "+ T\u1EA1o g\u00F3i m\u1EDBi";
+            dict_vi["badge_ready"] = "S\u1EB5n s\u00E0ng";
+            dict_vi["badge_installed"] = "\u0110\u00E3 c\u00E0i \u0111\u1EB7t";
+            dict_vi["badge_installing"] = "\u0110ang c\u00E0i \u0111\u1EB7t...";
+            dict_vi["badge_failed"] = "Th\u1EA5t b\u1EA1i";
+            dict_vi["showing_count"] = "\u0110ang hi\u1EC3n th\u1ECB {0:N0} tr\u00EAn t\u1ED5ng s\u1ED1 {1:N0} \u1EE9ng d\u1EE5ng";
+            dict_vi["showing_count_selected"] = "\u0110ang hi\u1EC3n th\u1ECB {0:N0} tr\u00EAn t\u1ED5ng s\u1ED1 {1:N0} \u1EE9ng d\u1EE5ng ({2:N0} \u0111\u00E3 ch\u1ECDn)";
+            dict_vi["showing_local_online"] = "Hi\u1EC3n th\u1ECB {0} c\u1EE5c b\u1ED9 + {1} tr\u1EF1c tuy\u1EBFn cho \"{2}\"";
+            dict_vi["showing_local_online_selected"] = "Hi\u1EC3n th\u1ECB {0} c\u1EE5c b\u1ED9 + {1} tr\u1EF1c tuy\u1EBFn cho \"{2}\" ({3:N0} \u0111\u00E3 ch\u1ECDn)";
+            dict_vi["found_online_count"] = "T\u00ECm th\u1EA5y {0:N0} \u1EE9ng d\u1EE5ng tr\u1EF1c tuy\u1EBFn cho \"{1}\"";
+            dict_vi["found_online_count_selected"] = "T\u00ECm th\u1EA5y {0:N0} \u1EE9ng d\u1EE5ng tr\u1EF1c tuy\u1EBFn cho \"{1}\" ({2:N0} \u0111\u00E3 ch\u1ECDn)";
+            dict_vi["showing_query_count"] = "Hi\u1EC3n th\u1ECB {0:N0} \u1EE9ng d\u1EE5ng ph\u00F9 h\u1EE3p cho \"{1}\"";
+            dict_vi["showing_query_count_selected"] = "Hi\u1EC3n th\u1ECB {0:N0} \u1EE9ng d\u1EE5ng ph\u00F9 h\u1EE3p cho \"{1}\" ({2:N0} \u0111\u00E3 ch\u1ECDn)";
+            dict_vi["searching_online"] = "\uD83D\uDD0D \u0110ang t\u00ECm ki\u1EBFm tr\u1EF1c tuy\u1EBFn trong kho Winget cho \"{0}\"...";
+            dict_vi["no_apps_found"] = "Kh\u00F4ng t\u00ECm th\u1EA5y g\u00F3i ph\u1EA7n m\u1EC1m n\u00E0o cho \"{0}\"";
+            dict_vi["no_apps_found_desc"] = "Kh\u00F4ng t\u00ECm th\u1EA5y trong c\u01A1 s\u1EDF d\u1EEF li\u1EC7u c\u1EE5c b\u1ED9 ho\u1EB7c Winget tr\u1EF1c tuy\u1EBFn. Vui l\u00F2ng ki\u1EC3m tra ch\u00EDnh t\u1EA3.";
+            dict_vi["type_to_search"] = "Vui l\u00F2ng nh\u1EADp \u00EDt nh\u1EA5t 2 k\u00FD t\u1EF1 \u0111\u1EC3 t\u00ECm ki\u1EBFm \u1EE9ng d\u1EE5ng.";
+            dict_vi["no_winget_title"] = "Kh\u00F4ng t\u00ECm th\u1EA5y \u1EE9ng d\u1EE5ng c\u1EE5c b\u1ED9 n\u00E0o cho \"{0}\"";
+            dict_vi["no_winget_desc"] = "Microsoft Winget kh\u00F4ng kh\u1EA3 d\u1EE5ng tr\u00EAn h\u1EC7 th\u1ED1ng n\u00E0y.";
+            dict_vi["bottom_tip"] = "M\u1EB9o: B\u1EA1n c\u00F3 th\u1EC3 t\u00F9y ch\u1EC9nh b\u1EA5t k\u1EF3 g\u00F3i n\u00E0o, th\u00EAm ho\u1EB7c x\u00F3a \u1EE9ng d\u1EE5ng.";
+            dict_vi["pack_selected_prefix"] = "G\u00F3i \u1EE9ng d\u1EE5ng \u0111\u00E3 ch\u1ECDn: {0}";
+            dict_vi["logs_title"] = "L\u1ECBch s\u1EED c\u00E0i \u0111\u1EB7t";
+            dict_vi["logs_subtitle"] = "Gi\u00E1m s\u00E1t tri\u1EC3n khai tr\u1EF1c ti\u1EBFp v\u00E0 nh\u1EADt k\u00FD ki\u1EC3m to\u00E1n.";
+            dict_vi["btn_summary_report"] = "B\u00E1o c\u00E1o t\u00F3m t\u1EAFt";
+            dict_vi["btn_open_logfile"] = "M\u1EDF t\u1EC7p nh\u1EADt k\u00FD";
+            dict_vi["btn_clear_screen"] = "X\u00F3a m\u00E0n h\u00ECnh";
+            _translations["vi"] = dict_vi;
+
+        }
+
+        public static string DetectSystemLanguage()
+        {
+            try
+            {
+                string sysTwoLetter = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLowerInvariant();
+                foreach (LanguageDefinition lang in SupportedLanguages)
+                {
+                    if (lang.Code.Equals(sysTwoLetter, StringComparison.OrdinalIgnoreCase))
+                        return lang.Code;
+                }
+            }
+            catch { }
+            return "en";
+        }
+
+        public static LanguageDefinition GetLanguage(string code)
+        {
+            if (string.IsNullOrEmpty(code)) code = CurrentLanguage;
+            if (code.Equals("auto", StringComparison.OrdinalIgnoreCase)) code = DetectSystemLanguage();
+            foreach (LanguageDefinition lang in SupportedLanguages)
+            {
+                if (lang.Code.Equals(code, StringComparison.OrdinalIgnoreCase)) return lang;
+            }
+            return SupportedLanguages[0];
+        }
+
+        public static string T(string key, params object[] args)
+        {
+            if (_translations == null) InitializeTranslations();
+            string lang = CurrentLanguage;
+            if (string.IsNullOrEmpty(lang) || lang.Equals("auto", StringComparison.OrdinalIgnoreCase))
+                lang = DetectSystemLanguage();
+
+            Dictionary<string, string> dict = null;
+            if (!_translations.TryGetValue(lang, out dict))
+                _translations.TryGetValue("en", out dict);
+
+            string val = null;
+            if (dict == null || !dict.TryGetValue(key, out val))
+            {
+                Dictionary<string, string> enDict = null;
+                if (_translations.TryGetValue("en", out enDict) && enDict.TryGetValue(key, out val))
+                {
+                    // found in fallback
+                }
+                else
+                {
+                    val = key;
+                }
+            }
+
+            if (args != null && args.Length > 0)
+            {
+                try
+                {
+                    return string.Format(val, args);
+                }
+                catch
+                {
+                    return val;
+                }
+            }
+            return val;
+        }
+
+        public static string GetLocalizedCategoryName(string catId, string defaultName)
+        {
+            if (string.IsNullOrEmpty(catId)) return defaultName;
+            string c = catId.ToLowerInvariant();
+            if (c == "all") return T("cat_all");
+            if (c == "browsers" || c.Contains("browser")) return T("cat_browsers");
+            if (c == "dev" || c.Contains("dev") || c.Contains("code")) return T("cat_dev");
+            if (c == "communication" || c.Contains("collab") || c.Contains("chat")) return T("cat_collab");
+            if (c == "office" || c.Contains("productiv")) return T("cat_office");
+            if (c == "utilities" || c.Contains("tool")) return T("cat_tools");
+            if (c == "media" || c.Contains("design") || c.Contains("creative")) return T("cat_media");
+            if (c == "security" || c.Contains("secur") || c.Contains("privac")) return T("cat_sec");
+            if (c == "cloud" || c.Contains("storage") || c.Contains("drive")) return T("cat_cloud");
+            if (c == "gaming" || c.Contains("game")) return T("cat_games");
+            return defaultName;
+        }
+
+        public static bool IsReadyBadgeText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return false;
+            string t = text.Trim();
+            if (t.Equals("Ready", StringComparison.OrdinalIgnoreCase)) return true;
+            if (_translations != null)
+            {
+                foreach (KeyValuePair<string, Dictionary<string, string>> pair in _translations)
+                {
+                    string val;
+                    if (pair.Value != null && pair.Value.TryGetValue("badge_ready", out val))
+                    {
+                        if (t.Equals(val.Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static bool IsKnownPlaceholder(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return true;
+            string t = text.Trim();
+            if (t.Equals("Find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
+                t.Equals("Search applications...", StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (_translations != null)
+            {
+                foreach (KeyValuePair<string, Dictionary<string, string>> pair in _translations)
+                {
+                    string val;
+                    if (pair.Value != null && pair.Value.TryGetValue("search_placeholder", out val))
+                    {
+                        if (t.Equals(val.Trim(), StringComparison.OrdinalIgnoreCase)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
     public class SettingsModel
     {
         public string cloudConfigUrl { get; set; }
@@ -149,6 +1618,7 @@ namespace FleetForge
         public bool accept_agreements { get; set; }
         public bool tutorialCompleted { get; set; }
         public string displayScale { get; set; }
+        public string language { get; set; }
 
         public SettingsModel()
         {
@@ -161,6 +1631,7 @@ namespace FleetForge
             accept_agreements = true;
             tutorialCompleted = false;
             displayScale = "Auto";
+            language = "auto";
         }
     }
 
@@ -2781,6 +4252,10 @@ namespace FleetForge
         private Button btnToggleTheme;
         private TextBlock txtToggleThemeIcon;
         private Button btnHelpMenu;
+        private Button btnLanguageSelector;
+        private TextBlock txtLanguageFlag;
+        private TextBlock txtLanguageName;
+        private string activeLanguageCode = "auto";
         private Image imgBrandLogo;
 
         // Modal 1: Check for Updates
@@ -3235,6 +4710,148 @@ namespace FleetForge
             return null;
         }
 
+        
+        // =========================================================================
+        // MULTILANGUAGE PLATFORM METHODS
+        // =========================================================================
+        private bool IsSearchPlaceholder(string text)
+        {
+            return Localization.IsKnownPlaceholder(text);
+        }
+
+        private void SetApplicationLanguage(string code)
+        {
+            activeLanguageCode = code;
+            if (settings != null)
+            {
+                settings.language = code;
+                SaveSettings();
+            }
+
+            if (code.Equals("auto", StringComparison.OrdinalIgnoreCase))
+            {
+                Localization.CurrentLanguage = Localization.DetectSystemLanguage();
+            }
+            else
+            {
+                Localization.CurrentLanguage = code;
+            }
+
+            UpdateLanguageButtonDisplay();
+            ApplyLanguageLive();
+        }
+
+        private void UpdateLanguageButtonDisplay()
+        {
+            if (btnLanguageSelector == null) return;
+            LanguageDefinition current = Localization.GetLanguage(Localization.CurrentLanguage);
+            if (txtLanguageFlag != null)
+            {
+                txtLanguageFlag.Text = current != null ? current.Flag : "\uD83C\uDF10";
+            }
+            if (txtLanguageName != null)
+            {
+                txtLanguageName.Text = current != null ? current.NativeName : "English";
+            }
+            btnLanguageSelector.ToolTip = string.Format("Language: {0} ({1}) - Click to change", current != null ? current.NativeName : "English", current != null ? current.Name : "English");
+        }
+
+        private void RebuildCategoryChips()
+        {
+            if (categoryChipsPanel == null || config == null || config.categories == null) return;
+            categoryChipsPanel.Children.Clear();
+
+            string allTitle = Localization.GetLocalizedCategoryName("all", "All");
+            int totalApps = (config.apps != null) ? config.apps.Count : 0;
+            Button allTab = CreateCategoryTabButton("all", "\uD83C\uDF10", allTitle, totalApps, activeCategory == "all" || string.IsNullOrEmpty(activeCategory));
+            categoryChipsPanel.Children.Add(allTab);
+
+            foreach (CategoryModel cat in config.categories)
+            {
+                CategoryModel curCat = cat;
+                int count = (config.apps != null) ? config.apps.FindAll(delegate (AppModel a) { return MatchesCategory(a, curCat.id); }).Count : 0;
+                string locName = Localization.GetLocalizedCategoryName(curCat.id, curCat.name);
+                Button cTab = CreateCategoryTabButton(curCat.id, GetSafeCategoryIcon(curCat), locName, count, activeCategory == curCat.id);
+                categoryChipsPanel.Children.Add(cTab);
+            }
+        }
+
+        private void ApplyLanguageLive()
+        {
+            // 1. Navigation items
+            if (navTxtSetup != null) navTxtSetup.Text = Localization.T("nav_quick_setup");
+            if (navTxtCatalog != null) navTxtCatalog.Text = Localization.T("nav_all_apps");
+            if (navTxtCloud != null) navTxtCloud.Text = Localization.T("nav_cloud_sync");
+            if (navTxtLogs != null) navTxtLogs.Text = Localization.T("nav_history");
+
+            // 2. Quick Setup Hero & Wizard Steps
+            if (txtHeroMainTitle != null) txtHeroMainTitle.Text = Localization.T("quick_setup_title");
+            if (txtHeroMainSubtitle != null) txtHeroMainSubtitle.Text = Localization.T("quick_setup_subtitle");
+            if (txtWizardStep1Title != null) txtWizardStep1Title.Text = Localization.T("step1_title");
+            if (txtWizardStep1Desc != null) txtWizardStep1Desc.Text = Localization.T("step1_desc");
+            if (txtWizardStep2Title != null) txtWizardStep2Title.Text = Localization.T("step2_title");
+            if (txtWizardStep2Desc != null) txtWizardStep2Desc.Text = Localization.T("step2_desc");
+            if (txtWizardStep3Title != null) txtWizardStep3Title.Text = Localization.T("step3_title");
+            if (txtWizardStep3Desc != null) txtWizardStep3Desc.Text = Localization.T("step3_desc");
+            if (txtTargetRoleTitle != null) txtTargetRoleTitle.Text = Localization.T("available_packs_title");
+            if (txtTargetRoleSubtitle != null) txtTargetRoleSubtitle.Text = Localization.T("available_packs_subtitle");
+
+            // 3. Rebuild role cards with localized badges and counts
+            BuildRoleCards();
+
+            // 4. Catalog Page Hero & Header
+            if (txtCatalogBigHeading != null) txtCatalogBigHeading.Text = Localization.T("catalog_title");
+            if (txtCatalogBigSubtitle != null) txtCatalogBigSubtitle.Text = Localization.T("catalog_subtitle");
+            if (chkSelectAllCatalog != null) chkSelectAllCatalog.Content = Localization.T("select_all");
+            if (btnCatalogSort != null) btnCatalogSort.Content = Localization.T("sort_button");
+
+            // 5. Search box placeholder
+            if (txtSearch != null && IsSearchPlaceholder(txtSearch.Text))
+            {
+                txtSearch.Text = Localization.T("search_placeholder");
+                txtSearch.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
+                if (btnClearSearch != null) btnClearSearch.Visibility = Visibility.Collapsed;
+            }
+
+            // 6. Category chips
+            RebuildCategoryChips();
+
+            // 7. Help button
+            if (btnHelpMenu != null) btnHelpMenu.Content = Localization.T("help_button");
+
+            // 8. Bottom bar buttons & tips
+            if (btnImportPack != null) btnImportPack.Content = Localization.T("btn_import_pack");
+            if (btnCreateNewGroup != null) btnCreateNewGroup.Content = Localization.T("btn_create_pack");
+            if (btnStop != null) btnStop.Content = Localization.T("btn_stop");
+            if (txtSetupTip != null) txtSetupTip.Text = Localization.T("bottom_tip");
+
+            // 9. Logs Page
+            if (txtLogsBigHeading != null) txtLogsBigHeading.Text = Localization.T("logs_title");
+            if (txtLogsBigSubtitle != null) txtLogsBigSubtitle.Text = Localization.T("logs_subtitle");
+            if (btnViewReport != null) btnViewReport.Content = Localization.T("btn_summary_report");
+            if (btnOpenLogFile != null) btnOpenLogFile.Content = Localization.T("btn_open_logfile");
+            if (btnClearLogConsole != null) btnClearLogConsole.Content = Localization.T("btn_clear_screen");
+
+            // 10. Update catalog row badges
+            if (appRows != null)
+            {
+                foreach (AppRowView row in appRows)
+                {
+                    if (row != null && row.StatusText != null)
+                    {
+                        if (Localization.IsReadyBadgeText(row.StatusText.Text))
+                        {
+                            row.StatusText.Text = Localization.T("badge_ready");
+                        }
+                    }
+                }
+            }
+
+            // 11. Counters and summary stats
+            UpdateCount();
+            UpdateHeaderCount();
+        }
+
         private void InitializeWindow()
         {
             this.Title = "FleetForge — Zero-Touch Machine Setup & Enterprise Software Deployment";
@@ -3486,8 +5103,16 @@ namespace FleetForge
                     </Grid>
                 </Border>
 
-                <!-- Actions on Right (Clean Windows 11 Help Menu button) -->
+                <!-- Actions on Right (Language Selector & Help Menu button) -->
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                    <Button x:Name=""BtnLanguageSelector"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
+                            FontWeight=""SemiBold"" FontSize=""12"" Padding=""10,6"" Margin=""0,0,8,0"" Cursor=""Hand"" ToolTip=""Change Language / &#x092D;&#x093E;&#x0937;&#x093E; &#x092C;&#x0926;&#x0932;&#x0947;&#x0902;"" VerticalAlignment=""Center"">
+                        <StackPanel Orientation=""Horizontal"" VerticalAlignment=""Center"">
+                            <TextBlock x:Name=""TxtLanguageFlag"" Text=""&#x1F310;"" FontSize=""13"" Margin=""0,0,5,0"" VerticalAlignment=""Center""/>
+                            <TextBlock x:Name=""TxtLanguageName"" Text=""English"" FontSize=""12"" FontWeight=""SemiBold"" VerticalAlignment=""Center""/>
+                            <TextBlock Text="" &#x25BE;"" FontSize=""10"" Foreground=""#64748B"" Margin=""2,0,0,0"" VerticalAlignment=""Center""/>
+                        </StackPanel>
+                    </Button>
                     <Button x:Name=""BtnHelpMenu"" Content=""Help ?"" Background=""#FFFFFF"" Foreground=""#0F172A"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
                             FontWeight=""SemiBold"" FontSize=""12"" Padding=""16,6"" Cursor=""Hand"" ToolTip=""How to Use, Settings, Updates &amp; About"" VerticalAlignment=""Center""/>
                 </StackPanel>
@@ -4990,6 +6615,81 @@ namespace FleetForge
                 };
             }
 
+                        btnLanguageSelector = (Button)root.FindName("BtnLanguageSelector");
+            txtLanguageFlag = (TextBlock)root.FindName("TxtLanguageFlag");
+            txtLanguageName = (TextBlock)root.FindName("TxtLanguageName");
+
+            Localization.InitializeTranslations();
+            activeLanguageCode = (settings != null && !string.IsNullOrEmpty(settings.language)) ? settings.language : "auto";
+            if (activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
+            {
+                Localization.CurrentLanguage = Localization.DetectSystemLanguage();
+            }
+            else
+            {
+                Localization.CurrentLanguage = activeLanguageCode;
+            }
+
+            if (btnLanguageSelector != null)
+            {
+                btnLanguageSelector.Click += delegate
+                {
+                    ContextMenu menu = new ContextMenu();
+                    menu.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E222A");
+                    menu.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#333C4D");
+                    menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+                    menu.FontSize = 12;
+
+                    // Item 0: Auto (System Default)
+                    MenuItem itmAuto = new MenuItem();
+                    string detected = Localization.DetectSystemLanguage();
+                    LanguageDefinition detectedLang = Localization.GetLanguage(detected);
+                    string autoLabel = string.Format("\uD83C\uDF10  {0} ({1} {2})", Localization.T("lang_auto"), detectedLang != null ? detectedLang.Flag : "", detectedLang != null ? detectedLang.NativeName : "");
+                    if (activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase))
+                    {
+                        autoLabel = "\u2713  " + autoLabel;
+                        itmAuto.FontWeight = FontWeights.Bold;
+                    }
+                    else
+                    {
+                        autoLabel = "    " + autoLabel;
+                    }
+                    itmAuto.Header = autoLabel;
+                    itmAuto.Click += delegate
+                    {
+                        SetApplicationLanguage("auto");
+                    };
+                    menu.Items.Add(itmAuto);
+                    menu.Items.Add(new Separator());
+
+                    // All 16 Supported Languages
+                    foreach (LanguageDefinition langDef in Localization.SupportedLanguages)
+                    {
+                        LanguageDefinition curL = langDef;
+                        MenuItem itmLang = new MenuItem();
+                        bool isCurrent = !activeLanguageCode.Equals("auto", StringComparison.OrdinalIgnoreCase) &&
+                                         activeLanguageCode.Equals(curL.Code, StringComparison.OrdinalIgnoreCase);
+
+                        string prefix = isCurrent ? "\u2713  " : "    ";
+                        string label = string.Format("{0}{1}  {2} ({3})", prefix, curL.Flag, curL.NativeName, curL.Name);
+                        itmLang.Header = label;
+                        if (isCurrent) itmLang.FontWeight = FontWeights.Bold;
+
+                        itmLang.Click += delegate
+                        {
+                            SetApplicationLanguage(curL.Code);
+                        };
+                        menu.Items.Add(itmLang);
+                    }
+
+                    menu.PlacementTarget = btnLanguageSelector;
+                    menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                    menu.IsOpen = true;
+                };
+            }
+
+            UpdateLanguageButtonDisplay();
+
             btnHelpMenu = (Button)root.FindName("BtnHelpMenu");
             if (btnHelpMenu != null)
             {
@@ -5001,10 +6701,10 @@ namespace FleetForge
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
                     menu.FontSize = 12.5;
 
-                    MenuItem itmTutorial = new MenuItem() { Header = "How to Use (Interactive Guide)...", FontWeight = FontWeights.SemiBold };
-                    MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? "Check for Updates (New Version Available!)..." : "Check for Updates..." };
-                    MenuItem itmSettings = new MenuItem() { Header = "Settings..." };
-                    MenuItem itmAbout = new MenuItem() { Header = "About FleetForge..." };
+                    MenuItem itmTutorial = new MenuItem() { Header = Localization.T("menu_guide"), FontWeight = FontWeights.SemiBold };
+                    MenuItem itmUpdates = new MenuItem() { Header = isUpdateAvailable ? (Localization.T("menu_updates") + " (New Version Available!)...") : Localization.T("menu_updates") };
+                    MenuItem itmSettings = new MenuItem() { Header = Localization.T("menu_settings") };
+                    MenuItem itmAbout = new MenuItem() { Header = Localization.T("menu_about") };
 
                     itmTutorial.Click += (ms, me) => ShowTutorialModal();
                     itmUpdates.Click += (ms, me) => ShowUpdatesModal();
@@ -5530,11 +7230,11 @@ namespace FleetForge
                     menu.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
                     menu.FontSize = 12;
 
-                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "✓  " : "    ") + "⭐ Selected & Recommended First" };
-                    MenuItem itmAlphaAsc = new MenuItem() { Header = (catalogSortMode == "alpha_asc" ? "✓  " : "    ") + "🔤 Name (A to Z)" };
-                    MenuItem itmAlphaDesc = new MenuItem() { Header = (catalogSortMode == "alpha_desc" ? "✓  " : "    ") + "🔤 Name (Z to A)" };
-                    MenuItem itmPopular = new MenuItem() { Header = (catalogSortMode == "popular" ? "✓  " : "    ") + "🔥 Most Popular" };
-                    MenuItem itmCategory = new MenuItem() { Header = (catalogSortMode == "category" ? "✓  " : "    ") + "🏷️ By Category" };
+                    MenuItem itmSelectedTop = new MenuItem() { Header = (catalogSortMode == "selected_top" ? "\u2713  " : "    ") + "\u2B50 " + Localization.T("sort_selected_top") };
+                    MenuItem itmAlphaAsc = new MenuItem() { Header = (catalogSortMode == "alpha_asc" ? "\u2713  " : "    ") + "\U0001F524 " + Localization.T("sort_name_az") };
+                    MenuItem itmAlphaDesc = new MenuItem() { Header = (catalogSortMode == "alpha_desc" ? "\u2713  " : "    ") + "\U0001F524 " + Localization.T("sort_name_za") };
+                    MenuItem itmPopular = new MenuItem() { Header = (catalogSortMode == "popular" ? "\u2713  " : "    ") + "\U0001F525 " + Localization.T("sort_selected_top") };
+                    MenuItem itmCategory = new MenuItem() { Header = (catalogSortMode == "category" ? "\u2713  " : "    ") + "\U0001F3F7\uFE0F " + Localization.T("sort_category") };
 
                     itmSelectedTop.Click += delegate { SetCatalogSort("selected_top", "Selected & Recommended"); };
                     itmAlphaAsc.Click += delegate { SetCatalogSort("alpha_asc", "A → Z"); };
@@ -5580,7 +7280,7 @@ namespace FleetForge
                     borderHeaderSearch.BorderBrush = currentThemeIsLight ? HexBrush("#0067C0") : HexBrush("#38BDF8");
                     borderHeaderSearch.BorderThickness = new Thickness(1.5);
                 }
-                if (txtSearch.Text == "Find an app, setting or pack..." || txtSearch.Text == "Search applications...")
+                if (IsSearchPlaceholder(txtSearch.Text))
                 {
                     txtSearch.Text = "";
                     txtSearch.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
@@ -5595,7 +7295,7 @@ namespace FleetForge
                 }
                 if (string.IsNullOrWhiteSpace(txtSearch.Text))
                 {
-                    txtSearch.Text = "Find an app, setting or pack...";
+                    txtSearch.Text = Localization.T("search_placeholder");
                     txtSearch.Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8");
                 }
             };
@@ -5628,7 +7328,7 @@ namespace FleetForge
             txtSearch.TextChanged += delegate
             {
                 string t = txtSearch.Text;
-                bool hasText = !string.IsNullOrEmpty(t) && t != "Find an app, setting or pack..." && t != "Search applications...";
+                bool hasText = !string.IsNullOrEmpty(t) && !IsSearchPlaceholder(t);
                 if (hasText && currentView != "catalog")
                 {
                     SwitchView("catalog");
@@ -5640,9 +7340,12 @@ namespace FleetForge
                 if (searchDebounceTimer != null)
                 {
                     searchDebounceTimer.Stop();
-                    searchDebounceTimer.Start();
+                    if (hasText)
+                    {
+                        searchDebounceTimer.Start();
+                    }
                 }
-                else
+                else if (hasText)
                 {
                     ApplyFilters();
                 }
@@ -7279,6 +8982,12 @@ namespace FleetForge
                 btnHelpMenu.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                 btnHelpMenu.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
             }
+            if (btnLanguageSelector != null)
+            {
+                btnLanguageSelector.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
+                btnLanguageSelector.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
+                btnLanguageSelector.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
+            }
 
             // Updates Modal
             if (borderUpdatesCard != null)
@@ -7617,6 +9326,12 @@ namespace FleetForge
                 btnHelpMenu.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
                 btnHelpMenu.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#404040");
                 btnHelpMenu.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
+            }
+            if (btnLanguageSelector != null)
+            {
+                btnLanguageSelector.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2B2B2B");
+                btnLanguageSelector.BorderBrush = isLight ? HexBrush("#D1D5DB") : HexBrush("#404040");
+                btnLanguageSelector.Foreground = isLight ? HexBrush("#0F172A") : HexBrush("#FFFFFF");
             }
 
             BuildEmojiChips();
@@ -9631,7 +11346,7 @@ namespace FleetForge
                 };
                 TextBlock cTxt = new TextBlock()
                 {
-                    Text = isRecGroup ? (currentGrp.apps.Count + " partner apps") : (currentGrp.apps.Count + " apps"),
+                    Text = isRecGroup ? Localization.T("partner_apps_count", currentGrp.apps.Count) : Localization.T("apps_count", currentGrp.apps.Count),
                     FontSize = 11,
                     FontWeight = FontWeights.SemiBold,
                     Foreground = currentThemeIsLight ? HexBrush("#0284C7") : HexBrush("#38BDF8")
@@ -9648,7 +11363,7 @@ namespace FleetForge
 
                 Button selectBtn = new Button()
                 {
-                    Content = "Select Pack",
+                    Content = Localization.T("btn_select_pack"),
                     Background = isSelected ? HexBrush("#0066FF") : (currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547")),
                     Foreground = isSelected ? HexBrush("#FFFFFF") : (currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC")),
                     FontWeight = isSelected ? FontWeights.Bold : FontWeights.SemiBold,
@@ -9666,7 +11381,7 @@ namespace FleetForge
 
                 Button editBtn = new Button()
                 {
-                    Content = "Customize Apps",
+                    Content = Localization.T("btn_customize_pack"),
                     Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547"),
                     Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
                     FontWeight = FontWeights.SemiBold,
@@ -9696,7 +11411,7 @@ namespace FleetForge
 
                     exportBtn = new Button()
                     {
-                        Content = "Export Pack",
+                        Content = Localization.T("btn_export_pack"),
                         Background = Brushes.Transparent,
                         Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"),
                         FontWeight = FontWeights.SemiBold,
@@ -9771,7 +11486,7 @@ namespace FleetForge
                     rc.Card.BorderBrush = HexBrush("#0066FF");
                     rc.Card.BorderThickness = new Thickness(2);
                     rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
-                    rc.SelectButton.Content = "Select Pack";
+                    rc.SelectButton.Content = Localization.T("btn_select_pack");
                     rc.SelectButton.Background = HexBrush("#0066FF");
                     rc.SelectButton.Foreground = HexBrush("#FFFFFF");
                     rc.SelectButton.FontWeight = FontWeights.Bold;
@@ -9782,7 +11497,7 @@ namespace FleetForge
                     rc.Card.BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155");
                     rc.Card.BorderThickness = new Thickness(1);
                     rc.Card.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#1E293B");
-                    rc.SelectButton.Content = "Select Pack";
+                    rc.SelectButton.Content = Localization.T("btn_select_pack");
                     rc.SelectButton.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
                     rc.SelectButton.Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC");
                     rc.SelectButton.FontWeight = FontWeights.SemiBold;
@@ -11228,18 +12943,7 @@ namespace FleetForge
         {
             appsContainer.Children.Clear();
             appRows.Clear();
-            categoryChipsPanel.Children.Clear();
-
-            Button allTab = CreateCategoryTabButton("all", "🌐", "All", config.apps.Count, activeCategory == "all" || string.IsNullOrEmpty(activeCategory));
-            categoryChipsPanel.Children.Add(allTab);
-
-            foreach (CategoryModel cat in config.categories)
-            {
-                CategoryModel curCat = cat;
-                int count = config.apps.FindAll(delegate (AppModel a) { return MatchesCategory(a, curCat.id); }).Count;
-                Button cTab = CreateCategoryTabButton(curCat.id, GetSafeCategoryIcon(curCat), curCat.name, count, activeCategory == curCat.id);
-                categoryChipsPanel.Children.Add(cTab);
-            }
+            RebuildCategoryChips();
 
             localAppsPanel = new StackPanel();
             localCardsContainer = new StackPanel();
@@ -11728,7 +13432,7 @@ namespace FleetForge
 
             TextBlock statusText = new TextBlock()
             {
-                Text = "Ready",
+                Text = Localization.T("badge_ready"),
                 FontSize = 11.5,
                 FontWeight = FontWeights.SemiBold,
                 Foreground = HexBrush("#16A34A"),
@@ -13291,8 +14995,7 @@ namespace FleetForge
             if (activeCategory == "winget_online") return;
 
             string rawQuery = txtSearch != null ? txtSearch.Text.Trim() : "";
-            if (rawQuery.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
-                rawQuery.Equals("search applications...", StringComparison.OrdinalIgnoreCase))
+            if (IsSearchPlaceholder(rawQuery))
             {
                 rawQuery = "";
             }
@@ -13825,8 +15528,7 @@ namespace FleetForge
             {
                 int selectedInFilter = GetSelectedInFilterCount();
                 string rawQ = txtSearch != null ? txtSearch.Text.Trim() : "";
-                if (rawQ.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
-                    rawQ.Equals("search applications...", StringComparison.OrdinalIgnoreCase))
+                if (IsSearchPlaceholder(rawQ))
                 {
                     rawQ = "";
                 }
@@ -13846,36 +15548,36 @@ namespace FleetForge
                     if (onlineCount > 0 && localCount > 0)
                     {
                         if (selectedInFilter > 0)
-                            txtCatalogListHeaderCount.Text = string.Format("Showing {0} local + {1} online apps for \"{2}\" ({3:N0} selected)", localCount, onlineCount, rawQ, selectedInFilter);
+                            txtCatalogListHeaderCount.Text = Localization.T("showing_local_online_selected", localCount, onlineCount, rawQ, selectedInFilter);
                         else
-                            txtCatalogListHeaderCount.Text = string.Format("Showing {0} local + {1} online apps for \"{2}\"", localCount, onlineCount, rawQ);
+                            txtCatalogListHeaderCount.Text = Localization.T("showing_local_online", localCount, onlineCount, rawQ);
                         return;
                     }
                     else if (onlineCount > 0 && localCount == 0)
                     {
                         if (selectedInFilter > 0)
-                            txtCatalogListHeaderCount.Text = string.Format("Found {0:N0} online apps for \"{1}\" ({2:N0} selected)", onlineCount, rawQ, selectedInFilter);
+                            txtCatalogListHeaderCount.Text = Localization.T("found_online_count_selected", onlineCount, rawQ, selectedInFilter);
                         else
-                            txtCatalogListHeaderCount.Text = string.Format("Found {0:N0} online apps for \"{1}\"", onlineCount, rawQ);
+                            txtCatalogListHeaderCount.Text = Localization.T("found_online_count", onlineCount, rawQ);
                         return;
                     }
                     else
                     {
                         if (selectedInFilter > 0)
-                            txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} apps for \"{1}\" ({2:N0} selected)", activeFilteredApps.Count, rawQ, selectedInFilter);
+                            txtCatalogListHeaderCount.Text = Localization.T("showing_query_count_selected", activeFilteredApps.Count, rawQ, selectedInFilter);
                         else
-                            txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} apps for \"{1}\"", activeFilteredApps.Count, rawQ);
+                            txtCatalogListHeaderCount.Text = Localization.T("showing_query_count", activeFilteredApps.Count, rawQ);
                         return;
                     }
                 }
 
                 if (selectedInFilter > 0)
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps ({2:N0} selected)", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
+                    txtCatalogListHeaderCount.Text = Localization.T("showing_count_selected", currentRenderedCount, activeFilteredApps.Count, selectedInFilter);
                 }
                 else
                 {
-                    txtCatalogListHeaderCount.Text = string.Format("Showing {0:N0} of {1:N0} apps", currentRenderedCount, activeFilteredApps.Count);
+                    txtCatalogListHeaderCount.Text = Localization.T("showing_count", currentRenderedCount, activeFilteredApps.Count);
                 }
             }
         }
@@ -13894,11 +15596,11 @@ namespace FleetForge
                 {
                     if (selectedAppIds.Count > 0)
                     {
-                        btnInstall.Content = string.Format("\uD83D\uDCE5  Install Selected Apps ({0})", selectedAppIds.Count);
+                        btnInstall.Content = Localization.T("btn_install", selectedAppIds.Count);
                     }
                     else
                     {
-                        btnInstall.Content = "\uD83D\uDCE5  Install Selected Apps";
+                        btnInstall.Content = Localization.T("btn_install_no_count");
                     }
                     btnInstall.Background = HexBrush("#0066FF");
                     btnInstall.Foreground = HexBrush("#FFFFFF");
@@ -13908,11 +15610,11 @@ namespace FleetForge
             {
                 if (selectedAppIds.Count > 0)
                 {
-                    btnHeroInstall.Content = string.Format("Install Selected Apps ({0})", selectedAppIds.Count);
+                    btnHeroInstall.Content = Localization.T("btn_install", selectedAppIds.Count);
                 }
                 else
                 {
-                    btnHeroInstall.Content = "Install Selected Apps";
+                    btnHeroInstall.Content = Localization.T("btn_install_no_count");
                 }
                 btnHeroInstall.Background = HexBrush("#0066FF");
                 btnHeroInstall.Foreground = HexBrush("#FFFFFF");
