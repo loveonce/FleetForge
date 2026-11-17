@@ -7,6 +7,8 @@ All notable changes to the FleetForge enterprise workstation deployment suite ar
 ## [2.7.0] — 2026-11-17
 
 ### Added & Certified
+- **Unified Single Search with Automatic Online Fallback:** Redesigned the search architecture into a single, common, universal search box in All Applications. Queries the local 16,349 package database first; if an application is not available locally, FleetForge automatically queries the Microsoft Winget cloud repository in the background and renders the results directly into the **same table** with seamless checkbox selection, package ID inspection, and one-click installation.
+- **Eliminated Redundant Action Steps:** Completely removed the separate "Search Online Apps" bottom button and prompt banner, eliminating modal popups and multi-step workflows in favor of a fast, unified inline search experience.
 - **Enterprise Quality Assurance & Sandbox Test Suite:** Comprehensive automated QA verification suite across 10 distinct phases (Installation, Functional, UI Automation, .NET Deep Engine Diagnostics, JavaScript Tools, Filesystem, Network Offline, Security, Performance, and Crash Recovery) executing 64 automated test cases with a 100% pass rate in Windows Sandbox.
 - **Automatic Display Resolution & UI Scaling Engine:** Dynamically measures the active display resolution, DPI scaling factor, and available Windows WorkArea bounds. Automatically scales down to 0.80x on compact screens (1366x768, 1280x720, 1024x600) to ensure zero control clipping, zero text truncation, and full accessibility of bottom action buttons.
 - **User Display Zoom Preferences:** Added dedicated display scaling modes in Settings (`Auto`, `100%`, `90%`, `80%`) with live active scale feedback.

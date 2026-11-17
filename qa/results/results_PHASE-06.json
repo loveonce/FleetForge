@@ -3,7 +3,7 @@
         "id":  "FUNC-001",
         "name":  "Application Cold Launch \u0026 SplashScreen",
         "error":  "",
-        "durationMs":  2349,
+        "durationMs":  2323,
         "evidence":  "FleetForge process launched and initialized",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -12,7 +12,7 @@
         "id":  "FUNC-002",
         "name":  "Catalog Database (16,349 Apps) Integrity \u0026 Loading",
         "error":  "",
-        "durationMs":  259,
+        "durationMs":  273,
         "evidence":  "Loaded 16350 applications successfully",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -21,7 +21,7 @@
         "id":  "FUNC-003",
         "name":  "Role Presets Selection \u0026 App Count Synchronization",
         "error":  "",
-        "durationMs":  357,
+        "durationMs":  461,
         "evidence":  "Found 5 role preset groups",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -30,7 +30,7 @@
         "id":  "FUNC-004",
         "name":  "Catalog Search \u0026 Real-time Filter Debounce",
         "error":  "",
-        "durationMs":  113,
+        "durationMs":  109,
         "evidence":  "Found 19 results for \u0027chrome\u0027",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -39,7 +39,7 @@
         "id":  "FUNC-005",
         "name":  "Category Pill Filtering \u0026 Master Checkbox",
         "error":  "",
-        "durationMs":  31,
+        "durationMs":  32,
         "evidence":  "Found 9 distinct categories",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -66,7 +66,7 @@
         "id":  "FUNC-008",
         "name":  "Pack Editor Modal (Add/Remove Software \u0026 Icon Cycle)",
         "error":  "",
-        "durationMs":  7,
+        "durationMs":  9,
         "evidence":  "Created group with 2 apps",
         "phase":  "PHASE-06",
         "status":  "PASS"
@@ -84,7 +84,7 @@
         "id":  "FUNC-010",
         "name":  "Export \u0026 Import Custom Pack JSON Workflow",
         "error":  "",
-        "durationMs":  12,
+        "durationMs":  13,
         "evidence":  "Pack exported and re-imported successfully",
         "phase":  "PHASE-06",
         "status":  "PASS"

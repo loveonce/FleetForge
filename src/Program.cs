@@ -2647,8 +2647,6 @@ namespace FleetForge
         private StackPanel appsContainer;
         private StackPanel localAppsPanel;
         private StackPanel wingetOnlinePanel;
-        private Border bannerSearchWingetPrompt;
-        private TextBlock txtSearchWingetPromptText;
         private TextBox txtOnlineSearchInput;
         private TextBlock txtOnlineStatus;
         private StackPanel onlineResultsPanel;
@@ -2688,11 +2686,16 @@ namespace FleetForge
         private TextBlock txtStatus;
         private TextBlock txtCount;
         private ProgressBar progressBar;
-        private Button btnSearchWingetOnlineBottom;
         private Button btnInstall;
         private Button btnStop;
         private Process currentProc;
         private volatile bool isCancelled;
+
+        // Auto Online Winget Search State
+        private int currentOnlineSearchToken = 0;
+        private Dictionary<string, AppModel> knownOnlineApps = new Dictionary<string, AppModel>(StringComparer.OrdinalIgnoreCase);
+        private bool isOnlineSearching = false;
+        private bool isShowingOnlineResults = false;
 
         // Group Editor Modal References
         private Grid groupModalOverlay;
@@ -3761,10 +3764,6 @@ namespace FleetForge
                                        FontSize=""11.5"" Foreground=""#1D4ED8"" VerticalAlignment=""Center""/>
                         </StackPanel>
                     </Border>
-                    <Button x:Name=""BtnSearchWingetOnlineBottom"" Content=""🔍  Search Online Apps""
-                            Background=""#FFFFFF"" Foreground=""#0066FF"" BorderBrush=""#CBD5E1"" BorderThickness=""1""
-                            FontWeight=""SemiBold"" Padding=""16,8"" Cursor=""Hand"" FontSize=""12""
-                            Visibility=""Collapsed""/>
                 </StackPanel>
 
                 <StackPanel Grid.Column=""1"" Orientation=""Horizontal"" VerticalAlignment=""Center"" Margin=""16,0,16,0"">
@@ -4893,7 +4892,6 @@ namespace FleetForge
             txtStatus = (TextBlock)root.FindName("TxtStatus");
             txtCount = (TextBlock)root.FindName("TxtCount");
             progressBar = (ProgressBar)root.FindName("ProgressBar");
-            btnSearchWingetOnlineBottom = (Button)root.FindName("BtnSearchWingetOnlineBottom");
             btnInstall = (Button)root.FindName("BtnInstall");
             btnStop = (Button)root.FindName("BtnStop");
 
@@ -5685,17 +5683,6 @@ namespace FleetForge
                 }
                 Process.Start("notepad.exe", configPath);
             };
-
-            // Bottom Search Winget Online Button -> Open Modal Popup
-            if (btnSearchWingetOnlineBottom != null)
-            {
-                btnSearchWingetOnlineBottom.Click += delegate
-                {
-                    string q = txtSearch != null ? txtSearch.Text.Trim() : "";
-                    if (q == "Search applications..." || q == "find an app, setting or pack...") q = "";
-                    OpenOnlineSearchModal(q);
-                };
-            }
 
             // Online Search Modal Events
             if (modalOnlineSearchOverlay != null)
@@ -7142,13 +7129,6 @@ namespace FleetForge
             if (txtStatus != null) txtStatus.Foreground = isLight ? HexBrush("#5D5D5D") : HexBrush("#A0A0A0");
             if (txtCount != null) txtCount.Foreground = isLight ? HexBrush("#0067C0") : HexBrush("#4CC2FF");
             if (progressBar != null) progressBar.Background = isLight ? HexBrush("#E5E5E5") : HexBrush("#262626");
-            if (btnSearchWingetOnlineBottom != null)
-            {
-                btnSearchWingetOnlineBottom.Background = isLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
-                btnSearchWingetOnlineBottom.BorderBrush = isLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
-            }
             if (btnInstall != null)
             {
                 btnInstall.Background = HexBrush("#0066FF");
@@ -7851,11 +7831,6 @@ namespace FleetForge
                 }
             }
 
-            if (btnSearchWingetOnlineBottom != null)
-            {
-                btnSearchWingetOnlineBottom.Visibility = (viewName == "catalog") ? Visibility.Visible : Visibility.Collapsed;
-            }
-
             UpdateBottomBarVisibility();
         }
 
@@ -7874,10 +7849,6 @@ namespace FleetForge
             if (btnCreateNewGroup != null)
             {
                 btnCreateNewGroup.Visibility = isSetupView ? Visibility.Visible : Visibility.Collapsed;
-            }
-            if (btnSearchWingetOnlineBottom != null)
-            {
-                btnSearchWingetOnlineBottom.Visibility = isCatalogView ? Visibility.Visible : Visibility.Collapsed;
             }
 
             if (stackBottomSelectedPackInfo != null)
@@ -10561,19 +10532,22 @@ namespace FleetForge
             };
             titleStack.Children.Add(txtName);
 
+            bool isOnlineApp = (curApp.category != null && (curApp.category.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || curApp.category.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0));
             Border badge = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
+                Background = isOnlineApp ? (currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#3B0764")) : (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B")),
+                BorderBrush = isOnlineApp ? (currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6B21A8")) : null,
+                BorderThickness = isOnlineApp ? new Thickness(1) : new Thickness(0),
                 CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(8, 0, 0, 0),
                 Padding = new Thickness(7, 2, 7, 2)
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = (curApp.category ?? "UTILITIES").ToUpperInvariant(),
+                Text = isOnlineApp ? "🌐 WINGET CLOUD" : (curApp.category ?? "UTILITIES").ToUpperInvariant(),
                 FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = HexBrush("#0066FF")
+                Foreground = isOnlineApp ? (currentThemeIsLight ? HexBrush("#7E22CE") : HexBrush("#D8B4FE")) : HexBrush("#0066FF")
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
@@ -11262,35 +11236,6 @@ namespace FleetForge
             }
 
             localAppsPanel = new StackPanel();
-
-            // Dynamic Prompt Banner to search Winget Online when typing in search box
-            bannerSearchWingetPrompt = new Border()
-            {
-                Background = currentThemeIsLight ? HexBrush("#F5F3FF") : HexBrush("#1E1B4B"),
-                BorderBrush = HexBrush("#8B5CF6"),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(8),
-                Padding = new Thickness(14, 10, 14, 10),
-                Margin = new Thickness(0, 0, 0, 10),
-                Visibility = Visibility.Collapsed,
-                Cursor = Cursors.Hand
-            };
-            txtSearchWingetPromptText = new TextBlock()
-            {
-                Text = "🔍 Search live cloud app repository →",
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = HexBrush("#8B5CF6")
-            };
-            bannerSearchWingetPrompt.Child = txtSearchWingetPromptText;
-            bannerSearchWingetPrompt.MouseLeftButtonUp += delegate
-            {
-                string q = txtSearch.Text.Trim();
-                if (q.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) || q.Equals("search applications...", StringComparison.OrdinalIgnoreCase)) q = "";
-                OpenOnlineSearchModal(q);
-            };
-            localAppsPanel.Children.Add(bannerSearchWingetPrompt);
-
             localCardsContainer = new StackPanel();
             localAppsPanel.Children.Add(localCardsContainer);
 
@@ -11438,6 +11383,44 @@ namespace FleetForge
                         btnLoadAll.Content = string.Format("\u2713 All {0:N0} Apps Loaded", activeFilteredApps.Count);
                         btnLoadAll.IsEnabled = false;
                     }
+                }
+            }
+
+            if (!isOnlineSearching && !isShowingOnlineResults && currentRenderedCount >= activeFilteredApps.Count)
+            {
+                string rawQ = txtSearch != null ? txtSearch.Text.Trim() : "";
+                if (!string.IsNullOrEmpty(rawQ) && rawQ != "find an app, setting or pack..." && rawQ != "search applications..." && rawQ.Length >= 2)
+                {
+                    Border onlineHint = new Border()
+                    {
+                        Background = currentThemeIsLight ? HexBrush("#F5F3FF") : HexBrush("#1E1B4B"),
+                        BorderBrush = currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6D28D9"),
+                        BorderThickness = new Thickness(1),
+                        CornerRadius = new CornerRadius(8),
+                        Padding = new Thickness(14, 10, 14, 10),
+                        Margin = new Thickness(0, 10, 0, 6),
+                        Cursor = Cursors.Hand
+                    };
+                    StackPanel hintSp = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center };
+                    TextBlock hintIcon = new TextBlock() { Text = "🌐", FontSize = 13, Margin = new Thickness(0, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
+                    TextBlock hintText = new TextBlock()
+                    {
+                        Text = string.Format("Can't find what you need? Click here to search online Winget repository for \"{0}\" →", rawQ),
+                        FontSize = 12,
+                        FontWeight = FontWeights.SemiBold,
+                        Foreground = currentThemeIsLight ? HexBrush("#7C3AED") : HexBrush("#C084FC"),
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    hintSp.Children.Add(hintIcon);
+                    hintSp.Children.Add(hintText);
+                    onlineHint.Child = hintSp;
+                    string searchTarget = rawQ;
+                    onlineHint.MouseLeftButtonUp += delegate
+                    {
+                        int tkn = Interlocked.Increment(ref currentOnlineSearchToken);
+                        ExecuteOnlineWingetSearch(searchTarget, tkn);
+                    };
+                    localCardsContainer.Children.Add(onlineHint);
                 }
             }
         }
@@ -11611,19 +11594,22 @@ namespace FleetForge
             };
             titleStack.Children.Add(txtName);
 
+            bool isOnlineApp = (curApp.category != null && (curApp.category.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || curApp.category.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0));
             Border badge = new Border()
             {
-                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
+                Background = isOnlineApp ? (currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#3B0764")) : (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B")),
+                BorderBrush = isOnlineApp ? (currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6B21A8")) : null,
+                BorderThickness = isOnlineApp ? new Thickness(1) : new Thickness(0),
                 CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(8, 0, 0, 0),
                 Padding = new Thickness(7, 2, 7, 2)
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = (curApp.category ?? "UTILITIES").ToUpperInvariant(),
+                Text = isOnlineApp ? "🌐 WINGET CLOUD" : (curApp.category ?? "UTILITIES").ToUpperInvariant(),
                 FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = HexBrush("#0066FF")
+                Foreground = isOnlineApp ? (currentThemeIsLight ? HexBrush("#7E22CE") : HexBrush("#D8B4FE")) : HexBrush("#0066FF")
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
@@ -13011,15 +12997,6 @@ namespace FleetForge
             if (wingetOnlinePanel != null) wingetOnlinePanel.Visibility = Visibility.Collapsed;
             if (borderCatalogHeaderBar != null) borderCatalogHeaderBar.Visibility = Visibility.Visible;
             ApplyFilters();
-
-            if (btnSearchWingetOnlineBottom != null)
-            {
-                btnSearchWingetOnlineBottom.Content = "🔍  Search Online Apps";
-                btnSearchWingetOnlineBottom.Background = currentThemeIsLight ? HexBrush("#FFFFFF") : HexBrush("#2A3547");
-                btnSearchWingetOnlineBottom.Foreground = HexBrush("#0066FF");
-                btnSearchWingetOnlineBottom.BorderBrush = currentThemeIsLight ? HexBrush("#CBD5E1") : HexBrush("#475569");
-                btnSearchWingetOnlineBottom.BorderThickness = new Thickness(1);
-            }
         }
 
         private void SetCatalogSort(string mode, string label)
@@ -13247,6 +13224,19 @@ namespace FleetForge
             }
         }
 
+        private static bool MatchesSearchQuery(AppModel a, string lowerQuery, string cleanQuery)
+        {
+            if (a == null) return false;
+            string aName = a.name ?? "";
+            string aId = a.id ?? "";
+            string aDesc = a.description ?? "";
+            return aName.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   aId.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   aDesc.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   aName.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   aId.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         private void ApplyFilters()
         {
             if (activeCategory == "winget_online") return;
@@ -13258,15 +13248,8 @@ namespace FleetForge
                 rawQuery = "";
             }
 
-            if (!string.IsNullOrEmpty(rawQuery))
-            {
-                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Visible;
-                if (txtSearchWingetPromptText != null) txtSearchWingetPromptText.Text = string.Format("🔍 Can't find '{0}'? Search millions of apps online →", rawQuery);
-            }
-            else
-            {
-                if (bannerSearchWingetPrompt != null) bannerSearchWingetPrompt.Visibility = Visibility.Collapsed;
-            }
+            int searchToken = Interlocked.Increment(ref currentOnlineSearchToken);
+            isShowingOnlineResults = false;
 
             string cleanQuery = rawQuery.Replace(" ", "").ToLowerInvariant();
             string lowerQuery = rawQuery.ToLowerInvariant();
@@ -13280,22 +13263,8 @@ namespace FleetForge
 
                 if (!string.IsNullOrEmpty(lowerQuery))
                 {
-                    string aName = a.name ?? "";
-                    string aId = a.id ?? "";
-                    string aDesc = a.description ?? "";
-                    
-                    bool matchQuery =
-                        aName.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        aId.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        aDesc.IndexOf(lowerQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        aName.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                        aId.Replace(" ", "").IndexOf(cleanQuery, StringComparison.OrdinalIgnoreCase) >= 0;
-
-                    if (!matchQuery) return false;
-
-                    // If it is a custom database / recommended app that matches search, ALWAYS show it regardless of category!
+                    if (!MatchesSearchQuery(a, lowerQuery, cleanQuery)) return false;
                     if (isRec || isCust) return true;
-
                     return matchCat;
                 }
                 else
@@ -13304,17 +13273,305 @@ namespace FleetForge
                 }
             });
 
-            SortFilteredApps();
+            // If 0 matches in active category, but user typed a search query, search all apps across the database
+            if (activeFilteredApps.Count == 0 && !string.IsNullOrEmpty(lowerQuery) && activeCategory != "all" && !string.IsNullOrEmpty(activeCategory))
+            {
+                activeFilteredApps = config.apps.FindAll(delegate (AppModel a)
+                {
+                    return MatchesSearchQuery(a, lowerQuery, cleanQuery);
+                });
+            }
 
             isStreamingAllApps = false;
             currentRenderedCount = 0;
             appRows.Clear();
             if (localCardsContainer != null) localCardsContainer.Children.Clear();
 
-            UpdateMasterCheckboxState();
-            UpdateHeaderCount();
+            // Scenario 1: Local results found in local database!
+            if (activeFilteredApps.Count > 0)
+            {
+                isOnlineSearching = false;
+                SortFilteredApps();
+                UpdateMasterCheckboxState();
+                UpdateHeaderCount();
+                RenderNextBatch(250);
+                return;
+            }
 
-            RenderNextBatch(250);
+            // Scenario 2: Empty search query (user didn't type anything, viewing empty category)
+            if (string.IsNullOrEmpty(lowerQuery))
+            {
+                isOnlineSearching = false;
+                UpdateMasterCheckboxState();
+                UpdateHeaderCount();
+                if (catalogPaginationPanel != null) catalogPaginationPanel.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            // Scenario 3: Query is very short (1 character)
+            if (rawQuery.Length < 2)
+            {
+                isOnlineSearching = false;
+                UpdateMasterCheckboxState();
+                if (txtCatalogListHeaderCount != null) txtCatalogListHeaderCount.Text = "Type at least 2 characters to search apps...";
+                if (catalogPaginationPanel != null) catalogPaginationPanel.Visibility = Visibility.Collapsed;
+
+                Border tipCard = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(24, 28, 24, 28),
+                    Margin = new Thickness(0, 10, 0, 10),
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
+                StackPanel sp = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+                TextBlock icon = new TextBlock() { Text = "⌨️", FontSize = 24, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 8) };
+                TextBlock txt = new TextBlock() { Text = "Please type at least 2 characters to search applications.", FontSize = 13, FontWeight = FontWeights.SemiBold, Foreground = currentThemeIsLight ? HexBrush("#475569") : HexBrush("#94A3B8"), HorizontalAlignment = HorizontalAlignment.Center };
+                sp.Children.Add(icon);
+                sp.Children.Add(txt);
+                tipCard.Child = sp;
+                localCardsContainer.Children.Add(tipCard);
+                return;
+            }
+
+            // Scenario 4: Query >= 2 characters and not in local database -> Automatically search online on the same table!
+            ExecuteOnlineWingetSearch(rawQuery, searchToken);
+        }
+
+        private void ExecuteOnlineWingetSearch(string queryToExecute, int searchToken)
+        {
+            if (string.IsNullOrEmpty(wingetCmd))
+            {
+                isOnlineSearching = false;
+                UpdateMasterCheckboxState();
+                if (txtCatalogListHeaderCount != null) txtCatalogListHeaderCount.Text = string.Format("0 apps found for \"{0}\"", queryToExecute);
+                if (catalogPaginationPanel != null) catalogPaginationPanel.Visibility = Visibility.Collapsed;
+
+                Border noWingetCard = new Border()
+                {
+                    Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                    BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                    BorderThickness = new Thickness(1),
+                    CornerRadius = new CornerRadius(10),
+                    Padding = new Thickness(24, 28, 24, 28),
+                    Margin = new Thickness(0, 10, 0, 10),
+                    HorizontalAlignment = HorizontalAlignment.Stretch
+                };
+                StackPanel sp = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+                TextBlock icon = new TextBlock() { Text = "🔍", FontSize = 26, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 8) };
+                TextBlock title = new TextBlock() { Text = string.Format("No local applications found for \"{0}\"", queryToExecute), FontSize = 13.5, FontWeight = FontWeights.Bold, Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"), HorizontalAlignment = HorizontalAlignment.Center };
+                TextBlock sub = new TextBlock() { Text = "Microsoft Winget is not available on this system to search online repository.", FontSize = 12, Foreground = HexBrush("#64748B"), HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0) };
+                sp.Children.Add(icon);
+                sp.Children.Add(title);
+                sp.Children.Add(sub);
+                noWingetCard.Child = sp;
+                localCardsContainer.Children.Add(noWingetCard);
+                return;
+            }
+
+            isOnlineSearching = true;
+            UpdateMasterCheckboxState();
+            if (txtCatalogListHeaderCount != null)
+            {
+                txtCatalogListHeaderCount.Text = string.Format("🔍 Searching online Winget repository for \"{0}\"...", queryToExecute);
+            }
+            if (catalogPaginationPanel != null) catalogPaginationPanel.Visibility = Visibility.Collapsed;
+
+            localCardsContainer.Children.Clear();
+            appRows.Clear();
+
+            Border loadingCard = new Border()
+            {
+                Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(10),
+                Padding = new Thickness(24, 28, 24, 28),
+                Margin = new Thickness(0, 10, 0, 10),
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            StackPanel loadSp = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+            TextBlock loadIcon = new TextBlock()
+            {
+                Text = "⏳",
+                FontSize = 26,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+            TextBlock loadTitle = new TextBlock()
+            {
+                Text = string.Format("Not found in local database. Searching online Winget repository for \"{0}\"...", queryToExecute),
+                FontSize = 13.5,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+            TextBlock loadSub = new TextBlock()
+            {
+                Text = "Querying Microsoft Winget live cloud index for matching packages...",
+                FontSize = 12,
+                Foreground = HexBrush("#64748B"),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 4, 0, 0)
+            };
+            loadSp.Children.Add(loadIcon);
+            loadSp.Children.Add(loadTitle);
+            loadSp.Children.Add(loadSub);
+            loadingCard.Child = loadSp;
+            localCardsContainer.Children.Add(loadingCard);
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                List<AppModel> foundApps = new List<AppModel>();
+                string errorMsg = null;
+                try
+                {
+                    string args = string.Format("search -q \"{0}\" -n 50 --accept-source-agreements", queryToExecute);
+                    ProcessStartInfo psi = new ProcessStartInfo(wingetCmd, args);
+                    psi.CreateNoWindow = true;
+                    psi.UseShellExecute = false;
+                    psi.RedirectStandardOutput = true;
+                    psi.RedirectStandardError = true;
+
+                    List<string> lines = new List<string>();
+                    using (Process proc = Process.Start(psi))
+                    {
+                        while (!proc.StandardOutput.EndOfStream)
+                        {
+                            lines.Add(proc.StandardOutput.ReadLine());
+                        }
+                        proc.WaitForExit();
+                    }
+
+                    int hdrIndex = -1;
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        if (lines[i] != null && System.Text.RegularExpressions.Regex.IsMatch(lines[i], @"^Name\s+Id"))
+                        {
+                            hdrIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (hdrIndex >= 0 && lines.Count > hdrIndex + 2)
+                    {
+                        string hdr = lines[hdrIndex];
+                        int idPos = hdr.IndexOf("Id");
+                        int verPos = hdr.IndexOf("Version");
+                        int matchPos = hdr.IndexOf("Match");
+                        int srcPos = hdr.IndexOf("Source");
+
+                        for (int i = hdrIndex + 2; i < lines.Count; i++)
+                        {
+                            string line = lines[i];
+                            if (string.IsNullOrWhiteSpace(line)) continue;
+
+                            string name = (idPos > 0 && line.Length >= idPos) ? line.Substring(0, idPos).Trim() : line.Trim();
+                            string id = "";
+                            if (idPos > 0 && line.Length > idPos)
+                            {
+                                int end = (verPos > idPos) ? Math.Min(line.Length - idPos, verPos - idPos) : line.Length - idPos;
+                                id = line.Substring(idPos, end).Trim();
+                            }
+
+                            string ver = "";
+                            if (verPos > 0 && line.Length > verPos)
+                            {
+                                int limit = (matchPos > verPos) ? matchPos : ((srcPos > verPos) ? srcPos : line.Length);
+                                int end = Math.Min(line.Length - verPos, limit - verPos);
+                                ver = line.Substring(verPos, end).Trim();
+                            }
+
+                            if (!string.IsNullOrEmpty(id))
+                            {
+                                foundApps.Add(new AppModel()
+                                {
+                                    id = id,
+                                    name = string.IsNullOrEmpty(name) ? id : name,
+                                    category = "Winget Online",
+                                    description = string.IsNullOrEmpty(ver) ? "Package ID: " + id : "Version: " + ver + " • Package ID: " + id
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorMsg = ex.Message;
+                }
+
+                Dispatcher.Invoke(new Action(delegate
+                {
+                    if (searchToken != currentOnlineSearchToken) return;
+                    string currentInput = txtSearch != null ? txtSearch.Text.Trim() : "";
+                    if (currentInput.Equals("find an app, setting or pack...", StringComparison.OrdinalIgnoreCase) ||
+                        currentInput.Equals("search applications...", StringComparison.OrdinalIgnoreCase))
+                    {
+                        currentInput = "";
+                    }
+                    if (!string.Equals(currentInput, queryToExecute, StringComparison.OrdinalIgnoreCase)) return;
+
+                    isOnlineSearching = false;
+                    localCardsContainer.Children.Clear();
+                    appRows.Clear();
+
+                    if (errorMsg != null || foundApps.Count == 0)
+                    {
+                        Border noRes = new Border()
+                        {
+                            Background = currentThemeIsLight ? HexBrush("#F8FAFC") : HexBrush("#1E293B"),
+                            BorderBrush = currentThemeIsLight ? HexBrush("#E2E8F0") : HexBrush("#334155"),
+                            BorderThickness = new Thickness(1),
+                            CornerRadius = new CornerRadius(10),
+                            Padding = new Thickness(24, 30, 24, 30),
+                            Margin = new Thickness(0, 10, 0, 10),
+                            HorizontalAlignment = HorizontalAlignment.Stretch
+                        };
+                        StackPanel spNo = new StackPanel() { HorizontalAlignment = HorizontalAlignment.Center };
+                        TextBlock iconNo = new TextBlock() { Text = "🔍", FontSize = 28, HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 8) };
+                        TextBlock titleNo = new TextBlock() { Text = string.Format("No software packages found for \"{0}\"", queryToExecute), FontSize = 14, FontWeight = FontWeights.Bold, Foreground = currentThemeIsLight ? HexBrush("#0F172A") : HexBrush("#F8FAFC"), HorizontalAlignment = HorizontalAlignment.Center };
+                        TextBlock descNo = new TextBlock() { Text = errorMsg != null ? ("Search error: " + errorMsg) : "Not found in local database or online Winget repository. Check spelling or try a publisher name (e.g. 'Mozilla.Firefox').", FontSize = 12, Foreground = currentThemeIsLight ? HexBrush("#64748B") : HexBrush("#94A3B8"), HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 4, 0, 0) };
+                        spNo.Children.Add(iconNo);
+                        spNo.Children.Add(titleNo);
+                        spNo.Children.Add(descNo);
+                        noRes.Child = spNo;
+                        localCardsContainer.Children.Add(noRes);
+
+                        if (txtCatalogListHeaderCount != null)
+                        {
+                            txtCatalogListHeaderCount.Text = string.Format("0 apps found for \"{0}\"", queryToExecute);
+                        }
+                        UpdateMasterCheckboxState();
+                        return;
+                    }
+
+                    // Register found apps into knownOnlineApps & in-memory config.apps so they are fully recognized
+                    foreach (AppModel app in foundApps)
+                    {
+                        if (!knownOnlineApps.ContainsKey(app.id)) knownOnlineApps[app.id] = app;
+                        if (!config.apps.Exists(delegate(AppModel x) { return string.Equals(x.id, app.id, StringComparison.OrdinalIgnoreCase); }))
+                        {
+                            config.apps.Add(app);
+                        }
+                    }
+
+                    isShowingOnlineResults = true;
+                    activeFilteredApps = foundApps;
+                    currentRenderedCount = 0;
+                    RenderNextBatch(250);
+                    UpdateMasterCheckboxState();
+                    if (txtCatalogListHeaderCount != null)
+                    {
+                        int selCount = GetSelectedInFilterCount();
+                        if (selCount > 0)
+                            txtCatalogListHeaderCount.Text = string.Format("Found {0:N0} online apps for \"{1}\" ({2:N0} selected)", foundApps.Count, queryToExecute, selCount);
+                        else
+                            txtCatalogListHeaderCount.Text = string.Format("Found {0:N0} online apps for \"{1}\"", foundApps.Count, queryToExecute);
+                    }
+                }));
+            });
         }
 
         private void OnMasterCheckboxClicked()
@@ -13674,6 +13931,25 @@ namespace FleetForge
                 foreach (AppModel a in config.apps)
                 {
                     if (targetIdSet.Contains(a.id)) selectedApps.Add(a);
+                }
+            }
+
+            if (knownOnlineApps != null)
+            {
+                foreach (string id in targetIdSet)
+                {
+                    if (!selectedApps.Exists(delegate(AppModel x) { return string.Equals(x.id, id, StringComparison.OrdinalIgnoreCase); }))
+                    {
+                        if (knownOnlineApps.ContainsKey(id))
+                        {
+                            AppModel onlineApp = knownOnlineApps[id];
+                            selectedApps.Add(onlineApp);
+                            if (config != null && config.apps != null && !config.apps.Exists(delegate(AppModel x) { return string.Equals(x.id, id, StringComparison.OrdinalIgnoreCase); }))
+                            {
+                                config.apps.Add(onlineApp);
+                            }
+                        }
+                    }
                 }
             }
 
