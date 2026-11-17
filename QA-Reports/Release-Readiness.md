@@ -1,4 +1,4 @@
-﻿# FleetForge v2.7.0 â€” Release Readiness Certificate & Production Sign-Off
+# FleetForge v2.7.0 â€” Release Readiness Certificate & Production Sign-Off
 
 **Release Target:** FleetForge v2.7.0 Enterprise IT Edition  
 **Release Date:** November 16, 2026  
