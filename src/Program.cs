@@ -10534,22 +10534,26 @@ namespace FleetForge
             };
             titleStack.Children.Add(txtName);
 
-            bool isOnlineApp = (curApp.category != null && (curApp.category.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || curApp.category.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0));
+            string catText = (curApp.category ?? "").Trim();
+            if (string.IsNullOrEmpty(catText) || catText.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || catText.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                catText = InferAppCategory(curApp.name, curApp.id);
+            }
+            catText = catText.ToUpperInvariant();
+
             Border badge = new Border()
             {
-                Background = isOnlineApp ? (currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#3B0764")) : (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B")),
-                BorderBrush = isOnlineApp ? (currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6B21A8")) : null,
-                BorderThickness = isOnlineApp ? new Thickness(1) : new Thickness(0),
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
                 CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(8, 0, 0, 0),
                 Padding = new Thickness(7, 2, 7, 2)
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = isOnlineApp ? "🌐 WINGET CLOUD" : (curApp.category ?? "UTILITIES").ToUpperInvariant(),
+                Text = catText,
                 FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = isOnlineApp ? (currentThemeIsLight ? HexBrush("#7E22CE") : HexBrush("#D8B4FE")) : HexBrush("#0066FF")
+                Foreground = HexBrush("#0066FF")
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
@@ -11383,12 +11387,95 @@ namespace FleetForge
             }
         }
 
+        private static string InferAppCategory(string name, string id)
+        {
+            string s = ((name ?? "") + " " + (id ?? "")).ToLowerInvariant();
+
+            // 1. Web Browsers
+            if (s.Contains("browser") || s.Contains("chrome") || s.Contains("firefox") || s.Contains("msedge") || 
+                s.Contains("brave") || s.Contains("opera") || s.Contains("vivaldi") || s.Contains("torproject") || 
+                s.Contains("tor browser") || s.Contains("chromium") || s.Contains("waterfox") || s.Contains("floorp") || 
+                s.Contains("safari") || s.Contains("librewolf") || s.Contains("zen-browser") ||
+                s.EndsWith(".chrome") || s.EndsWith(".firefox") || s.EndsWith(".edge") || s.EndsWith(".brave"))
+                return "BROWSERS";
+
+            // 2. Security & Network
+            if (s.Contains("secur") || s.Contains("vpn") || s.Contains("antivirus") || s.Contains("defender") || 
+                s.Contains("firewall") || s.Contains("malware") || s.Contains("protect") || s.Contains("guard") || 
+                s.Contains("bitdefender") || s.Contains("kaspersky") || s.Contains("avast") || s.Contains("norton") || 
+                s.Contains("malwarebytes") || s.Contains("wireguard") || s.Contains("openvpn") || s.Contains("proton") || 
+                s.Contains("vault") || s.Contains("password") || s.Contains("bitwarden") || s.Contains("keepass") || 
+                s.Contains("1password") || s.Contains("authenticator") || s.Contains("privacy") || s.Contains("shield") ||
+                s.Contains("wireshark") || s.Contains("nmap") || s.Contains("proxy"))
+                return "SECURITY";
+
+            // 3. Development & Code
+            if (s.Contains("git") || s.Contains("code") || s.Contains("develop") || s.Contains("studio") || 
+                s.Contains("compiler") || s.Contains("sdk") || s.Contains("python") || s.Contains("node") || 
+                s.Contains("rust") || s.Contains("golang") || s.Contains("java") || s.Contains("dotnet") || 
+                s.Contains("docker") || s.Contains("k8s") || s.Contains("kubernetes") || s.Contains("terminal") || 
+                s.Contains("powershell") || s.Contains("database") || s.Contains("sql") || s.Contains("dbeaver") || 
+                s.Contains("postman") || s.Contains("generator") || s.Contains("report") || s.Contains("nuget") || 
+                s.Contains("npm") || s.Contains("yarn") || s.Contains("cmake") || s.Contains("sublime") || 
+                s.Contains("neovim") || s.Contains("vim") || s.Contains("decompiler") || s.Contains("fiddler") ||
+                s.Contains("intellij") || s.Contains("pycharm") || s.Contains("webstorm") || s.Contains("rider"))
+                return "DEVELOPMENT";
+
+            // 4. Communication & Collaboration
+            if (s.Contains("chat") || s.Contains("message") || s.Contains("messenger") || s.Contains("discord") || 
+                s.Contains("telegram") || s.Contains("slack") || s.Contains("teams") || s.Contains("zoom") || 
+                s.Contains("skype") || s.Contains("whatsapp") || s.Contains("signal") || s.Contains("wechat") || 
+                s.Contains("meet") || s.Contains("collab") || s.Contains("mail") || s.Contains("email") || 
+                s.Contains("outlook") || s.Contains("thunderbird") || s.Contains("vicinae"))
+                return "COMMUNICATION";
+
+            // 5. Media & Creative
+            if (s.Contains("media") || s.Contains("video") || s.Contains("audio") || s.Contains("sound") || 
+                s.Contains("music") || s.Contains("player") || s.Contains("editor") || s.Contains("vlc") || 
+                s.Contains("spotify") || s.Contains("obs") || s.Contains("blender") || s.Contains("photoshop") || 
+                s.Contains("illustrator") || s.Contains("premiere") || s.Contains("audacity") || s.Contains("handbrake") || 
+                s.Contains("gimp") || s.Contains("inkscape") || s.Contains("figma") || s.Contains("canva") || 
+                s.Contains("davinci") || s.Contains("resolve") || s.Contains("aftereffects") || s.Contains("lightroom") || 
+                s.Contains("foobar") || s.Contains("potplayer") || s.Contains("ffmpeg") || s.Contains("codec") ||
+                s.Contains("stream") || s.Contains("render"))
+                return "MEDIA";
+
+            // 6. Cloud & Storage
+            if (s.Contains("cloud") || s.Contains("storage") || s.Contains("drive") || s.Contains("dropbox") || 
+                s.Contains("onedrive") || s.Contains("mega") || s.Contains("sync") || s.Contains("backup") || 
+                s.Contains("torrent") || s.Contains("qbittorrent") || s.Contains("filezilla") || s.Contains("winscp") ||
+                s.Contains("box") || s.Contains("nextcloud"))
+                return "CLOUD";
+
+            // 7. Productivity & Office
+            if (s.Contains("office") || s.Contains("word") || s.Contains("excel") || s.Contains("powerpoint") || 
+                s.Contains("pdf") || s.Contains("reader") || s.Contains("note") || s.Contains("notion") || 
+                s.Contains("obsidian") || s.Contains("evernote") || s.Contains("todo") || s.Contains("task") || 
+                s.Contains("calendar") || s.Contains("document") || s.Contains("writer") || s.Contains("libreoffice") || 
+                s.Contains("raycast") || s.Contains("launcher") || s.Contains("calculator") || s.Contains("spreadsheet"))
+                return "PRODUCTIVITY";
+
+            // 8. Gaming & Engines
+            if (s.Contains("game") || s.Contains("gaming") || s.Contains("steam") || s.Contains("epic") || 
+                s.Contains("gog") || s.Contains("roblox") || s.Contains("minecraft") || s.Contains("unity") || 
+                s.Contains("unreal") || s.Contains("godot") || s.Contains("emulator") || s.Contains("retroarch") || 
+                s.Contains("love2d") || s.Contains("love tester"))
+                return "GAMING";
+
+            // Default
+            return "UTILITIES";
+        }
+
         private static string GetAppGlyphIcon(AppModel app)
         {
             if (app == null) return "\uE74C";
             string id = (app.id ?? "").ToLowerInvariant();
             string name = (app.name ?? "").ToLowerInvariant();
             string cat = (app.category ?? "").ToLowerInvariant();
+            if (string.IsNullOrEmpty(cat) || cat.Contains("online") || cat.Contains("winget"))
+            {
+                cat = InferAppCategory(name, id).ToLowerInvariant();
+            }
 
             // Precedence 1: Exact matches for showcase apps from Fluent mockup
             if (name.Contains("isecure") || id.Contains("isecure") || id.Contains("vpn") || name.Contains("vpn"))
@@ -11552,22 +11639,26 @@ namespace FleetForge
             };
             titleStack.Children.Add(txtName);
 
-            bool isOnlineApp = (curApp.category != null && (curApp.category.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || curApp.category.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0));
+            string catText = (curApp.category ?? "").Trim();
+            if (string.IsNullOrEmpty(catText) || catText.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 || catText.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                catText = InferAppCategory(curApp.name, curApp.id);
+            }
+            catText = catText.ToUpperInvariant();
+
             Border badge = new Border()
             {
-                Background = isOnlineApp ? (currentThemeIsLight ? HexBrush("#F3E8FF") : HexBrush("#3B0764")) : (currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B")),
-                BorderBrush = isOnlineApp ? (currentThemeIsLight ? HexBrush("#DDD6FE") : HexBrush("#6B21A8")) : null,
-                BorderThickness = isOnlineApp ? new Thickness(1) : new Thickness(0),
+                Background = currentThemeIsLight ? HexBrush("#EFF6FF") : HexBrush("#1E293B"),
                 CornerRadius = new CornerRadius(5),
                 Margin = new Thickness(8, 0, 0, 0),
                 Padding = new Thickness(7, 2, 7, 2)
             };
             TextBlock txtBadge = new TextBlock()
             {
-                Text = isOnlineApp ? "🌐 WINGET CLOUD" : (curApp.category ?? "UTILITIES").ToUpperInvariant(),
+                Text = catText,
                 FontSize = 9.5,
                 FontWeight = FontWeights.Bold,
-                Foreground = isOnlineApp ? (currentThemeIsLight ? HexBrush("#7E22CE") : HexBrush("#D8B4FE")) : HexBrush("#0066FF")
+                Foreground = HexBrush("#0066FF")
             };
             badge.Child = txtBadge;
             titleStack.Children.Add(badge);
@@ -13485,11 +13576,12 @@ namespace FleetForge
 
                             if (!string.IsNullOrEmpty(id))
                             {
+                                string appName = string.IsNullOrEmpty(name) ? id : name;
                                 foundApps.Add(new AppModel()
                                 {
                                     id = id,
-                                    name = string.IsNullOrEmpty(name) ? id : name,
-                                    category = "Winget Online",
+                                    name = appName,
+                                    category = InferAppCategory(appName, id),
                                     description = string.IsNullOrEmpty(ver) ? "Package ID: " + id : "Version: " + ver + " • Package ID: " + id
                                 });
                             }
@@ -13744,9 +13836,7 @@ namespace FleetForge
                     int onlineCount = 0;
                     for (int i = 0; i < activeFilteredApps.Count; i++)
                     {
-                        if (activeFilteredApps[i].category != null &&
-                            (activeFilteredApps[i].category.IndexOf("online", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                             activeFilteredApps[i].category.IndexOf("winget", StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (activeFilteredApps[i] != null && knownOnlineApps.ContainsKey(activeFilteredApps[i].id))
                         {
                             onlineCount++;
                         }
